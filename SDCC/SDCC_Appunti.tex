@@ -1,0 +1,162 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+% Titolo e Autore
+\title{Sistemi Distribuiti e Cloud Computing}
+\author{Valeria Cardellini}
+\date{Anno Accademico 2024/2025}
+
+\begin{document}
+
+% Pagina del titolo
+\maketitle
+\tableofcontents
+
+% Capitolo 1 - Introduzione ai sistemi distribuiti
+\chapter{Introduzione ai Sistemi Distribuiti}
+\label{chap:introduzione}
+
+La \textbf{Legge di Metcalfe} afferma che il valore di una rete di telecomunicazione è proporzionale al quadrato del numero di utenti connessi al sistema. Per esempio, il potere economico di aziende come Facebook, Google e Instagram è cresciuto grazie a questa legge.
+
+Negli ultimi anni, l'evoluzione tecnologica ha portato a computer:
+\begin{itemize}
+    \item Più piccoli
+    \item Più economici
+    \item Più efficienti dal punto di vista energetico
+    \item Più veloci
+\end{itemize}
+
+Esempi di \textbf{sistemi distribuiti} includono:
+\begin{itemize}
+    \item Internet e Web
+    \item Sistemi Cloud
+    \item Sistemi peer-to-peer
+    \item Internet of Things (IoT)
+\end{itemize}
+
+Secondo \textbf{Leslie Lamport}, un \textit{sistema distribuito} è un sistema in cui il fallimento di un computer, che non sapevamo esistesse, può rendere inutilizzabile il nostro sistema.
+
+\section{Definizione di Sistema Distribuito}
+\label{sec:definizione-sistema-distribuito}
+
+Un \textit{sistema distribuito} è caratterizzato da:
+\begin{enumerate}
+    \item Un insieme di elementi computazionali autonomi, che appaiono esternamente come un unico sistema coerente grazie a un \textit{middleware}. Gli elementi autonomi, spesso chiamati \textit{nodi}, possono essere hardware o software.
+    \item Comunicazione e coordinamento tra i componenti tramite scambio di messaggi (sincrono o asincrono).
+    \item Un sistema dove il fallimento di un nodo può rendere inutilizzabile il servizio senza che ne fossimo a conoscenza.
+\end{enumerate}
+
+\textit{Leslie Lamport}, vincitore del Turing Award nel 2013, ha dato contributi fondamentali alla teoria e alla pratica dei sistemi distribuiti, introducendo concetti chiave come la causalità, i clock logici e i fallimenti bizantini [9:source].
+
+\section{Utilità di un Sistema Distribuito}
+\label{sec:utilita-sistema-distribuito}
+
+I sistemi distribuiti sono utili per:
+\begin{itemize}
+    \item Condividere risorse (nodi computazionali, spazio di storage, rete, applicazioni).
+    \item Migliorare la qualità del servizio, in termini di:
+    \begin{itemize}
+        \item Prestazioni (riduzione del tempo di risposta)
+        \item Disponibilità (percentuale del tempo in cui il sistema è operativo)
+    \end{itemize}
+    \item Migliorare la sicurezza, grazie alla distribuzione dei nodi che riduce i rischi di un attacco centralizzato.
+    \item Distribuire componenti del sistema su larga scala (anche geograficamente).
+    \item Mantenere l'autonomia, evitando componenti centralizzate che possono rappresentare un punto di fallimento [9:source].
+\end{itemize}
+
+\section{Differenze tra Sistema Distribuito e Centralizzato}
+\label{sec:differenze-sistema-distribuito}
+
+Le principali differenze includono:
+\begin{itemize}
+    \item \textbf{Concorrenza}: Nei sistemi distribuiti, la concorrenza è inevitabile poiché i nodi lavorano in parallelo, mentre nei sistemi centralizzati può essere una scelta di design.
+    \item \textbf{Mancanza di un Clock Globale}: In un sistema distribuito, ci sono molti clock fisici che non sono necessariamente sincronizzati tra loro.
+    \item \textbf{Indipendenza}: Il fallimento di un thread in un sistema centralizzato può compromettere l'intero sistema, mentre nei sistemi distribuiti, il fallimento di un nodo non compromette necessariamente l'intero sistema.
+\end{itemize}
+
+\section{Caratteristiche di un Sistema Distribuito}
+\label{sec:caratteristiche-sistema-distribuito}
+
+Le principali caratteristiche di un sistema distribuito sono:
+\begin{itemize}
+    \item \textbf{Eterogeneità}: I nodi possono essere costituiti da differenti reti, sistemi operativi e linguaggi di programmazione. Il \textit{middleware} maschera questa eterogeneità.
+    \item \textbf{Trasparenza}: L'utente non dovrebbe percepire la distribuzione delle risorse. I tipi di trasparenza includono:
+    \begin{itemize}
+        \item Accesso: Nasconde le differenze nella rappresentazione dei dati e nel modo in cui le risorse sono accedute.
+        \item Locazione: Nasconde dove la risorsa è localizzata, per esempio un URL nasconde l'indirizzo IP [9:source].
+        \item Migrazione e replicazione: Nasconde che le risorse possano essere spostate o replicate senza impattare l'operatività.
+    \end{itemize}
+    \item \textbf{Scalabilità}: La capacità di mantenere le prestazioni adeguate nonostante la crescita del numero di utenti o processi.
+    \item \textbf{Apertura}: I sistemi distribuiti devono essere aperti, in grado di interagire con altri sistemi e garantire portabilità.
+\end{itemize}
+
+% Capitolo 2 - Virtualizzazione e Architettura
+\chapter{Virtualizzazione e Architettura}
+\label{chap:virtualizzazione}
+
+\section{Pro e Contro}
+\label{sec:pro-contro}
+
+La virtualizzazione offre numerosi vantaggi, tra cui una maggiore flessibilità nell'utilizzo delle risorse e una riduzione dei costi operativi. Tuttavia, presenta anche alcune sfide, come la gestione della sicurezza e la complessità di configurazione.
+
+\section{Architettura Xen}
+\label{sec:architettura-xen}
+
+La piattaforma \textit{Xen} è un esempio di hypervisor che permette la creazione di macchine virtuali con un controllo fine sull'allocazione delle risorse hardware.
+
+% Capitolo 3 - Migrazione e Resizing
+\chapter{Migrazione e Resizing}
+\label{chap:migrazione-resizing}
+
+\section{Resizing}
+\label{sec:resizing}
+
+Il \textit{resizing} è il processo di adattamento dinamico delle risorse assegnate a una macchina virtuale.
+
+\section{Migrazione}
+\label{sec:migrazione}
+
+La migrazione delle macchine virtuali consente di spostare le istanze tra server fisici per bilanciare il carico o per manutenzioni programmate.
+
+% Capitolo 4 - Lightweight Operating Systems e Unikernel
+\chapter{Lightweight Operating Systems e Unikernel}
+\label{chap:lightweight-os}
+
+\section{Docker}
+\label{sec:docker}
+
+\textit{Docker} è una piattaforma di virtualizzazione a livello di sistema operativo che utilizza container per isolare le applicazioni in ambienti indipendenti.
+
+\section{Kubernetes}
+\label{sec:kubernetes}
+
+\textit{Kubernetes} è una piattaforma di orchestrazione per container che automatizza il deployment, la gestione e la scalabilità delle applicazioni containerizzate.
+
+% Capitolo 5 - Tecniche di Scaling nei Sistemi Distribuiti
+\chapter{Tecniche di Scaling nei Sistemi Distribuiti}
+\label{chap:scaling}
+
+\section{Scaling Verticale e Orizzontale}
+\label{sec:scaling-verticale-orizzontale}
+
+Ci sono due principali direzioni di scaling nei sistemi distribuiti:
+\begin{itemize}
+    \item \textbf{Scaling verticale (scale-up)}: Aumentare la potenza delle risorse già esistenti.
+    \item \textbf{Scaling orizzontale (scale-out)}: Aggiungere più risorse della stessa capacità [9:source].
+\end{itemize}
+
+\section{Tecniche di Scalabilità}
+\label{sec:tecniche-scalabilita}
+
+Per garantire la scalabilità, si possono utilizzare diverse tecniche:
+\begin{itemize}
+    \item Nascondere la latenza di comunicazione con la comunicazione asincrona.
+    \item Spostare le computazioni il più vicino possibile ai client.
+    \item Partizionare i dati e le computazioni, distribuendoli su più risorse (divide et impera).
+    \item Replicare risorse e dati del sistema, rendendoli disponibili su diversi nodi [9:source].
+\end{itemize}
+
+\end{document}
