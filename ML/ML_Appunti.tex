@@ -1,0 +1,214 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb} % Aggiungi questo pacchetto per il comando \mathbb
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\title{Machine Learning - Appunti}
+\author{Leonardo Polidori\\Edoardo Marchionni}
+\date{Anno Accademico 2024/2025}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Introduzione}
+\subsection{Machine Learning}
+Programmare un algoritmo affinché impari dai dati o dall’esperienza. Molto simile alla statistica:
+\begin{itemize}
+    \item Entrambi i campi attingono al calcolo, alla probabilità e all’algebra lineare.
+    \item Entrambi tentano di scoprire modelli nei dati.
+\end{itemize}
+Diversità dalla statistica:
+\begin{itemize}
+    \item Il Machine Learning è più interessato alla costruzione di agenti autonomi.
+    \item Pone maggiore enfasi sulle prestazioni predittive e sulla scalabilità.
+\end{itemize}
+
+\subsubsection{Workflow}
+\begin{enumerate}
+    \item Scegliere se utilizzare il Machine Learning.
+    \item Raccogliere e organizzare i dati.
+    \item Stabilire una baseline.
+    \item Scegliere il modello.
+    \item Ottimizzare.
+    \item Ricercare gli iperparametri.
+    \item Analizzare performance ed errori e iterare.
+\end{enumerate}
+
+\subsubsection{Tipi di Machine Learning}
+\begin{itemize}
+    \item \textbf{Supervised Learning}: Esempi etichettati con comportamento corretto.
+    \item \textbf{Reinforcement Learning}: L'agente impara massimizzando un segnale di ricompensa.
+    \item \textbf{Unsupervised Learning}: Non viene etichettato nulla; si cerca di trovare pattern nei dati.
+\end{itemize}
+
+\subsubsection{Vettori di input}
+Gli algoritmi di Machine Learning utilizzano vari tipi di dati. Gli input sono spesso rappresentati come vettori nel piano reale $\mathbb{R}^2$. 
+
+\section{Supervised Learning}
+\subsection{Nearest Neighbors}
+Per classificare un vettore $x$, possiamo cercare il vettore più vicino nel training set e copiare la sua label.
+\begin{equation}
+    \| x^{(a)} - x^{(b)} \| = \sqrt{\sum_{j=1}^{d} (x_j^{(a)} - x_j^{(b)})^2}
+\end{equation}
+L'algoritmo trova la coppia più vicina a tale vettore di input ed assegnerà come label di $x$ proprio quella del suo vicino.
+
+% Aggiungi immagine se disponibile:
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{NN.png}
+\end{center}
+
+
+\subsubsection{Voronoi Diagram}
+Data una serie di punti nello spazio, il diagramma di Voronoi suddivide lo spazio in celle o regioni, dove ogni cella contiene i punti dello spazio che sono più vicini a uno specifico punto rispetto a tutti gli altri punti. Questo concetto è usato nel \textbf{Nearest Neighbors}, un algoritmo di Supervised Learning. Nel contesto del KNN, un Voronoi Diagram mostra come lo spazio di input è suddiviso in base alla distanza dai punti di training. Ogni regione rappresenta un'area in cui tutti i punti sono classificati come appartenenti alla stessa classe del vicino più prossimo. il Voronoi viene rappresentato grazia al decision boundary ovvero i confini che separano le diverse classi in uno spazio di input, cioè le linee o superfici che dividono lo spazio in regioni classificate diversamente.
+
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{voroi.png}
+\end{center}
+
+
+
+
+
+
+
+%inizio rumore
+\subsubsection{Rumore}
+Una delle problematiche di tale algoritmo è la sensibilità al rumore generato da possibili dati etichettati male che creano un effetto a cascata per i futuri input. \\
+Per ovviare a ciò si può far considerare i $K$ punti del training set più vicini \textbf{(KNN)}.\\ inserire immagine
+
+\paragraph{Scelta di $K$}
+\begin{itemize}
+    \item $K$ piccolo:
+    \begin{itemize}
+        \item Ottimo per catturare pattern a grana fine;
+        \item Può portare all’overfit, cioè la troppa sensibilità alle caratteristiche del training set.
+    \end{itemize}
+    \item $K$ grande:
+    \begin{itemize}
+        \item Effettua previsioni stabili calcolando la media su molti esempi;
+        \item Può portare all’underfit, cioè non riuscire a catturare dettagli importanti del traning set portando a generalizzazioni dei dati.
+    \end{itemize}
+    \item $K$ bilanciato:
+    \begin{itemize}
+        \item La scelta ottimale di $K$ dipende dal numero di punti dati $n$;
+        \item Buone proprietà teoriche se $K \to \infty$ e $K/n \to 0$;
+        \item Regola empirica: scegliere $K < \sqrt{n}$;
+        \item Possiamo scegliere $K$ usando il validation set.
+    \end{itemize}
+\end{itemize}
+\paragraph{Suddivisione del dataset}:
+\begin{itemize}
+\item Training Set: Usato per addestrare il modello con un set di dati già classificati.
+\item Validation Set: set di dati di cui si conosce la classificazione ma usati per calcolare l'errore preliminare del modello. Tuning degli iperparametri (sisceglie la versione con l'errore più basso) e per prevenire fenomeni come overfitting.
+\item Test Set: ultimo set di dati usato dopo aver ottimizzato il modello per valutare in modo definitivo le prestazioni di esso su dati completamente nuovi di cui si conosce la classificazione. Serve a calcolare l'errore finale del modello(ci si aspetta che sia simile a quello del validation set).
+\end{itemize}
+
+\paragraph{K-Fold Cross-Validation}:\\
+il K-Fold Cross-validation è una tecnica di tuning degli hyperparameter robusta. Essa consiste nel dividere il Data set in Training e test set; per poi suddividere a sua volta training set in K-folder di cui uno farà da validation set per poi ruotare a turno per tutti i folder. Quindi si calcola l'errore per ogni combinazione ottenendo k errori diversi, successivamente si calcola la media di questi che fungerà da errore totale dell'istanza del modello di KNN. Infine si fa una valutazione dell'errore finale con il test data per le performance del sistema. (si parla di K diversi uno per il modello e uno per la validazione)\\\\inserire immagine\\\\
+
+\subsection{Regressione KNN}
+La differenza principale con il KNN classico è che le etichette non sono più un Vero o Falso o più in generale discrete ma si adotta un etichetta rappresentata da un numero reale 
+\[
+t \in \mathbb{R}
+\]
+. \\\\insert image\\\\ 
+\subsubsection{Problema della dimensionalità}
+Le visualizzazioni a bassa dimensionalità sono fuorvianti. In grandi dimensioni, la maggior parte dei punti sono molto distanti tra loro. \\
+Punti necessari affinché il vicino risieda ad una distanza $< \epsilon$:
+\begin{itemize}
+\item Volume di un cubo di lato 1 è pari a $1^d$
+
+    \item Volume di un cubetto di lato $\epsilon < 1$: $O(\epsilon^d)$;
+
+    \item Allora: $(\frac{1}{\epsilon})^d$ probabilità per un punto di finire all'interno di $\epsilon$.
+\end{itemize}
+
+\subsubsection{Normalizzazione}
+I vicini più prossimi possono essere sensibili agli intervalli di diverse features. \\
+\textbf{Soluzione}: normalizzare ogni dimensione ad avere media nulla e varianza unitaria.
+\begin{itemize}
+    \item Calcolare media: $\mu_j$;
+    \item Calcolare deviazione standard: $\sigma_j$;
+    \item Calcolare: \[
+    \tilde{x}_j = \frac{x_j - \mu_j}{\sigma_j}
+    \]
+    \item Utilizzare $\tilde{x}_j$.
+\end{itemize}
+
+\subsubsection{Costo computazionale}
+\begin{itemize}
+    \item Numero di operazioni al training time: 0;
+    \item Numero di operazioni al test time, per query:
+    \begin{itemize}
+        \item Calcolare le distanze euclidee D-dimensionali con N punti dati: $O(ND)$;
+        \item Ordinare le distanze: $O(N \log(N))$.
+    \end{itemize}
+    \item Operazioni da eseguire ad ogni query: costoso;
+    \item Dati da memorizzare: l’intero dataset in memoria.
+\end{itemize}
+
+
+\section{Regressione Lineare}
+Tale algoritmo ha come principale obiettivo quello di predire target scalari come funzione lineare degli input. Mentre KNN è un algoritmo completo, la regressione lineare esemplifica un approccio modulare:
+\begin{itemize}
+    \item Scegliere un modello che descriva le relazioni tra le variabili di interesse;
+    \item Definire una loss function che quantifica quanto male sta andando il fitting dei dati;
+    \item Scegliere un regolarizzatore che definisca quanto si preferiscono modelli differenti;
+    \item Scegliere un modello che minimizzi la loss function e soddisfi i vincoli imposti dal regolarizzatore, possibilmente usando anche un algoritmo di ottimizzazione.
+\end{itemize}
+
+\subsubsection{Modello}
+La predizione del valore di target è una funzione lineare delle features:
+\[
+y = f(x) = \sum_{j=1}^{D} w_j x_j + b
+\]
+\begin{itemize}
+    \item Features: $x = (x^{(1)}, x^{(2)}, ..., x^{(D)}) \in \mathbb{R}^D$;
+    \item Predizione: $y = t \in \mathbb{R}$;
+    \item Vettore di Pesi: $w$;
+    \item Bias: $b$.
+\end{itemize}
+
+
+
+
+
+\subsubsection{Loss Function e Funzione di Costo}
+La loss function definisce quanto è dannosa una predizione $y$ rispetto al target $t$.
+\begin{itemize}
+    \item \textbf{Squared Error Loss Function}: errore quadratico tra predizione e target:
+    \[
+    L(y, t) = \frac{1}{2}(y - t)^2
+    \]
+    \begin{itemize}
+        \item Residuo da minimizzare: $y - t$.
+    \end{itemize}
+    \item \textbf{Funzione di costo}: loss function mediata su tutti i campioni del training set:
+    \[
+    J(x, t) = \frac{1}{2N} \sum_{i=1}^{N} (y^{(i)} - t^{(i)})^2 = \frac{1}{2N} \sum_{i=1}^{N} \left( w^T x^{(i)} + b - t^{(i)} \right)^2
+    \]
+    \item Costo empirico.
+\end{itemize}
+
+\newpage
+\section{Decision Trees}
+Gli alberi di decisione suddividono lo spazio delle feature tramite una struttura ad albero.
+Ogni nodo interno effettua un test su un attributo, mentre ogni foglia predice un output.
+
+\subsection{Algoritmo ID3}
+L'algoritmo ID3 utilizza un approccio top-down per costruire l'albero.
+\begin{enumerate}
+    \item Inizia con l'intero training set e un albero vuoto.
+    \item Seleziona la miglior feature/attributo.
+    \item Effettua lo split e ripete il processo in modo ricorsivo.
+\end{enumerate}
+
+\end{document}
