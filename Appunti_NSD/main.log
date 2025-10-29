@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2025.10.29)  29 OCT 2025 17:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2025.10.29)  29 OCT 2025 17:45
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -454,7 +454,7 @@ Package caption Info: longtable package is loaded.
  (/usr/share/texlive/texmf-dist/tex/latex/caption/ltcaption.sty
 Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 ))
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 42.
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 48.
  (/usr/share/texmf/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
@@ -478,40 +478,40 @@ LaTeX Warning: Label `fig:double_tagging' multiply defined.
 ))
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Info: Redefining \it@ocap on input line 42.
-LaTeX Info: Redefining \it@ccap on input line 42.
-LaTeX Info: Redefining \microtypecontext on input line 42.
-Package microtype Info: Applying patch `item' on input line 42.
-Package microtype Info: Applying patch `toc' on input line 42.
-Package microtype Info: Applying patch `eqnum' on input line 42.
-Package microtype Info: Applying patch `footnote' on input line 42.
-Package microtype Info: Applying patch `verbatim' on input line 42.
-LaTeX Info: Redefining \microtypesetup on input line 42.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Info: Redefining \it@ocap on input line 48.
+LaTeX Info: Redefining \it@ccap on input line 48.
+LaTeX Info: Redefining \microtypecontext on input line 48.
+Package microtype Info: Applying patch `item' on input line 48.
+Package microtype Info: Applying patch `toc' on input line 48.
+Package microtype Info: Applying patch `eqnum' on input line 48.
+Package microtype Info: Applying patch `footnote' on input line 48.
+Package microtype Info: Applying patch `verbatim' on input line 48.
+LaTeX Info: Redefining \microtypesetup on input line 48.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 42.
+LaTeX Info: Redefining \showhyphens on input line 48.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -552,7 +552,7 @@ File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman (
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring OFF on input line 42.
+Package hyperref Info: Link coloring OFF on input line 48.
 (./main.out) (./main.out)
 \@outlinefile=\write3
 \openout3 = `main.out'.
@@ -579,35 +579,35 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 44.
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 50.
  (/usr/share/texmf/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 44.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 50.
  (/usr/share/texmf/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 44.
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 50.
  (/usr/share/texmf/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 44.
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 50.
  (/usr/share/texmf/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 44.
+(Font)              <12> on input line 50.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 44.
+(Font)              <8> on input line 50.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 44.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 44.
+(Font)              <6> on input line 50.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 50.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 44.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 50.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
@@ -628,159 +628,6 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 
 [3]
-\openout2 = `sezioni/net01.aux'.
-
- (./sezioni/net01.tex
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 12.
- (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
-File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-<immagini/slide1/stessa_rete.png, id=480, 585.18625pt x 214.8025pt>
-File: immagini/slide1/stessa_rete.png Graphic file (type png)
-<use immagini/slide1/stessa_rete.png>
-Package pdftex.def Info: immagini/slide1/stessa_rete.png  used on input line 18.
-(pdftex.def)             Requested size: 386.96027pt x 142.0454pt.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 26.
- (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
-File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-Package microtype Info: Loading generic protrusion settings for font family
-(microtype)             `lmtt' (encoding: T1).
-(microtype)             For optimal results, create family-specific settings.
-(microtype)             See the microtype manual for details.
-<immagini/slide1/esempio_mask.png, id=482, 805.0075pt x 172.645pt>
-File: immagini/slide1/esempio_mask.png Graphic file (type png)
-<use immagini/slide1/esempio_mask.png>
-Package pdftex.def Info: immagini/slide1/esempio_mask.png  used on input line 30.
-(pdftex.def)             Requested size: 386.96027pt x 82.98718pt.
-
-
-[4
-
-
-{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc} <./immagini/slide1/stessa_rete.png>]
-<immagini/slide1/esempio_ip.png, id=492, 748.7975pt x 272.01625pt>
-File: immagini/slide1/esempio_ip.png Graphic file (type png)
-<use immagini/slide1/esempio_ip.png>
-Package pdftex.def Info: immagini/slide1/esempio_ip.png  used on input line 44.
-(pdftex.def)             Requested size: 386.96027pt x 140.57347pt.
-LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 49.
-
-Overfull \hbox (5.25912pt too wide) in paragraph at lines 62--64
- \T1/lmr/bx/n/10.95 (-20) 1.1.3.2 2) Per-ché ba-sta guar-da-re l'ul-ti-mo ot-tet-to[][] \T1/lmr/m/n/10.95 (-20) Con /27 i pri-mi tre ot-tet-ti (\T1/lmtt/m/n/10.95 209.85.129\T1/lmr/m/n/10.95 (-20) )
- []
-
-
-
-[5{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc} <./immagini/slide1/esempio_mask.png> <./immagini/slide1/esempio_ip.png>]
-<immagini/slide1/dns.png, id=511, 1072.005pt x 447.6725pt>
-File: immagini/slide1/dns.png Graphic file (type png)
-<use immagini/slide1/dns.png>
-Package pdftex.def Info: immagini/slide1/dns.png  used on input line 116.
-(pdftex.def)             Requested size: 386.96027pt x 161.59232pt.
-
-
-[6]
-<immagini/slide1/dns2.png, id=522, 1014.79124pt x 421.575pt>
-File: immagini/slide1/dns2.png Graphic file (type png)
-<use immagini/slide1/dns2.png>
-Package pdftex.def Info: immagini/slide1/dns2.png  used on input line 137.
-(pdftex.def)             Requested size: 386.96027pt x 160.75337pt.
-
-
-[7 <./immagini/slide1/dns.png> <./immagini/slide1/dns2.png>]
-
-[8]
-Underfull \hbox (badness 10000) in paragraph at lines 167--168
-
- []
-
-<immagini/slide1/lab1.png, id=536, 984.67876pt x 417.56pt>
-File: immagini/slide1/lab1.png Graphic file (type png)
-<use immagini/slide1/lab1.png>
-Package pdftex.def Info: immagini/slide1/lab1.png  used on input line 180.
-(pdftex.def)             Requested size: 386.96027pt x 164.09654pt.
-
-Overfull \hbox (41.25984pt too wide) in paragraph at lines 197--198
-\T1/lmr/m/n/10.95 (-20) af-fer-man-do che l'IP del rou-ter (\T1/lmtt/m/n/10.95 10.0.0.1\T1/lmr/m/n/10.95 (-20) ) cor-ri-spon-de al MAC del-l'at-tac-can-te (\T1/lmtt/m/n/10.95 aa:aa:aa:aa:aa:aa\T1/lmr/m/n/10.95 (-20) ); 
- []
-
-
-
-[9 <./immagini/slide1/lab1.png>] (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
-File: lstlang1.sty 2024/09/23 1.10c listings language file
-) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
-File: lstlang1.sty 2024/09/23 1.10c listings language file
-)
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 205.
-)
-
-[10]
-\openout2 = `sezioni/net02.aux'.
-
- (./sezioni/net02.tex
-Underfull \hbox (badness 10000) in paragraph at lines 16--18
-
- []
-
-LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 25.
-(/usr/share/texmf/tex/latex/lm/ts1lmtt.fd
-File: ts1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-Package microtype Info: Loading generic protrusion settings for font family
-(microtype)             `lmtt' (encoding: TS1).
-(microtype)             For optimal results, create family-specific settings.
-(microtype)             See the microtype manual for details.
-Package microtype Info: Character `texttrademark ' is missing
-(microtype)             in font `TS1/lmtt/m/n/10.95'.
-(microtype)             Ignoring protrusion settings for this character.
-<immagini/NET_02/adress_learning_1.png, id=566, 598.48593pt x 280.79906pt>
-File: immagini/NET_02/adress_learning_1.png Graphic file (type png)
-<use immagini/NET_02/adress_learning_1.png>
-Package pdftex.def Info: immagini/NET_02/adress_learning_1.png  used on input line 31.
-(pdftex.def)             Requested size: 386.96027pt x 181.55746pt.
-
-
-[11
-
-
-
-]
-<immagini/NET_02/address_learning_2.png, id=572, 640.64343pt x 291.33844pt>
-File: immagini/NET_02/address_learning_2.png Graphic file (type png)
-<use immagini/NET_02/address_learning_2.png>
-Package pdftex.def Info: immagini/NET_02/address_learning_2.png  used on input line 39.
-(pdftex.def)             Requested size: 386.96027pt x 175.97801pt.
-
-
-[12 <./immagini/NET_02/adress_learning_1.png> <./immagini/NET_02/address_learning_2.png>]
-<immagini//NET_02/DHCP.png, id=581, 599.99156pt x 398.99063pt>
-File: immagini//NET_02/DHCP.png Graphic file (type png)
-<use immagini//NET_02/DHCP.png>
-Package pdftex.def Info: immagini//NET_02/DHCP.png  used on input line 84.
-(pdftex.def)             Requested size: 227.62206pt x 151.3684pt.
-
-
-[13 <./immagini//NET_02/DHCP.png>]
-<immagini//NET_02/ARP.png, id=593, 569.12625pt x 312.41719pt>
-File: immagini//NET_02/ARP.png Graphic file (type png)
-<use immagini//NET_02/ARP.png>
-Package pdftex.def Info: immagini//NET_02/ARP.png  used on input line 98.
-(pdftex.def)             Requested size: 227.62206pt x 124.95035pt.
-
-
-[14 <./immagini//NET_02/ARP.png>]
-
-[15]
-
-[16]
-
-[17]
-
-[18])
-
-[19]
 \openout2 = `sezioni/net03.aux'.
 
  (./sezioni/net03.tex
@@ -788,129 +635,148 @@ Package pdftex.def Info: immagini//NET_02/ARP.png  used on input line 98.
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 7.
 
-<immagini/NET_03/ip_subnet.png, id=623, 754.82pt x 472.76625pt>
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 17.
+(/usr/share/texmf/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+<immagini/NET_03/ip_subnet.png, id=315, 754.82pt x 472.76625pt>
 File: immagini/NET_03/ip_subnet.png Graphic file (type png)
 <use immagini/NET_03/ip_subnet.png>
 Package pdftex.def Info: immagini/NET_03/ip_subnet.png  used on input line 24.
 (pdftex.def)             Requested size: 386.96027pt x 242.3628pt.
 
 
-[20
+[18
 
 
 
- <./immagini/NET_03/ip_subnet.png>]
-<immagini/NET_03/vlan.png, id=630, 707.64375pt x 322.20375pt>
+
+{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc} <./immagini/NET_03/ip_subnet.png>]
+<immagini/NET_03/vlan.png, id=325, 707.64375pt x 322.20375pt>
 File: immagini/NET_03/vlan.png Graphic file (type png)
 <use immagini/NET_03/vlan.png>
 Package pdftex.def Info: immagini/NET_03/vlan.png  used on input line 42.
 (pdftex.def)             Requested size: 386.96027pt x 176.18999pt.
-<immagini/NET_03/vlan2.png, id=632, 703.62875pt x 426.59375pt>
+<immagini/NET_03/vlan2.png, id=327, 703.62875pt x 426.59375pt>
 File: immagini/NET_03/vlan2.png Graphic file (type png)
 <use immagini/NET_03/vlan2.png>
 Package pdftex.def Info: immagini/NET_03/vlan2.png  used on input line 66.
 (pdftex.def)             Requested size: 386.96027pt x 234.60124pt.
 
 
-[21 <./immagini/NET_03/vlan.png>]
-<immagini/NET_03/vlan3.png, id=640, 610.28pt x 453.695pt>
+[19 <./immagini/NET_03/vlan.png>]
+<immagini/NET_03/vlan3.png, id=335, 610.28pt x 453.695pt>
 File: immagini/NET_03/vlan3.png Graphic file (type png)
 <use immagini/NET_03/vlan3.png>
 Package pdftex.def Info: immagini/NET_03/vlan3.png  used on input line 77.
 (pdftex.def)             Requested size: 295.90588pt x 219.98642pt.
+ (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2024/09/23 1.10c listings language file
+) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2024/09/23 1.10c listings language file
+)
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 82.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 82.
+ (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `lmtt' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 83.
 
 
-[22 <./immagini/NET_03/vlan2.png> <./immagini/NET_03/vlan3.png>]
-<immagini/NET_03/access_link.png, id=653, 211.79124pt x 301.125pt>
+[20 <./immagini/NET_03/vlan2.png> <./immagini/NET_03/vlan3.png>]
+<immagini/NET_03/access_link.png, id=351, 211.79124pt x 301.125pt>
 File: immagini/NET_03/access_link.png Graphic file (type png)
 <use immagini/NET_03/access_link.png>
 Package pdftex.def Info: immagini/NET_03/access_link.png  used on input line 142.
 (pdftex.def)             Requested size: 113.81102pt x 161.81476pt.
 
 
-[23]
-<immagini/NET_03/access_link_legacy.png, id=658, 755.82375pt x 392.46625pt>
+[21]
+<immagini/NET_03/access_link_legacy.png, id=357, 755.82375pt x 392.46625pt>
 File: immagini/NET_03/access_link_legacy.png Graphic file (type png)
 <use immagini/NET_03/access_link_legacy.png>
 Package pdftex.def Info: immagini/NET_03/access_link_legacy.png  used on input line 160.
 (pdftex.def)             Requested size: 386.96027pt x 200.93364pt.
 
 
-[24 <./immagini/NET_03/access_link.png> <./immagini/NET_03/access_link_legacy.png>]
-<immagini/NET_03/trunk_link.png, id=667, 713.66624pt x 342.27875pt>
+[22 <./immagini/NET_03/access_link.png> <./immagini/NET_03/access_link_legacy.png>]
+<immagini/NET_03/trunk_link.png, id=366, 713.66624pt x 342.27875pt>
 File: immagini/NET_03/trunk_link.png Graphic file (type png)
 <use immagini/NET_03/trunk_link.png>
 Package pdftex.def Info: immagini/NET_03/trunk_link.png  used on input line 187.
 (pdftex.def)             Requested size: 273.14923pt x 131.00214pt.
-<immagini/NET_03/hybrid_link.png, id=668, 550.055pt x 379.4175pt>
+<immagini/NET_03/hybrid_link.png, id=367, 550.055pt x 379.4175pt>
 File: immagini/NET_03/hybrid_link.png Graphic file (type png)
 <use immagini/NET_03/hybrid_link.png>
 Package pdftex.def Info: immagini/NET_03/hybrid_link.png  used on input line 213.
 (pdftex.def)             Requested size: 341.43307pt x 235.5201pt.
 
 
-[25 <./immagini/NET_03/trunk_link.png>]
-<immagini/NET_03/multivlan_station.png, id=676, 727.71875pt x 470.75874pt>
+[23 <./immagini/NET_03/trunk_link.png>]
+<immagini/NET_03/multivlan_station.png, id=374, 727.71875pt x 470.75874pt>
 File: immagini/NET_03/multivlan_station.png Graphic file (type png)
 <use immagini/NET_03/multivlan_station.png>
 Package pdftex.def Info: immagini/NET_03/multivlan_station.png  used on input line 240.
 (pdftex.def)             Requested size: 341.43307pt x 220.87593pt.
 
 
-[26 <./immagini/NET_03/hybrid_link.png>]
+[24 <./immagini/NET_03/hybrid_link.png>]
 
-[27 <./immagini/NET_03/multivlan_station.png>]
+[25 <./immagini/NET_03/multivlan_station.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 251--252
 
  []
 
-<immagini/NET_03/lab3_topology.png, id=689, 1085.05376pt x 650.43pt>
+<immagini/NET_03/lab3_topology.png, id=387, 1085.05376pt x 650.43pt>
 File: immagini/NET_03/lab3_topology.png Graphic file (type png)
 <use immagini/NET_03/lab3_topology.png>
 Package pdftex.def Info: immagini/NET_03/lab3_topology.png  used on input line 271.
 (pdftex.def)             Requested size: 341.43307pt x 204.66818pt.
 
 
-[28 <./immagini/NET_03/lab3_topology.png>]
+[26 <./immagini/NET_03/lab3_topology.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 318.
 
-<immagini/NET_03/example.png, id=712, 1112.155pt x 662.475pt>
+<immagini/NET_03/example.png, id=409, 1112.155pt x 662.475pt>
 File: immagini/NET_03/example.png Graphic file (type png)
 <use immagini/NET_03/example.png>
 Package pdftex.def Info: immagini/NET_03/example.png  used on input line 344.
 (pdftex.def)             Requested size: 386.96027pt x 230.50507pt.
 
 
-[29]
+[27]
 
-[30 <./immagini/NET_03/example.png>]
-<immagini/NET_03/mac_attack.png, id=746, 483.8075pt x 482.80376pt>
+[28 <./immagini/NET_03/example.png>]
+<immagini/NET_03/mac_attack.png, id=444, 483.8075pt x 482.80376pt>
 File: immagini/NET_03/mac_attack.png Graphic file (type png)
 <use immagini/NET_03/mac_attack.png>
 Package pdftex.def Info: immagini/NET_03/mac_attack.png  used on input line 388.
 (pdftex.def)             Requested size: 341.43307pt x 340.73769pt.
 
 
-[31 <./immagini/NET_03/mac_attack.png>]
-<immagini/NET_03/basic_vlan_hopping.png, id=754, 507.8975pt x 310.15875pt>
+[29 <./immagini/NET_03/mac_attack.png>]
+<immagini/NET_03/basic_vlan_hopping.png, id=451, 507.8975pt x 310.15875pt>
 File: immagini/NET_03/basic_vlan_hopping.png Graphic file (type png)
 <use immagini/NET_03/basic_vlan_hopping.png>
 Package pdftex.def Info: immagini/NET_03/basic_vlan_hopping.png  used on input line 414.
 (pdftex.def)             Requested size: 227.62206pt x 139.00223pt.
-<immagini/NET_03/double_tagging.png, id=755, 589.20125pt x 312.16624pt>
+<immagini/NET_03/double_tagging.png, id=452, 589.20125pt x 312.16624pt>
 File: immagini/NET_03/double_tagging.png Graphic file (type png)
 <use immagini/NET_03/double_tagging.png>
 Package pdftex.def Info: immagini/NET_03/double_tagging.png  used on input line 423.
 (pdftex.def)             Requested size: 227.62206pt x 120.59639pt.
 
 
-[32 <./immagini/NET_03/basic_vlan_hopping.png> <./immagini/NET_03/double_tagging.png>]
+[30 <./immagini/NET_03/basic_vlan_hopping.png> <./immagini/NET_03/double_tagging.png>]
 
-[33]
+[31]
 Underfull \hbox (badness 10000) in paragraph at lines 473--474
 
  []
@@ -921,9 +787,9 @@ Package pdftex.def Info: immagini/NET_03/double_tagging.png  used on input line 
 (pdftex.def)             Requested size: 364.19667pt x 192.95995pt.
 
 
-[34])
+[32])
 
-[35]
+[33]
 
 Package caption Warning: Unused \captionsetup[table] on input line 21.
 See the caption package documentation for explanation.
@@ -938,21 +804,186 @@ L3 programming layer <2025-01-18>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 6E2FBE2C39E2E29AAB0534E9D91155CD;21119.
+(rerunfilecheck)             Checksum: 37D514347C0616D8E263B15092784FEF;7526.
  ) 
 Here is how much of TeX's memory you used:
- 18741 strings out of 473197
- 298312 string characters out of 5718604
- 984036 words of memory out of 5000000
- 41207 multiletter control sequences out of 15000+600000
- 626006 words of font info for 211 fonts, out of 8000000 for 9000
+ 18372 strings out of 473197
+ 291430 string characters out of 5718604
+ 983464 words of memory out of 5000000
+ 40989 multiletter control sequences out of 15000+600000
+ 614693 words of font info for 165 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,1051b,1220s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (35 pages, 3330116 bytes).
+ 75i,7n,79p,1051b,1309s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+pdfTeX warning (dest): name{subsubsection.2.2.8} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.2.2.7} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.2.2.6} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.5.5} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.5.4} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.5.3} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.5.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.5.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.2.2.5} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.4.5} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.4.4} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.4.3} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.4.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.4.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.2.2.4} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.3.3} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.3.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.3.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.2.2.3} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.2.2.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.1.3} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.1.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.2.2.1.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.2.2.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{section.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.4.5} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.4.4} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.4.3} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.4.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.4.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.1.4} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.3.5} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.3.4} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.3.3} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.3.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.3.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.1.3} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.2.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.2.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.1.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.1.5} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.1.4} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.1.1.3.6} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.1.1.3.5} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.1.1.3.4} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.1.1.3.3} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.1.1.3.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{paragraph.1.1.3.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.1.3} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.1.2} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsubsection.1.1.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.1.1} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{section.1} has been referenced but does not exist, replaced by a fixed one
+
+</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
+Output written on main.pdf (19 pages, 2258292 bytes).
 PDF statistics:
- 921 PDF objects out of 1000 (max. 8388607)
- 796 compressed objects within 8 object streams
- 241 named destinations out of 1000 (max. 500000)
- 37713 words of extra memory for PDF output out of 42996 (max. 10000000)
+ 577 PDF objects out of 1000 (max. 8388607)
+ 503 compressed objects within 6 object streams
+ 185 named destinations out of 1000 (max. 500000)
+ 31079 words of extra memory for PDF output out of 35830 (max. 10000000)
 
