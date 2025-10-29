@@ -1,0 +1,293 @@
+\newpage
+\maketitle
+\section{NET\_02}
+
+\subsection{Sicurezza delle Reti Ethernet LAN (Livello 2)}
+
+\subsection{Perché la LAN Ethernet è fragile per natura}
+Ethernet nasce per \emph{autoconfigurarsi}: gli switch imparano indirizzi e percorsi (MAC learning), i protocolli di controllo (STP, ARP, DHCP) si basano su broadcast e sulla mancanza di autenticazione a L2. Questo rende immediati tre vettori: \textbf{osservare} (eavesdropping), \textbf{manipolare} (spoofing/MITM) e \textbf{interrompere} (DoS). Le minacce si organizzano in quattro famiglie: (i) accesso a rete/sistemi, (ii) confidenzialità, (iii) disponibilità, (iv) integrità.
+
+\subsubsection{Frame, indirizzamento e forwarding}
+Gli indirizzi Mac sono a 48 bit e ognuno di essi ha un utilizzo specifico.\\
+nella versione originale dell ethernet la tipologia del frame veniva usata per il demultiplexing del layer superiore per esemio 0x800=IP; mentre in 802.3 indica la lunghezza oppure il tipo in particolare se il frame supera i $0x0600$ ($1536_{10}$) allora indica la tipologia di frame altrimenti LLC per il demultiplexing e indica il payload size. Se frame inferiore ai 46 bit allora viene utilizzato del padding.\\
+Il primo bit dell’indirizzo MAC indica se l’indirizzo è unicast (0) o di gruppo/multicast (1); il secondo bit distingue tra indirizzi globali (0, assegnati dal produttore) e locali (1, configurabili via software o driver).
+
+\paragraph{Multiport Repeaters (Hub)}
+Gli hub, o ripetitori multiporta, operano come un bus condiviso: tutto il traffico ricevuto viene rigenerato su tutte le porte. 
+Appartengono quindi a un unico \textbf{dominio di collisione} e non offrono isolamento tra host; per questo sono oggi sostituiti dagli switch.\\
+
+\paragraph{Bridge/Switches}
+Gli switch possono operare in:
+\begin{itemize}
+  \item \textbf{Store\&Forward}: lettura completa del frame (memorizzazione su buffer), controllo CRC, scarto dei frame \emph{runt}(<64 bytes too short)/troppo lunghi oppure se fallisce il CRC; look up nella tabella e forwarding.
+  \item \textbf{Cut-through}: lettura solo fino all'indirizzo, nessun check di integrità, look-up, forwarding.
+\end{itemize}
+Il \textbf{Forwarding Database} (FDB) mappa \texttt{MAC→porta}; le entry dinamiche sono apprese (MAC learning) e scadono con \emph{ageing} tipicamente nell’ordine dei 300\,s; altrimenti impostate staticamente da un sysadmin o da un db. Se la destinazione è sconosciuta, lo switch effettua \emph{flooding}.
+\paragraph{Address Learning}
+Un frame arriva alla porta X quindi deve provenire dalla LAN connessa dalla porta X, il source address viene usato per l update del forwarding DB. Se arriva un frame da un source addr non presente nella tabella allora viene creata la entry con $age=0$; se invece arriva un entry già presente viene refreshata la age di quella entry.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{immagini/NET_02/adress_learning_1.png}
+    \caption{Topologia rete}
+    \label{fig:lab1}
+\end{figure}
+Infine se arriva un frame da un source addr già presente nella tabella ma sotto una porta differente allora viene aggiornata la entry e refresh della age.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{immagini/NET_02/address_learning_2.png}
+    \caption{Topologia rete}
+    \label{fig:lab1}
+\end{figure}
+
+
+\subsubsection{Topologie e controllo dei loop: STP}
+Quando in una rete Ethernet esistono collegamenti ridondanti, possono formarsi \emph{loop} a \textbf{Livello 2 (L2, Data Link)}: i frame possono circolare all’infinito tra switch, saturando la rete. 
+Per evitare questo, entra in gioco lo \textbf{Spanning Tree Protocol}. 
+L’idea è eleggere uno \emph{switch radice} (\textbf{root bridge}) e disattivare alcune porte in modo che la topologia effettiva sia un albero evitando così loop, pur lasciando i link ridondanti pronti a subentrare in caso di guasti.
+
+Gli switch si mettono d’accordo scambiandosi messaggi di controllo chiamati \textbf{BPDU (Bridge Protocol Data Unit)}. 
+Ogni BPDU contiene l’identità dello switch (\emph{Bridge ID}, che include \emph{priorità} e MAC) e i \emph{costi} dei percorsi. 
+Viene eletto un \emph{root bridge}; e poi per ogni altro switch, \textbf{STP} sceglie:
+\begin{itemize}
+  \item una \textbf{porta radice (root port)}: la porta verso il root bridge con costo minore;
+  \item eventuali porte in eccesso vengono messe in stato \textbf{bloccato (blocking)} per rompere i cicli.
+\end{itemize}
+Il risultato è che solo alcune porte sono di forwarding, mentre le altre restano \textbf{bloccate}; se un link o uno switch si guastano allora STP riconfigura la topologia evitando nuovamente loop.
+
+Sul piano della sicurezza, però, STP ha un limite: a L2 non c’è \textbf{autenticazione} dei messaggi di controllo. 
+Un host malevolo può inviare \textbf{BPDU} artefatte e farsi eleggere \emph{root bridge} (alzando la priorità o manipolando i costi), dirottando o interrompendo il traffico. 
+Per questo, in produzione si usano contromisure come \emph{BPDU Guard}, \emph{Root Guard}, \emph{portfast} solo sugli host, e piani di controllo isolati.
+
+
+\subsubsection{Adattamento del Livello 3 su Livello 2: DHCP, ARP e NDP}
+
+L’interoperabilità tra il \textbf{Livello 2 (Data Link)} e il \textbf{Livello 3 (Network)} è assicurata da una serie di protocolli di adattamento che consentono agli host di configurare automaticamente i propri parametri IP e di risolvere gli indirizzi fisici (MAC) dei dispositivi vicini. 
+Questi protocolli, fondamentali per il funzionamento delle reti IP, nascono però in un contesto di fiducia implicita e \textbf{assenza di autenticazione}, diventando quindi bersagli ideali per attacchi di spoofing e manipolazione del traffico.
+
+\paragraph{DHCP — Dynamic Host Configuration Protocol (IPv4).}
+Il \textbf{DHCP} automatizza l’assegnazione degli indirizzi IP e dei parametri di rete,. 
+Opera in modalità \emph{client–server} e sfrutta il meccanismo di broadcasting a livello Ethernet per raggiungere il server anche quando il client non ha ancora un IP. 
+
+Il protocollo segue un tipico \textbf{handshake a quattro fasi}:
+\begin{enumerate}
+  \item \textbf{DHCP Discover} — il client trasmette in broadcast (\texttt{255.255.255.255}) per cercare un server disponibile;
+  \item \textbf{DHCP Offer} — il server risponde offrendo un indirizzo IP e altri parametri (gateway, DNS, lease time);
+  \item \textbf{DHCP Request} — il client accetta esplicitamente un’offerta specifica;
+  \item \textbf{DHCP ACK} — il server conferma l’assegnazione e crea una voce di \emph{lease} nel proprio database.
+\end{enumerate}
+Ogni lease è temporaneo e può essere rinnovato tramite messaggi \emph{DHCP Renew/Rebind}.  
+Quando un host si trova in una rete diversa dal server, la comunicazione avviene tramite un \textbf{DHCP relay agent} — spesso un router — che incapsula i messaggi Discover/Request e li inoltra verso il server remoto, mantenendo così la visibilità dell’origine (campo \texttt{giaddr}).  
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{immagini//NET_02/DHCP.png}
+    \label{fig:placeholder}
+\end{figure}
+
+\textbf{Sicurezza:} DHCP non autentica né il client né il server. Un host malevolo può rispondere più velocemente del server legittimo (\textbf{DHCP spoofing}) e assegnare gateway o DNS controllati, dirottando il traffico.  
+Per mitigare questi scenari, gli switch moderni implementano \textbf{DHCP Snooping}: una funzione che registra le associazioni IP–MAC–porta–VLAN apprese dai messaggi DHCP legittimi, utile anche per alimentare altri controlli di sicurezza come la \emph{Dynamic ARP Inspection}.
+
+\paragraph{ARP — Address Resolution Protocol (IPv4).}
+L'\textbf{ARP} consente di scoprire l’indirizzo MAC associato a un indirizzo IP all’interno della stessa LAN.  
+Quando un host deve inviare un pacchetto IP verso una destinazione della propria subnet, interroga la rete inviando un messaggio \textbf{ARP Request} in broadcast contenente l’indirizzo IP cercato.  
+L’host corrispondente risponde con un \textbf{ARP Reply} unicast, fornendo il proprio MAC address.  
+Ogni sistema mantiene una \textbf{cache ARP} che memorizza temporaneamente queste associazioni per ridurre il numero di richieste future (tipicamente 20 minuti su sistemi UNIX-like).
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{immagini//NET_02/ARP.png}
+    \caption{}
+    \label{fig:placeholder}
+\end{figure}
+
+\textbf{Debolezze:} ARP è \emph{stateless} e non prevede autenticazione.  
+Un attaccante può quindi inviare \textbf{ARP Reply falsificati} (anche senza richiesta) per associare un IP legittimo al proprio MAC address: è il classico \textbf{ARP poisoning}, che consente di intercettare, modificare o bloccare il traffico (attacco \emph{Man-in-the-Middle}).  
+Meccanismi come \textbf{Dynamic ARP Inspection (DAI)}, basati sulle tabelle di DHCP Snooping, permettono di bloccare risposte ARP incoerenti rispetto alle associazioni IP–MAC note.
+
+\paragraph{NDP — Neighbor Discovery Protocol (IPv6).}
+Nel mondo IPv6, il \textbf{Neighbor Discovery Protocol (NDP)}, sostituisce ARP e parte del ruolo di DHCP.  
+Basato su \textbf{ICMPv6}
+A differenza di ARP, NDP usa \textbf{multicast} anziché broadcast, riducendo l’impatto sulla rete e migliorando la scalabilità.  
+Tuttavia, condivide la stessa assenza di autenticazione: un host può fingere di essere un router o un vicino legittimo, portando a \emph{neighbor spoofing} o \emph{router advertisement flooding}.
+\subsubsection{Vulnerabilità e minacce principali}
+
+La sicurezza di una rete Ethernet dipende fortemente dall’affidabilità del Livello 2, ma i protocolli su cui si basa — come ARP, DHCP e STP — sono stati progettati per un ambiente fidato, senza autenticazione o cifratura. 
+Questo rende l’intera architettura LAN intrinsecamente vulnerabile ad attacchi che puntano al controllo dell’accesso fisico, alla manipolazione del traffico e al degrado delle prestazioni. 
+Le principali minacce si raggruppano in quattro categorie: \textbf{(1) accesso alla rete}, \textbf{(2) riservatezza del traffico}, \textbf{(3) integrità e manipolazione}, \textbf{(4) disponibilità e prestazioni}.
+
+\paragraph{1) Accesso alla rete.}
+
+\textbf{Accesso fisico non autorizzato.}  
+L’attacco più basilare consiste nel collegarsi fisicamente a una porta Ethernet lasciata attiva e non monitorata. 
+In ambienti non presidiati (aule, uffici, open space), un attaccante può semplicemente inserire il proprio dispositivo o un piccolo switch/access point (\emph{rogue device}), espandendo la rete interna senza autorizzazione.  
+Poiché lo standard Ethernet non prevede autenticazione a livello di porta, la connessione risulta immediatamente operativa.  
+Questo tipo di “\emph{join} fisico” rappresenta il punto d’ingresso di molte compromissioni LAN.
+
+\textbf{Accesso remoto e ricognizione.}  
+Una volta ottenuto l’accesso (fisico o logico), l’attaccante può mappare la topologia di rete sfruttando protocolli di base:
+\begin{itemize}
+  \item \emph{ARP scanning} — per enumerare gli indirizzi IP attivi nella LAN;
+  \item richieste \emph{DHCP} — per dedurre l’intervallo di indirizzi disponibili e i parametri di rete (gateway, DNS);
+  \item \emph{port scanning} — per identificare i servizi esposti e i sistemi operativi in uso.
+\end{itemize}
+Queste informazioni consentono di costruire una mappa logica della rete e di selezionare successivi obiettivi di attacco (\emph{target profiling}).
+
+\textbf{Compromissione e controllo dello switch.}  
+Gli switch Ethernet possono essere presi di mira direttamente se le loro interfacce di gestione sono accessibili. 
+Molti dispositivi vengono distribuiti con credenziali predefinite o con protezioni minime; un attaccante che riesce a ottenere l’accesso può:
+\begin{itemize}
+  \item modificare la configurazione VLAN;
+  \item attivare porte di mirroring per intercettare traffico;
+  \item manipolare parametri di Spanning Tree Protocol (STP) per diventare \emph{root bridge} e reindirizzare il traffico;
+  \item disattivare link o generare \emph{Denial of Service}.
+\end{itemize}
+Inoltre, un reset fisico del dispositivo può riportarlo alle impostazioni di fabbrica, consentendo un takeover completo.
+
+\paragraph{2) Riservatezza e intercettazione.}
+
+\textbf{Eavesdropping (intercettazione).}  
+In una rete Ethernet tradizionale basata su hub, tutto il traffico viene propagato su tutte le porte, rendendo triviale l’intercettazione passiva (\emph{sniffing}).  
+Anche negli switch moderni, l’attacco resta possibile tramite:
+\begin{itemize}
+  \item installazione fisica di un dispositivo di ascolto (\emph{tap}) su un cavo in rame o fibra ottica;
+  \item abilitazione di una scheda di rete in \emph{promiscuous mode} per ricevere frame non destinati al proprio MAC;
+  \item abuso della funzione di \emph{port mirroring} sugli switch, utile per intercettare il traffico di altre porte.
+\end{itemize}
+
+\textbf{MAC flooding.}  
+Gli switch memorizzano le associazioni \texttt{MAC→porta} nella CAM (Content Addressable Memory) o FDB (Forwarding Database).  
+Un attaccante può saturare questa memoria inviando migliaia di frame con indirizzi MAC sorgente casuali.  
+Quando la tabella si riempie, lo switch passa alla modalità \emph{flooding}, inoltrando i frame su tutte le porte come un hub.  
+Questo permette di catturare traffico unicast normalmente privato e, in certi casi, di rompere l’isolamento tra VLAN (\emph{cross-VLAN leakage}).
+
+\textbf{MAC spoofing.}  
+Manipolando l’indirizzo MAC sorgente dei frame inviati, un attaccante può sostituirsi a un host legittimo già presente nella FDB.  
+Il risultato è un \emph{hijacking} del traffico diretto alla vittima, che può essere intercettato, modificato o semplicemente bloccato.  
+Lo spoofing è efficace perché Ethernet non verifica la coerenza tra il MAC dichiarato nel frame e quello della scheda di rete.
+
+\paragraph{3) Integrità del traffico e attacchi Man-in-the-Middle (MITM).}
+
+\textbf{ARP poisoning.}  
+Approfittando del fatto che l’ARP accetta qualunque risposta non autenticata, un attaccante può inviare \emph{gratuitous ARP replies} falsificati per associare il proprio MAC address all’indirizzo IP di un altro nodo (ad esempio il gateway).  
+In questo modo intercetta tutto il traffico tra la vittima e il router, realizzando un classico attacco \emph{Man-in-the-Middle (MITM)}.  
+Varianti di questo attacco esistono anche in IPv6 sotto forma di \emph{Neighbor Advertisement spoofing} contro NDP.
+
+\textbf{DHCP poisoning.}  
+Simile nel principio, l’attacco DHCP poisoning consiste nel rispondere alle richieste DHCP più rapidamente del server legittimo.  
+Il client riceve così parametri falsi (indirizzo IP, gateway, DNS), che permettono all’attaccante di deviare il traffico verso sistemi controllati o intercettarlo.
+
+\textbf{Session hijacking.}  
+Una volta intercettato il traffico (via ARP o DHCP poisoning), è possibile analizzare le sessioni di livello superiore (ad esempio TCP) e riprodurle, utilizzando numeri di sequenza o cookie d’autenticazione per impersonare un utente o un servizio.
+
+\textbf{Replay attack.}  
+Consiste nel riutilizzare pacchetti validi intercettati in precedenza — ad esempio messaggi di controllo o di autenticazione — per ottenere accesso o indurre comportamenti anomali nei dispositivi di rete.  
+In mancanza di firme digitali o timestamp, questi messaggi vengono accettati come legittimi.
+
+\paragraph{4) Disponibilità e attacchi di Denial of Service (DoS).}
+
+\textbf{STP DoS e manipolazione topologica.}  
+Il protocollo \textbf{Spanning Tree Protocol (STP, IEEE 802.1D)} non prevede autenticazione dei messaggi di controllo (\textbf{BPDU, Bridge Protocol Data Units}).  
+Un attaccante può sfruttare questa debolezza per:
+\begin{itemize}
+  \item eleggersi come \emph{root bridge} forzando il traffico a passare attraverso il proprio nodo;
+  \item inondare la rete di BPDU falsi, causando continui ricalcoli dell’albero di spanning e interruzioni periodiche dei collegamenti (\emph{STP reconvergence loops}).
+\end{itemize}
+
+\textbf{Resource exhaustion e flooding.}  
+Un altro vettore comune consiste nel sovraccaricare il piano di controllo degli switch o dei router.  
+Attacchi di \emph{unknown-unicast flooding} e tempeste di broadcast (\emph{broadcast storms}) possono saturare la banda o la memoria, impedendo il corretto forwarding dei frame.  
+Simili risultati possono essere ottenuti generando una quantità eccessiva di richieste ARP o DHCP, portando al collasso del servizio (\emph{DoS a livello L2}).
+
+\paragraph{Sintesi.}
+In sintesi, le reti Ethernet soffrono di vulnerabilità strutturali dovute alla loro progettazione originaria: assenza di autenticazione, uso esteso di broadcast, apprendimento dinamico dei MAC e protocolli di controllo non cifrati.  
+Molti di questi problemi sono oggi mitigabili grazie a funzioni avanzate degli switch — come DHCP Snooping, Dynamic ARP Inspection, BPDU Guard e Port Security — ma nessuna misura singola è sufficiente.  
+La sicurezza del livello 2 è quindi il risultato di una \textbf{difesa stratificata}, che combina controllo d’accesso, segmentazione, monitoraggio continuo e buone pratiche di configurazione.
+
+\subsubsection{Contromisure: dal minimo sindacale al robusto}
+
+Per affrontare le vulnerabilità strutturali di Ethernet e le minacce che ne derivano, è fondamentale adottare un approccio stratificato. Le contromisure spaziano da soluzioni basilari, come la segmentazione della rete, a soluzioni avanzate che includono l'uso di crittografia L2 e l'autenticazione a livello di porta.
+
+\paragraph{1) Segmentazione della rete.}
+
+\textbf{Router-based security.}  
+Una delle strategie di base per migliorare la sicurezza di una rete Ethernet è utilizzare un router per separare i vari domini L2. I router creano segmenti L3 separati, eliminando così il dominio di collisione condiviso tra tutti i dispositivi. Questo spezza il traffico di controllo come ARP, STP e VLAN, riducendo significativamente la superficie di attacco. Se il traffico è confinato all'interno di un segmento L2, un attacco che comprometta una porzione della rete non può propagarsi agli altri segmenti.
+
+Un esempio pratico: se si utilizza un router per separare VLAN diverse, attacchi come l'iniezione di traffico non autorizzato o ARP poisoning sono limitati a un solo segmento, riducendo il rischio di compromissione intersegmento.
+
+\textbf{VLAN perimetriche.}  
+Le \textbf{VLAN} (Virtual Local Area Network) sono fondamentali per isolare il traffico tra dispositivi all'interno della stessa rete fisica. Utilizzare VLAN per limitare il \emph{blast radius} (raggio di propagazione di un attacco) è una delle prime linee di difesa contro le minacce interne. La configurazione corretta dei trunk, l'assegnazione adeguata delle VLAN perimetrali, e la disabilitazione dei protocolli di gestione su porte access sono passi essenziali.  
+Ad esempio, mantenere VLAN 1 come VLAN nativa su tutte le interfacce trunk può rendere vulnerabile la rete agli attacchi di tipo VLAN hopping.
+
+\paragraph{2) Controllo d’accesso.}
+
+\textbf{802.1X (NAC) su porta.}  
+L'uso di \textbf{802.1X} con un sistema di \textbf{Network Access Control (NAC)} fornisce un livello di sicurezza aggiuntivo, garantendo che solo dispositivi autenticati possano accedere alla rete. Con \textbf{RADIUS} come server di autenticazione, il dispositivo che tenta di connettersi viene autenticato tramite EAP (Extensible Authentication Protocol), permettendo l'accesso solo a dispositivi legittimi.  
+Un esempio pratico: ogni dispositivo, al momento del collegamento, deve inviare le proprie credenziali via EAPOL (EAP over LAN). Il server RADIUS verifica la validità delle credenziali, abilitando l'accesso alla porta dello switch solo se autenticato.
+
+**Limitazioni**: Sebbene 802.1X protegga contro il \emph{MAC spoofing} e il flooding, non è completamente immune a attacchi avanzati come l'\emph{ARP poisoning}, né impedisce un attacco \emph{piggybacking} dove un attaccante inserisce un mini-switch tra il dispositivo legittimo e lo switch autenticato.
+
+\textbf{Port Security e ACL.}  
+\textbf{Port Security} consente di limitare il numero di indirizzi MAC che possono essere appresi da una singola porta dello switch. Ciò impedisce attacchi come il \textbf{MAC flooding}, che saturano la memoria CAM dello switch. Inoltre, l'uso di \textbf{Access Control Lists (ACL)} per il filtraggio dei pacchetti a livello di switch, basato su indirizzi MAC o Ethertype, offre un ulteriore livello di protezione contro attacchi di tipo \emph{flooding} o \emph{spoofing}.  
+Un esempio pratico: configurare una porta per consentire solo due dispositivi MAC, impedendo a un terzo dispositivo di connettersi.
+
+```bash
+Esempio di ebtables per binding MAC→porta
+ebtables -A FORWARD --in-interface eth0 -s ! a0:...:a0 -j DROP
+ebtables -A FORWARD --in-interface eth1 -s ! b0:...:b0 -j DROP
+ebtables -A FORWARD --in-interface eth2 -s c0:...:c0 -j DROP
+\paragraph{3) Protezione della risoluzione indirizzi.}
+
+\textbf{DHCP Snooping e Dynamic ARP Inspection (DAI).}
+Il \textbf{DHCP Snooping} è una funzione che impedisce agli attaccanti di impersonare server DHCP. Registrando le informazioni IP–MAC–porta–VLAN provenienti dalle risposte DHCP legittime, il dispositivo protegge contro il \textbf{DHCP spoofing}. L'integrazione con \textbf{Dynamic ARP Inspection} (DAI) fornisce un ulteriore livello di protezione, assicurando che solo le risposte ARP coerenti con la tabella DHCP siano accettate. Questo blocca attacchi come \emph{ARP poisoning}, impedendo che il traffico venga dirottato verso un attaccante.
+
+\textbf{SEND (Secure Neighbor Discovery) per IPv6.}
+Per le reti IPv6, la protezione contro gli attacchi di tipo \emph{neighbor spoofing} o \emph{router advertisement flooding} è fornita da \textbf{SEND (Secure Neighbor Discovery)}. Questo protocollo estende NDP (Neighbor Discovery Protocol) e garantisce l’autenticità delle comunicazioni grazie all’utilizzo di \textbf{CGA (Cryptographically Generated Addresses)} e firme digitali.
+SEND è utile per prevenire che un attaccante falsifichi i messaggi NDP e si faccia passare per un router o un altro host legittimo.
+
+\paragraph{4) Crittografia L2: MACsec (802.1AE).}
+
+Il protocollo \textbf{MACsec (802.1AE)} fornisce la crittografia end-to-end del traffico a livello L2, garantendo \emph{confidenzialità}, \emph{integrità} e protezione contro gli \emph{attacchi replay}. Con \textbf{GCM-AES-128} come cifratura predefinita, MACsec protegge i frame Ethernet, inclusi quelli che attraversano domini di trasmissione non protetti.
+Un esempio pratico di configurazione con \texttt{ip link} in Linux è il seguente: 
+ip link add link eth0 macsec0 type macsec
+ip macsec add macsec0 tx sa 0 pn 1 on key 01 0987...32109
+ip macsec add macsec0 rx address b0:...:b0 port 1 sa 0 pn 1 on key 02 1234...9012
+ip link set macsec0 up
+ip addr add 10.100.0.2/24 dev macsec0
+
+Limiti: MACsec non risolve i problemi relativi agli attacchi DoS (Denial of Service), né impedisce a un host legittimo compromesso di compromettere ulteriormente la rete.
+
+\paragraph{5) Buone pratiche operative.}
+
+Oltre alle soluzioni tecnologiche, le buone pratiche operative sono fondamentali.
+Le seguenti azioni devono essere adottate in modo sistematico:
+\begin{itemize}
+\item Protezione fisica: assicurarsi che l'hardware sia protetto in armadi blindati e che le porte non utilizzate siano disabilitate.
+\item Shutdown delle porte non usate: evitare che porte inutilizzate possano essere sfruttate per un "join fisico" non autorizzato.
+\item Storm Control: attivare meccanismi di controllo dei flussi di traffico per evitare tempeste di broadcast.
+\item BPDU Guard / Root Guard: proteggere gli switch da manipolazioni del protocollo STP.
+\item Principio del least privilege: limitare i privilegi amministrativi e configurare correttamente gli accessi remoti.
+\item Logging e monitoraggio continuo: per rilevare eventuali anomalie e ridurre i tempi di reazione agli attacchi.
+\end{itemize}
+
+\subsubsection{Monitoraggio e risposta}
+\textbf{Firewall \& DPI (Deep Packet Inspection).}
+I firewall moderni, operanti su tutti i livelli, permettono di controllare il traffico tra segmenti e di eseguire analisi di pacchetti (DPI) per identificare eventuali attacchi. Utilizzando \texttt{ebtables}, \texttt{iptables} e \texttt{netfilter}, è possibile applicare ACL a livello L2 e superiore.
+
+\textbf{IDS/IPS (Intrusion Detection / Prevention Systems).}
+Questi sistemi analizzano il traffico di rete alla ricerca di pattern noti di attacco, utilizzando librerie di firme. Vengono solitamente collocati tra due endpoint per monitorare il traffico tramite port mirroring.
+
+\textbf{eBPF/XDP (Extended Berkeley Packet Filter / Express Data Path).}
+Questi strumenti ad alte prestazioni permettono di applicare filtri sui pacchetti direttamente nel kernel del sistema operativo, consentendo una gestione avanzata del traffico per il rate-limiting, il rilevamento di spoofing e la telemetria avanzata.
+
+\subsubsection{Appendice A — Dalla LAN agli overlay: EVPN/VXLAN}
+In scenari di overlay L2 su L3, come VXLAN, il traffico di broadcast viene incapsulato nei tunnel. \textbf{EVPN} (Ethernet Virtual Private Network) introduce un control-plane BGP per la gestione dinamica dei MAC e IP, riducendo la necessità di ARP e migliorando la resilienza del sistema contro gli attacchi basati sul flooding.
+
+\subsubsection{Appendice B — Checklist operativa}
+\begin{itemize}
+\item Segmenta la rete con router/firewall e VLAN.
+\item Usa 802.1X per l'autenticazione delle porte utente.
+\item Abilita DHCP Snooping + Dynamic ARP Inspection + IP Source Guard.
+\item Applica Port Security e ACL mirate.
+\item Considera MACsec per proteggere la confidenzialità dei dati.
+\item Monitora il traffico con IDS/IPS e applica un logging rigoroso.
+\end{itemize}
