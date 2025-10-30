@@ -48,36 +48,135 @@ allo \emph{strato sottostante}.
 \emph{Formato dei messaggi}: un pacchetto EAP contiene \texttt{Code} (\textit{Request, Response, Success, Failure}), \texttt{Identifier} (accoppia richiesta/risposta), \texttt{Length} e \texttt{Data} (il payload del metodo). Il server AAA decide l’esito del metodo e, se positivo, l’authenticator sblocca la porta e applica l’autorizzazione (VLAN/ACL).
 
 
-\subsection{RADIUS nel disegno 802.1X}
-RADIUS (\textbf{R}emote \textbf{A}uthentication \textbf{D}ial-\textbf{I}n \textbf{U}ser \textbf{S}ervice) è
-il protocollo per AAA (autenticazione, autorizzazione, accounting) in architetture 802.1X: 
-è client/server e gira a livello applicativo, usando TCP o UDP. Non è definito da 802.1X, ma è la scelta prevalente 
-come backend dell’authenticator. 
-
 \subsection{EAP termination vs EAP relay (EAPoR)}
-Tra switch (authenticator) e server AAA si hanno due modalità:
+Tra \emph{authenticator} (switch/AP) e \emph{server AAA} esistono due modelli operativi, con effetti
+concreti su sicurezza, scalabilità e troubleshooting.
+
+\paragraph{ EAP termination mode (terminazione locale).}
+Lo switch \emph{implementa} il metodo EAP e parla con il server usando i messaggi RADIUS tradizionali
+(\texttt{Access-Request/Accept/Reject}) senza trasportare il payload EAP end-to-end.
 \begin{itemize}
-  \item \textbf{EAP termination mode}: lo switch “termina” EAP e parla con RADIUS con messaggi/access tipici.
-  \item \textbf{EAP relay mode} (\emph{EAP over RADIUS}, EAPoR): lo switch incapsula i messaggi EAP \emph{così come sono} 
-  negli attributi RADIUS (\texttt{EAP-Message}, \texttt{Message-Authenticator}) e li inoltra al server, preservando end-to-end il 
-  metodo EAP lato server. 
+  \item \textbf{Dove “vive” il metodo}: dentro lo switch (NAS). Il server AAA verifica credenziali/attributi,
+        ma non esegue direttamente il metodo EAP.
+  \item \textbf{Vantaggi}: latenza ridotta; minor banda verso AAA; utile per metodi semplici (es. EAP-MD5 in lab) o
+        quando si desidera \emph{offload} di logica sul bordo.
+  \item \textbf{Limiti}: meno flessibilità (aggiornare/estendere metodi richiede supporto sul NAS);
+        minore \emph{visibilità} diagnostica lato server; la derivazione delle chiavi (MSK) non arriva
+        automaticamente al server, quindi integrazioni con altre fasi (es. roaming/derivazioni) sono più
+        macchinose.
+  \item \textbf{Uso tipico}: ambienti didattici o reti con metodo basico e policy semplici.
 \end{itemize}
-Le slide mostrano anche il formato EAPoR. 
+
+\paragraph{ EAP relay mode (EAP over RADIUS, EAPoR).}
+Lo switch \emph{inoltra inalterati} i messaggi EAP del supplicant al server incapsulandoli negli attributi
+RADIUS \texttt{EAP-Message} + \texttt{Message-Authenticator}. Il metodo EAP viene eseguito \emph{end-to-end}
+tra supplicant e server.
+\begin{itemize}
+  \item \textbf{Dove “vive” il metodo}: sul \emph{server AAA}. Lo switch resta un ponte L2/AAA “consapevole”.
+  \item \textbf{Vantaggi}: massima compatibilità con metodi complessi (EAP-TLS, PEAP/TTLS, FAST, SIM/AKA);
+        la \textbf{MSK/EMSK} è generata sul server e può alimentare altri servizi (es. derivazioni chiave, MACsec
+        con dynamic CAK, Wi-Fi 802.11i); aggiornare/aggiungere metodi richiede solo aggiornare il server.
+  \item \textbf{Sicurezza}: l’attributo \texttt{Message-Authenticator} protegge l’integrità del trasporto EAP
+        su RADIUS; con link non fidati si usa RADIUS/TLS (RadSec) o IPsec per confidenzialità.
+  \item \textbf{Diagnostica}: il server vede \emph{tutto} lo scambio EAP (tracce/PCAP più utili); più semplice
+        fare \emph{troubleshooting} su handshake TLS, certificati, inner method, ecc.
+  \item \textbf{Uso tipico}: quasi tutti i deployment reali 802.1X enterprise.
+\end{itemize}
+
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{immagini/NET_04/eapor.png}
+  \caption{struttura pacchetto EAPoR}
+  \label{fig:eapor}
+\end{figure}
+
+
 
 \subsection{Processi di autenticazione: dai diagrammi alle implicazioni operative}
-\paragraph{Termination Mode (visione di flusso).} Il flusso “classico” con RADIUS è illustrato nelle slide: il client risponde 
-alle \emph{Request} dell’autenticator; lo switch confeziona richieste RADIUS e gestisce \emph{Access-Request/Challenge/Accept} 
-secondo l’esito lato server. (Cfr. “Authentication Process in EAP Termination Mode”). 
 
-\paragraph{Relay Mode con EAP-MD5 (dettaglio step-by-step).} In relay, l’authenticator inoltra username al server; il server 
-cerca l’utente e invia una \emph{MD5 challenge}. Il client calcola \texttt{MD5(id + challenge + password)} e risponde con
- \emph{EAP-Response/MD5-Challenge}. Se i valori coincidono, il server invia \emph{Access-Accept}; lo switch manda \emph{EAP-Success} 
- al client e pone la porta in \emph{authorized}. Il meccanismo di \emph{handshake} periodico verifica la presenza dell’utente; 
- \emph{EAPoL-Logoff} riporta la porta in \emph{unauthorized}. (La sequenza è mostrata in più slide consecutive “Relay Mode (MD5-challenge)”). 
+\paragraph{Message exchange (visione di alto livello).}
+Lo scambio coinvolge tre attori:
 
-\paragraph{EAP-TLS: esempio più complesso.} Le slide richiamano l’handshake EAP-TLS (RFC~5216): con 802.1X l’handshake inizia con 
-\emph{EAPoL-Start} e prosegue con negoziazione TLS tra supplicant e server via authenticator. In pratica, si ottiene autenticazione
- mutua a certificati e derivazione di materiale di chiave robusto. 
+
+
+\begin{enumerate}
+  \item \textbf{Supplicant $\leftrightarrow$ Authenticator (EAPoL):} il controllo d’accesso viaggia su \emph{EAP over LAN}.
+        Tipicamente: \textit{EAP-Request/Identity} $\rightarrow$ \textit{EAP-Response/Identity} e poi i messaggi del metodo EAP.
+  \item \textbf{Authenticator $\leftrightarrow$ Server AAA (RADIUS/DIAMETER):} l’authenticator incapsula/termina EAP e dialoga con il server
+        usando messaggi \texttt{Access-Request/Challenge/Accept/Reject} (più accounting). In \emph{relay} l’EAP del client è inoltrato end-to-end
+        dentro l’attributo \texttt{EAP-Message}.
+  \item \textbf{Sblocco del piano dati:} a successo, l’authenticator cambia lo stato della porta in \emph{authorized} e applica la policy
+        (VLAN/ACL/UCL). In caso di fallimento o \textit{EAPoL-Logoff}, la porta torna \emph{unauthorized}.
+\end{enumerate}
+\noindent
+\emph{Implicazioni:} il troubleshooting si fa catturando EAPoL lato accesso (\texttt{tcpdump ether proto 0x888e}) e RADIUS lato control-plane;
+timer e ritrasmissioni sono gestiti dall’authenticator e impattano l’esperienza di login.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.65\linewidth]{immagini/NET_04/msg.png}
+  \caption{Message exchange ad alto livello}
+  \label{fig:msg}
+\end{figure}
+
+\paragraph{Relay Mode (EAP-MD5) — sequenza dettagliata.}
+Nel \emph{relay} l’authenticator non “capisce” il metodo: inoltra i messaggi EAP al server dentro RADIUS.
+\begin{enumerate}
+  \item \textbf{EAPoL-Start} (client $\rightarrow$ authenticator): il supplicant innesca la procedura.
+  \item \textbf{EAP-Request/Identity} (authenticator $\rightarrow$ client): richiesta dell’identità.
+  \item \textbf{EAP-Response/Identity} (client $\rightarrow$ authenticator) $\Rightarrow$
+        \textbf{Access-Request} con \texttt{EAP-Message} (authenticator $\rightarrow$ server).
+  \item \textbf{Access-Challenge} (server $\rightarrow$ authenticator): il server genera la \emph{MD5 challenge}.
+  \item \textbf{EAP-Request/MD5-Challenge} (authenticator $\rightarrow$ client): inoltro della challenge.
+  \item \textbf{EAP-Response/MD5-Challenge} (client $\rightarrow$ authenticator): il client calcola\\
+        \(\texttt{MD5(id \,+\, challenge \,+\, password)}\) e risponde $\Rightarrow$
+        \textbf{Access-Request} con \texttt{EAP-Message} (authenticator $\rightarrow$ server).
+  \item \textbf{Access-Accept/Reject} (server $\rightarrow$ authenticator): esito dell’autenticazione
+        (in \emph{Accept} possono esserci attributi di autorizzazione: VLAN, ACL, UCL).
+  \item \textbf{EAP-Success/Failure} (authenticator $\rightarrow$ client) e \textbf{cambio stato porta}:
+        \emph{authorized} a successo, \emph{unauthorized} a fallimento.
+  \item \textbf{Handshake/keepalive}: l’authenticator interroga periodicamente il client (es. \textit{EAP-Request/Identity})
+        per verificare che la sessione sia ancora viva; timeout consecutivi $\Rightarrow$ chiusura sessione.
+  \item \textbf{EAPoL-Logoff} (client $\rightarrow$ authenticator): logout proattivo; l’authenticator ferma l’accounting,
+        rimuove autorizzazioni e riporta la porta a \emph{unauthorized}.
+\end{enumerate}
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.65\linewidth]{immagini/NET_04/msg2.png}
+  \caption{RelayMode md5 challenge}
+  \label{fig:msg2}
+
+\end{figure}
+
+
+
+
+\paragraph{EAP-TLS: esempio più complesso.}
+Rispetto a EAP-MD5, qui il processo è molto più sicuro perché si basa su un
+\textbf{handshake TLS} completo tra il client (supplicant) e il server AAA.
+
+\noindent
+In pratica, dopo l’avvio (\emph{EAPoL-Start}), l’autenticazione procede così:
+\begin{itemize}
+  \item Il server invia una richiesta EAP di tipo \textbf{EAP-TLS}, che avvia la
+        sessione TLS (come un normale \emph{client\_hello/server\_hello} HTTPS).
+  \item Il client risponde con il proprio \textbf{certificato} e completa la fase di
+        \emph{key exchange} e \emph{cipher negotiation}.
+  \item Entrambe le parti verificano i certificati: così si ottiene una
+        \textbf{autenticazione reciproca} (\emph{mutual authentication}).
+  \item Alla fine, viene derivata una \textbf{Master Session Key (MSK)} sicura,
+        usata per proteggere il traffico o per altri protocolli (es. MACsec o WPA2-Enterprise).
+\end{itemize}
+
+\noindent
+Se qualcosa va storto (certificato non valido, handshake interrotto, errore TLS),
+il server invia \emph{EAP-Failure}.  
+In sintesi, EAP-TLS trasporta l’intero handshake TLS dentro EAP, fornendo un livello
+di sicurezza equivalente a una connessione HTTPS cifrata, ma applicato all’autenticazione di rete.
 
 \subsection{Operazioni aggiuntive: ri-autenticazione, logout, timer}
 Le slide enfatizzano aspetti gestionali spesso sottovalutati:
@@ -115,6 +214,9 @@ accedere al mezzo; inoltre gli \emph{EAPoL-Logoff} essendo in chiaro sono falsif
 
 
 %%%%%%%%%%laboratorio
+\newpage
+\maketitle
+{\LARGE \textbf{Laboratorio}} \\[0.5em]
 \subsection{Lab 5 — 802.1X Port-Based Authentication \& VLAN assignment (ri-lettura guidata)}
 \paragraph{Obiettivo e componenti.} Dimostrare 802.1X (EAP-MD5) con porta bloccata fino a successo e assegnazione 
 VLAN dinamica secondo policy RADIUS. Topologia: 2 supplicant; 1 server RADIUS (FreeRADIUS); 1 switch Linux come

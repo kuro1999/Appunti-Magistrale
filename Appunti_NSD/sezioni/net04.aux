@@ -7,35 +7,42 @@
 \newlabel{fig:architettura}{{26}{37}{Architettura 802.1X e piani di traffico: (1) EAP incapsulato in EAPoL tra \emph {supplicant} e \emph {authenticator}; (2) EAP trasportato verso il server AAA tramite RADIUS/DIAMETER; (3) a autenticazione riuscita, sblocco del piano dati verso risorse LAN/Internet}{figure.caption.34}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}EAP ed EAPoL: fondamenti}{37}{subsection.4.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{\numberline {4.3.0.1}EAP (Extensible Authentication Protocol).}{37}{paragraph.4.3.0.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}RADIUS nel disegno 802.1X}{38}{subsection.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}EAP termination vs EAP relay (EAPoR)}{38}{subsection.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Processi di autenticazione: dai diagrammi alle implicazioni operative}{38}{subsection.4.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.6.0.1}Termination Mode (visione di flusso).}{38}{paragraph.4.6.0.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.6.0.2}Relay Mode con EAP-MD5 (dettaglio step-by-step).}{38}{paragraph.4.6.0.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.6.0.3}EAP-TLS: esempio più complesso.}{38}{paragraph.4.6.0.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}Operazioni aggiuntive: ri-autenticazione, logout, timer}{39}{subsection.4.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.8}Autorizzazione post-autenticazione: VLAN, ACL, UCL}{39}{subsection.4.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.8.0.1}VLAN dinamiche.}{39}{paragraph.4.8.0.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.8.0.2}ACL per-utente.}{39}{paragraph.4.8.0.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.8.0.3}UCL (User Control List).}{39}{paragraph.4.8.0.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9}Vulnerabilità storiche e motivazione per MACsec}{39}{subsection.4.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.10}Lab 5 — 802.1X Port-Based Authentication \& VLAN assignment (ri-lettura guidata)}{39}{subsection.4.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.10.0.1}Obiettivo e componenti.}{39}{paragraph.4.10.0.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.10.0.2}Switch (Authenticator).}{39}{paragraph.4.10.0.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.10.0.3}Server RADIUS (FreeRADIUS).}{40}{paragraph.4.10.0.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.10.0.4}Supplicant (client).}{40}{paragraph.4.10.0.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.10.0.5}Enforcement dinamico L2 (script).}{40}{paragraph.4.10.0.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.10.0.6}Task operativi (sintesi).}{40}{paragraph.4.10.0.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.11}802.1X-2010: MACsec Key Agreement (MKA)}{40}{subsection.4.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.11.0.1}Gerarchia delle chiavi.}{40}{paragraph.4.11.0.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.11.0.2}Static vs Dynamic CAK.}{40}{paragraph.4.11.0.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.11.0.3}Protocollo MKA “a colpo d’occhio”.}{40}{paragraph.4.11.0.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {4.11.0.4}Mini-lab MACsec (richiamo dalle slide).}{40}{paragraph.4.11.0.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.12}Recap sicurezza Ethernet e contromisure (chiusura)}{40}{subsection.4.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}EAP termination vs EAP relay (EAPoR)}{38}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.4.0.1} EAP termination mode (terminazione locale).}{38}{paragraph.4.4.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.4.0.2} EAP relay mode (EAP over RADIUS, EAPoR).}{38}{paragraph.4.4.0.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces struttura pacchetto EAPoR}}{39}{figure.caption.35}\protected@file@percent }
+\newlabel{fig:eapor}{{27}{39}{struttura pacchetto EAPoR}{figure.caption.35}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Processi di autenticazione: dai diagrammi alle implicazioni operative}{39}{subsection.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.5.0.1}Message exchange (visione di alto livello).}{39}{paragraph.4.5.0.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {28}{\ignorespaces Message exchange ad alto livello}}{39}{figure.caption.36}\protected@file@percent }
+\newlabel{fig:msg}{{28}{39}{Message exchange ad alto livello}{figure.caption.36}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.5.0.2}Relay Mode (EAP-MD5) — sequenza dettagliata.}{40}{paragraph.4.5.0.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {29}{\ignorespaces RelayMode md5 challenge}}{40}{figure.caption.37}\protected@file@percent }
+\newlabel{fig:msg2}{{29}{40}{RelayMode md5 challenge}{figure.caption.37}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.5.0.3}EAP-TLS: esempio più complesso.}{41}{paragraph.4.5.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Operazioni aggiuntive: ri-autenticazione, logout, timer}{41}{subsection.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}Autorizzazione post-autenticazione: VLAN, ACL, UCL}{41}{subsection.4.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.7.0.1}VLAN dinamiche.}{41}{paragraph.4.7.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.7.0.2}ACL per-utente.}{41}{paragraph.4.7.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.7.0.3}UCL (User Control List).}{41}{paragraph.4.7.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8}Vulnerabilità storiche e motivazione per MACsec}{42}{subsection.4.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9}Lab 5 — 802.1X Port-Based Authentication \& VLAN assignment (ri-lettura guidata)}{43}{subsection.4.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.9.0.1}Obiettivo e componenti.}{43}{paragraph.4.9.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.9.0.2}Switch (Authenticator).}{43}{paragraph.4.9.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.9.0.3}Server RADIUS (FreeRADIUS).}{43}{paragraph.4.9.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.9.0.4}Supplicant (client).}{43}{paragraph.4.9.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.9.0.5}Enforcement dinamico L2 (script).}{43}{paragraph.4.9.0.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.9.0.6}Task operativi (sintesi).}{43}{paragraph.4.9.0.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.10}802.1X-2010: MACsec Key Agreement (MKA)}{43}{subsection.4.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.10.0.1}Gerarchia delle chiavi.}{43}{paragraph.4.10.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.10.0.2}Static vs Dynamic CAK.}{43}{paragraph.4.10.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.10.0.3}Protocollo MKA “a colpo d’occhio”.}{43}{paragraph.4.10.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {4.10.0.4}Mini-lab MACsec (richiamo dalle slide).}{44}{paragraph.4.10.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.11}Recap sicurezza Ethernet e contromisure (chiusura)}{44}{subsection.4.11}\protected@file@percent }
 \@setckpt{sezioni/net04}{
-\setcounter{page}{41}
+\setcounter{page}{45}
 \setcounter{equation}{0}
-\setcounter{enumi}{5}
+\setcounter{enumi}{10}
 \setcounter{enumii}{0}
 \setcounter{enumiii}{0}
 \setcounter{enumiv}{0}
@@ -43,17 +50,17 @@
 \setcounter{mpfootnote}{0}
 \setcounter{part}{0}
 \setcounter{section}{4}
-\setcounter{subsection}{12}
+\setcounter{subsection}{11}
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{26}
+\setcounter{figure}{29}
 \setcounter{table}{0}
 \setcounter{parentequation}{0}
 \setcounter{section@level}{2}
-\setcounter{Item}{19}
+\setcounter{Item}{32}
 \setcounter{Hfootnote}{0}
-\setcounter{bookmark@seq@number}{120}
+\setcounter{bookmark@seq@number}{121}
 \setcounter{lstnumber}{8}
 \setcounter{float@type}{8}
 \setcounter{LT@tables}{0}

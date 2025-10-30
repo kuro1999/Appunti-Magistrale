@@ -98,28 +98,29 @@
 \contentsline {subsection}{\numberline {4.2}Attori dell’architettura (vista di alto livello)}{37}{subsection.4.2}%
 \contentsline {subsection}{\numberline {4.3}EAP ed EAPoL: fondamenti}{37}{subsection.4.3}%
 \contentsline {paragraph}{\numberline {4.3.0.1}EAP (Extensible Authentication Protocol).}{37}{paragraph.4.3.0.1}%
-\contentsline {subsection}{\numberline {4.4}RADIUS nel disegno 802.1X}{38}{subsection.4.4}%
-\contentsline {subsection}{\numberline {4.5}EAP termination vs EAP relay (EAPoR)}{38}{subsection.4.5}%
-\contentsline {subsection}{\numberline {4.6}Processi di autenticazione: dai diagrammi alle implicazioni operative}{38}{subsection.4.6}%
-\contentsline {paragraph}{\numberline {4.6.0.1}Termination Mode (visione di flusso).}{38}{paragraph.4.6.0.1}%
-\contentsline {paragraph}{\numberline {4.6.0.2}Relay Mode con EAP-MD5 (dettaglio step-by-step).}{38}{paragraph.4.6.0.2}%
-\contentsline {paragraph}{\numberline {4.6.0.3}EAP-TLS: esempio più complesso.}{38}{paragraph.4.6.0.3}%
-\contentsline {subsection}{\numberline {4.7}Operazioni aggiuntive: ri-autenticazione, logout, timer}{39}{subsection.4.7}%
-\contentsline {subsection}{\numberline {4.8}Autorizzazione post-autenticazione: VLAN, ACL, UCL}{39}{subsection.4.8}%
-\contentsline {paragraph}{\numberline {4.8.0.1}VLAN dinamiche.}{39}{paragraph.4.8.0.1}%
-\contentsline {paragraph}{\numberline {4.8.0.2}ACL per-utente.}{39}{paragraph.4.8.0.2}%
-\contentsline {paragraph}{\numberline {4.8.0.3}UCL (User Control List).}{39}{paragraph.4.8.0.3}%
-\contentsline {subsection}{\numberline {4.9}Vulnerabilità storiche e motivazione per MACsec}{39}{subsection.4.9}%
-\contentsline {subsection}{\numberline {4.10}Lab 5 — 802.1X Port-Based Authentication \& VLAN assignment (ri-lettura guidata)}{39}{subsection.4.10}%
-\contentsline {paragraph}{\numberline {4.10.0.1}Obiettivo e componenti.}{39}{paragraph.4.10.0.1}%
-\contentsline {paragraph}{\numberline {4.10.0.2}Switch (Authenticator).}{39}{paragraph.4.10.0.2}%
-\contentsline {paragraph}{\numberline {4.10.0.3}Server RADIUS (FreeRADIUS).}{40}{paragraph.4.10.0.3}%
-\contentsline {paragraph}{\numberline {4.10.0.4}Supplicant (client).}{40}{paragraph.4.10.0.4}%
-\contentsline {paragraph}{\numberline {4.10.0.5}Enforcement dinamico L2 (script).}{40}{paragraph.4.10.0.5}%
-\contentsline {paragraph}{\numberline {4.10.0.6}Task operativi (sintesi).}{40}{paragraph.4.10.0.6}%
-\contentsline {subsection}{\numberline {4.11}802.1X-2010: MACsec Key Agreement (MKA)}{40}{subsection.4.11}%
-\contentsline {paragraph}{\numberline {4.11.0.1}Gerarchia delle chiavi.}{40}{paragraph.4.11.0.1}%
-\contentsline {paragraph}{\numberline {4.11.0.2}Static vs Dynamic CAK.}{40}{paragraph.4.11.0.2}%
-\contentsline {paragraph}{\numberline {4.11.0.3}Protocollo MKA “a colpo d’occhio”.}{40}{paragraph.4.11.0.3}%
-\contentsline {paragraph}{\numberline {4.11.0.4}Mini-lab MACsec (richiamo dalle slide).}{40}{paragraph.4.11.0.4}%
-\contentsline {subsection}{\numberline {4.12}Recap sicurezza Ethernet e contromisure (chiusura)}{40}{subsection.4.12}%
+\contentsline {subsection}{\numberline {4.4}EAP termination vs EAP relay (EAPoR)}{38}{subsection.4.4}%
+\contentsline {paragraph}{\numberline {4.4.0.1} EAP termination mode (terminazione locale).}{38}{paragraph.4.4.0.1}%
+\contentsline {paragraph}{\numberline {4.4.0.2} EAP relay mode (EAP over RADIUS, EAPoR).}{38}{paragraph.4.4.0.2}%
+\contentsline {subsection}{\numberline {4.5}Processi di autenticazione: dai diagrammi alle implicazioni operative}{39}{subsection.4.5}%
+\contentsline {paragraph}{\numberline {4.5.0.1}Message exchange (visione di alto livello).}{39}{paragraph.4.5.0.1}%
+\contentsline {paragraph}{\numberline {4.5.0.2}Relay Mode (EAP-MD5) — sequenza dettagliata.}{40}{paragraph.4.5.0.2}%
+\contentsline {paragraph}{\numberline {4.5.0.3}EAP-TLS: esempio più complesso.}{41}{paragraph.4.5.0.3}%
+\contentsline {subsection}{\numberline {4.6}Operazioni aggiuntive: ri-autenticazione, logout, timer}{41}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Autorizzazione post-autenticazione: VLAN, ACL, UCL}{41}{subsection.4.7}%
+\contentsline {paragraph}{\numberline {4.7.0.1}VLAN dinamiche.}{41}{paragraph.4.7.0.1}%
+\contentsline {paragraph}{\numberline {4.7.0.2}ACL per-utente.}{41}{paragraph.4.7.0.2}%
+\contentsline {paragraph}{\numberline {4.7.0.3}UCL (User Control List).}{41}{paragraph.4.7.0.3}%
+\contentsline {subsection}{\numberline {4.8}Vulnerabilità storiche e motivazione per MACsec}{42}{subsection.4.8}%
+\contentsline {subsection}{\numberline {4.9}Lab 5 — 802.1X Port-Based Authentication \& VLAN assignment (ri-lettura guidata)}{43}{subsection.4.9}%
+\contentsline {paragraph}{\numberline {4.9.0.1}Obiettivo e componenti.}{43}{paragraph.4.9.0.1}%
+\contentsline {paragraph}{\numberline {4.9.0.2}Switch (Authenticator).}{43}{paragraph.4.9.0.2}%
+\contentsline {paragraph}{\numberline {4.9.0.3}Server RADIUS (FreeRADIUS).}{43}{paragraph.4.9.0.3}%
+\contentsline {paragraph}{\numberline {4.9.0.4}Supplicant (client).}{43}{paragraph.4.9.0.4}%
+\contentsline {paragraph}{\numberline {4.9.0.5}Enforcement dinamico L2 (script).}{43}{paragraph.4.9.0.5}%
+\contentsline {paragraph}{\numberline {4.9.0.6}Task operativi (sintesi).}{43}{paragraph.4.9.0.6}%
+\contentsline {subsection}{\numberline {4.10}802.1X-2010: MACsec Key Agreement (MKA)}{43}{subsection.4.10}%
+\contentsline {paragraph}{\numberline {4.10.0.1}Gerarchia delle chiavi.}{43}{paragraph.4.10.0.1}%
+\contentsline {paragraph}{\numberline {4.10.0.2}Static vs Dynamic CAK.}{43}{paragraph.4.10.0.2}%
+\contentsline {paragraph}{\numberline {4.10.0.3}Protocollo MKA “a colpo d’occhio”.}{43}{paragraph.4.10.0.3}%
+\contentsline {paragraph}{\numberline {4.10.0.4}Mini-lab MACsec (richiamo dalle slide).}{44}{paragraph.4.10.0.4}%
+\contentsline {subsection}{\numberline {4.11}Recap sicurezza Ethernet e contromisure (chiusura)}{44}{subsection.4.11}%
