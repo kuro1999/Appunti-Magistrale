@@ -1,96 +1,126 @@
 \babel@toc {italian}{}\relax 
 \babel@toc {italian}{}\relax 
-\contentsline {section}{\numberline {1}NET\_01}{2}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Architettura di base e principi di rete}{2}{subsection.1.1}%
-\contentsline {subsubsection}{\numberline {1.1.1}Definizione e interconnessione}{2}{subsubsection.1.1.1}%
-\contentsline {subsubsection}{\numberline {1.1.2}Indirizzamento e instradamento}{2}{subsubsection.1.1.2}%
-\contentsline {subsubsection}{\numberline {1.1.3}Anatomia dell'indirizzo IP e subnetting}{2}{subsubsection.1.1.3}%
-\contentsline {paragraph}{\numberline {1.1.3.1}1) Cosa significa ``/27''}{3}{paragraph.1.1.3.1}%
-\contentsline {paragraph}{\numberline {1.1.3.2}2) Perché basta guardare l'ultimo ottetto}{3}{paragraph.1.1.3.2}%
-\contentsline {paragraph}{\numberline {1.1.3.3}3) Trova il blocco in cui cade 99}{3}{paragraph.1.1.3.3}%
-\contentsline {paragraph}{\numberline {1.1.3.4}4) Verifica con l'AND (ultimo ottetto)}{4}{paragraph.1.1.3.4}%
-\contentsline {paragraph}{\numberline {1.1.3.5}5) Broadcast: tutti i bit host a 1}{4}{paragraph.1.1.3.5}%
-\contentsline {paragraph}{\numberline {1.1.3.6}6) Intervallo host e conteggio}{4}{paragraph.1.1.3.6}%
-\contentsline {subsubsection}{\numberline {1.1.4}Sistemi autonomi (AS) e routing globale}{4}{subsubsection.1.1.4}%
-\contentsline {subsubsection}{\numberline {1.1.5}La routing table e l'algoritmo di lookup}{4}{subsubsection.1.1.5}%
-\contentsline {subsection}{\numberline {1.2}II. Il viaggio del pacchetto: esempio di richiesta DNS}{4}{subsection.1.2}%
-\contentsline {subsubsection}{\numberline {1.2.1}Topologia e hop}{4}{subsubsection.1.2.1}%
-\contentsline {subsubsection}{\numberline {1.2.2}Stack protocollare e incapsulamento}{5}{subsubsection.1.2.2}%
-\contentsline {subsection}{\numberline {1.3}III. Vulnerabilità intrinseche di IP e TCP}{5}{subsection.1.3}%
-\contentsline {subsubsection}{\numberline {1.3.1}Identificazione, spoofing e non-ripudio}{6}{subsubsection.1.3.1}%
-\contentsline {subsubsection}{\numberline {1.3.2}Confidenzialità}{6}{subsubsection.1.3.2}%
-\contentsline {subsubsection}{\numberline {1.3.3}Integrità dei dati}{6}{subsubsection.1.3.3}%
-\contentsline {subsubsection}{\numberline {1.3.4}Packet replication e anti-replay}{6}{subsubsection.1.3.4}%
-\contentsline {subsubsection}{\numberline {1.3.5}Insicurezza delle mappature dinamiche}{6}{subsubsection.1.3.5}%
-\contentsline {subsection}{\numberline {1.4}Laboratorio 1: MiTM e DNS spoofing}{7}{subsection.1.4}%
-\contentsline {subsubsection}{\numberline {1.4.1}Obiettivo e scenario}{7}{subsubsection.1.4.1}%
-\contentsline {subsubsection}{\numberline {1.4.2}Fasi dell'attacco}{7}{subsubsection.1.4.2}%
-\contentsline {subsubsection}{\numberline {1.4.3}STEP 1: ARP spoofing (MiTM)}{7}{subsubsection.1.4.3}%
-\contentsline {subsubsection}{\numberline {1.4.4}STEP 2 \& 3: intercettazione e DNS spoofing}{8}{subsubsection.1.4.4}%
-\contentsline {subsubsection}{\numberline {1.4.5}STEP 4: impersonificazione del sito web}{8}{subsubsection.1.4.5}%
-\contentsline {section}{\numberline {2}NET\_02}{9}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Sicurezza delle Reti Ethernet LAN (Livello 2)}{9}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Perché la LAN Ethernet è fragile per natura}{9}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Frame, indirizzamento e forwarding}{9}{subsubsection.2.2.1}%
-\contentsline {paragraph}{\numberline {2.2.1.1}Multiport Repeaters (Hub)}{9}{paragraph.2.2.1.1}%
-\contentsline {paragraph}{\numberline {2.2.1.2}Bridge/Switches}{9}{paragraph.2.2.1.2}%
-\contentsline {paragraph}{\numberline {2.2.1.3}Address Learning}{9}{paragraph.2.2.1.3}%
-\contentsline {subsubsection}{\numberline {2.2.2}Topologie e controllo dei loop: STP}{10}{subsubsection.2.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.3}Adattamento del Livello 3 su Livello 2: DHCP, ARP e NDP}{11}{subsubsection.2.2.3}%
-\contentsline {paragraph}{\numberline {2.2.3.1}DHCP — Dynamic Host Configuration Protocol (IPv4).}{11}{paragraph.2.2.3.1}%
-\contentsline {paragraph}{\numberline {2.2.3.2}ARP — Address Resolution Protocol (IPv4).}{12}{paragraph.2.2.3.2}%
-\contentsline {paragraph}{\numberline {2.2.3.3}NDP — Neighbor Discovery Protocol (IPv6).}{12}{paragraph.2.2.3.3}%
-\contentsline {subsubsection}{\numberline {2.2.4}Vulnerabilità e minacce principali}{12}{subsubsection.2.2.4}%
-\contentsline {paragraph}{\numberline {2.2.4.1}1) Accesso alla rete.}{12}{paragraph.2.2.4.1}%
-\contentsline {paragraph}{\numberline {2.2.4.2}2) Riservatezza e intercettazione.}{13}{paragraph.2.2.4.2}%
-\contentsline {paragraph}{\numberline {2.2.4.3}3) Integrità del traffico e attacchi Man-in-the-Middle (MITM).}{14}{paragraph.2.2.4.3}%
-\contentsline {paragraph}{\numberline {2.2.4.4}4) Disponibilità e attacchi di Denial of Service (DoS).}{14}{paragraph.2.2.4.4}%
-\contentsline {paragraph}{\numberline {2.2.4.5}Sintesi.}{14}{paragraph.2.2.4.5}%
-\contentsline {subsubsection}{\numberline {2.2.5}Contromisure: dal minimo sindacale al robusto}{14}{subsubsection.2.2.5}%
-\contentsline {paragraph}{\numberline {2.2.5.1}1) Segmentazione della rete.}{15}{paragraph.2.2.5.1}%
-\contentsline {paragraph}{\numberline {2.2.5.2}2) Controllo d’accesso.}{15}{paragraph.2.2.5.2}%
-\contentsline {paragraph}{\numberline {2.2.5.3}3) Protezione della risoluzione indirizzi.}{15}{paragraph.2.2.5.3}%
-\contentsline {paragraph}{\numberline {2.2.5.4}4) Crittografia L2: MACsec (802.1AE).}{16}{paragraph.2.2.5.4}%
-\contentsline {paragraph}{\numberline {2.2.5.5}5) Buone pratiche operative.}{16}{paragraph.2.2.5.5}%
-\contentsline {subsubsection}{\numberline {2.2.6}Monitoraggio e risposta}{16}{subsubsection.2.2.6}%
-\contentsline {subsubsection}{\numberline {2.2.7}Appendice A — Dalla LAN agli overlay: EVPN/VXLAN}{16}{subsubsection.2.2.7}%
-\contentsline {subsubsection}{\numberline {2.2.8}Appendice B — Checklist operativa}{17}{subsubsection.2.2.8}%
-\contentsline {section}{\numberline {3}NET\_03 — Virtual LANs (VLAN)}{18}{section.3}%
-\contentsline {subsubsection}{\numberline {3.0.1}Definizione e motivazione}{18}{subsubsection.3.0.1}%
-\contentsline {subsubsection}{\numberline {3.0.2}Limiti delle reti fisicamente separate}{18}{subsubsection.3.0.2}%
-\contentsline {paragraph}{\numberline {3.0.2.1}Benefici principali delle VLAN}{18}{paragraph.3.0.2.1}%
-\contentsline {subsection}{\numberline {3.1}Assegnazione e membership delle VLAN}{19}{subsection.3.1}%
-\contentsline {subsubsection}{\numberline {3.1.1}Criteri di assegnazione}{19}{subsubsection.3.1.1}%
-\contentsline {subsubsection}{\numberline {3.1.2}Vista logica}{19}{subsubsection.3.1.2}%
-\contentsline {paragraph}{\numberline {3.1.2.1}Router “one-armed”}{20}{paragraph.3.1.2.1}%
-\contentsline {subsection}{\numberline {3.2}Trasporto dei frame: Tagging IEEE 802.1Q}{21}{subsection.3.2}%
-\contentsline {subsubsection}{\numberline {3.2.1}Porte di tipo Access, Trunk e Hybrid}{21}{subsubsection.3.2.1}%
-\contentsline {subsubsection}{\numberline {3.2.2}Access links}{21}{subsubsection.3.2.2}%
-\contentsline {subsubsection}{\numberline {3.2.3}Access links nelle regioni legacy}{22}{subsubsection.3.2.3}%
-\contentsline {subsubsection}{\numberline {3.2.4}Trunk links}{22}{subsubsection.3.2.4}%
-\contentsline {subsubsection}{\numberline {3.2.5}Hybrid links}{23}{subsubsection.3.2.5}%
-\contentsline {subsubsection}{\numberline {3.2.6}Una stazione può appartenere a più VLAN?}{24}{subsubsection.3.2.6}%
-\contentsline {subsection}{\numberline {3.3}Laboratorio 3: Configurazione VLAN e router one-armed}{26}{subsection.3.3}%
-\contentsline {paragraph}{\numberline {3.3.0.1}Isolamento del traffico}{27}{paragraph.3.3.0.1}%
-\contentsline {paragraph}{\numberline {3.3.0.2}Routing inter-VLAN}{27}{paragraph.3.3.0.2}%
-\contentsline {paragraph}{\numberline {3.3.0.3}Verifica del comportamento}{28}{paragraph.3.3.0.3}%
-\contentsline {paragraph}{\numberline {3.3.0.4}Osservazione pratica}{28}{paragraph.3.3.0.4}%
-\contentsline {subsection}{\numberline {3.4}Sicurezza delle VLAN e vulnerabilità di livello 2}{29}{subsection.3.4}%
-\contentsline {subsubsection}{\numberline {3.4.1}Minacce principali}{29}{subsubsection.3.4.1}%
-\contentsline {paragraph}{\numberline {3.4.1.1}1) MAC Flooding (CAM Overflow)}{29}{paragraph.3.4.1.1}%
-\contentsline {paragraph}{\numberline {3.4.1.2}2) ARP Spoofing / Poisoning}{29}{paragraph.3.4.1.2}%
-\contentsline {paragraph}{\numberline {3.4.1.3}3) VLAN Hopping}{30}{paragraph.3.4.1.3}%
-\contentsline {paragraph}{\numberline {3.4.1.4}4) Attacchi ai protocolli di controllo}{30}{paragraph.3.4.1.4}%
-\contentsline {subparagraph}{\numberline {3.4.1.4.1}Spanning Tree Attack (BPDU spoofing)}{31}{subparagraph.3.4.1.4.1}%
-\contentsline {subparagraph}{\numberline {3.4.1.4.2}VTP Attack (VLAN Trunking Protocol)}{31}{subparagraph.3.4.1.4.2}%
-\contentsline {subparagraph}{\numberline {3.4.1.4.3}Cisco Discovery Protocol Attack (information leakage)}{31}{subparagraph.3.4.1.4.3}%
-\contentsline {subsection}{\numberline {3.5}Laboratorio 4: VLAN Hopping e Double Tagging}{32}{subsection.3.5}%
-\contentsline {subsubsection}{\numberline {3.5.1}Scenario}{32}{subsubsection.3.5.1}%
-\contentsline {subsubsection}{\numberline {3.5.2}Configurazione di attacco}{32}{subsubsection.3.5.2}%
-\contentsline {paragraph}{\numberline {3.5.2.1}Mitigazioni}{32}{paragraph.3.5.2.1}%
-\contentsline {subsection}{\numberline {3.6}Autenticazione e controllo d’accesso: IEEE 802.1X}{33}{subsection.3.6}%
-\contentsline {subsubsection}{\numberline {3.6.1}Architettura e funzionamento}{33}{subsubsection.3.6.1}%
-\contentsline {paragraph}{\numberline {3.6.1.1}Vantaggi}{33}{paragraph.3.6.1.1}%
-\contentsline {subsection}{\numberline {3.7}Firewall e sicurezza perimetrale}{33}{subsection.3.7}%
-\contentsline {subsubsection}{\numberline {3.7.1}Ruolo del firewall}{33}{subsubsection.3.7.1}%
-\contentsline {paragraph}{\numberline {3.7.1.1}Implementazione in Linux}{33}{paragraph.3.7.1.1}%
+\contentsline {section}{\numberline {1}NET\_01}{4}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Architettura di base e principi di rete}{4}{subsection.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1}Definizione e interconnessione}{4}{subsubsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.2}Indirizzamento e instradamento}{4}{subsubsection.1.1.2}%
+\contentsline {subsubsection}{\numberline {1.1.3}Anatomia dell'indirizzo IP e subnetting}{4}{subsubsection.1.1.3}%
+\contentsline {paragraph}{\numberline {1.1.3.1}1) Cosa significa ``/27''}{5}{paragraph.1.1.3.1}%
+\contentsline {paragraph}{\numberline {1.1.3.2}2) Perché basta guardare l'ultimo ottetto}{5}{paragraph.1.1.3.2}%
+\contentsline {paragraph}{\numberline {1.1.3.3}3) Trova il blocco in cui cade 99}{5}{paragraph.1.1.3.3}%
+\contentsline {paragraph}{\numberline {1.1.3.4}4) Verifica con l'AND (ultimo ottetto)}{6}{paragraph.1.1.3.4}%
+\contentsline {paragraph}{\numberline {1.1.3.5}5) Broadcast: tutti i bit host a 1}{6}{paragraph.1.1.3.5}%
+\contentsline {paragraph}{\numberline {1.1.3.6}6) Intervallo host e conteggio}{6}{paragraph.1.1.3.6}%
+\contentsline {subsubsection}{\numberline {1.1.4}Sistemi autonomi (AS) e routing globale}{6}{subsubsection.1.1.4}%
+\contentsline {subsubsection}{\numberline {1.1.5}La routing table e l'algoritmo di lookup}{6}{subsubsection.1.1.5}%
+\contentsline {subsection}{\numberline {1.2}II. Il viaggio del pacchetto: esempio di richiesta DNS}{6}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}Topologia e hop}{6}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}Stack protocollare e incapsulamento}{7}{subsubsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.3}III. Vulnerabilità intrinseche di IP e TCP}{7}{subsection.1.3}%
+\contentsline {subsubsection}{\numberline {1.3.1}Identificazione, spoofing e non-ripudio}{8}{subsubsection.1.3.1}%
+\contentsline {subsubsection}{\numberline {1.3.2}Confidenzialità}{8}{subsubsection.1.3.2}%
+\contentsline {subsubsection}{\numberline {1.3.3}Integrità dei dati}{8}{subsubsection.1.3.3}%
+\contentsline {subsubsection}{\numberline {1.3.4}Packet replication e anti-replay}{8}{subsubsection.1.3.4}%
+\contentsline {subsubsection}{\numberline {1.3.5}Insicurezza delle mappature dinamiche}{8}{subsubsection.1.3.5}%
+\contentsline {subsection}{\numberline {1.4}Laboratorio 1: MiTM e DNS spoofing}{9}{subsection.1.4}%
+\contentsline {subsubsection}{\numberline {1.4.1}Obiettivo e scenario}{9}{subsubsection.1.4.1}%
+\contentsline {subsubsection}{\numberline {1.4.2}Fasi dell'attacco}{9}{subsubsection.1.4.2}%
+\contentsline {subsubsection}{\numberline {1.4.3}STEP 1: ARP spoofing (MiTM)}{9}{subsubsection.1.4.3}%
+\contentsline {subsubsection}{\numberline {1.4.4}STEP 2 \& 3: intercettazione e DNS spoofing}{10}{subsubsection.1.4.4}%
+\contentsline {subsubsection}{\numberline {1.4.5}STEP 4: impersonificazione del sito web}{10}{subsubsection.1.4.5}%
+\contentsline {section}{\numberline {2}NET\_02}{11}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Sicurezza delle Reti Ethernet LAN (Livello 2)}{11}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Perché la LAN Ethernet è fragile per natura}{11}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Frame, indirizzamento e forwarding}{11}{subsubsection.2.2.1}%
+\contentsline {paragraph}{\numberline {2.2.1.1}Multiport Repeaters (Hub)}{11}{paragraph.2.2.1.1}%
+\contentsline {paragraph}{\numberline {2.2.1.2}Bridge/Switches}{11}{paragraph.2.2.1.2}%
+\contentsline {paragraph}{\numberline {2.2.1.3}Address Learning}{11}{paragraph.2.2.1.3}%
+\contentsline {subsubsection}{\numberline {2.2.2}Topologie e controllo dei loop: STP}{12}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Adattamento del Livello 3 su Livello 2: DHCP, ARP e NDP}{13}{subsubsection.2.2.3}%
+\contentsline {paragraph}{\numberline {2.2.3.1}DHCP — Dynamic Host Configuration Protocol (IPv4).}{13}{paragraph.2.2.3.1}%
+\contentsline {paragraph}{\numberline {2.2.3.2}ARP — Address Resolution Protocol (IPv4).}{14}{paragraph.2.2.3.2}%
+\contentsline {paragraph}{\numberline {2.2.3.3}NDP — Neighbor Discovery Protocol (IPv6).}{14}{paragraph.2.2.3.3}%
+\contentsline {subsubsection}{\numberline {2.2.4}Vulnerabilità e minacce principali}{14}{subsubsection.2.2.4}%
+\contentsline {paragraph}{\numberline {2.2.4.1}1) Accesso alla rete.}{14}{paragraph.2.2.4.1}%
+\contentsline {paragraph}{\numberline {2.2.4.2}2) Riservatezza e intercettazione.}{15}{paragraph.2.2.4.2}%
+\contentsline {paragraph}{\numberline {2.2.4.3}3) Integrità del traffico e attacchi Man-in-the-Middle (MITM).}{16}{paragraph.2.2.4.3}%
+\contentsline {paragraph}{\numberline {2.2.4.4}4) Disponibilità e attacchi di Denial of Service (DoS).}{16}{paragraph.2.2.4.4}%
+\contentsline {paragraph}{\numberline {2.2.4.5}Sintesi.}{16}{paragraph.2.2.4.5}%
+\contentsline {subsubsection}{\numberline {2.2.5}Contromisure: dal minimo sindacale al robusto}{16}{subsubsection.2.2.5}%
+\contentsline {paragraph}{\numberline {2.2.5.1}1) Segmentazione della rete.}{17}{paragraph.2.2.5.1}%
+\contentsline {paragraph}{\numberline {2.2.5.2}2) Controllo d’accesso.}{17}{paragraph.2.2.5.2}%
+\contentsline {paragraph}{\numberline {2.2.5.3}3) Protezione della risoluzione indirizzi.}{17}{paragraph.2.2.5.3}%
+\contentsline {paragraph}{\numberline {2.2.5.4}4) Crittografia L2: MACsec (802.1AE).}{18}{paragraph.2.2.5.4}%
+\contentsline {paragraph}{\numberline {2.2.5.5}5) Buone pratiche operative.}{18}{paragraph.2.2.5.5}%
+\contentsline {subsubsection}{\numberline {2.2.6}Monitoraggio e risposta}{18}{subsubsection.2.2.6}%
+\contentsline {subsubsection}{\numberline {2.2.7}Appendice A — Dalla LAN agli overlay: EVPN/VXLAN}{18}{subsubsection.2.2.7}%
+\contentsline {subsubsection}{\numberline {2.2.8}Appendice B — Checklist operativa}{19}{subsubsection.2.2.8}%
+\contentsline {section}{\numberline {3}NET\_03 — Virtual LANs (VLAN)}{20}{section.3}%
+\contentsline {subsubsection}{\numberline {3.0.1}Definizione e motivazione}{20}{subsubsection.3.0.1}%
+\contentsline {subsubsection}{\numberline {3.0.2}Limiti delle reti fisicamente separate}{20}{subsubsection.3.0.2}%
+\contentsline {paragraph}{\numberline {3.0.2.1}Benefici principali delle VLAN}{20}{paragraph.3.0.2.1}%
+\contentsline {subsection}{\numberline {3.1}Assegnazione e membership delle VLAN}{21}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Criteri di assegnazione}{21}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Vista logica}{21}{subsubsection.3.1.2}%
+\contentsline {paragraph}{\numberline {3.1.2.1}Router “one-armed”}{22}{paragraph.3.1.2.1}%
+\contentsline {subsection}{\numberline {3.2}Trasporto dei frame: Tagging IEEE 802.1Q}{23}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Porte di tipo Access, Trunk e Hybrid}{23}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Access links}{23}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}Access links nelle regioni legacy}{24}{subsubsection.3.2.3}%
+\contentsline {subsubsection}{\numberline {3.2.4}Trunk links}{24}{subsubsection.3.2.4}%
+\contentsline {subsubsection}{\numberline {3.2.5}Hybrid links}{25}{subsubsection.3.2.5}%
+\contentsline {subsubsection}{\numberline {3.2.6}Una stazione può appartenere a più VLAN?}{26}{subsubsection.3.2.6}%
+\contentsline {subsection}{\numberline {3.3}Laboratorio 3: Configurazione VLAN e router one-armed}{28}{subsection.3.3}%
+\contentsline {paragraph}{\numberline {3.3.0.1}Isolamento del traffico}{29}{paragraph.3.3.0.1}%
+\contentsline {paragraph}{\numberline {3.3.0.2}Routing inter-VLAN}{29}{paragraph.3.3.0.2}%
+\contentsline {paragraph}{\numberline {3.3.0.3}Verifica del comportamento}{30}{paragraph.3.3.0.3}%
+\contentsline {paragraph}{\numberline {3.3.0.4}Osservazione pratica}{30}{paragraph.3.3.0.4}%
+\contentsline {subsection}{\numberline {3.4}Sicurezza delle VLAN e vulnerabilità di livello 2}{31}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Minacce principali}{31}{subsubsection.3.4.1}%
+\contentsline {paragraph}{\numberline {3.4.1.1}1) MAC Flooding (CAM Overflow)}{31}{paragraph.3.4.1.1}%
+\contentsline {paragraph}{\numberline {3.4.1.2}2) ARP Spoofing / Poisoning}{31}{paragraph.3.4.1.2}%
+\contentsline {paragraph}{\numberline {3.4.1.3}3) VLAN Hopping}{32}{paragraph.3.4.1.3}%
+\contentsline {paragraph}{\numberline {3.4.1.4}4) Attacchi ai protocolli di controllo}{32}{paragraph.3.4.1.4}%
+\contentsline {subparagraph}{\numberline {3.4.1.4.1}Spanning Tree Attack (BPDU spoofing)}{33}{subparagraph.3.4.1.4.1}%
+\contentsline {subparagraph}{\numberline {3.4.1.4.2}VTP Attack (VLAN Trunking Protocol)}{33}{subparagraph.3.4.1.4.2}%
+\contentsline {subparagraph}{\numberline {3.4.1.4.3}Cisco Discovery Protocol Attack (information leakage)}{33}{subparagraph.3.4.1.4.3}%
+\contentsline {subsection}{\numberline {3.5}Laboratorio 4: VLAN Hopping e Double Tagging}{34}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Scenario}{34}{subsubsection.3.5.1}%
+\contentsline {subsubsection}{\numberline {3.5.2}Topologia del laboratorio}{34}{subsubsection.3.5.2}%
+\contentsline {subsubsection}{\numberline {3.5.3}Prerequisiti perché l’attacco riesca}{35}{subsubsection.3.5.3}%
+\contentsline {subsubsection}{\numberline {3.5.4}Funzionamento dell’attacco (passo–passo)}{35}{subsubsection.3.5.4}%
+\contentsline {subsubsection}{\numberline {3.5.5}Esecuzione pratica (Linux)}{35}{subsubsection.3.5.5}%
+\contentsline {paragraph}{\numberline {3.5.5.1}Cosa osservare con lo sniffer}{36}{paragraph.3.5.5.1}%
+\contentsline {paragraph}{\numberline {3.5.5.2}Limitazioni pratiche}{36}{paragraph.3.5.5.2}%
+\contentsline {paragraph}{\numberline {3.5.5.3}Mitigazioni}{36}{paragraph.3.5.5.3}%
+\contentsline {section}{\numberline {4}NET\_04 — 802.1x}{37}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Quadro generale e obiettivo}{37}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Attori dell’architettura (vista di alto livello)}{37}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}EAP ed EAPoL: fondamenti}{37}{subsection.4.3}%
+\contentsline {paragraph}{\numberline {4.3.0.1}EAP (Extensible Authentication Protocol).}{37}{paragraph.4.3.0.1}%
+\contentsline {subsection}{\numberline {4.4}EAP termination vs EAP relay (EAPoR)}{38}{subsection.4.4}%
+\contentsline {paragraph}{\numberline {4.4.0.1} EAP termination mode (terminazione locale).}{38}{paragraph.4.4.0.1}%
+\contentsline {paragraph}{\numberline {4.4.0.2} EAP relay mode (EAP over RADIUS, EAPoR).}{38}{paragraph.4.4.0.2}%
+\contentsline {subsection}{\numberline {4.5}Processi di autenticazione: dai diagrammi alle implicazioni operative}{39}{subsection.4.5}%
+\contentsline {paragraph}{\numberline {4.5.0.1}Message exchange (visione di alto livello).}{39}{paragraph.4.5.0.1}%
+\contentsline {paragraph}{\numberline {4.5.0.2}Relay Mode (EAP-MD5) — sequenza dettagliata.}{40}{paragraph.4.5.0.2}%
+\contentsline {paragraph}{\numberline {4.5.0.3}EAP-TLS: esempio più complesso.}{41}{paragraph.4.5.0.3}%
+\contentsline {subsection}{\numberline {4.6}Operazioni aggiuntive: ri-autenticazione, logout, timer}{41}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Autorizzazione post-autenticazione: VLAN, ACL, UCL}{41}{subsection.4.7}%
+\contentsline {paragraph}{\numberline {4.7.0.1}VLAN dinamiche.}{41}{paragraph.4.7.0.1}%
+\contentsline {paragraph}{\numberline {4.7.0.2}ACL per-utente.}{41}{paragraph.4.7.0.2}%
+\contentsline {paragraph}{\numberline {4.7.0.3}UCL (User Control List).}{41}{paragraph.4.7.0.3}%
+\contentsline {subsection}{\numberline {4.8}Vulnerabilità storiche e motivazione per MACsec}{42}{subsection.4.8}%
+\contentsline {subsection}{\numberline {4.9}Lab 5 — 802.1X Port-Based Authentication \& VLAN assignment (ri-lettura guidata)}{43}{subsection.4.9}%
+\contentsline {paragraph}{\numberline {4.9.0.1}Obiettivo e componenti.}{43}{paragraph.4.9.0.1}%
+\contentsline {paragraph}{\numberline {4.9.0.2}Switch (Authenticator).}{43}{paragraph.4.9.0.2}%
+\contentsline {paragraph}{\numberline {4.9.0.3}Server RADIUS (FreeRADIUS).}{43}{paragraph.4.9.0.3}%
+\contentsline {paragraph}{\numberline {4.9.0.4}Supplicant (client).}{43}{paragraph.4.9.0.4}%
+\contentsline {paragraph}{\numberline {4.9.0.5}Enforcement dinamico L2 (script).}{43}{paragraph.4.9.0.5}%
+\contentsline {paragraph}{\numberline {4.9.0.6}Task operativi (sintesi).}{43}{paragraph.4.9.0.6}%
+\contentsline {subsection}{\numberline {4.10}802.1X-2010: MACsec Key Agreement (MKA)}{43}{subsection.4.10}%
+\contentsline {paragraph}{\numberline {4.10.0.1}Gerarchia delle chiavi.}{43}{paragraph.4.10.0.1}%
+\contentsline {paragraph}{\numberline {4.10.0.2}Static vs Dynamic CAK.}{43}{paragraph.4.10.0.2}%
+\contentsline {paragraph}{\numberline {4.10.0.3}Protocollo MKA “a colpo d’occhio”.}{43}{paragraph.4.10.0.3}%
+\contentsline {paragraph}{\numberline {4.10.0.4}Mini-lab MACsec (richiamo dalle slide).}{44}{paragraph.4.10.0.4}%
+\contentsline {subsection}{\numberline {4.11}Recap sicurezza Ethernet e contromisure (chiusura)}{44}{subsection.4.11}%

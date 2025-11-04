@@ -474,17 +474,55 @@ Tra i principali:
 \subsection{Laboratorio 4: VLAN Hopping e Double Tagging}
 
 \subsubsection{Scenario}
-L’obiettivo del laboratorio è simulare un attacco di \textbf{Double Tagging}, in cui un host appartenente alla VLAN nativa tenta di raggiungere host di un’altra VLAN senza passare per il router.
+L’obiettivo è dimostrare un attacco di \textbf{double tagging 802.1Q}: un host nella \textbf{VLAN nativa (VLAN~1)} tenta di inviare traffico a una vittima in \textbf{VLAN~20} \emph{senza} routing inter-VLAN, sfruttando la rimozione del tag della VLAN nativa sul primo switch.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=.8\linewidth]{immagini/NET_03/double_tagging.png}
-  \caption{Attacco Double Tagging su trunk VLAN nativa}
+  \caption{Attacco Double Tagging su trunk con VLAN nativa impostata a 1.}
   \label{fig:double_tagging}
 \end{figure}
 
-\subsubsection{Configurazione di attacco}
-\begin{lstlisting}[language=bash,caption={Esempio pratico di doppio tagging}]
+\subsubsection{Topologia del laboratorio}
+La topologia è in \autoref{fig:lab4_topology}: attaccante in \textbf{VLAN 1 (nativa)} connesso a una porta che insiste sul \emph{trunk}; vittima in \textbf{VLAN 20} su uno switch a valle; nessun router tra le VLAN.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.75\linewidth]{immagini/NET_03/lab4_topology.png}
+  \caption{Lab 4 — Topologia: attaccante su VLAN~1 (nativa) verso trunk; vittima in VLAN~20; \emph{no} inter-VLAN routing.}
+  \label{fig:lab4_topology}
+\end{figure}
+
+\noindent\textit{Nota operativa.} Le porte \texttt{eth3} dei due switch formano il \emph{trunk} con \textbf{VLAN nativa = 1}. L’attaccante è su una porta \emph{access} in VLAN~1; gli host \texttt{client-3} (VLAN~10) e \texttt{client-4} (VLAN~20) sono su porte \emph{access} degli switch opposti.
+
+\subsubsection{Prerequisiti perché l’attacco riesca}
+\begin{itemize}
+  \item esiste un \textbf{link trunk} tra due switch;
+  \item \textbf{stessa VLAN nativa} configurata su entrambe le estremità del trunk (qui: VLAN~1);
+  \item l’attaccante è connesso a \textbf{VLAN~1} (nativa) e può inviare frame con \emph{doppio tag};
+  \item la vittima appartiene a una \textbf{VLAN diversa} (qui: VLAN~20).
+\end{itemize}
+
+\subsubsection{Funzionamento dell’attacco (passo–passo)}
+L’attaccante costruisce un frame con \textbf{due tag 802.1Q annidati}:
+\[
+\underbrace{\texttt{Tag esterno} = \text{VLAN nativa (1)}}_{\text{verrà rimosso dal primo switch}} 
+\quad\big|\quad 
+\underbrace{\texttt{Tag interno} = \text{VLAN bersaglio (20)}}_{\text{rimarrà visibile al secondo switch}}.
+\]
+
+\begin{enumerate}
+  \item \textbf{Invio dal nodo malevolo.} Il frame parte dall’attaccante con due tag: \texttt{VLAN 1} (esterno) e \texttt{VLAN 20} (interno).
+  \item \textbf{Primo switch (ingresso trunk).} Per definizione, i frame \emph{taggati con la VLAN nativa} sul trunk vengono trattati come \emph{untagged}: lo switch \textbf{rimuove il tag esterno} (VLAN~1) e inoltra il frame sul trunk \emph{senza} quel tag.
+  \item \textbf{Attraversamento del trunk.} Il frame prosegue e, non avendo più il tag esterno, \textbf{rimane solo il tag interno} (VLAN~20) nel payload.
+  \item \textbf{Secondo switch (uscita trunk).} Vede un frame \emph{ancora taggato} con \textbf{VLAN~20} (il tag interno) e lo inoltra correttamente all’\emph{access port} della VLAN~20.
+  \item \textbf{Consegna alla vittima.} L’host in VLAN~20 riceve il frame come se provenisse da un nodo legittimo della propria VLAN.
+\end{enumerate}
+
+\noindent\textbf{Unidirezionalità.} La risposta della vittima \emph{non} segue lo stesso percorso: l’host in VLAN~20 non inserisce doppio tag e il frame di risposta non potrà rientrare verso l’attaccante in VLAN~1 senza routing. Per questo l’attacco è tipicamente \textbf{mono\-direzionale} (utile per inviare pacchetti/sondare servizi, meno per instaurare dialoghi completi).
+
+\subsubsection{Esecuzione pratica (Linux)}
+\begin{lstlisting}[language=bash,caption={Costruzione di un frame con doppio tag via sub-interfacce annidate}]
 ip link add link eth0 name eth0.1 type vlan id 1
 ip link set eth0.1 up
 ip link add link eth0.1 name eth0.1.20 type vlan id 20
@@ -494,66 +532,30 @@ arp -s 10.0.20.102 <MAC-vittima> -i eth0.1.20
 ping 10.0.20.102
 \end{lstlisting}
 
-Questo attacco è tipicamente \textbf{unidirezionale}: l’attaccante può inviare pacchetti verso la VLAN vittima, ma non ricevere risposte.
+\noindent In questo modo lo \texttt{stack} inserisce \textbf{due tag 802.1Q} (outer=1, inner=20). Il \texttt{ping} raggiunge la vittima, ma la risposta generalmente non torna all’attaccante (vedi unidirezionalità).
+
+\paragraph{Cosa osservare con lo sniffer}
+\begin{itemize}
+  \item sul \textbf{primo switch lato trunk}: si vedono frame che escono \emph{senza} tag nativo e \emph{con} il tag interno (20) ancora presente;
+  \item sul \textbf{secondo switch}: si vedono frame \textbf{con VLAN~20} che vengono consegnati alla porta \emph{access} della vittima;
+  \item sull’host attaccante: assenza di risposte ICMP (o ARP) dalla vittima per la natura monodirezionale.
+\end{itemize}
+
+\paragraph{Limitazioni pratiche}
+\begin{itemize}
+  \item se la \textbf{VLAN nativa non è usata} (o è diversa e dedicata), il meccanismo di rimozione del primo tag non produce l’effetto desiderato;
+  \item molti switch moderni applicano \textbf{filtri} su frame anomali (ad es.\ doppio tag con \emph{outer} uguale alla nativa).
+\end{itemize}
 
 \paragraph{Mitigazioni}
 \begin{itemize}
-  \item disabilitare l’auto-trunking (DTP) sulle porte utente;
-  \item non usare VLAN~1 come nativa;
-  \item assegnare VLAN nativa diversa e dedicata solo ai trunk;
-  \item monitorare traffico anomalo su frame doppiamente taggati.
+  \item \textbf{Disabilitare l’auto-trunking (DTP)} e configurare \emph{manual\-mente} le porte utente come \texttt{access};
+  \item \textbf{Non usare VLAN~1 come nativa}; scegliere una \textbf{VLAN nativa dedicata} e non operativa per il traffico utente;
+  \item \textbf{Consentire sul trunk solo le VLAN necessarie} (\emph{allowed VLAN list});
+  \item abilitare controlli di \textbf{storm/unknown-unicast} e ispezioni su frame con \emph{double tag} dove supportato;
+  \item monitoraggio con IDS/port mirroring su link trunk per \textbf{pattern di doppio tagging}.
 \end{itemize}
-
-
-\subsection{Autenticazione e controllo d’accesso: IEEE 802.1X}
-
-\subsubsection{Architettura e funzionamento}
-IEEE~802.1X definisce un meccanismo di autenticazione basato su porta.  
-Il modello coinvolge tre componenti:
-\begin{itemize}
-  \item \textbf{Supplicant:} l’host che richiede accesso alla rete;
-  \item \textbf{Authenticator:} lo switch o access point che funge da intermediario;
-  \item \textbf{Authentication Server:} tipicamente un server RADIUS che verifica le credenziali.
-\end{itemize}
-
-Il protocollo utilizza EAPOL (EAP over LAN) per trasportare le credenziali di autenticazione a livello 2, prima dell’assegnazione IP.  
-Una volta autenticato, l’utente può essere automaticamente assegnato a una VLAN o a specifiche ACL in base all’identità verificata.
-
-\paragraph{Vantaggi}
-\begin{itemize}
-  \item garantisce accesso controllato alle VLAN;
-  \item permette la \textbf{VLAN dinamica per utente};
-  \item si integra con firewall e sistemi NAC per gestione centralizzata.
-\end{itemize}
-
-
-\subsection{Firewall e sicurezza perimetrale}
-
-\subsubsection{Ruolo del firewall}
-I firewall rappresentano il principale punto di controllo tra VLAN e verso Internet.  
-Esistono due principali categorie:
-\begin{itemize}
-  \item \textbf{Packet filtering:} filtra i pacchetti in base a indirizzi, porte e protocolli.
-  \item \textbf{Stateful inspection:} tiene traccia dello stato delle connessioni (es. TCP SYN/ACK) consentendo solo traffico di risposta legittimo.
-\end{itemize}
-
-\paragraph{Implementazione in Linux}
-Il framework \textbf{Netfilter} del kernel Linux implementa le funzioni di firewalling.  
-Il comando \texttt{iptables} consente di creare regole di filtraggio e NAT per gestire le comunicazioni tra VLAN e verso l’esterno.
-
-\begin{lstlisting}[language=bash,caption={Esempio di filtraggio stateful tra VLAN}]
-# Permetti traffico dalla VLAN 10 alla VLAN 20
-iptables -A FORWARD -i eth0.10 -o eth0.20 -m state --state ESTABLISHED,RELATED -j ACCEPT
-iptables -A FORWARD -i eth0.20 -o eth0.10 -j ACCEPT
-\end{lstlisting}
 
 
 \subsection*{Conclusioni}
-Le VLAN rappresentano un meccanismo fondamentale di segmentazione logica, riducendo il dominio di broadcast e migliorando ordine e sicurezza.  
-Tuttavia, se configurate in modo errato, possono introdurre vulnerabilità specifiche (es. trunk non protetti o VLAN nativa mal gestita).  
-Una corretta progettazione prevede:
-\begin{itemize}
-  \item configurazione manuale e controllata delle porte trunk;
-  \item uso di VLAN dedicate per la gestione e di VLAN nativa distinta da quelle operative;
-  \item integrazione con 802.1X, ACL e firewall per garantire isolamento e autenticazione a ogni livello.
-\end{itemize}
+Il \textbf{double tagging} sfrutta la gestione della \textbf{VLAN nativa} sui trunk per far accettare a uno switch un \emph{tag interno} verso una VLAN diversa, \emph{senza} routing. È spesso \textbf{monodirezionale}. La difesa passa da: hardening dei trunk (nativa dedicata, allowed-VLAN), porte utente in \texttt{access} statico, autenticazione 802.1X e controllo a livello di firewall/IDS.

@@ -1,0 +1,273 @@
+\newpage
+\maketitle
+\section{NET\_04 — 802.1x}
+
+\subsection{Quadro generale e obiettivo}
+IEEE~802.1X è lo standard per il \emph{Port-based Network Access Control} (PNAC): l’accesso alla rete avviene 
+“per porta” a livello 2, così che solo i dispositivi autenticati possano oltrepassare l’autenticatore (switch/AP).
+Lavorando a L2, 802.1X evita processamento IP durante l’onboarding: i frame di autenticazione e i dati applicativi 
+passano su interfacce logiche differenti, riducendo costi e superficie d’attacco. 802.1X definisce l’incapsulamento
+di EAP su LAN (\textbf{EAPoL}). EAP, invece, è un \emph{framework} IETF indipendente dallo standard 802.1X. 
+
+\subsection{Attori dell’architettura (vista di alto livello)}
+Tre ruoli: \textbf{Supplicant} (host/utente che richiede accesso), \textbf{Authenticator} (switch/AP che filtra e media), 
+\textbf{Authentication Server} (AAA, tipicamente RADIUS). In stato iniziale la porta è \emph{unauthorized} e
+ lascia passare soltanto EAPoL; a successo la porta diventa \emph{authorized} e il traffico dati è ammesso secondo 
+ la policy decisa dal server. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{immagini/NET_04/architettura.png}
+    \caption{Architettura 802.1X e piani di traffico: (1) EAP incapsulato in EAPoL tra \emph{supplicant} 
+    e \emph{authenticator}; (2) EAP trasportato verso il server AAA tramite RADIUS/DIAMETER; 
+    (3) a autenticazione riuscita, sblocco del piano dati verso risorse LAN/Internet.}
+    \label{fig:architettura}
+\end{figure}
+
+\subsection{EAP ed EAPoL: fondamenti}
+
+\paragraph{EAP (Extensible Authentication Protocol).}
+EAP è un \emph{framework di autenticazione} standardizzato (RFC~3748, aggiornato da RFC~5247): definisce 
+il \emph{dialogo} tra peer (supplicant) e server e il formato dei messaggi, ma \textbf{non} 
+impone un meccanismo crittografico unico. In altre parole, EAP stabilisce come negoziare ed eseguire 
+un \emph{metodo EAP} (la vera ricetta di autenticazione), mentre il trasporto su rete è demandato 
+allo \emph{strato sottostante}.
+\begin{itemize}
+  \item \textbf{Che cos’è}: un livello di astrazione che fornisce messaggi \emph{Request/Response}
+   e \emph{Success/Failure}, più un canale per scambiarsi i parametri del metodo scelto; esistono 
+   una quarantina di metodi (tra cui \textbf{EAP-TLS}, \textbf{PEAP}, \textbf{EAP-TTLS}, \textbf{EAP-SIM/AKA}, 
+   \textbf{EAP-FAST}).
+  \item \textbf{Che cosa non è}: \emph{non è} un \emph{wire protocol} L2/L3; non cifra né autentica 
+  “da solo”; la sicurezza \textbf{dipende} dal metodo selezionato (es.: \emph{EAP-MD5} non offre mutua 
+  autenticazione né protezione contro attacker attivi; \emph{EAP-TLS} sì).
+  \item \textbf{Dove gira}: EAP può essere incapsulato su vari “lower layer” (PPP, 802.11, 802.3);
+   in 802.1X su Ethernet/Wi-Fi si usa \textbf{EAP over LAN (EAPoL)} per portare EAP tra supplicant 
+   e authenticator, che a sua volta inoltra verso AAA (tipicamente RADIUS).
+\end{itemize}
+\noindent
+\emph{Formato dei messaggi}: un pacchetto EAP contiene \texttt{Code} (\textit{Request, Response, Success, Failure}), \texttt{Identifier} (accoppia richiesta/risposta), \texttt{Length} e \texttt{Data} (il payload del metodo). Il server AAA decide l’esito del metodo e, se positivo, l’authenticator sblocca la porta e applica l’autorizzazione (VLAN/ACL).
+
+
+\subsection{EAP termination vs EAP relay (EAPoR)}
+Tra \emph{authenticator} (switch/AP) e \emph{server AAA} esistono due modelli operativi, con effetti
+concreti su sicurezza, scalabilità e troubleshooting.
+
+\paragraph{ EAP termination mode (terminazione locale).}
+Lo switch \emph{implementa} il metodo EAP e parla con il server usando i messaggi RADIUS tradizionali
+(\texttt{Access-Request/Accept/Reject}) senza trasportare il payload EAP end-to-end.
+\begin{itemize}
+  \item \textbf{Dove “vive” il metodo}: dentro lo switch (NAS). Il server AAA verifica credenziali/attributi,
+        ma non esegue direttamente il metodo EAP.
+  \item \textbf{Vantaggi}: latenza ridotta; minor banda verso AAA; utile per metodi semplici (es. EAP-MD5 in lab) o
+        quando si desidera \emph{offload} di logica sul bordo.
+  \item \textbf{Limiti}: meno flessibilità (aggiornare/estendere metodi richiede supporto sul NAS);
+        minore \emph{visibilità} diagnostica lato server; la derivazione delle chiavi (MSK) non arriva
+        automaticamente al server, quindi integrazioni con altre fasi (es. roaming/derivazioni) sono più
+        macchinose.
+  \item \textbf{Uso tipico}: ambienti didattici o reti con metodo basico e policy semplici.
+\end{itemize}
+
+\paragraph{ EAP relay mode (EAP over RADIUS, EAPoR).}
+Lo switch \emph{inoltra inalterati} i messaggi EAP del supplicant al server incapsulandoli negli attributi
+RADIUS \texttt{EAP-Message} + \texttt{Message-Authenticator}. Il metodo EAP viene eseguito \emph{end-to-end}
+tra supplicant e server.
+\begin{itemize}
+  \item \textbf{Dove “vive” il metodo}: sul \emph{server AAA}. Lo switch resta un ponte L2/AAA “consapevole”.
+  \item \textbf{Vantaggi}: massima compatibilità con metodi complessi (EAP-TLS, PEAP/TTLS, FAST, SIM/AKA);
+        la \textbf{MSK/EMSK} è generata sul server e può alimentare altri servizi (es. derivazioni chiave, MACsec
+        con dynamic CAK, Wi-Fi 802.11i); aggiornare/aggiungere metodi richiede solo aggiornare il server.
+  \item \textbf{Sicurezza}: l’attributo \texttt{Message-Authenticator} protegge l’integrità del trasporto EAP
+        su RADIUS; con link non fidati si usa RADIUS/TLS (RadSec) o IPsec per confidenzialità.
+  \item \textbf{Diagnostica}: il server vede \emph{tutto} lo scambio EAP (tracce/PCAP più utili); più semplice
+        fare \emph{troubleshooting} su handshake TLS, certificati, inner method, ecc.
+  \item \textbf{Uso tipico}: quasi tutti i deployment reali 802.1X enterprise.
+\end{itemize}
+
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{immagini/NET_04/eapor.png}
+  \caption{struttura pacchetto EAPoR}
+  \label{fig:eapor}
+\end{figure}
+
+
+
+\subsection{Processi di autenticazione: dai diagrammi alle implicazioni operative}
+
+\paragraph{Message exchange (visione di alto livello).}
+Lo scambio coinvolge tre attori:
+
+
+
+\begin{enumerate}
+  \item \textbf{Supplicant $\leftrightarrow$ Authenticator (EAPoL):} il controllo d’accesso viaggia su \emph{EAP over LAN}.
+        Tipicamente: \textit{EAP-Request/Identity} $\rightarrow$ \textit{EAP-Response/Identity} e poi i messaggi del metodo EAP.
+  \item \textbf{Authenticator $\leftrightarrow$ Server AAA (RADIUS/DIAMETER):} l’authenticator incapsula/termina EAP e dialoga con il server
+        usando messaggi \texttt{Access-Request/Challenge/Accept/Reject} (più accounting). In \emph{relay} l’EAP del client è inoltrato end-to-end
+        dentro l’attributo \texttt{EAP-Message}.
+  \item \textbf{Sblocco del piano dati:} a successo, l’authenticator cambia lo stato della porta in \emph{authorized} e applica la policy
+        (VLAN/ACL/UCL). In caso di fallimento o \textit{EAPoL-Logoff}, la porta torna \emph{unauthorized}.
+\end{enumerate}
+\noindent
+\emph{Implicazioni:} il troubleshooting si fa catturando EAPoL lato accesso (\texttt{tcpdump ether proto 0x888e}) e RADIUS lato control-plane;
+timer e ritrasmissioni sono gestiti dall’authenticator e impattano l’esperienza di login.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.65\linewidth]{immagini/NET_04/msg.png}
+  \caption{Message exchange ad alto livello}
+  \label{fig:msg}
+\end{figure}
+
+\paragraph{Relay Mode (EAP-MD5) — sequenza dettagliata.}
+Nel \emph{relay} l’authenticator non “capisce” il metodo: inoltra i messaggi EAP al server dentro RADIUS.
+\begin{enumerate}
+  \item \textbf{EAPoL-Start} (client $\rightarrow$ authenticator): il supplicant innesca la procedura.
+  \item \textbf{EAP-Request/Identity} (authenticator $\rightarrow$ client): richiesta dell’identità.
+  \item \textbf{EAP-Response/Identity} (client $\rightarrow$ authenticator) $\Rightarrow$
+        \textbf{Access-Request} con \texttt{EAP-Message} (authenticator $\rightarrow$ server).
+  \item \textbf{Access-Challenge} (server $\rightarrow$ authenticator): il server genera la \emph{MD5 challenge}.
+  \item \textbf{EAP-Request/MD5-Challenge} (authenticator $\rightarrow$ client): inoltro della challenge.
+  \item \textbf{EAP-Response/MD5-Challenge} (client $\rightarrow$ authenticator): il client calcola\\
+        \(\texttt{MD5(id \,+\, challenge \,+\, password)}\) e risponde $\Rightarrow$
+        \textbf{Access-Request} con \texttt{EAP-Message} (authenticator $\rightarrow$ server).
+  \item \textbf{Access-Accept/Reject} (server $\rightarrow$ authenticator): esito dell’autenticazione
+        (in \emph{Accept} possono esserci attributi di autorizzazione: VLAN, ACL, UCL).
+  \item \textbf{EAP-Success/Failure} (authenticator $\rightarrow$ client) e \textbf{cambio stato porta}:
+        \emph{authorized} a successo, \emph{unauthorized} a fallimento.
+  \item \textbf{Handshake/keepalive}: l’authenticator interroga periodicamente il client (es. \textit{EAP-Request/Identity})
+        per verificare che la sessione sia ancora viva; timeout consecutivi $\Rightarrow$ chiusura sessione.
+  \item \textbf{EAPoL-Logoff} (client $\rightarrow$ authenticator): logout proattivo; l’authenticator ferma l’accounting,
+        rimuove autorizzazioni e riporta la porta a \emph{unauthorized}.
+\end{enumerate}
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.65\linewidth]{immagini/NET_04/msg2.png}
+  \caption{RelayMode md5 challenge}
+  \label{fig:msg2}
+
+\end{figure}
+
+
+
+
+\paragraph{EAP-TLS: esempio più complesso.}
+Rispetto a EAP-MD5, qui il processo è molto più sicuro perché si basa su un
+\textbf{handshake TLS} completo tra il client (supplicant) e il server AAA.
+
+\noindent
+In pratica, dopo l’avvio (\emph{EAPoL-Start}), l’autenticazione procede così:
+\begin{itemize}
+  \item Il server invia una richiesta EAP di tipo \textbf{EAP-TLS}, che avvia la
+        sessione TLS (come un normale \emph{client\_hello/server\_hello} HTTPS).
+  \item Il client risponde con il proprio \textbf{certificato} e completa la fase di
+        \emph{key exchange} e \emph{cipher negotiation}.
+  \item Entrambe le parti verificano i certificati: così si ottiene una
+        \textbf{autenticazione reciproca} (\emph{mutual authentication}).
+  \item Alla fine, viene derivata una \textbf{Master Session Key (MSK)} sicura,
+        usata per proteggere il traffico o per altri protocolli (es. MACsec o WPA2-Enterprise).
+\end{itemize}
+
+\noindent
+Se qualcosa va storto (certificato non valido, handshake interrotto, errore TLS),
+il server invia \emph{EAP-Failure}.  
+In sintesi, EAP-TLS trasporta l’intero handshake TLS dentro EAP, fornendo un livello
+di sicurezza equivalente a una connessione HTTPS cifrata, ma applicato all’autenticazione di rete.
+
+\subsection{Operazioni aggiuntive: ri-autenticazione, logout, timer}
+Le slide enfatizzano aspetti gestionali spesso sottovalutati:
+\begin{itemize}
+  \item \textbf{Re-auth}: se cambiano parametri (o stato) dell’utente, si forza ri-autenticazione; in condizioni anomale è 
+  previsto un flusso per utenti in \emph{pre-connection} (ottimizza l’accesso “rapido”). 
+  \item \textbf{Logout e accounting}: se l’uscita non è rilevata (né dallo switch né da RADIUS), l’accounting resta “attivo”, 
+  creando incongruenze e possibili \emph{spoof} su IP/MAC “appesi”. L’access device deve \emph{immediatamente} rilevare logout, cancellare 
+  l’entry utente e fermare l’accounting.
+  \item \textbf{Timer}: 802.1X si appoggia a timer per ritrasmissioni e timeout; la loro taratura impatta esperienza utente e 
+  affidabilità della sessione.
+\end{itemize}
+Tutti questi punti sono rappresentati esplicitamente nelle slide “Re-Authentication”, “Log out and Timers”. 
+
+\subsection{Autorizzazione post-autenticazione: VLAN, ACL, UCL}
+\paragraph{VLAN dinamiche.} Utenti non autenticati e risorse “ristrette” sono messi in VLAN diverse; a successo, 
+il server assegna una \emph{authorized VLAN}, che ha precedenza sulla configurazione statica dell’interfaccia. 
+Attributi RADIUS standard obbligatori: \texttt{Tunnel-Type=VLAN(13)}, \texttt{Tunnel-Medium-Type=802(6)}, 
+\texttt{Tunnel-Private-Group-ID=<VLAN>}. La VLAN statica torna attiva quando l’utente va offline. 
+
+\paragraph{ACL per-utente.} Il server assegna un’ACL: i pacchetti \emph{permit} passano, i \emph{deny} sono scartati.
+ Due modalità: \emph{statica} (server passa \texttt{Filter-Id}, regole pre-caricate sul device) e \emph{dinamica} 
+ (regole spinte via attributi estesi, p.es. \emph{HW-Data-Filter}). 
+
+\paragraph{UCL (User Control List).} Invece di gestire utenti singolarmente, si raggruppano terminali con medesimi 
+requisiti; il server assegna \emph{nome UCL} con \texttt{Filter-Id} o \emph{ID UCL} con attributi estesi (p.es. \emph{HW-UCL-Group}).
+ La policy UCL deve essere configurata in anticipo sul device. 
+
+\subsection{Vulnerabilità storiche e motivazione per MACsec}
+Se un attaccante intercetta i frame su una porta autorizzata (es. stesso hub del legittimo), può \emph{spoofare} MAC/IP e 
+accedere al mezzo; inoltre gli \emph{EAPoL-Logoff} essendo in chiaro sono falsificabili per causare DoS.
+ Per mitigare questi limiti la revisione 802.1X-2010 introduce \textbf{MACsec Key Agreement (MKA)} e, con MACsec, 
+ confidenzialità/integrità/anti-replay dei frame L2. 
+
+
+
+%%%%%%%%%%laboratorio
+\newpage
+\maketitle
+{\LARGE \textbf{Laboratorio}} \\[0.5em]
+\subsection{Lab 5 — 802.1X Port-Based Authentication \& VLAN assignment (ri-lettura guidata)}
+\paragraph{Obiettivo e componenti.} Dimostrare 802.1X (EAP-MD5) con porta bloccata fino a successo e assegnazione 
+VLAN dinamica secondo policy RADIUS. Topologia: 2 supplicant; 1 server RADIUS (FreeRADIUS); 1 switch Linux come
+ authenticator + L3 FWD; 1 AP per l’accesso Internet. 
+
+\paragraph{Switch (Authenticator).} Creazione bridge L2 e inserimento \texttt{eth0}/\texttt{eth1}/\texttt{eth3}; 
+abilitazione inoltro EAPoL (\texttt{group\_fwd\_mask}); default \texttt{ebtables} \texttt{DROP} su \texttt{FORWARD}; 
+porta verso router \texttt{ACCEPT}; reachability verso RADIUS su \texttt{eth2}; \texttt{hostapd} in modalità \texttt{driver=wired},
+ \texttt{ieee8021x=1}, con definizione \texttt{nas\_identifier} e parametri \texttt{auth\_server\_*}. 
+ (Nota slide: parsing VLAN disabilitato in \texttt{hostapd} per semplicità; idea progetto: abilitarlo). 
+
+\paragraph{Server RADIUS (FreeRADIUS).} Configurazione \texttt{clients.conf} (NAS IP/secret) e \texttt{users} 
+(credenziali + attributi VLAN \texttt{Tunnel-Type/Tunnel-Medium-Type/Tunnel-Private-Group-ID}).
+ Avvio in \texttt{daemon} o \texttt{-X} per debug.
+
+\paragraph{Supplicant (client).} \texttt{wpa\_supplicant} wired con \texttt{key\_mgmt=IEEE8021X}, \texttt{eap=MD5}, 
+\texttt{identity/password} per ciascun host; indirizzi IP statici (compito: integrare DHCP). 
+
+\paragraph{Enforcement dinamico L2 (script).} Uno script Python richiamato da \texttt{hostapd\_cli -a} 
+ascolta eventi 802.1X e aggiorna \texttt{ebtables}: su \emph{EAP-SUCCESS}/\emph{AP-STA-CONNECTED}
+ aggiunge regole \texttt{ACCEPT} per MAC autorizzati; su \emph{DISCONNECTED}/\emph{EAP-FAILURE} rimuove le regole. 
+ Mantiene stato in JSON per robustezza. 
+
+\paragraph{Task operativi (sintesi).} 
+\emph{(1)} Switch: 802.1X su \texttt{eth0}/\texttt{eth1}, bridge con \texttt{eth3}, policy \texttt{DROP}, script eventi; 
+\emph{(2)} RADIUS: configurare \texttt{clients.conf}/\texttt{users}; \emph{(3)} Client: configurare \texttt{wpa\_supplicant}
+ e IP; \emph{(4)} AP: NAT/IP addressing. Le slide forniscono i comandi di riferimento (NAT \texttt{MASQUERADE}, bridge, 
+ \texttt{group\_fwd\_mask}, ecc.). 
+
+\subsection{802.1X-2010: MACsec Key Agreement (MKA)}
+\paragraph{Gerarchia delle chiavi.} \textbf{CAK} (Connectivity Association Key) è il segreto iniziale per l’integrità dei messaggi 
+MKA e la distribuzione della \textbf{SAK} (Secure Association Key). Da CAK si derivano \textbf{ICK} (integrità) e \textbf{KEK} 
+(cifratura della distribuzione SAK). La SAK protegge i canali sicuri unidirezionali MACsec (TX/RX). \textbf{Key Server} eletto 
+tramite semplice meccanismo di priorità distribuisce le SAK. 
+
+\paragraph{Static vs Dynamic CAK.} 
+\emph{Static CAK}: CAK precondivisa tra peer MKA (tipico switch–switch o switch–router). 
+\emph{Dynamic CAK}: CAK derivata dalla \emph{Master Session Key} (MSK) ottenuta via 802.1X/EAP; comune in host–switch. 
+In switch–switch con dynamic CAK, i nodi agiscono reciprocamente da authenticator \emph{e} supplicant. 
+
+\paragraph{Protocollo MKA “a colpo d’occhio”.} Ogni stazione invia “heartbeat” con: capacità MACsec, priorità Key Server 
+(di norma lo switch), info anti-replay (lista di stazioni “live/potentially live”). Dopo consenso sulla lista “live”, 
+si elegge il Key Server e si distribuiscono le SAK; se mancano i keepalive oltre timeout, l’associazione di sicurezza viene annullata. 
+
+
+\paragraph{Mini-lab MACsec (richiamo dalle slide).} Configurazioni \texttt{wpa\_supplicant} per \texttt{macsec\_linux} 
+con \texttt{macsec\_policy=1}, CAK/CKN, avvio su \texttt{macsec0}, indirizzamento IP e verifica; dimostrazione dei messaggi EAPOL-MKA: 
+annuncio Key Server, elezione, distribuzione SAK. 
+
+\subsection{Recap sicurezza Ethernet e contromisure (chiusura)}
+Le slide concludono collegando i tasselli: difetti “di default” a L2 (autenticazione assente, hijacking semplice, 
+spoof ARP/DHCP/STP) e contromisure: protezione fisica, \emph{port security}, L2 ACL, autenticazione 802.1X,
+segmentazione (VLAN e Private VLAN), cifratura/integrità/anti-replay con MACsec, e protocolli di sicurezza a
+strati superiori. 802.1X fornisce l’identità e l’ancora di policy (VLAN/ACL/UCL); MACsec chiude il cerchio proteggendo il piano dati. 
