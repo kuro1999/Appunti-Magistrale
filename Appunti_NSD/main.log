@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2025.10.29)  30 OCT 2025 16:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2025.10.29)  4 NOV 2025 14:29
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -23,40 +23,298 @@ File: size11.clo 2024/06/29 v1.4n Standard LaTeX file (size option)
 \abovecaptionskip=\skip49
 \belowcaptionskip=\skip50
 \bibindent=\dimen141
-) (/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
+) (/usr/share/texlive/texmf-dist/tex/latex/biblatex/biblatex.sty
+Package: biblatex 2024/03/21 v3.20 programmable bibliographies (PK/MW)
+ (/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO)
+ (/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+) (/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2024/12/12 v1.0g TeX engine tests
+) (/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+) (/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2025/02/11 v2.5l e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count270
+) (/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+) (/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+ (/usr/share/texlive/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+)) (/usr/share/texlive/texmf-dist/tex/latex/logreq/logreq.sty
+Package: logreq 2010/08/04 v1.0 xml request logger
+\lrq@indent=\count271
+ (/usr/share/texlive/texmf-dist/tex/latex/logreq/logreq.def
+File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
+)) (/usr/share/texlive/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
+) (/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip17
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+\c@tabx@nest=\count272
+\c@listtotal=\count273
+\c@listcount=\count274
+\c@liststart=\count275
+\c@liststop=\count276
+\c@citecount=\count277
+\c@citetotal=\count278
+\c@multicitecount=\count279
+\c@multicitetotal=\count280
+\c@instcount=\count281
+\c@maxnames=\count282
+\c@minnames=\count283
+\c@maxitems=\count284
+\c@minitems=\count285
+\c@citecounter=\count286
+\c@maxcitecounter=\count287
+\c@savedcitecounter=\count288
+\c@uniquelist=\count289
+\c@uniquename=\count290
+\c@refsection=\count291
+\c@refsegment=\count292
+\c@maxextratitle=\count293
+\c@maxextratitleyear=\count294
+\c@maxextraname=\count295
+\c@maxextradate=\count296
+\c@maxextraalpha=\count297
+\c@abbrvpenalty=\count298
+\c@highnamepenalty=\count299
+\c@lownamepenalty=\count300
+\c@maxparens=\count301
+\c@parenlevel=\count302
+\blx@tempcnta=\count303
+\blx@tempcntb=\count304
+\blx@tempcntc=\count305
+\c@blx@maxsection=\count306
+\blx@maxsegment@0=\count307
+\blx@notetype=\count308
+\blx@parenlevel@text=\count309
+\blx@parenlevel@foot=\count310
+\blx@sectionciteorder@0=\count311
+\blx@sectionciteorderinternal@0=\count312
+\blx@entrysetcounter=\count313
+\blx@biblioinstance=\count314
+\labelnumberwidth=\skip51
+\labelalphawidth=\skip52
+\biblabelsep=\skip53
+\bibitemsep=\skip54
+\bibnamesep=\skip55
+\bibinitsep=\skip56
+\bibparsep=\skip57
+\bibhang=\skip58
+\blx@bcfin=\read2
+\blx@bcfout=\write3
+\blx@langwohyphens=\language90
+\c@mincomprange=\count315
+\c@maxcomprange=\count316
+\c@mincompwidth=\count317
+Package biblatex Info: Trying to load biblatex default data model...
+Package biblatex Info: ... file 'blx-dm.def' found.
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/blx-dm.def
+File: blx-dm.def 2024/03/21 v3.20 biblatex datamodel (PK/MW)
+)
+Package biblatex Info: Trying to load biblatex style data model...
+Package biblatex Info: ... file 'numeric.dbx' not found.
+Package biblatex Info: Trying to load biblatex custom data model...
+Package biblatex Info: ... file 'biblatex-dm.cfg' not found.
+\c@afterword=\count318
+\c@savedafterword=\count319
+\c@annotator=\count320
+\c@savedannotator=\count321
+\c@author=\count322
+\c@savedauthor=\count323
+\c@bookauthor=\count324
+\c@savedbookauthor=\count325
+\c@commentator=\count326
+\c@savedcommentator=\count327
+\c@editor=\count328
+\c@savededitor=\count329
+\c@editora=\count330
+\c@savededitora=\count331
+\c@editorb=\count332
+\c@savededitorb=\count333
+\c@editorc=\count334
+\c@savededitorc=\count335
+\c@foreword=\count336
+\c@savedforeword=\count337
+\c@holder=\count338
+\c@savedholder=\count339
+\c@introduction=\count340
+\c@savedintroduction=\count341
+\c@namea=\count342
+\c@savednamea=\count343
+\c@nameb=\count344
+\c@savednameb=\count345
+\c@namec=\count346
+\c@savednamec=\count347
+\c@translator=\count348
+\c@savedtranslator=\count349
+\c@shortauthor=\count350
+\c@savedshortauthor=\count351
+\c@shorteditor=\count352
+\c@savedshorteditor=\count353
+\c@labelname=\count354
+\c@savedlabelname=\count355
+\c@institution=\count356
+\c@savedinstitution=\count357
+\c@lista=\count358
+\c@savedlista=\count359
+\c@listb=\count360
+\c@savedlistb=\count361
+\c@listc=\count362
+\c@savedlistc=\count363
+\c@listd=\count364
+\c@savedlistd=\count365
+\c@liste=\count366
+\c@savedliste=\count367
+\c@listf=\count368
+\c@savedlistf=\count369
+\c@location=\count370
+\c@savedlocation=\count371
+\c@organization=\count372
+\c@savedorganization=\count373
+\c@origlocation=\count374
+\c@savedoriglocation=\count375
+\c@origpublisher=\count376
+\c@savedorigpublisher=\count377
+\c@publisher=\count378
+\c@savedpublisher=\count379
+\c@language=\count380
+\c@savedlanguage=\count381
+\c@origlanguage=\count382
+\c@savedoriglanguage=\count383
+\c@pageref=\count384
+\c@savedpageref=\count385
+\shorthandwidth=\skip59
+\shortjournalwidth=\skip60
+\shortserieswidth=\skip61
+\shorttitlewidth=\skip62
+\shortauthorwidth=\skip63
+\shorteditorwidth=\skip64
+\locallabelnumberwidth=\skip65
+\locallabelalphawidth=\skip66
+\localshorthandwidth=\skip67
+\localshortjournalwidth=\skip68
+\localshortserieswidth=\skip69
+\localshorttitlewidth=\skip70
+\localshortauthorwidth=\skip71
+\localshorteditorwidth=\skip72
+Package biblatex Info: Trying to load compatibility code...
+Package biblatex Info: ... file 'blx-compat.def' found.
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/blx-compat.def
+File: blx-compat.def 2024/03/21 v3.20 biblatex compatibility (PK/MW)
+)
+Package biblatex Info: Trying to load BibTeX backend compatibility...
+Package biblatex Info: ... file 'blx-bibtex.def' found.
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/blx-bibtex.def
+File: blx-bibtex.def 2024/03/21 v3.20 biblatex compatibility (PK/MW)
+
+
+Package biblatex Warning: Using fall-back bibtex backend:
+(biblatex)                functionality may be reduced/unavailable.
+
+)
+Package biblatex Info: Trying to load generic definitions...
+Package biblatex Info: ... file 'biblatex.def' found.
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/biblatex.def
+File: biblatex.def 2024/03/21 v3.20 biblatex compatibility (PK/MW)
+\c@textcitecount=\count386
+\c@textcitetotal=\count387
+\c@textcitemaxnames=\count388
+\c@biburlbigbreakpenalty=\count389
+\c@biburlbreakpenalty=\count390
+\c@biburlnumpenalty=\count391
+\c@biburlucpenalty=\count392
+\c@biburllcpenalty=\count393
+\biburlbigskip=\muskip18
+\biburlnumskip=\muskip19
+\biburlucskip=\muskip20
+\biburllcskip=\muskip21
+\c@smartand=\count394
+)
+Package biblatex Info: Trying to load bibliography style 'numeric'...
+Package biblatex Info: ... file 'numeric.bbx' found.
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/bbx/numeric.bbx
+File: numeric.bbx 2024/03/21 v3.20 biblatex bibliography style (PK/MW)
+Package biblatex Info: Trying to load bibliography style 'standard'...
+Package biblatex Info: ... file 'standard.bbx' found.
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/bbx/standard.bbx
+File: standard.bbx 2024/03/21 v3.20 biblatex bibliography style (PK/MW)
+\c@bbx:relatedcount=\count395
+\c@bbx:relatedtotal=\count396
+))
+Package biblatex Info: Trying to load citation style 'numeric'...
+Package biblatex Info: ... file 'numeric.cbx' found.
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/cbx/numeric.cbx
+File: numeric.cbx 2024/03/21 v3.20 biblatex citation style (PK/MW)
+Package biblatex Info: Redefining '\cite'.
+Package biblatex Info: Redefining '\parencite'.
+Package biblatex Info: Redefining '\footcite'.
+Package biblatex Info: Redefining '\footcitetext'.
+Package biblatex Info: Redefining '\smartcite'.
+Package biblatex Info: Redefining '\supercite'.
+Package biblatex Info: Redefining '\textcite'.
+Package biblatex Info: Redefining '\textcites'.
+Package biblatex Info: Redefining '\cites'.
+Package biblatex Info: Redefining '\parencites'.
+Package biblatex Info: Redefining '\smartcites'.
+)
+Package biblatex Info: Trying to load configuration file...
+Package biblatex Info: ... file 'biblatex.cfg' found.
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/biblatex.cfg
+File: biblatex.cfg 
+)
+Package biblatex Info: Input encoding 'utf8' detected.
+Package biblatex Info: Document encoding is UTF8 ....
+ (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/expl3.sty
+Package: expl3 2025-01-18 L3 programming layer (loader) 
+ (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count397
+\l__pdf_internal_box=\box52
+))
+Package biblatex Info: ... and expl3
+(biblatex)             2025-01-18 L3 programming layer (loader) 
+(biblatex)             is new enough (at least 2020/04/06),
+(biblatex)             setting 'casechanger=expl3'.
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/blx-case-expl3.sty (/usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+Package: xparse 2024-08-16 L3 Experimental document command parser
+)
+Package: blx-case-expl3 2024/03/21 v3.20 expl3 case changing code for biblatex
+)) (/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
 Package: inputenc 2024/02/08 v1.3d Input encoding file
-\inpenc@prehook=\toks17
-\inpenc@posthook=\toks18
+\inpenc@prehook=\toks18
+\inpenc@posthook=\toks19
 ) (/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
 Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
 ) (/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
 Package: babel 2025/02/14 v25.4 The multilingual framework for pdfLaTeX, LuaLaTeX and XeLaTeX
-\babel@savecnt=\count270
+\babel@savecnt=\count398
 \U@D=\dimen142
-\l@unhyphenated=\language90
+\l@unhyphenated=\language91
  (/usr/share/texlive/texmf-dist/tex/generic/babel/txtbabel.def)
-\bbl@readstream=\read2
-\bbl@dirlevel=\count271
+\bbl@readstream=\read3
+\bbl@dirlevel=\count399
  (/usr/share/texlive/texmf-dist/tex/generic/babel-italian/italian.ldf
 Language: italian 2024/10/10 v.1.5.01 Italian support for the babel system
-\it@lettering=\count272
-\it@doublequoteactive=\count273
-\it@ISOcompliance=\count274
+\it@lettering=\count400
+\it@doublequoteactive=\count401
+\it@ISOcompliance=\count402
 )) (/usr/share/texlive/texmf-dist/tex/generic/babel/locale/it/babel-italian.tex
 Package babel Info: Importing font and identification data for italian
 (babel)             from babel-it.ini. Reported on input line 11.
-) (/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
-Package: etoolbox 2025/02/11 v2.5l e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count275
 ) (/usr/share/texlive/texmf-dist/tex/latex/microtype/microtype.sty
 Package: microtype 2025/02/11 v3.2a Micro-typographical refinements (RS)
- (/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
-Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
-\KV@toks@=\toks19
-)
 \MT@toks=\toks20
-\MT@tempbox=\box52
-\MT@count=\count276
+\MT@tempbox=\box53
+\MT@count=\count403
 LaTeX Info: Redefining \noprotrusionifhmode on input line 1087.
 LaTeX Info: Redefining \leftprotrusion on input line 1088.
 \MT@prot@toks=\toks21
@@ -65,12 +323,12 @@ LaTeX Info: Redefining \textls on input line 1449.
 \MT@outer@kern=\dimen143
 LaTeX Info: Redefining \microtypecontext on input line 2053.
 LaTeX Info: Redefining \textmicrotypecontext on input line 2070.
-\MT@listname@count=\count277
+\MT@listname@count=\count404
  (/usr/share/texlive/texmf-dist/tex/latex/microtype/microtype-pdftex.def
 File: microtype-pdftex.def 2025/02/11 v3.2a Definitions specific to pdftex (RS)
 LaTeX Info: Redefining \lsstyle on input line 944.
 LaTeX Info: Redefining \lslig on input line 944.
-\MT@outer@space=\skip51
+\MT@outer@space=\skip73
 )
 Package microtype Info: Loading configuration file microtype.cfg.
  (/usr/share/texlive/texmf-dist/tex/latex/microtype/microtype.cfg
@@ -79,7 +337,7 @@ File: microtype.cfg 2025/02/11 v3.2a microtype main configuration file (RS)
 LaTeX Info: Redefining \microtypesetup on input line 3065.
 ) (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2024/11/05 v2.17t AMS math features
-\@mathmargin=\skip52
+\@mathmargin=\skip74
 
 For additional information on amsmath, use the `?' option.
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
@@ -94,19 +352,19 @@ Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 ) (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
 )
-\inf@bad=\count278
+\inf@bad=\count405
 LaTeX Info: Redefining \frac on input line 233.
-\uproot@=\count279
-\leftroot@=\count280
+\uproot@=\count406
+\leftroot@=\count407
 LaTeX Info: Redefining \overline on input line 398.
 LaTeX Info: Redefining \colon on input line 409.
-\classnum@=\count281
-\DOTSCASE@=\count282
+\classnum@=\count408
+\DOTSCASE@=\count409
 LaTeX Info: Redefining \ldots on input line 495.
 LaTeX Info: Redefining \dots on input line 498.
 LaTeX Info: Redefining \cdots on input line 619.
-\Mathstrutbox@=\box53
-\strutbox@=\box54
+\Mathstrutbox@=\box54
+\strutbox@=\box55
 LaTeX Info: Redefining \big on input line 721.
 LaTeX Info: Redefining \Big on input line 722.
 LaTeX Info: Redefining \bigg on input line 723.
@@ -114,20 +372,20 @@ LaTeX Info: Redefining \Bigg on input line 724.
 \big@size=\dimen146
 LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
-\macc@depth=\count283
+\macc@depth=\count410
 LaTeX Info: Redefining \bmod on input line 904.
 LaTeX Info: Redefining \pmod on input line 909.
 LaTeX Info: Redefining \smash on input line 939.
 LaTeX Info: Redefining \relbar on input line 969.
 LaTeX Info: Redefining \Relbar on input line 970.
-\c@MaxMatrixCols=\count284
-\dotsspace@=\muskip17
-\c@parentequation=\count285
-\dspbrk@lvl=\count286
+\c@MaxMatrixCols=\count411
+\dotsspace@=\muskip22
+\c@parentequation=\count412
+\dspbrk@lvl=\count413
 \tag@help=\toks23
-\row@=\count287
-\column@=\count288
-\maxfields@=\count289
+\row@=\count414
+\column@=\count415
+\maxfields@=\count416
 \andhelp@=\toks24
 \eqnshift@=\dimen147
 \alignsep@=\dimen148
@@ -136,8 +394,8 @@ LaTeX Info: Redefining \Relbar on input line 970.
 \totwidth@=\dimen151
 \lineht@=\dimen152
 \@envbody=\toks25
-\multlinegap=\skip53
-\multlinetaggap=\skip54
+\multlinegap=\skip75
+\multlinetaggap=\skip76
 \mathdisplay@stack=\toks26
 LaTeX Info: Redefining \[ on input line 2953.
 LaTeX Info: Redefining \] on input line 2954.
@@ -154,12 +412,10 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 Package: geometry 2020/01/02 v5.9 Page Geometry
  (/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
 Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
- (/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty
-Package: iftex 2024/12/12 v1.0g TeX engine tests
-))
-\Gm@cnth=\count290
-\Gm@cntv=\count291
-\c@Gm@tempcnt=\count292
+)
+\Gm@cnth=\count417
+\Gm@cntv=\count418
+\c@Gm@tempcnt=\count419
 \Gm@bindingoffset=\dimen153
 \Gm@wd@mp=\dimen154
 \Gm@odd@mp=\dimen155
@@ -171,23 +427,11 @@ Package: iftex 2024/12/12 v1.0g TeX engine tests
 \Gm@dimlist=\toks27
 ) (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
 Package: hyperref 2024-11-05 v7.01l Hypertext links for LaTeX
- (/usr/share/texlive/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
-Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
-) (/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+ (/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
 Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
 ) (/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty
 Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
- (/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
-Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
-) (/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
-Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO)
- (/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
-Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
-)
-Package pdftexcmds Info: \pdf@primitive is available.
-Package pdftexcmds Info: \pdf@ifprimitive is available.
-Package pdftexcmds Info: \pdfdraftmode found.
-)) (/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty
+) (/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty
 Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
 ) (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2023-11-26 v2.56 Cross-referencing by name of section
@@ -195,16 +439,14 @@ Package: nameref 2023-11-26 v2.56 Cross-referencing by name of section
 Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 ) (/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
- (/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
-Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
-))
-\c@section@level=\count293
+)
+\c@section@level=\count420
 ) (/usr/share/texlive/texmf-dist/tex/generic/stringenc/stringenc.sty
 Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
 )
 \@linkdim=\dimen161
-\Hy@linkcounter=\count294
-\Hy@pagecounter=\count295
+\Hy@linkcounter=\count421
+\Hy@pagecounter=\count422
  (/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2024-11-05 v7.01l Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
@@ -212,7 +454,7 @@ Now handling font encoding PD1 ...
 ) (/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count296
+\Hy@SavedSpaceFactor=\count423
  (/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def
 File: puenc.def 2024-11-05 v7.01l Hyperref: PDF Unicode definition (HO)
 Now handling font encoding PU ...
@@ -225,11 +467,7 @@ Package hyperref Info: Plain pages OFF on input line 4172.
 Package hyperref Info: Backreferencing OFF on input line 4177.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4424.
-\c@Hy@tempcnt=\count297
- (/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
-\Urlmuskip=\muskip18
-Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
-)
+\c@Hy@tempcnt=\count424
 LaTeX Info: Redefining \url on input line 4763.
 \XeTeXLinkMargin=\dimen162
  (/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
@@ -237,7 +475,7 @@ Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
  (/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO)
 ))
-\Fld@menulength=\count298
+\Fld@menulength=\count425
 \Field@Width=\dimen163
 \Fld@charsize=\dimen164
 Package hyperref Info: Hyper figures OFF on input line 6042.
@@ -251,9 +489,9 @@ Package hyperref Info: PDF/A mode OFF on input line 6072.
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count299
-\c@Item=\count300
-\c@Hfootnote=\count301
+\Hy@abspage=\count426
+\c@Item=\count427
+\c@Hfootnote=\count428
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
  (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
@@ -262,8 +500,8 @@ File: hpdftex.def 2024-11-05 v7.01l Hyperref driver for pdfTeX
 Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend package
 with kernel methods
 )
-\Fld@listcount=\count302
-\c@bookmark@seq@number=\count303
+\Fld@listcount=\count429
+\c@bookmark@seq@number=\count430
  (/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
 Package: rerunfilecheck 2022-07-10 v1.10 Rerun checks for auxiliary files (HO)
  (/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
@@ -271,7 +509,7 @@ Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 285.
 )
-\Hy@SectionHShift=\skip55
+\Hy@SectionHShift=\skip77
 ) (/usr/share/texlive/texmf-dist/tex/latex/parskip/parskip.sty
 Package: parskip 2021-03-14 v2.0h non-zero parskip adjustments
 ) (/usr/share/texmf/tex/latex/lm/lmodern.sty
@@ -309,25 +547,25 @@ LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 (Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 38.
 ) (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count304
-\lst@gtempboxa=\box55
+\lst@mode=\count431
+\lst@gtempboxa=\box56
 \lst@token=\toks28
-\lst@length=\count305
+\lst@length=\count432
 \lst@currlwidth=\dimen165
-\lst@column=\count306
-\lst@pos=\count307
+\lst@column=\count433
+\lst@pos=\count434
 \lst@lostspace=\dimen166
 \lst@width=\dimen167
-\lst@newlines=\count308
-\lst@lineno=\count309
+\lst@newlines=\count435
+\lst@lineno=\count436
 \lst@maxwidth=\dimen168
  (/usr/share/texlive/texmf-dist/tex/latex/listings/lstpatch.sty
 File: lstpatch.sty 2024/09/23 1.10c (Carsten Heinz)
 ) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2024/09/23 1.10c (Carsten Heinz)
-\c@lstnumber=\count310
-\lst@skipnumbers=\count311
-\lst@framebox=\box56
+\c@lstnumber=\count437
+\lst@skipnumbers=\count438
+\lst@framebox=\box57
 ) (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
 File: listings.cfg 2024/09/23 1.10c listings configuration
 ))
@@ -365,11 +603,11 @@ Package graphics Info: Driver file: pdftex.def on input line 106.
 \Gin@req@width=\dimen170
 ) (/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count312
+\c@float@type=\count439
 \float@exts=\toks29
-\float@box=\box57
+\float@box=\box58
 \@float@everytoks=\toks30
-\@floatcapt=\box58
+\@floatcapt=\box59
 ) (/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \heavyrulewidth=\dimen171
@@ -382,54 +620,54 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \cmidrulesep=\dimen178
 \cmidrulekern=\dimen179
 \defaultaddspace=\dimen180
-\@cmidla=\count313
-\@cmidlb=\count314
+\@cmidla=\count440
+\@cmidlb=\count441
 \@aboverulesep=\dimen181
 \@belowrulesep=\dimen182
-\@thisruleclass=\count315
-\@lastruleclass=\count316
+\@thisruleclass=\count442
+\@lastruleclass=\count443
 \@thisrulewidth=\dimen183
 ) (/usr/share/texlive/texmf-dist/tex/latex/tools/tabularx.sty
 Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
  (/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
 Package: array 2024/10/17 v2.6g Tabular extension package (FMi)
 \col@sep=\dimen184
-\ar@mcellbox=\box59
+\ar@mcellbox=\box60
 \extrarowheight=\dimen185
 \NC@list=\toks31
-\extratabsurround=\skip56
-\backup@length=\skip57
-\ar@cellbox=\box60
+\extratabsurround=\skip78
+\backup@length=\skip79
+\ar@cellbox=\box61
 )
 \TX@col@width=\dimen186
 \TX@old@table=\dimen187
 \TX@old@col=\dimen188
 \TX@target=\dimen189
 \TX@delta=\dimen190
-\TX@cols=\count317
+\TX@cols=\count444
 \TX@ftn=\toks32
 ) (/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty
 Package: longtable 2024-10-27 v4.22 Multi-page Table package (DPC)
-\LTleft=\skip58
-\LTright=\skip59
-\LTpre=\skip60
-\LTpost=\skip61
-\LTchunksize=\count318
+\LTleft=\skip80
+\LTright=\skip81
+\LTpre=\skip82
+\LTpost=\skip83
+\LTchunksize=\count445
 \LTcapwidth=\dimen191
-\LT@head=\box61
-\LT@firsthead=\box62
-\LT@foot=\box63
-\LT@lastfoot=\box64
-\LT@gbox=\box65
-\LT@cols=\count319
-\LT@rows=\count320
-\c@LT@tables=\count321
-\c@LT@chunks=\count322
+\LT@head=\box62
+\LT@firsthead=\box63
+\LT@foot=\box64
+\LT@lastfoot=\box65
+\LT@gbox=\box66
+\LT@cols=\count446
+\LT@rows=\count447
+\c@LT@tables=\count448
+\c@LT@chunks=\count449
 \LT@p@ftn=\toks33
 ) (/usr/share/texlive/texmf-dist/tex/latex/makecell/makecell.sty
 Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
 \rotheadsize=\dimen192
-\c@nlinenum=\count323
+\c@nlinenum=\count450
 \TeXr@lab=\toks34
 ) (/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2023/08/05 v3.6o Customizing captions (AR)
@@ -445,8 +683,8 @@ Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
 \caption@hangindent=\dimen256
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count324
-\c@continuedfloat=\count325
+\c@caption@flags=\count451
+\c@continuedfloat=\count452
 Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: listings package is loaded.
@@ -454,13 +692,18 @@ Package caption Info: longtable package is loaded.
  (/usr/share/texlive/texmf-dist/tex/latex/caption/ltcaption.sty
 Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 ))
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 42.
- (/usr/share/texmf/tex/latex/lm/t1lmr.fd
+
+Package biblatex Warning: Load 'inputenc' before biblatex.
+
+
+Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.
+(biblatex)                Loading 'csquotes' recommended.
+
+\@quotelevel=\count453
+\@quotereset=\count454
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 44.
+(/usr/share/texmf/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
-File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count326
-\l__pdf_internal_box=\box66
 ) (./main.aux (./sezioni/net01.aux) (./sezioni/net02.aux
 
 LaTeX Warning: Label `fig:lab1' multiply defined.
@@ -471,51 +714,73 @@ LaTeX Warning: Label `fig:lab1' multiply defined.
 
 LaTeX Warning: Label `fig:placeholder' multiply defined.
 
+
+LaTeX Warning: Label `fig:placeholder' multiply defined.
+
 ) (./sezioni/net03.aux
 
 LaTeX Warning: Label `fig:double_tagging' multiply defined.
 
-) (./sezioni/net04.aux))
+) (./sezioni/net04.aux) (./sezioni/net05.aux))
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Info: Redefining \it@ocap on input line 42.
-LaTeX Info: Redefining \it@ccap on input line 42.
-LaTeX Info: Redefining \microtypecontext on input line 42.
-Package microtype Info: Applying patch `item' on input line 42.
-Package microtype Info: Applying patch `toc' on input line 42.
-Package microtype Info: Applying patch `eqnum' on input line 42.
-Package microtype Info: Applying patch `footnote' on input line 42.
-Package microtype Info: Applying patch `verbatim' on input line 42.
-LaTeX Info: Redefining \microtypesetup on input line 42.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+Package biblatex Info: Trying to load language 'italian'...
+Package biblatex Info: ... file 'italian.lbx' found.
+ (/usr/share/texlive/texmf-dist/tex/latex/biblatex/lbx/italian.lbx
+File: italian.lbx 2024/03/21 v3.20 biblatex localization (PK/MW)
+)
+Package biblatex Info: Input encoding 'utf8' detected.
+Package biblatex Info: Automatic encoding selection.
+(biblatex)             Assuming data encoding 'utf8'.
+Package biblatex Info: Input encoding 'utf8' detected.
+Package biblatex Info: Data encoding 'utf8' specified.
+(biblatex)             No need to reencode data.
+\openout3 = `main-blx.bib'.
+
+Package biblatex Info: Trying to load bibliographic data...
+Package biblatex Info: ... file 'main.bbl' not found.
+
+No file main.bbl.
+Package biblatex Info: Reference section=0 on input line 44.
+Package biblatex Info: Reference segment=0 on input line 44.
+LaTeX Info: Redefining \it@ocap on input line 44.
+LaTeX Info: Redefining \it@ccap on input line 44.
+LaTeX Info: Redefining \microtypecontext on input line 44.
+Package microtype Info: Applying patch `item' on input line 44.
+Package microtype Info: Applying patch `toc' on input line 44.
+Package microtype Info: Applying patch `eqnum' on input line 44.
+Package microtype Info: Applying patch `footnote' on input line 44.
+Package microtype Info: Applying patch `verbatim' on input line 44.
+LaTeX Info: Redefining \microtypesetup on input line 44.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 42.
+LaTeX Info: Redefining \showhyphens on input line 44.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
- (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman (RS)
 )
 *geometry* driver: auto-detecting
@@ -552,24 +817,24 @@ File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman (
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring OFF on input line 42.
+Package hyperref Info: Link coloring OFF on input line 44.
 (./main.out) (./main.out)
-\@outlinefile=\write3
-\openout3 = `main.out'.
+\@outlinefile=\write4
+\openout4 = `main.out'.
 
-\c@lstlisting=\count327
+\c@lstlisting=\count455
  (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count328
+\scratchcounter=\count456
 \scratchdimen=\dimen257
 \scratchbox=\box67
-\nofMPsegments=\count329
-\nofMParguments=\count330
+\nofMPsegments=\count457
+\nofMParguments=\count458
 \everyMPshowfont=\toks35
-\MPscratchCnt=\count331
+\MPscratchCnt=\count459
 \MPscratchDim=\dimen258
-\MPnumerator=\count332
-\makeMPintoPDFobject=\count333
+\MPnumerator=\count460
+\makeMPintoPDFobject=\count461
 \everyMPtoPDFconversion=\toks36
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -579,35 +844,35 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 44.
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 46.
  (/usr/share/texmf/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 44.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 46.
  (/usr/share/texmf/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 44.
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 46.
  (/usr/share/texmf/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 44.
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 46.
  (/usr/share/texmf/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 44.
+(Font)              <12> on input line 46.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 44.
+(Font)              <8> on input line 46.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 44.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 44.
+(Font)              <6> on input line 46.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 46.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 44.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 46.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
@@ -620,27 +885,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}]
-
-[2])
-\tf@toc=\write4
-\openout4 = `main.toc'.
-
-
-
-[3]
-\openout2 = `sezioni/net01.aux'.
-
- (./sezioni/net01.tex
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 12.
- (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
-File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-<immagini/slide1/stessa_rete.png, id=631, 585.18625pt x 214.8025pt>
-File: immagini/slide1/stessa_rete.png Graphic file (type png)
-<use immagini/slide1/stessa_rete.png>
-Package pdftex.def Info: immagini/slide1/stessa_rete.png  used on input line 18.
-(pdftex.def)             Requested size: 386.96027pt x 142.0454pt.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 26.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 57.
  (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
@@ -648,18 +893,40 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `lmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-<immagini/slide1/esempio_mask.png, id=633, 805.0075pt x 172.645pt>
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 57.
+ (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+
+[2{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}]
+
+[3])
+\tf@toc=\write5
+\openout5 = `main.toc'.
+
+
+
+[4]
+\openout2 = `sezioni/net01.aux'.
+
+ (./sezioni/net01.tex
+<immagini/slide1/stessa_rete.png, id=865, 585.18625pt x 214.8025pt>
+File: immagini/slide1/stessa_rete.png Graphic file (type png)
+<use immagini/slide1/stessa_rete.png>
+Package pdftex.def Info: immagini/slide1/stessa_rete.png  used on input line 18.
+(pdftex.def)             Requested size: 386.96027pt x 142.0454pt.
+<immagini/slide1/esempio_mask.png, id=867, 805.0075pt x 172.645pt>
 File: immagini/slide1/esempio_mask.png Graphic file (type png)
 <use immagini/slide1/esempio_mask.png>
 Package pdftex.def Info: immagini/slide1/esempio_mask.png  used on input line 30.
 (pdftex.def)             Requested size: 386.96027pt x 82.98718pt.
 
 
-[4
+[5
 
 
-{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc} <./immagini/slide1/stessa_rete.png>]
-<immagini/slide1/esempio_ip.png, id=643, 748.7975pt x 272.01625pt>
+{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc} <./immagini/slide1/stessa_rete.png>]
+<immagini/slide1/esempio_ip.png, id=875, 748.7975pt x 272.01625pt>
 File: immagini/slide1/esempio_ip.png Graphic file (type png)
 <use immagini/slide1/esempio_ip.png>
 Package pdftex.def Info: immagini/slide1/esempio_ip.png  used on input line 44.
@@ -673,30 +940,30 @@ Overfull \hbox (5.25912pt too wide) in paragraph at lines 62--64
 
 
 
-[5{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc} <./immagini/slide1/esempio_mask.png> <./immagini/slide1/esempio_ip.png>]
-<immagini/slide1/dns.png, id=661, 1072.005pt x 447.6725pt>
+[6{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc} <./immagini/slide1/esempio_mask.png> <./immagini/slide1/esempio_ip.png>]
+<immagini/slide1/dns.png, id=892, 1072.005pt x 447.6725pt>
 File: immagini/slide1/dns.png Graphic file (type png)
 <use immagini/slide1/dns.png>
 Package pdftex.def Info: immagini/slide1/dns.png  used on input line 116.
 (pdftex.def)             Requested size: 386.96027pt x 161.59232pt.
 
 
-[6]
-<immagini/slide1/dns2.png, id=673, 1014.79124pt x 421.575pt>
+[7]
+<immagini/slide1/dns2.png, id=904, 1014.79124pt x 421.575pt>
 File: immagini/slide1/dns2.png Graphic file (type png)
 <use immagini/slide1/dns2.png>
 Package pdftex.def Info: immagini/slide1/dns2.png  used on input line 137.
 (pdftex.def)             Requested size: 386.96027pt x 160.75337pt.
 
 
-[7 <./immagini/slide1/dns.png> <./immagini/slide1/dns2.png>]
+[8 <./immagini/slide1/dns.png> <./immagini/slide1/dns2.png>]
 
-[8]
+[9]
 Underfull \hbox (badness 10000) in paragraph at lines 167--168
 
  []
 
-<immagini/slide1/lab1.png, id=687, 984.67876pt x 417.56pt>
+<immagini/slide1/lab1.png, id=917, 984.67876pt x 417.56pt>
 File: immagini/slide1/lab1.png Graphic file (type png)
 <use immagini/slide1/lab1.png>
 Package pdftex.def Info: immagini/slide1/lab1.png  used on input line 180.
@@ -708,7 +975,7 @@ Overfull \hbox (41.25984pt too wide) in paragraph at lines 197--198
 
 
 
-[9 <./immagini/slide1/lab1.png>] (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
+[10 <./immagini/slide1/lab1.png>] (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2024/09/23 1.10c listings language file
 ) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2024/09/23 1.10c listings language file
@@ -716,7 +983,7 @@ File: lstlang1.sty 2024/09/23 1.10c listings language file
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 205.
 )
 
-[10]
+[11]
 \openout2 = `sezioni/net02.aux'.
 
  (./sezioni/net02.tex
@@ -735,52 +1002,127 @@ Package microtype Info: Loading generic protrusion settings for font family
 Package microtype Info: Character `texttrademark ' is missing
 (microtype)             in font `TS1/lmtt/m/n/10.95'.
 (microtype)             Ignoring protrusion settings for this character.
-<immagini/NET_02/adress_learning_1.png, id=717, 598.48593pt x 280.79906pt>
+<immagini/NET_02/adress_learning_1.png, id=947, 598.48593pt x 280.79906pt>
 File: immagini/NET_02/adress_learning_1.png Graphic file (type png)
 <use immagini/NET_02/adress_learning_1.png>
 Package pdftex.def Info: immagini/NET_02/adress_learning_1.png  used on input line 31.
 (pdftex.def)             Requested size: 386.96027pt x 181.55746pt.
 
 
-[11
+[12
 
 
 
 ]
-<immagini/NET_02/address_learning_2.png, id=723, 640.64343pt x 291.33844pt>
+<immagini/NET_02/address_learning_2.png, id=954, 640.64343pt x 291.33844pt>
 File: immagini/NET_02/address_learning_2.png Graphic file (type png)
 <use immagini/NET_02/address_learning_2.png>
 Package pdftex.def Info: immagini/NET_02/address_learning_2.png  used on input line 39.
 (pdftex.def)             Requested size: 386.96027pt x 175.97801pt.
 
 
-[12 <./immagini/NET_02/adress_learning_1.png> <./immagini/NET_02/address_learning_2.png>]
-<immagini//NET_02/DHCP.png, id=732, 599.99156pt x 398.99063pt>
+[13 <./immagini/NET_02/adress_learning_1.png> <./immagini/NET_02/address_learning_2.png>]
+<immagini//NET_02/DHCP.png, id=964, 599.99156pt x 398.99063pt>
 File: immagini//NET_02/DHCP.png Graphic file (type png)
 <use immagini//NET_02/DHCP.png>
 Package pdftex.def Info: immagini//NET_02/DHCP.png  used on input line 84.
 (pdftex.def)             Requested size: 227.62206pt x 151.3684pt.
 
 
-[13 <./immagini//NET_02/DHCP.png>]
-<immagini//NET_02/ARP.png, id=744, 569.12625pt x 312.41719pt>
+[14 <./immagini//NET_02/DHCP.png>]
+<immagini//NET_02/ARP.png, id=975, 569.12625pt x 312.41719pt>
 File: immagini//NET_02/ARP.png Graphic file (type png)
 <use immagini//NET_02/ARP.png>
 Package pdftex.def Info: immagini//NET_02/ARP.png  used on input line 98.
 (pdftex.def)             Requested size: 227.62206pt x 124.95035pt.
 
+Underfull \hbox (badness 10000) in paragraph at lines 118--119
 
-[14 <./immagini//NET_02/ARP.png>]
+ []
 
-[15]
+
+
+[15 <./immagini//NET_02/ARP.png>]
 
 [16]
+Underfull \hbox (badness 10000) in paragraph at lines 169--170
 
-[17]
+ []
 
-[18])
+
+Underfull \hbox (badness 10000) in paragraph at lines 187--188
+
+ []
+
+<immagini//NET_02/MITM.png, id=986, 514.92375pt x 255.20343pt>
+File: immagini//NET_02/MITM.png Graphic file (type png)
+<use immagini//NET_02/MITM.png>
+Package pdftex.def Info: immagini//NET_02/MITM.png  used on input line 199.
+(pdftex.def)             Requested size: 227.62206pt x 112.81166pt.
+
+
+[17 <./immagini//NET_02/MITM.png>]
+
+[18]
+LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 275.
+
 
 [19]
+Underfull \hbox (badness 10000) in paragraph at lines 286--287
+
+ []
+
+LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 289.
+
+Overfull \hbox (18.86992pt too wide) in paragraph at lines 289--289
+[]\T1/lmr/bx/n/12 (-20) Laboratorio 2A: ACL L2 con Li-nux Brid-ge ed \T1/lmtt/b/n/12 ebtables \T1/lmr/bx/n/12 (-20) (bin-ding MAC\TS1/lmr/bx/n/12 (-20) ^^Y\T1/lmr/bx/n/12 (-20) porta) 
+ []
+
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 308.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 324--325
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 335--336
+
+ []
+
+
+
+[20]
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 380.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 380--381
+
+ []
+
+
+
+[21]
+Underfull \hbox (badness 10000) in paragraph at lines 391--392
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 402--403
+
+ []
+
+
+
+[22])
+
+[23]
 \openout2 = `sezioni/net03.aux'.
 
  (./sezioni/net03.tex
@@ -788,129 +1130,127 @@ Package pdftex.def Info: immagini//NET_02/ARP.png  used on input line 98.
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 7.
 
-<immagini/NET_03/ip_subnet.png, id=774, 754.82pt x 472.76625pt>
+<immagini/NET_03/ip_subnet.png, id=1112, 754.82pt x 472.76625pt>
 File: immagini/NET_03/ip_subnet.png Graphic file (type png)
 <use immagini/NET_03/ip_subnet.png>
 Package pdftex.def Info: immagini/NET_03/ip_subnet.png  used on input line 24.
 (pdftex.def)             Requested size: 386.96027pt x 242.3628pt.
 
 
-[20
+[24
 
 
 
  <./immagini/NET_03/ip_subnet.png>]
-<immagini/NET_03/vlan.png, id=781, 707.64375pt x 322.20375pt>
+<immagini/NET_03/vlan.png, id=1119, 707.64375pt x 322.20375pt>
 File: immagini/NET_03/vlan.png Graphic file (type png)
 <use immagini/NET_03/vlan.png>
 Package pdftex.def Info: immagini/NET_03/vlan.png  used on input line 42.
 (pdftex.def)             Requested size: 386.96027pt x 176.18999pt.
-<immagini/NET_03/vlan2.png, id=783, 703.62875pt x 426.59375pt>
+<immagini/NET_03/vlan2.png, id=1121, 703.62875pt x 426.59375pt>
 File: immagini/NET_03/vlan2.png Graphic file (type png)
 <use immagini/NET_03/vlan2.png>
 Package pdftex.def Info: immagini/NET_03/vlan2.png  used on input line 66.
 (pdftex.def)             Requested size: 386.96027pt x 234.60124pt.
 
 
-[21 <./immagini/NET_03/vlan.png>]
-<immagini/NET_03/vlan3.png, id=791, 610.28pt x 453.695pt>
+[25 <./immagini/NET_03/vlan.png>]
+<immagini/NET_03/vlan3.png, id=1130, 610.28pt x 453.695pt>
 File: immagini/NET_03/vlan3.png Graphic file (type png)
 <use immagini/NET_03/vlan3.png>
 Package pdftex.def Info: immagini/NET_03/vlan3.png  used on input line 77.
 (pdftex.def)             Requested size: 295.90588pt x 219.98642pt.
-LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 83.
 
 
-[22 <./immagini/NET_03/vlan2.png> <./immagini/NET_03/vlan3.png>]
-<immagini/NET_03/access_link.png, id=804, 211.79124pt x 301.125pt>
+[26 <./immagini/NET_03/vlan2.png> <./immagini/NET_03/vlan3.png>]
+<immagini/NET_03/access_link.png, id=1143, 211.79124pt x 301.125pt>
 File: immagini/NET_03/access_link.png Graphic file (type png)
 <use immagini/NET_03/access_link.png>
 Package pdftex.def Info: immagini/NET_03/access_link.png  used on input line 142.
 (pdftex.def)             Requested size: 113.81102pt x 161.81476pt.
 
 
-[23]
-<immagini/NET_03/access_link_legacy.png, id=809, 755.82375pt x 392.46625pt>
+[27]
+<immagini/NET_03/access_link_legacy.png, id=1149, 755.82375pt x 392.46625pt>
 File: immagini/NET_03/access_link_legacy.png Graphic file (type png)
 <use immagini/NET_03/access_link_legacy.png>
 Package pdftex.def Info: immagini/NET_03/access_link_legacy.png  used on input line 160.
 (pdftex.def)             Requested size: 386.96027pt x 200.93364pt.
 
 
-[24 <./immagini/NET_03/access_link.png> <./immagini/NET_03/access_link_legacy.png>]
-<immagini/NET_03/trunk_link.png, id=818, 713.66624pt x 342.27875pt>
+[28 <./immagini/NET_03/access_link.png> <./immagini/NET_03/access_link_legacy.png>]
+<immagini/NET_03/trunk_link.png, id=1158, 713.66624pt x 342.27875pt>
 File: immagini/NET_03/trunk_link.png Graphic file (type png)
 <use immagini/NET_03/trunk_link.png>
 Package pdftex.def Info: immagini/NET_03/trunk_link.png  used on input line 187.
 (pdftex.def)             Requested size: 273.14923pt x 131.00214pt.
-<immagini/NET_03/hybrid_link.png, id=819, 550.055pt x 379.4175pt>
+<immagini/NET_03/hybrid_link.png, id=1159, 550.055pt x 379.4175pt>
 File: immagini/NET_03/hybrid_link.png Graphic file (type png)
 <use immagini/NET_03/hybrid_link.png>
 Package pdftex.def Info: immagini/NET_03/hybrid_link.png  used on input line 213.
 (pdftex.def)             Requested size: 341.43307pt x 235.5201pt.
 
 
-[25 <./immagini/NET_03/trunk_link.png>]
-<immagini/NET_03/multivlan_station.png, id=827, 727.71875pt x 470.75874pt>
+[29 <./immagini/NET_03/trunk_link.png>]
+<immagini/NET_03/multivlan_station.png, id=1166, 727.71875pt x 470.75874pt>
 File: immagini/NET_03/multivlan_station.png Graphic file (type png)
 <use immagini/NET_03/multivlan_station.png>
 Package pdftex.def Info: immagini/NET_03/multivlan_station.png  used on input line 240.
 (pdftex.def)             Requested size: 341.43307pt x 220.87593pt.
 
 
-[26 <./immagini/NET_03/hybrid_link.png>]
+[30 <./immagini/NET_03/hybrid_link.png>]
 
-[27 <./immagini/NET_03/multivlan_station.png>]
+[31 <./immagini/NET_03/multivlan_station.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 251--252
 
  []
 
-<immagini/NET_03/lab3_topology.png, id=840, 1085.05376pt x 650.43pt>
+<immagini/NET_03/lab3_topology.png, id=1180, 1085.05376pt x 650.43pt>
 File: immagini/NET_03/lab3_topology.png Graphic file (type png)
 <use immagini/NET_03/lab3_topology.png>
 Package pdftex.def Info: immagini/NET_03/lab3_topology.png  used on input line 271.
 (pdftex.def)             Requested size: 341.43307pt x 204.66818pt.
 
 
-[28 <./immagini/NET_03/lab3_topology.png>]
+[32 <./immagini/NET_03/lab3_topology.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 318.
 
-<immagini/NET_03/example.png, id=862, 1112.155pt x 662.475pt>
+<immagini/NET_03/example.png, id=1201, 1112.155pt x 662.475pt>
 File: immagini/NET_03/example.png Graphic file (type png)
 <use immagini/NET_03/example.png>
 Package pdftex.def Info: immagini/NET_03/example.png  used on input line 344.
 (pdftex.def)             Requested size: 386.96027pt x 230.50507pt.
 
 
-[29]
+[33]
 
-[30 <./immagini/NET_03/example.png>]
-<immagini/NET_03/mac_attack.png, id=897, 483.8075pt x 482.80376pt>
+[34 <./immagini/NET_03/example.png>]
+<immagini/NET_03/mac_attack.png, id=1235, 483.8075pt x 482.80376pt>
 File: immagini/NET_03/mac_attack.png Graphic file (type png)
 <use immagini/NET_03/mac_attack.png>
 Package pdftex.def Info: immagini/NET_03/mac_attack.png  used on input line 388.
 (pdftex.def)             Requested size: 341.43307pt x 340.73769pt.
 
 
-[31 <./immagini/NET_03/mac_attack.png>]
-<immagini/NET_03/basic_vlan_hopping.png, id=905, 507.8975pt x 310.15875pt>
+[35 <./immagini/NET_03/mac_attack.png>]
+<immagini/NET_03/basic_vlan_hopping.png, id=1242, 507.8975pt x 310.15875pt>
 File: immagini/NET_03/basic_vlan_hopping.png Graphic file (type png)
 <use immagini/NET_03/basic_vlan_hopping.png>
 Package pdftex.def Info: immagini/NET_03/basic_vlan_hopping.png  used on input line 414.
 (pdftex.def)             Requested size: 227.62206pt x 139.00223pt.
-<immagini/NET_03/double_tagging.png, id=906, 589.20125pt x 312.16624pt>
+<immagini/NET_03/double_tagging.png, id=1243, 589.20125pt x 312.16624pt>
 File: immagini/NET_03/double_tagging.png Graphic file (type png)
 <use immagini/NET_03/double_tagging.png>
 Package pdftex.def Info: immagini/NET_03/double_tagging.png  used on input line 423.
 (pdftex.def)             Requested size: 227.62206pt x 120.59639pt.
 
 
-[32 <./immagini/NET_03/basic_vlan_hopping.png> <./immagini/NET_03/double_tagging.png>]
+[36 <./immagini/NET_03/basic_vlan_hopping.png> <./immagini/NET_03/double_tagging.png>]
 
-[33]
+[37]
 Underfull \hbox (badness 10000) in paragraph at lines 473--474
 
  []
@@ -919,22 +1259,25 @@ File: immagini/NET_03/double_tagging.png Graphic file (type png)
 <use immagini/NET_03/double_tagging.png>
 Package pdftex.def Info: immagini/NET_03/double_tagging.png  used on input line 481.
 (pdftex.def)             Requested size: 364.19667pt x 192.95995pt.
-<immagini/NET_03/lab4_topology.png, id=923, 1135.24126pt x 615.29875pt>
+<immagini/NET_03/lab4_topology.png, id=1262, 1135.24126pt x 615.29875pt>
 File: immagini/NET_03/lab4_topology.png Graphic file (type png)
 <use immagini/NET_03/lab4_topology.png>
 Package pdftex.def Info: immagini/NET_03/lab4_topology.png  used on input line 491.
 (pdftex.def)             Requested size: 341.43307pt x 185.05109pt.
 
 
-[34 <./immagini/NET_03/lab4_topology.png>]
+[38 <./immagini/NET_03/lab4_topology.png>]
 
-[35])
+[39])
 
-[36]
+[40]
+
+LaTeX Warning: Empty bibliography on input line 62.
+
 \openout2 = `sezioni/net04.aux'.
 
- (./sezioni/net04.tex
-<immagini/NET_04/architettura.png, id=953, 930.47626pt x 582.175pt>
+(./sezioni/net04.tex
+<immagini/NET_04/architettura.png, id=1292, 930.47626pt x 582.175pt>
 File: immagini/NET_04/architettura.png Graphic file (type png)
 <use immagini/NET_04/architettura.png>
 Package pdftex.def Info: immagini/NET_04/architettura.png  used on input line 20.
@@ -946,7 +1289,7 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 
 
-[37
+[41
 
 
 
@@ -960,14 +1303,14 @@ Overfull \hbox (12.64726pt too wide) in paragraph at lines 56--58
 \T1/lmr/m/n/10.95 (-20) EAP e par-la con il ser-ver usan-do i mes-sag-gi RA-DIUS tra-di-zio-na-li (\T1/lmtt/m/n/10.95 Access-Request/Accept/Reject\T1/lmr/m/n/10.95 (-20) )
  []
 
-<immagini/NET_04/eapor.png, id=961, 1225.57875pt x 430.60875pt>
+<immagini/NET_04/eapor.png, id=1299, 1225.57875pt x 430.60875pt>
 File: immagini/NET_04/eapor.png Graphic file (type png)
 <use immagini/NET_04/eapor.png>
 Package pdftex.def Info: immagini/NET_04/eapor.png  used on input line 90.
 (pdftex.def)             Requested size: 364.19667pt x 127.96149pt.
 
 
-[38]
+[42]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 100.
@@ -977,63 +1320,110 @@ Overfull \hbox (33.38443pt too wide) in paragraph at lines 107--110
 \T1/lmr/m/n/10.95 (-20) ter-mi-na EAP e dia-lo-ga con il ser-ver usan-do mes-sag-gi \T1/lmtt/m/n/10.95 Access-Request/Challenge/Accept/Reject
  []
 
-<immagini/NET_04/msg.png, id=966, 597.23125pt x 501.875pt>
+<immagini/NET_04/msg.png, id=1304, 597.23125pt x 501.875pt>
 File: immagini/NET_04/msg.png Graphic file (type png)
 <use immagini/NET_04/msg.png>
 Package pdftex.def Info: immagini/NET_04/msg.png  used on input line 119.
 (pdftex.def)             Requested size: 295.90588pt x 248.66245pt.
 
 
-[39 <./immagini/NET_04/eapor.png> <./immagini/NET_04/msg.png>]
-<immagini/NET_04/msg2.png, id=979, 730.73pt x 801.99625pt>
+[43 <./immagini/NET_04/eapor.png> <./immagini/NET_04/msg.png>]
+<immagini/NET_04/msg2.png, id=1317, 730.73pt x 801.99625pt>
 File: immagini/NET_04/msg2.png Graphic file (type png)
 <use immagini/NET_04/msg2.png>
 Package pdftex.def Info: immagini/NET_04/msg2.png  used on input line 149.
 (pdftex.def)             Requested size: 295.90588pt x 324.75775pt.
 
 
-[40 <./immagini/NET_04/msg2.png>]
+[44 <./immagini/NET_04/msg2.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 195.
 
 
 
-[41]
+[45]
 
-[42]
-Underfull \hbox (badness 10000) in paragraph at lines 219--220
+[46]
+Underfull \hbox (badness 10000) in paragraph at lines 256--257
 
  []
 
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 221.
+(hyperref)                than one, level fixed on input line 260.
 
+<immagini/NET_04/topologia.png, id=1342, 984.67876pt x 696.6025pt>
+File: immagini/NET_04/topologia.png Graphic file (type png)
+<use immagini/NET_04/topologia.png>
+Package pdftex.def Info: immagini/NET_04/topologia.png  used on input line 281.
+(pdftex.def)             Requested size: 386.96027pt x 273.75722pt.
 
-Overfull \hbox (41.18533pt too wide) in paragraph at lines 231--234
-\T1/lmr/m/n/10.95 (-20) e \T1/lmtt/m/n/10.95 users \T1/lmr/m/n/10.95 (-20) (cre-den-zia-li + at-tri-bu-ti VLAN \T1/lmtt/m/n/10.95 Tunnel-Type/Tunnel-Medium-Type/Tunnel-Private-Group-ID\T1/lmr/m/n/10.95 (-20) ).
+Overfull \hbox (41.93944pt too wide) in paragraph at lines 294--296
+[]\T1/lmr/m/n/10.95 (-20) abilitazione del-l'i-nol-tro EA-PoL con: [][]\T1/lmtt/m/n/10.95 echo 8 > /sys/class/net/bridge/bridge/group_fwd_mask[]\T1/lmr/m/n/10.95 (-20) ; 
  []
 
 
-Overfull \hbox (2.44891pt too wide) in paragraph at lines 238--242
- \T1/lmr/bx/n/10.95 (-20) 4.9.0.5 En-for-ce-ment di-na-mi-co L2 (script).[][] \T1/lmr/m/n/10.95 (-20) Uno script Py-thon ri-chia-ma-to da \T1/lmtt/m/n/10.95 hostapd_cli
+
+[47 <./immagini/NET_04/topologia.png>]
+Overfull \hbox (19.08252pt too wide) in paragraph at lines 297--300
+[]\T1/lmr/m/n/10.95 (-20) configurazione \T1/lmtt/m/n/10.95 hostapd.conf \T1/lmr/m/n/10.95 (-20) con: \T1/lmtt/m/n/10.95 ieee8021x=1\T1/lmr/m/n/10.95 (-20) , \T1/lmtt/m/n/10.95 use_pae_group_addr=1\T1/lmr/m/n/10.95 (-20) , \T1/lmtt/m/n/10.95 auth_server_addr\T1/lmr/m/n/10.95 (-20) ,
  []
 
 
-Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 250.
+Overfull \hbox (3.4267pt too wide) in paragraph at lines 348--349
+[]\T1/lmr/m/n/10.95 (-20) rimuove la re-go-la quan-do l'u-ten-te si di-scon-net-te (\T1/lmtt/m/n/10.95 EAPoL-Logoff\T1/lmr/m/n/10.95 (-20) ) o fal-li-sce la ri-autenticazione. 
+ []
 
 
 
-[43])
+[48]
+Overfull \hbox (18.18065pt too wide) in paragraph at lines 357--358
+[]\T1/lmr/m/n/10.95 (-20) Il ser-ver RA-DIUS va-lu-ta le cre-den-zia-li e re-sti-tui-sce \T1/lmtt/m/n/10.95 Access-Challenge \T1/lmr/m/n/10.95 (-20) (MD5) o \T1/lmtt/m/n/10.95 Access-Accept\T1/lmr/m/n/10.95 (-20) . 
+ []
 
-[44]
 
-Package caption Warning: Unused \captionsetup[table] on input line 21.
+
+[49]
+<immagini/NET_04/mka.png, id=1365, 1129.21875pt x 649.42625pt>
+File: immagini/NET_04/mka.png Graphic file (type png)
+<use immagini/NET_04/mka.png>
+Package pdftex.def Info: immagini/NET_04/mka.png  used on input line 392.
+(pdftex.def)             Requested size: 341.43307pt x 196.36534pt.
+
+
+[50 <./immagini/NET_04/mka.png>]
+
+[51]
+
+[52]
+Underfull \hbox (badness 10000) in paragraph at lines 474--475
+
+ []
+
+<immagini/NET_04/mka_topology.png, id=1387, 1129.21875pt x 649.42625pt>
+File: immagini/NET_04/mka_topology.png Graphic file (type png)
+<use immagini/NET_04/mka_topology.png>
+Package pdftex.def Info: immagini/NET_04/mka_topology.png  used on input line 492.
+(pdftex.def)             Requested size: 386.96027pt x 222.54607pt.
+
+
+[53 <./immagini/NET_04/mka_topology.png>]
+Overfull \hbox (1.87363pt too wide) in paragraph at lines 555--556
+[]\T1/lmr/bx/n/10.95 (-20) Interfaccia \T1/lmtt/b/n/10.95 macsec0 \T1/lmr/bx/n/10.95 (-20) as-sen-te\T1/lmr/m/n/10.95 (-20) : ve-ri-fi-ca-re \T1/lmtt/m/n/10.95 -D macsec_linux\T1/lmr/m/n/10.95 (-20) , \T1/lmtt/m/n/10.95 ap_scan=0\T1/lmr/m/n/10.95 (-20) , \T1/lmtt/m/n/10.95 eapol_version=3\T1/lmr/m/n/10.95 (-20) . 
+ []
+
+)
+
+[54]
+\openout2 = `sezioni/net05.aux'.
+
+ (./sezioni/net05.tex)
+
+Package caption Warning: Unused \captionsetup[table] on input line 23.
 See the caption package documentation for explanation.
 
-(./main.aux (./sezioni/net01.aux) (./sezioni/net02.aux) (./sezioni/net03.aux) (./sezioni/net04.aux))
+(./main.aux (./sezioni/net01.aux) (./sezioni/net02.aux) (./sezioni/net03.aux) (./sezioni/net04.aux) (./sezioni/net05.aux))
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -1043,21 +1433,24 @@ L3 programming layer <2025-01-18>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: F5D56A35B456F087C08010B457F99F1D;29060.
+(rerunfilecheck)             Checksum: EB9816F5CF79859D8231E1F48966A137;38543.
+Package logreq Info: Writing requests to 'main.run.xml'.
+\openout1 = `main.run.xml'.
+
  ) 
 Here is how much of TeX's memory you used:
- 18907 strings out of 473197
- 301671 string characters out of 5718604
- 985159 words of memory out of 5000000
- 41288 multiletter control sequences out of 15000+600000
- 627234 words of font info for 221 fonts, out of 8000000 for 9000
+ 26431 strings out of 473197
+ 451895 string characters out of 5718604
+ 1477227 words of memory out of 5000000
+ 48574 multiletter control sequences out of 15000+600000
+ 636323 words of font info for 232 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,1051b,1220s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (44 pages, 4544310 bytes).
+ 66i,10n,81p,1933b,2104s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmbxi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
+Output written on main.pdf (54 pages, 5275685 bytes).
 PDF statistics:
- 1155 PDF objects out of 1200 (max. 8388607)
- 1008 compressed objects within 11 object streams
- 299 named destinations out of 1000 (max. 500000)
- 37978 words of extra memory for PDF output out of 42996 (max. 10000000)
+ 1582 PDF objects out of 1728 (max. 8388607)
+ 1409 compressed objects within 15 object streams
+ 460 named destinations out of 1000 (max. 500000)
+ 47062 words of extra memory for PDF output out of 51595 (max. 10000000)
 
