@@ -1,0 +1,191 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\@writefile{toc}{\contentsline {section}{\numberline {6}SYS\_02 — Hardware Primer}{60}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Moore’s Law e l’evoluzione del calcolo}{60}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Fine della crescita lineare e parallelismo}{60}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Pipeline e architettura superscalare}{60}{subsection.6.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {34}{\ignorespaces Architettura pipeline MIPS}}{60}{figure.caption.53}\protected@file@percent }
+\newlabel{fig:pipeline}{{34}{60}{Architettura pipeline MIPS}{figure.caption.53}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {35}{\ignorespaces Esecuzione parallela di più istruzioni sulla stessa CPU}}{60}{figure.caption.53}\protected@file@percent }
+\newlabel{fig:pipeline2}{{35}{60}{Esecuzione parallela di più istruzioni sulla stessa CPU}{figure.caption.53}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Branch Prediction: principi e strategie}{60}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.4.0.1}Perché serve una predizione}{61}{paragraph.6.4.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.4.0.2}Tipi di predizione}{61}{paragraph.6.4.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.4.0.3}Contatore a 2 bit saturante}{61}{paragraph.6.4.0.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {36}{\ignorespaces 2 bit saturating counter}}{61}{figure.caption.54}\protected@file@percent }
+\newlabel{fig:twobit}{{36}{61}{2 bit saturating counter}{figure.caption.54}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.4.0.4}Predittori correlati e multilivello}{61}{paragraph.6.4.0.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {37}{\ignorespaces Pattern History Table}}{62}{figure.caption.55}\protected@file@percent }
+\newlabel{fig:pht}{{37}{62}{Pattern History Table}{figure.caption.55}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.4.0.5}Ottimizzazioni hardware}{62}{paragraph.6.4.0.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.4.0.6}Importanza crescente della predizione}{62}{paragraph.6.4.0.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Simultaneous Multithreading (SMT)}{63}{subsection.6.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6}Pipeline interna nei processori Intel Xeon}{63}{subsection.6.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {38}{\ignorespaces Pipeline interna Out-of-Order nei processori Xeon: le µops attraversano gli stadi di rinomina, scheduling, esecuzione e \emph  {retirement} nel \textbf  {Reorder Buffer}, che garantisce il commit in ordine architetturale.}}{63}{figure.caption.56}\protected@file@percent }
+\newlabel{fig:xeon_ooo}{{38}{63}{Pipeline interna Out-of-Order nei processori Xeon: le µops attraversano gli stadi di rinomina, scheduling, esecuzione e \emph {retirement} nel \textbf {Reorder Buffer}, che garantisce il commit in ordine architetturale}{figure.caption.56}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {39}{\ignorespaces Flusso del \textbf  {front-end} nei processori Intel: le istruzioni x86 vengono prelevate dalla cache L2, decodificate in micro–operazioni (\emph  {µops}) e memorizzate nella \textbf  {Trace Cache}. In caso di \emph  {hit}, le µops vengono fornite direttamente alla pipeline senza ripetere il ciclo di fetch e decode.}}{64}{figure.caption.57}\protected@file@percent }
+\newlabel{fig:trace_cache_pipeline}{{39}{64}{Flusso del \textbf {front-end} nei processori Intel: le istruzioni x86 vengono prelevate dalla cache L2, decodificate in micro–operazioni (\emph {µops}) e memorizzate nella \textbf {Trace Cache}. In caso di \emph {hit}, le µops vengono fornite direttamente alla pipeline senza ripetere il ciclo di fetch e decode}{figure.caption.57}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.7}Gerarchia di memoria}{64}{subsection.6.7}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {40}{\ignorespaces Schema piramidale della gerarchia di memoria}}{64}{figure.caption.58}\protected@file@percent }
+\newlabel{fig:memory}{{40}{64}{Schema piramidale della gerarchia di memoria}{figure.caption.58}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.7.0.1}Inclusività e mappatura}{64}{paragraph.6.7.0.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {41}{\ignorespaces Direct mapped cache}}{65}{figure.caption.59}\protected@file@percent }
+\newlabel{fig:dm}{{41}{65}{Direct mapped cache}{figure.caption.59}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {42}{\ignorespaces Fully associative cache}}{66}{figure.caption.60}\protected@file@percent }
+\newlabel{fig:fac}{{42}{66}{Fully associative cache}{figure.caption.60}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {43}{\ignorespaces 4way set Associative cache}}{66}{figure.caption.61}\protected@file@percent }
+\newlabel{fig:dm}{{43}{66}{4way set Associative cache}{figure.caption.61}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.7.0.2}Sostituzione ed aggiornamento}{66}{paragraph.6.7.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.8}Cache coherence nei multicore}{67}{subsection.6.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.8.0.1}Protocolli di coerenza}{68}{paragraph.6.8.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.9}Protocolli MOESI e VI}{69}{subsection.6.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.10}Hardware Transactional Memory (HTM)}{69}{subsection.6.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.10.0.1}Principio di funzionamento}{69}{paragraph.6.10.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.10.0.2}Casi di abort}{69}{paragraph.6.10.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.11}DRAM e Refresh}{70}{subsection.6.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {6.11.0.1}Effetti del refresh}{70}{paragraph.6.11.0.1}\protected@file@percent }
+\@setckpt{sezioni/sys02}{
+\setcounter{page}{71}
+\setcounter{equation}{0}
+\setcounter{enumi}{2}
+\setcounter{enumii}{0}
+\setcounter{enumiii}{0}
+\setcounter{enumiv}{0}
+\setcounter{footnote}{0}
+\setcounter{mpfootnote}{0}
+\setcounter{part}{0}
+\setcounter{section}{6}
+\setcounter{subsection}{11}
+\setcounter{subsubsection}{0}
+\setcounter{paragraph}{1}
+\setcounter{subparagraph}{0}
+\setcounter{figure}{43}
+\setcounter{table}{0}
+\setcounter{tabx@nest}{0}
+\setcounter{listtotal}{0}
+\setcounter{listcount}{0}
+\setcounter{liststart}{0}
+\setcounter{liststop}{0}
+\setcounter{citecount}{0}
+\setcounter{citetotal}{0}
+\setcounter{multicitecount}{0}
+\setcounter{multicitetotal}{0}
+\setcounter{instcount}{0}
+\setcounter{maxnames}{3}
+\setcounter{minnames}{1}
+\setcounter{maxitems}{3}
+\setcounter{minitems}{1}
+\setcounter{citecounter}{0}
+\setcounter{maxcitecounter}{0}
+\setcounter{savedcitecounter}{0}
+\setcounter{uniquelist}{0}
+\setcounter{uniquename}{0}
+\setcounter{refsection}{0}
+\setcounter{refsegment}{0}
+\setcounter{maxextratitle}{0}
+\setcounter{maxextratitleyear}{0}
+\setcounter{maxextraname}{0}
+\setcounter{maxextradate}{0}
+\setcounter{maxextraalpha}{0}
+\setcounter{abbrvpenalty}{50}
+\setcounter{highnamepenalty}{50}
+\setcounter{lownamepenalty}{25}
+\setcounter{maxparens}{3}
+\setcounter{parenlevel}{0}
+\setcounter{blx@maxsection}{0}
+\setcounter{mincomprange}{10}
+\setcounter{maxcomprange}{100000}
+\setcounter{mincompwidth}{1}
+\setcounter{afterword}{0}
+\setcounter{savedafterword}{0}
+\setcounter{annotator}{0}
+\setcounter{savedannotator}{0}
+\setcounter{author}{0}
+\setcounter{savedauthor}{0}
+\setcounter{bookauthor}{0}
+\setcounter{savedbookauthor}{0}
+\setcounter{commentator}{0}
+\setcounter{savedcommentator}{0}
+\setcounter{editor}{0}
+\setcounter{savededitor}{0}
+\setcounter{editora}{0}
+\setcounter{savededitora}{0}
+\setcounter{editorb}{0}
+\setcounter{savededitorb}{0}
+\setcounter{editorc}{0}
+\setcounter{savededitorc}{0}
+\setcounter{foreword}{0}
+\setcounter{savedforeword}{0}
+\setcounter{holder}{0}
+\setcounter{savedholder}{0}
+\setcounter{introduction}{0}
+\setcounter{savedintroduction}{0}
+\setcounter{namea}{0}
+\setcounter{savednamea}{0}
+\setcounter{nameb}{0}
+\setcounter{savednameb}{0}
+\setcounter{namec}{0}
+\setcounter{savednamec}{0}
+\setcounter{translator}{0}
+\setcounter{savedtranslator}{0}
+\setcounter{shortauthor}{0}
+\setcounter{savedshortauthor}{0}
+\setcounter{shorteditor}{0}
+\setcounter{savedshorteditor}{0}
+\setcounter{labelname}{0}
+\setcounter{savedlabelname}{0}
+\setcounter{institution}{0}
+\setcounter{savedinstitution}{0}
+\setcounter{lista}{0}
+\setcounter{savedlista}{0}
+\setcounter{listb}{0}
+\setcounter{savedlistb}{0}
+\setcounter{listc}{0}
+\setcounter{savedlistc}{0}
+\setcounter{listd}{0}
+\setcounter{savedlistd}{0}
+\setcounter{liste}{0}
+\setcounter{savedliste}{0}
+\setcounter{listf}{0}
+\setcounter{savedlistf}{0}
+\setcounter{location}{0}
+\setcounter{savedlocation}{0}
+\setcounter{organization}{0}
+\setcounter{savedorganization}{0}
+\setcounter{origlocation}{0}
+\setcounter{savedoriglocation}{0}
+\setcounter{origpublisher}{0}
+\setcounter{savedorigpublisher}{0}
+\setcounter{publisher}{0}
+\setcounter{savedpublisher}{0}
+\setcounter{language}{0}
+\setcounter{savedlanguage}{0}
+\setcounter{origlanguage}{0}
+\setcounter{savedoriglanguage}{0}
+\setcounter{pageref}{0}
+\setcounter{savedpageref}{0}
+\setcounter{textcitecount}{0}
+\setcounter{textcitetotal}{0}
+\setcounter{textcitemaxnames}{0}
+\setcounter{biburlbigbreakpenalty}{100}
+\setcounter{biburlbreakpenalty}{200}
+\setcounter{biburlnumpenalty}{0}
+\setcounter{biburlucpenalty}{0}
+\setcounter{biburllcpenalty}{0}
+\setcounter{smartand}{1}
+\setcounter{bbx:relatedcount}{0}
+\setcounter{bbx:relatedtotal}{0}
+\setcounter{parentequation}{0}
+\setcounter{section@level}{4}
+\setcounter{Item}{54}
+\setcounter{Hfootnote}{0}
+\setcounter{bookmark@seq@number}{204}
+\setcounter{lstnumber}{8}
+\setcounter{float@type}{8}
+\setcounter{LT@tables}{0}
+\setcounter{LT@chunks}{0}
+\setcounter{nlinenum}{0}
+\setcounter{caption@flags}{2}
+\setcounter{continuedfloat}{0}
+\setcounter{lstlisting}{15}
+}
