@@ -220,7 +220,7 @@ Questa scelta influenza direttamente le prestazioni e il tasso di \emph{miss}.
         \centering
         \includegraphics[width=.65\linewidth]{immagini/SYS_02/4way.png}
         \caption{4way set Associative cache}
-        \label{fig:dm}
+        \label{fig:4way}
     \end{figure}
 \end{itemize}
 
@@ -301,7 +301,13 @@ I protocolli di coerenza possono essere implementati in due principali modalità
             \item \emph{Pro:} semplice da implementare, non richiede una struttura centralizzata.
             \item \emph{Contro:} inefficiente per sistemi con molti core, poiché ogni cache deve monitorare l'intero bus, aumentando il carico e il traffico.
         \end{itemize}
-  
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=.65\linewidth]{immagini/SYS_02/snooping}
+      \caption{Snooping cache system model}
+      \label{fig: snooping}
+  \end{figure}
+
   \item \textbf{Directory-based:} in questo modello esiste un nodo centrale, una \textbf{directory}, che tiene traccia di quali core possiedono una copia di ogni blocco di memoria.  
         La directory riceve richieste di accesso da parte dei core e, quando un core scrive su un blocco, essa aggiorna o invalida le copie nelle altre cache.  
         Questo modello è più scalabile rispetto allo snooping, poiché centralizza la gestione della coerenza, evitando che ogni cache debba monitorare il bus.
@@ -320,7 +326,16 @@ I protocolli di coerenza possono essere implementati in due principali modalità
 
 \subsection{Protocolli MOESI e VI}
 I protocolli di coerenza sono descritti come \textbf{macchine a stati finiti} (FSM), dove ciascun blocco in cache può trovarsi in diversi stati di validità.  
-Il protocollo più semplice è il \textbf{VI}, con due soli stati (Valid/Invalid).  
+Il protocollo più semplice è il \textbf{VI}, con due soli stati (Valid/Invalid).
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\linewidth]{immagini/SYS_02/vi}
+    \caption{The vi protocol}
+    \label{fig:vi}
+\end{figure}
+
 Tuttavia, i sistemi moderni adottano versioni più espressive come il \textbf{MOESI}, che introduce:
 \begin{itemize}
   \item \textbf{M (Modified):} il blocco è valido, esclusivo, potenzialmente sporco; solo questa cache lo possiede.
