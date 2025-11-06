@@ -1,0 +1,106 @@
+
+\newpage
+\maketitle
+\section{SYS\_04 — Attacchi Hardware e Contromisure}
+\subsection{Introduzione agli Attacchi Hardware}
+Gli attacchi hardware sfruttano vulnerabilità fisiche e architetturali delle componenti elettroniche dei sistemi, come CPU, memoria e cache. Tali attacchi sono difficili da rilevare dai software di sicurezza e sfruttano caratteristiche intrinseche dell'hardware, come la temporizzazione, l'uso della cache e l'esecuzione speculativa. Gli attacchi hardware possono includere:
+
+\begin{itemize}
+    \item Attacchi di temporizzazione (Timing Attacks)
+    \item Attacchi a canale laterale (Side-Channel Attacks)
+    \item Manipolazioni della cache (Cache Attacks)
+    \item Attacchi alle funzioni speculative (Speculative Execution Attacks)
+    \item Attacchi basati su memoria (Memory-based Attacks)
+    \item Attacchi di RowHammer (attacchi a memoria dinamica)
+\end{itemize}
+
+\subsection{Timing e Sicurezza}
+Gli attacchi di temporizzazione sfruttano la misurazione dei tempi di esecuzione di operazioni su dati sensibili per ottenere informazioni sui dati stessi. Ad esempio, se un algoritmo impiega più tempo per elaborare determinati dati, \'e possibile dedurre informazioni su di essi, come nel caso delle password o delle chiavi di crittografia.
+
+\paragraph{Uso della Funzione strcmp}
+La funzione `strcmp()` confronta due stringhe carattere per carattere. Se le stringhe sono uguali, la funzione restituisce un valore pari a zero. Tuttavia, se le stringhe differiscono, il tempo impiegato per confrontarle aumenta progressivamente, con il risultato che, più a fondo si arriva nel confronto, maggiore sarà il tempo impiegato. Ciò consente a un attaccante di dedurre quale carattere della stringa \'e corretto, basandosi sul tempo impiegato per completare il confronto.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{immagini/SYS_04/strcmp.png}
+\end{figure}
+\paragraph{Timing attack in un Programma di Autenticazione}
+Supponiamo che un programma di autenticazione confronti un input (t) con la password corretta (s) usando `strcmp()`. Se `t = \"password\"` e `s = "password"`, il programma impiega più tempo per confrontare i caratteri quando l'input \'e corretto, rispetto a quando c'\'e un errore, permettendo all'attaccante di inferire gradualmente i caratteri della password.
+
+
+\subsubsection{Attacchi di Temporizzazione nel Mondo Reale: RSA}
+Nel contesto della crittografia, gli attacchi di temporizzazione possono essere utilizzati per ottenere informazioni sulla chiave privata di un sistema come RSA. La decrittazione RSA implica una serie di operazioni di esponentiazione modulare, che dipendono dal valore della chiave privata.
+
+\paragraph{Attacchi alla Decrittazione RSA}
+Gli attacchi alla decrittazione RSA si basano sul rilevamento delle differenze nei tempi di esecuzione durante il calcolo dell'esponentiazione modulare. Ad esempio, l'attaccante può inviare cifrati progettati per creare tempi di risposta differenti a causa dei passaggi computazionali coinvolti. Questo fenomeno, noto come il \"gap 0-1\", si verifica quando la decrittazione impiega meno tempo (0) quando certe condizioni sono soddisfatte e più tempo (1) quando altre condizioni richiedono più passaggi computazionali. Osservando queste differenze nei tempi di esecuzione, l'attaccante può inferire parti della chiave privata. Ad esempio, nel caso dell'esponente modulare, la modifica di uno dei bit della chiave può accelerare il calcolo, rivelando informazioni sul valore della chiave.
+
+\paragraph{Algoritmi a Tempo Costante}
+Per mitigare i Timing attacks, \'e essenziale utilizzare algoritmi che impiegano lo stesso tempo per ogni confronto, indipendentemente dai dati in ingresso. Un esempio di implementazione sicura di confronto di stringhe potrebbe essere la funzione `constantTimeStringCompare()` che confronta ogni carattere delle stringhe senza fermarsi fino a quando tutti i caratteri sono stati verificati, impedendo così che l'attaccante possa ottenere informazioni tramite differenze nei tempi di esecuzione.
+Ovviamente questo porta ad un peggioramento delle prestazioni, ma aumenta la sicurezza del sistema.
+\begin{figure}[H]
+\centering
+\includegraphics[width=.85\linewidth]{immagini/SYS_04/constTime.png}
+\end{figure}
+
+\subsection{Attacchi a Canale Laterale}
+Gli attacchi a canale laterale sfruttano informazioni che possono essere osservate indirettamente durante l'esecuzione di un programma, come il consumo di energia, la radiazione elettromagnetica, o l'accesso alla memoria. Un esempio di attacco a canale laterale \'e quello che sfrutta il comportamento della cache, che può rivelare informazioni su operazioni sensibili come le operazioni crittografiche.
+
+\subsubsection{Timing della Cache}
+Quando si leggono i dati dalla memoria, la CPU li legge effettivamente dalla cache, che cerca di servire una richiesta di memoria il più velocemente possibile. Se un attaccante può controllare lo stato della cache, può sfruttare i tempi di accesso per ottenere informazioni sui dati memorizzati. Gli attacchi alla cache si possono dividere in varie tecniche, come `Prime + Probe` e `Flush + Reload`, che mirano a identificare quali dati sono stati caricati nella cache.
+
+\paragraph{Attacchi Prime + Probe}
+L'attacco `Prime + Probe` \'e uno degli attacchi più noti alla cache. L'attaccante "prime" la cache riempiendola con i propri dati e successivamente "prova" i dati osservando il tempo necessario per accedere ai propri dati. Se un dato \'e stato sostituito da un altro processo, l'accesso sarà più lento, rivelando informazioni sul comportamento del sistema .
+
+\paragraph{Attacchi Flush + Reload}
+Il metodo `Flush + Reload` sfrutta il fatto che le linee di cache possono essere "scaricate" (flushed) e successivamente ricaricate. Misurando i tempi necessari per ricaricare una linea di cache, un attaccante può determinare se un altro processo ha accesso alla stessa linea di memoria, ottenendo così informazioni sensibili.
+
+\subsubsection{Mitigazioni agli Attacchi alla Cache}
+Gli attacchi alla cache sfruttano la memoria condivisa tra i processi per accedere a dati sensibili, come le chiavi di crittografia o altre informazioni private, osservando il comportamento della cache. Per mitigare tali attacchi, vengono implementate diverse soluzioni hardware e software.
+
+\paragraph{Soluzioni Hardware e Software}
+A livello hardware, una delle soluzioni più promettenti per contrastare gli attacchi alla cache \'e l'uso di **cache a tempo costante**, che elimina la variabilità nei tempi di accesso alle linee di cache, impedendo a un attaccante di dedurre informazioni sensibili tramite misurazioni temporali.
+
+Dal punto di vista del software, una tecnica comune di mitigazione \'e l'**isolamento dei processi**. In questo contesto, il sistema operativo può separare l'accesso alla memoria in modo che i dati sensibili siano meno vulnerabili agli attacchi di canale laterale. In aggiunta, le **memorie criptate** (ad esempio, l'uso di crittografia a livello di memoria) possono ridurre il rischio che i dati vengano estratti dalla cache durante un attacco.
+
+Una soluzione comune nel contesto delle CPU moderne \'e l'adozione di **sistemi di protezione della cache** che isolano le linee di cache tra i processi. Un altro approccio \'e l'uso di tecniche come **Cache Partitioning**, dove la cache \'e divisa in porzioni dedicate a specifici processi, riducendo le possibilità di un attacco cross-core.
+
+\subsection{Attacchi sul Processore}
+Gli attacchi sul processore sfruttano le vulnerabilità intrinseche nei moderni design dei processori, in particolare quelli legati alla **speculative execution** e alla **branch prediction**. Questi attacchi possono consentire l'accesso a informazioni sensibili, come chiavi di crittografia o dati privati, sfruttando il comportamento asincrono delle istruzioni nei processori.
+
+\subsubsection{Attacchi di Esecuzione Speculativa}
+L'esecuzione speculativa \'e una tecnica utilizzata dai processori moderni per migliorare le prestazioni, eseguendo operazioni in anticipo, basandosi su previsioni di ciò che accadrà. Tuttavia, questa tecnica può essere sfruttata da un attaccante per accedere a dati sensibili, come nel caso degli attacchi **Meltdown** e **Spectre**.
+
+\paragraph{Attacchi Meltdown e Spectre}
+**Meltdown** e **Spectre** sono tra gli attacchi più noti che sfruttano le vulnerabilità nell'esecuzione speculativa e nella predizione dei rami. Meltdown sfrutta una vulnerabilità che permette a un processo utente di accedere alla memoria kernel, che dovrebbe essere protetta. Questo avviene grazie alla speculazione del processore che non riesce a prevenire correttamente l'accesso a dati privilegiati.
+
+**Spectre**, invece, sfrutta la predizione dei rami, un meccanismo che i processori utilizzano per anticipare il percorso delle istruzioni future. Un attaccante può manipolare le previsioni del processore per eseguire operazioni speculativa e, successivamente, utilizzare i **side-channel** per recuperare dati da altre parti della memoria che altrimenti sarebbero stati protetti.
+
+\paragraph{Predizione dei Branchi}
+La **branch prediction** \'e un meccanismo dei processori per predire quale direzione prenderà una condizione if-else, migliorando le prestazioni. Tuttavia, se un attaccante riesce a influenzare la predizione di un ramo, può causare un comportamento indesiderato che lascia tracce micro-architetturali. Queste tracce possono essere osservate tramite attacchi a canale laterale, permettendo l'estrazione di dati sensibili.
+
+In particolare, gli attacchi basati sulla **branch target buffer (BTB)** possono manipolare le previsioni di salto per eseguire un'operazione speculativa non autorizzata, sfruttando il fatto che la CPU esegue il codice prima di sapere se il ramo \'e valido.
+
+\paragraph{Contromisure: Retpoline, IBRS, STIBP}
+Per contrastare gli attacchi come **Spectre** e **Meltdown**, sono state sviluppate diverse contromisure:
+
+- **Retpoline** \'e una tecnica software che impedisce agli attaccanti di manipolare la predizione dei rami, inserendo un "trampolino" per saltare direttamente ai risultati senza eseguire istruzioni speculative non sicure.
+  
+- **IBRS** (Indirect Branch Restricted Speculation) \'e un meccanismo hardware che impedisce ai processori di fare previsioni indirette sui rami, disabilitando la speculazione per le istruzioni di salto.
+  
+- **STIBP** (Single Thread Indirect Branch Prediction) impedisce la condivisione della predizione di rami indiretti tra i thread che girano sulla stessa CPU, proteggendo i processi in esecuzione in modalità multithreading (SMT).
+
+Queste tecniche vengono implementate nei processori moderni per limitare l'esecuzione speculativa non sicura, riducendo il rischio di attacchi basati sulla predizione dei rami.
+
+\subsubsection{Attacchi Foreshadow (L1TF)}
+**Foreshadow**, noto anche come **L1TF** (Level 1 Terminal Fault), \'e una vulnerabilità che sfrutta la speculazione nell'accesso alla memoria, ma a differenza di Meltdown e Spectre, riguarda la **memoria L1 cache**. Questo attacco sfrutta un comportamento del processore Intel che consente a un attaccante di ottenere l'accesso ai dati protetti, come le chiavi di crittografia utilizzate in **Intel SGX** (Software Guard Extensions), al di fuori dei limiti imposti dal sistema operativo o dalla virtualizzazione.
+
+\paragraph{Vulnerabilità di Intel}
+L1TF sfrutta la vulnerabilità nei processori Intel che consente a un processo non privilegiato di eseguire operazioni speculative che accedono alla memoria protetta tramite la L1 cache. Il processore, quando esegue operazioni speculativamente, non valida correttamente gli accessi a memoria sensibile, permettendo così a un attaccante di eseguire un **side-channel attack** per recuperare dati crittografici o altre informazioni sensibili.
+
+\paragraph{Mitigazione e Rilevamento}
+Le mitigazioni per Foreshadow (L1TF) includono **Kernel Page-Table Isolation (KPTI)**, che isola la memoria utente dalla memoria kernel, impedendo a un processo di accedere a memoria protetta. Inoltre, Intel ha introdotto **microcode updates** e patch software per disabilitare o limitare l'esecuzione speculativa su determinate operazioni, impedendo che dati sensibili vengano esposti.
+
+Altre misure di protezione includono il **disabilitare l'accesso condiviso alle L1 cache** tra i processi, in particolare nei sistemi con **SMT (Simultaneous Multi-Threading)**, per evitare che un processo malevolo possa monitorare o manipolare la cache di un altro processo.
+
+
+
+
