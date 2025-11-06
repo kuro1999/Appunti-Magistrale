@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2025.10.29)  5 NOV 2025 15:44
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2025.10.29)  6 NOV 2025 11:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -541,31 +541,12 @@ File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 )
 (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/main.aux
 (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net01.aux)
-(/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net02.aux
-
-LaTeX Warning: Label `fig:lab1' multiply defined.
-
-
-LaTeX Warning: Label `fig:lab1' multiply defined.
-
-
-LaTeX Warning: Label `fig:placeholder' multiply defined.
-
-
-LaTeX Warning: Label `fig:placeholder' multiply defined.
-
-) (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net03.aux
-
-LaTeX Warning: Label `fig:double_tagging' multiply defined.
-
-) (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net04.aux)
+(/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net02.aux)
+(/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net03.aux)
+(/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net04.aux)
 (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net05.aux)
 (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/sys01.aux)
-(/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/sys02.aux
-
-LaTeX Warning: Label `fig:dm' multiply defined.
-
-))
+(/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/sys02.aux))
 \openout1 = `main.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
@@ -605,7 +586,8 @@ LaTeX Info: Redefining \showhyphens on input line 42.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
- (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
@@ -1442,23 +1424,36 @@ Underfull \hbox (badness 10000) in paragraph at lines 261--264
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 273.
 
+<immagini/SYS_02/snooping.png, id=1686, 626.34pt x 483.8075pt>
+File: immagini/SYS_02/snooping.png Graphic file (type png)
+<use immagini/SYS_02/snooping.png>
+Package pdftex.def Info: immagini/SYS_02/snooping.png  used on input line 306.
+(pdftex.def)             Requested size: 295.90588pt x 228.57072pt.
 
 
 [68]
+<immagini/SYS_02/vi.png, id=1691, 740.7675pt x 484.81125pt>
+File: immagini/SYS_02/vi.png Graphic file (type png)
+<use immagini/SYS_02/vi.png>
+Package pdftex.def Info: immagini/SYS_02/vi.png  used on input line 334.
+(pdftex.def)             Requested size: 273.14923pt x 178.77074pt.
+
+
+[69 <./immagini/SYS_02/snooping.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 340.
+(hyperref)                than one, level fixed on input line 355.
 
 
 
-[69]
+[70 <./immagini/SYS_02/vi.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 365.
+(hyperref)                than one, level fixed on input line 380.
 
 )
 
-[70]
+[71]
 
 Package caption Warning: Unused \captionsetup[table] on input line 21.
 See the caption package documentation for explanation.
@@ -1477,16 +1472,16 @@ L3 programming layer <2025-01-18>
  ***********
 
 
-LaTeX Warning: There were multiply-defined labels.
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 46C1889414A4D0801C9FBB24F643A1ED;46672.
  ) 
 Here is how much of TeX's memory you used:
- 19569 strings out of 473197
- 315992 string characters out of 5718604
- 1158018 words of memory out of 5000000
- 41657 multiletter control sequences out of 15000+600000
+ 19602 strings out of 473197
+ 316815 string characters out of 5718604
+ 1158638 words of memory out of 5000000
+ 41687 multiletter control sequences out of 15000+600000
  637645 words of font info for 244 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,10n,79p,1001b,2032s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1502,10 +1497,10 @@ f/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10
 </usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1
 /public/lm/lmtti10.pfb>
 Output written on /home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/main.pd
-f (70 pages, 5964851 bytes).
+f (71 pages, 6108999 bytes).
 PDF statistics:
- 1902 PDF objects out of 2073 (max. 8388607)
- 1688 compressed objects within 17 object streams
- 532 named destinations out of 1000 (max. 500000)
- 49464 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 1913 PDF objects out of 2073 (max. 8388607)
+ 1694 compressed objects within 17 object streams
+ 535 named destinations out of 1000 (max. 500000)
+ 49474 words of extra memory for PDF output out of 51595 (max. 10000000)
 
