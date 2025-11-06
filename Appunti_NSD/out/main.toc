@@ -202,8 +202,9 @@
 \contentsline {subsection}{\numberline {6.8}Cache coherence nei multicore}{67}{subsection.6.8}%
 \contentsline {paragraph}{\numberline {6.8.0.1}Protocolli di coerenza}{68}{paragraph.6.8.0.1}%
 \contentsline {subsection}{\numberline {6.9}Protocolli MOESI e VI}{69}{subsection.6.9}%
-\contentsline {subsection}{\numberline {6.10}Hardware Transactional Memory (HTM)}{69}{subsection.6.10}%
-\contentsline {paragraph}{\numberline {6.10.0.1}Principio di funzionamento}{69}{paragraph.6.10.0.1}%
-\contentsline {paragraph}{\numberline {6.10.0.2}Casi di abort}{69}{paragraph.6.10.0.2}%
-\contentsline {subsection}{\numberline {6.11}DRAM e Refresh}{70}{subsection.6.11}%
-\contentsline {paragraph}{\numberline {6.11.0.1}Effetti del refresh}{70}{paragraph.6.11.0.1}%
+\contentsline {paragraph}{\numberline {6.9.0.1}Virtual vs. Physical Cache Indexing}{70}{paragraph.6.9.0.1}%
+\contentsline {subsection}{\numberline {6.10}Hardware Transactional Memory (HTM)}{71}{subsection.6.10}%
+\contentsline {paragraph}{\numberline {6.10.0.1}Principio di funzionamento}{71}{paragraph.6.10.0.1}%
+\contentsline {paragraph}{\numberline {6.10.0.2}Casi di abort e codici di stato}{72}{paragraph.6.10.0.2}%
+\contentsline {subsection}{\numberline {6.11}DRAM e Refresh}{72}{subsection.6.11}%
+\contentsline {paragraph}{\numberline {6.11.0.1}Effetti del refresh}{72}{paragraph.6.11.0.1}%

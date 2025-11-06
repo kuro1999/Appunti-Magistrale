@@ -346,10 +346,58 @@ Tuttavia, i sistemi moderni adottano versioni più espressive come il \textbf{MO
 \end{itemize}
 Il protocollo MOESI consente di minimizzare traffico e latenza mantenendo comunque una visione coerente dei dati, sfruttando il concetto di \emph{ownership} per coordinare chi deve rispondere a richieste remote.
 
+
+\paragraph{Virtual vs. Physical Cache Indexing}
+Le cache possono essere \textbf{indicizzate} usando l’indirizzo virtuale o quello fisico, a seconda del livello e della microarchitettura.
+La scelta influisce su latenza, complessità hardware
+e rischi di inconsistenza tra TLB e cache.
+
+\begin{itemize}
+  \item \textbf{Virtual-indexed caches:} usano l’indirizzo virtuale generato dalla CPU, prima della traduzione tramite il \textbf{Translation Lookaside Buffer (TLB)}.
+  Questo approccio è tipico della \textbf{L1 cache}, dove la priorità è la \emph{bassa latenza} e la velocità di accesso supera i rischi di incoerenza.
+  Tuttavia, poiché la traduzione virtuale→fisica non è ancora disponibile, il sistema deve gestire eventuali aliasing (lo stesso indirizzo fisico visto come virtuale diverso da più processi).
+
+  \item \textbf{Physically-indexed caches:} usano invece l’indirizzo fisico, cioè quello tradotto dal TLB.
+  Questo evita i problemi di aliasing e garantisce coerenza tra processi e livelli di cache diversi, ma richiede che la traduzione sia già avvenuta, aumentando leggermente la latenza.
+  Le \textbf{L2 e L3 cache} usano quasi sempre indicizzazione fisica.
+
+  \item \textbf{TLB (Translation Lookaside Buffer):} memorizza le traduzioni virtuale→fisico più recenti, riducendo il costo di accesso alla memoria principale.
+  Quando il TLB fornisce rapidamente la traduzione, l’indicizzazione fisica non penalizza eccessivamente le prestazioni.
+\end{itemize}
+
+In sintesi, la cache L1 privilegia l’accesso immediato e può usare indirizzi virtuali, mentre i livelli esterni (L2, L3) scelgono la coerenza globale e usano indirizzi fisici.
+Questo bilanciamento permette di minimizzare la latenza mantenendo consistenza tra processi, TLB e memoria principale.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.65\linewidth]{immagini/SYS_02/cache}
+    \caption{Virtual Vs Physical cache indexing}
+    \label{fig:cache}
+\end{figure}
+
 \subsection{Hardware Transactional Memory (HTM)}
 Per ridurre la complessità della sincronizzazione esplicita tra thread (lock, mutex), le CPU moderne supportano la \textbf{Transactional Memory} hardware, introdotta da Intel nel 2013 (TSX).  
 Un blocco di codice viene eseguito come transazione: tutte le operazioni sono provvisorie fino al commit, e se si verifica un conflitto con altri thread, la transazione viene annullata automaticamente.  
 Questo approccio fornisce concorrenza “lock-free” e semplifica il codice multithreaded.
+
+\begin{figure}[H]
+  \centering
+  % --- immagine sinistra ---
+  \begin{minipage}[t]{0.47\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{immagini/SYS_02/tsx_c.png}
+    \caption*{Esempio in C con \texttt{\_xbegin()} e \texttt{\_xend()}}
+  \end{minipage}
+  \hfill
+  % --- immagine destra ---
+  \begin{minipage}[t]{0.47\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{immagini/SYS_02/tsx_asm.png}
+    \caption*{Equivalente in assembly con \texttt{xbegin/xend}}
+  \end{minipage}
+  \caption{Confronto tra implementazione C e assembly di una transazione TSX}
+  \label{fig:tsx_confronto}
+\end{figure}
 
 \paragraph{Principio di funzionamento}
 Le transazioni si appoggiano alla coerenza cache: le scritture restano nella L1 finché non si effettua il commit.  
@@ -362,14 +410,41 @@ Un conflitto si verifica se un altro core tenta di accedere a un blocco presente
 Le istruzioni principali sono \texttt{xbegin}, \texttt{xend}, \texttt{xabort}, \texttt{xtest}.  
 Un’implementazione comune è la \textbf{RTM (Restricted Transactional Memory)}, che richiede fallback non transazionale in caso di fallimenti ripetuti.
 
-\paragraph{Casi di abort}
-Una transazione può abortire per:
+\paragraph{Casi di abort e codici di stato}
+Quando una transazione fallisce, l’istruzione \texttt{\_xbegin()} restituisce in \texttt{EAX} un \textbf{codice di stato} che indica la causa dell’abort.
+Le ragioni più comuni sono:
+
 \begin{itemize}
-  \item conflitto di accesso (un altro core legge o scrive nel suo write set);
-  \item interruzioni, context switch o page fault;
-  \item overflow della L1 o limiti hardware (numero massimo di linee marcate);
-  \item mancanza di supporto TSX (assenza del bit CPUID.07H.EBX.RTM).
+  \item \textbf{Conflitti di accesso:} un altro core accede (in lettura o scrittura) a una linea di cache inclusa nel \emph{write set} della transazione corrente.
+  \item \textbf{Interruzioni o eccezioni asincrone:} interrupt, context switch, page fault o eventi che invalidano il contesto transazionale.
+  \item \textbf{Overflow o limiti hardware:} superamento della capacità dei buffer interni o del numero massimo di linee L1 monitorabili (tipicamente poche decine di KB).
+  \item \textbf{Abort esplicito:} uso dell’istruzione \texttt{XABORT}, che forza la terminazione e può passare un argomento nei bit 24–31 del registro \texttt{EAX}.
+  \item \textbf{Assenza di supporto TSX:} il bit \texttt{CPUID.07H.EBX.RTM} non è impostato, quindi le istruzioni transazionali vengono ignorate o causano eccezione.
 \end{itemize}
+
+\noindent
+I bit del registro \texttt{EAX} restituiti in caso di abort sono così interpretati:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|l}
+\textbf{EAX Bit} & \textbf{Significato} \\
+\hline
+0 & Abort causato da istruzione \texttt{XABORT} \\
+1 & Transazione potenzialmente ripetibile al retry \\
+2 & Conflitto con altro processore su indirizzo monitorato \\
+3 & Overflow del buffer interno \\
+4 & Hit di breakpoint o debug event \\
+5 & Abort durante una transazione annidata \\
+6--23 & Riservati \\
+24--31 & Argomento passato a \texttt{XABORT} \\
+\end{tabular}
+\caption{Codici di stato restituiti nel registro \texttt{EAX} in caso di abort transazionale}
+\label{tab:tsx_abort_codes}
+\end{table}
+
+\noindent
+Se nessun bit è impostato (\texttt{EAX = 0}), significa che la transazione è stata abortita senza una causa specifica riconoscibile (abort generico).
 
 \subsection{DRAM e Refresh}
 La \textbf{Dynamic RAM (DRAM)} conserva ciascun bit come carica elettrica in un piccolo condensatore, controllato da un transistor.  
