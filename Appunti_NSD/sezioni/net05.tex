@@ -1,7 +1,4 @@
-
-
 \newpage
-
 \section{NET\_05 — Firewall e Algoritmi di Classificazione dei Pacchetti}
 
 \subsection{Panoramica sui Firewall}
@@ -9,6 +6,7 @@ I firewall sono componenti fondamentali per la sicurezza delle reti, in quanto c
 \begin{figure}[H]
   \centering
   \includegraphics[width=.6\linewidth]{immagini/NET_05/base.png}
+  \caption{Modello generale di firewall}
 \end{figure}
 \subsubsection{Obiettivi di Progettazione dei Firewall}
 Gli obiettivi principali dei firewall includono:
@@ -39,6 +37,8 @@ Le caratteristiche principali dei firewall includono:
 \begin{figure}[H]
   \centering
   \includegraphics[width=.85\linewidth]{immagini/NET_05/firewall_charateristics.png}
+  \caption{Criteri di filtraggio adottati dai firewall: indirizzi IP e protocolli, protocolli applicativi, identità dell’utente e attività di rete. Ogni categoria definisce un diverso livello di controllo sull’accesso e sul traffico.}
+
 \end{figure}
 
 Tuttavia, i firewall hanno delle limitazioni:
@@ -60,6 +60,8 @@ I firewall di filtraggio dei pacchetti operano valutando ciascun pacchetto rispe
 \begin{figure}[H]
   \centering
   \includegraphics[width=.6\linewidth]{immagini/NET_05/filtering.png}
+  \caption{Schema di un \textbf{packet filtering firewall}: il controllo avviene ai livelli inferiori dello stack (fino al trasporto), filtrando i pacchetti in base a indirizzi, porte e protocolli prima che raggiungano le applicazioni.}
+
 \end{figure}
 \subsubsection{Vantaggi e Svantaggi del Filtraggio dei Pacchetti}
 \textbf{Vantaggi}:
@@ -70,6 +72,8 @@ I firewall di filtraggio dei pacchetti operano valutando ciascun pacchetto rispe
 \begin{figure}[H]
   \centering
   \includegraphics[width=.6\linewidth]{immagini/NET_05/ex1.png}
+  \caption{Esempio di regole di filtraggio di un firewall basato su policy TCP: le regole consentono il traffico in ingresso e in uscita per porte specifiche (25 e >1023), mentre tutto il resto viene negato per impostazione predefinita.}
+
 \end{figure}
 
 \textbf{Svantaggi}:
@@ -84,6 +88,8 @@ Un \textbf{firewall di ispezione stateful} migliora il filtraggio dei pacchetti 
 \begin{figure}[H]
   \centering
   \includegraphics[width=.6\linewidth]{immagini/NET_05/stateful_inspection_firewall.png}
+  \caption{Schema di uno \textbf{stateful inspection firewall}: monitora lo stato delle connessioni e mantiene informazioni di sessione (\textit{state info}) per consentire solo pacchetti appartenenti a flussi legittimi.}
+
 \end{figure}
 \subsubsection{Tabella dello Stato delle Connessioni}
 La tabella dello stato delle connessioni registra le informazioni su ciascuna connessione stabilita, tra cui:
@@ -279,6 +285,8 @@ Il gateway funge da \emph{firewall perimetrale} e da router tra le tre reti, con
 \begin{figure}[H]
   \centering
   \includegraphics[width=.7\linewidth]{immagini/NET_05/topologia.png}
+  \caption{Topologia di rete con firewall e zona demilitarizzata (DMZ): i server pubblici risiedono nella DMZ (160.80.200.0/24), separata dalla LAN interna (10.0.0.0/24). Il firewall (FW) filtra il traffico tra LAN, DMZ e Internet, collegato al router R1 tramite la rete 1.0.0.0/30.}
+
 \end{figure}
 
 \paragraph{Gateway (firewall principale).}
@@ -345,9 +353,9 @@ Utilizzare \texttt{ping} e \texttt{nc (netcat)} per verificare la raggiungibilit
 {\LARGE \textbf{Classificazione dei Pacchetti e Algoritmi di Matching}} \\[0.5em]
 
 \subsection{Classificazione dei Pacchetti}
-La **classificazione dei pacchetti** è una parte fondamentale dei firewall, della gestione della qualità del servizio (QoS), del routing multicast, e di altre applicazioni di rete come l'IDS, NAT, e il traffic engineering. In sostanza, si tratta di identificare il miglior “match” tra le informazioni contenute nell'intestazione di un pacchetto e le regole di classificazione definite.
+La \textbf{classificazione dei pacchetti} è una parte fondamentale dei firewall, della gestione della qualità del servizio (QoS), del routing multicast, e di altre applicazioni di rete come l'IDS, NAT, e il traffic engineering. In sostanza, si tratta di identificare il miglior “match” tra le informazioni contenute nell'intestazione di un pacchetto e le regole di classificazione definite.
 
-**Esempio pratico**:
+\textbf{Esempio pratico}:
 Un router in una rete aziendale potrebbe dover classificare i pacchetti in base alla destinazione, alla porta, o persino al protocollo. Se il pacchetto proviene da un'applicazione di VoIP, potrebbe essere trattato con priorità rispetto a un pacchetto generico di dati HTTP.
 
 \subsubsection{Perché è Importante la Classificazione dei Pacchetti?}
@@ -368,15 +376,20 @@ Le regole di matching possono essere:
   \item \textbf{Range Match:} il campo del pacchetto deve rientrare in un intervallo specificato.
 \end{itemize}
 
-**Esempio pratico**:
-Un esempio di **Exact Match** potrebbe essere una regola che blocca i pacchetti provenienti da un determinato indirizzo IP, come nel caso di un attacco DoS da un IP malevolo. Un esempio di **Prefix Match** è l'abbinamento di un pacchetto con una rete intera, come nel caso di un filtro che consente solo pacchetti destinati a un range di indirizzi IP `192.168.1.0/24`. Infine, un **Range Match** potrebbe essere usato per consentire l'accesso a una gamma di porte, come 1000–2000 per un servizio FTP.
+\textbf{Esempio pratico}:
+Un esempio di \textbf{Exact Match} potrebbe essere una regola che blocca i pacchetti provenienti da un determinato indirizzo IP, come nel caso di un attacco DoS
+da un IP malevolo. Un esempio di \textbf{Prefix Match}
+è l'abbinamento di un pacchetto con una rete intera,
+come nel caso di un filtro che consente solo pacchetti destinati a
+un range di indirizzi IP `192.168.1.0/24`. Infine, un \textbf{Range Match}
+potrebbe essere usato per consentire l'accesso a una gamma di porte, come 1000–2000 per un servizio FTP.
 
 \subsection{Problema della Classificazione dei Pacchetti}
 Il problema della classificazione dei pacchetti riguarda l'identificazione della regola di matching più appropriata per ciascun pacchetto in arrivo. Questo problema diventa complesso quando ci sono molte regole, e la ricerca di un match può richiedere una grande quantità di risorse computazionali.
 
 Ogni pacchetto può essere confrontato con più regole, e la soluzione prevede l'adozione di algoritmi efficienti per ridurre la complessità della ricerca, specialmente in ambienti con un numero elevato di regole.
 
-**Esempio pratico**:
+\textbf{Esempio pratico}:
 Immagina una rete aziendale con 10.000 regole nel firewall. Se il firewall utilizza una ricerca lineare per confrontare i pacchetti, la ricerca di ogni pacchetto potrebbe richiedere tempi significativi, rallentando il traffico in caso di picchi di accesso. Questo problema è ancora più evidente nei router di backbone, dove ogni millisecondo può fare la differenza nelle prestazioni complessive della rete.
 
 \subsubsection{Struttura delle Regole di Classificazione}
@@ -389,7 +402,7 @@ Ogni regola di classificazione è composta da un insieme di campi di intestazion
 \end{itemize}
 Il compito del classificatore è determinare quale regola corrisponde meglio a un pacchetto in ingresso e applicare l'azione associata a tale regola (ad esempio, \texttt{ACCEPT}, \texttt{DROP}).
 
-**Esempio pratico**:
+\textbf{Esempio pratico}:
 Un pacchetto potrebbe corrispondere a una regola che consente solo pacchetti TCP sulla porta 80 (HTTP). Un altro pacchetto potrebbe corrispondere a una regola che accetta solo pacchetti ICMP (ping). Il sistema di classificazione determina quale regola applicare in base ai criteri specificati in ciascun campo dell'intestazione del pacchetto.
 
 \subsubsection{Combinazione di Regole con Match Multipli}
@@ -397,8 +410,10 @@ Poiché un pacchetto può corrispondere a più regole, è necessario definire un
 
 Nel caso di un firewall, ad esempio, si può configurare l'ordine delle regole in modo che la regola con la priorità più alta venga applicata per prima.
 
-**Esempio pratico**:
-Se un pacchetto corrisponde a una regola di tipo **DROP** e a una regola di tipo **ACCEPT**, la regola che ha la priorità più alta (determinata dalla posizione nella lista di regole) sarà applicata. Se le regole sono ordinate in ordine di priorità (ad esempio, le regole più restrittive vengono applicate per prime), il pacchetto verrà accettato o scartato in base alla prima regola che corrisponde.
+\textbf{Esempio pratico}:
+Se un pacchetto corrisponde a una regola di tipo \textbf{DROP}
+e a una regola di tipo \textbf{ACCEPT}
+, la regola che ha la priorità più alta (determinata dalla posizione nella lista di regole) sarà applicata. Se le regole sono ordinate in ordine di priorità (ad esempio, le regole più restrittive vengono applicate per prime), il pacchetto verrà accettato o scartato in base alla prima regola che corrisponde.
 
 \subsubsection{Algoritmi di Matching}
 Diversi algoritmi sono stati sviluppati per ottimizzare il processo di classificazione. I più comuni sono:
@@ -410,8 +425,8 @@ Diversi algoritmi sono stati sviluppati per ottimizzare il processo di classific
   \item \textbf{Content-Addressable Memory (CAM):} Memorie specializzate utilizzate per il matching rapido di regole, ma non sempre scalabili in software.
 \end{itemize}
 
-**Esempio pratico**:
-Il **Longest Prefix Match (LPM)** è utilizzato in scenari in cui è necessario fare il matching dell'indirizzo di destinazione di un pacchetto con un database di regole di routing. L'algoritmo trie è particolarmente utile in questo caso, in quanto permette di trovare rapidamente il prefisso più lungo che corrisponde a un pacchetto, riducendo significativamente il tempo di ricerca rispetto a una ricerca lineare.
+\textbf{Esempio pratico}:
+Il \textbf{Longest Prefix Match (LPM)} è utilizzato in scenari in cui è necessario fare il matching dell'indirizzo di destinazione di un pacchetto con un database di regole di routing. L'algoritmo trie è particolarmente utile in questo caso, in quanto permette di trovare rapidamente il prefisso più lungo che corrisponde a un pacchetto, riducendo significativamente il tempo di ricerca rispetto a una ricerca lineare.
 
 \subsection{Approccio Bit Vector Linear Search}
 
@@ -422,7 +437,7 @@ Ogni regola di classificazione è associata a una bitmask che rappresenta i camp
 \subsubsection{Funzionamento del Bit Vector Linear Search}
 Il sistema di bit vector funziona confrontando il pacchetto con i set di regole. Ad esempio, se un pacchetto ha una destinazione IP che corrisponde a un prefisso specificato in una regola, questa regola può essere "marcata" come un potenziale match. Successivamente, la ricerca avviene combinando i risultati di ciascun campo (destinazione IP, porta, ecc.) con un'operazione AND, per ridurre il numero di regole rimanenti da confrontare.
 
-**Esempio pratico**:
+\textbf{Esempio pratico}:
 Nel caso di un pacchetto con destinazione IP `192.168.1.100`, il sistema verifica quale regola ha il prefisso più lungo corrispondente. Se una regola ha un prefisso `192.168.1.0/24` e un'altra ha `192.168.1.100/32`, il sistema selezionerà la regola con il prefisso più specifico (quella con `/32`).
 
 \subsubsection{Vantaggi e Limiti del Bit Vector Linear Search}

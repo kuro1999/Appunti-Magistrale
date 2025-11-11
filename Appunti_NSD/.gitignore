@@ -48,3 +48,8 @@ Thumbs.db
 
 # === Latex Workshop cache ===
 *.synctex.gz(busy)
+
+# Directory di output
+/out/
+/out/*
+/out/sezioni/

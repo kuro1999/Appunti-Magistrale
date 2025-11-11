@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2025.10.29)  11 NOV 2025 15:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2025.10.29)  11 NOV 2025 16:45
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -741,23 +741,73 @@ File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 
 [5]
 
-[6])
+[6]
+
+[7]
+/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/main.toc:365: Missing $ i
+nserted.
+<inserted text> 
+                $
+l.365 ... {10}SYS_06 - Antivirus}{123}{section.10}
+                                                  %
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/main.toc:365: Extra }, or
+ forgotten $.
+<argument> ...{\numberline {10}SYS_06 - Antivirus}
+                                                  \Hy@toclinkend 
+l.365 ... {10}SYS_06 - Antivirus}{123}{section.10}
+                                                  %
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/main.toc:365: Missing $ i
+nserted.
+<inserted text> 
+                $
+l.365 ... {10}SYS_06 - Antivirus}{123}{section.10}
+                                                  %
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/main.toc:365: Missing } i
+nserted.
+<inserted text> 
+                }
+l.365 ... {10}SYS_06 - Antivirus}{123}{section.10}
+                                                  %
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+)
 \tf@toc=\write4
 \openout4 = `main.toc'.
 
 
 
-[7]
+[8{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dv
+ips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}]
 \openout2 = `sezioni/net01.aux'.
 
- (./sezioni/net01.tex
-<immagini/slide1/stessa_rete.png, id=1647, 585.18625pt x 214.8025pt>
+
+(./sezioni/net01.tex
+<immagini/slide1/stessa_rete.png, id=1943, 585.18625pt x 214.8025pt>
 File: immagini/slide1/stessa_rete.png Graphic file (type png)
 <use immagini/slide1/stessa_rete.png>
 Package pdftex.def Info: immagini/slide1/stessa_rete.png  used on input line 18
 .
 (pdftex.def)             Requested size: 386.96027pt x 142.0454pt.
-<immagini/slide1/esempio_mask.png, id=1649, 805.0075pt x 172.645pt>
+<immagini/slide1/esempio_mask.png, id=1945, 805.0075pt x 172.645pt>
 File: immagini/slide1/esempio_mask.png Graphic file (type png)
 <use immagini/slide1/esempio_mask.png>
 Package pdftex.def Info: immagini/slide1/esempio_mask.png  used on input line 3
@@ -765,12 +815,11 @@ Package pdftex.def Info: immagini/slide1/esempio_mask.png  used on input line 3
 (pdftex.def)             Requested size: 386.96027pt x 82.98718pt.
 
 
-[8
+[9
 
 
-{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc} <./immagini/slide1/stessa_r
-ete.png>]
-<immagini/slide1/esempio_ip.png, id=1657, 748.7975pt x 272.01625pt>
+ <./immagini/slide1/stessa_rete.png>]
+<immagini/slide1/esempio_ip.png, id=1952, 748.7975pt x 272.01625pt>
 File: immagini/slide1/esempio_ip.png Graphic file (type png)
 <use immagini/slide1/esempio_ip.png>
 Package pdftex.def Info: immagini/slide1/esempio_ip.png  used on input line 44.
@@ -787,32 +836,31 @@ t-to[][] \T1/lmr/m/n/10.95 (-20) Con /27 i pri-mi tre ot-tet-ti (\T1/lmtt/m/n/1
 
 
 
-[9{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}{/usr/share/texmf/fonts/en
-c/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc} <./imm
-agini/slide1/esempio_mask.png> <./immagini/slide1/esempio_ip.png>]
-<immagini/slide1/dns.png, id=1674, 1072.005pt x 447.6725pt>
+[10{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc} <./immagini/slide1/esemp
+io_mask.png> <./immagini/slide1/esempio_ip.png>]
+<immagini/slide1/dns.png, id=1966, 1072.005pt x 447.6725pt>
 File: immagini/slide1/dns.png Graphic file (type png)
 <use immagini/slide1/dns.png>
 Package pdftex.def Info: immagini/slide1/dns.png  used on input line 116.
 (pdftex.def)             Requested size: 386.96027pt x 161.59232pt.
 
 
-[10]
-<immagini/slide1/dns2.png, id=1686, 1014.79124pt x 421.575pt>
+[11]
+<immagini/slide1/dns2.png, id=1977, 1014.79124pt x 421.575pt>
 File: immagini/slide1/dns2.png Graphic file (type png)
 <use immagini/slide1/dns2.png>
 Package pdftex.def Info: immagini/slide1/dns2.png  used on input line 137.
 (pdftex.def)             Requested size: 386.96027pt x 160.75337pt.
 
 
-[11 <./immagini/slide1/dns.png> <./immagini/slide1/dns2.png>]
+[12 <./immagini/slide1/dns.png> <./immagini/slide1/dns2.png>]
 
-[12]
+[13]
 Underfull \hbox (badness 10000) in paragraph at lines 167--168
 
  []
 
-<immagini/slide1/lab1.png, id=1699, 984.67876pt x 417.56pt>
+<immagini/slide1/lab1.png, id=1992, 984.67876pt x 417.56pt>
 File: immagini/slide1/lab1.png Graphic file (type png)
 <use immagini/slide1/lab1.png>
 Package pdftex.def Info: immagini/slide1/lab1.png  used on input line 180.
@@ -826,7 +874,7 @@ Overfull \hbox (41.25984pt too wide) in paragraph at lines 197--198
 
 
 
-[13 <./immagini/slide1/lab1.png>]
+[14 <./immagini/slide1/lab1.png>]
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2024/09/23 1.10c listings language file
 )
@@ -837,7 +885,7 @@ Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
 nput line 205.
 )
 
-[14]
+[15]
 \openout2 = `sezioni/net02.aux'.
 
  (./sezioni/net02.tex
@@ -857,7 +905,7 @@ Package microtype Info: Loading generic protrusion settings for font family
 Package microtype Info: Character `texttrademark ' is missing
 (microtype)             in font `TS1/lmtt/m/n/10.95'.
 (microtype)             Ignoring protrusion settings for this character.
-<immagini/NET_02/adress_learning_1.png, id=1730, 598.48593pt x 280.79906pt>
+<immagini/NET_02/adress_learning_1.png, id=2022, 598.48593pt x 280.79906pt>
 File: immagini/NET_02/adress_learning_1.png Graphic file (type png)
 <use immagini/NET_02/adress_learning_1.png>
 Package pdftex.def Info: immagini/NET_02/adress_learning_1.png  used on input l
@@ -865,12 +913,12 @@ ine 31.
 (pdftex.def)             Requested size: 386.96027pt x 181.55746pt.
 
 
-[15
+[16
 
 
 
 ]
-<immagini/NET_02/address_learning_2.png, id=1736, 640.64343pt x 291.33844pt>
+<immagini/NET_02/address_learning_2.png, id=2028, 640.64343pt x 291.33844pt>
 File: immagini/NET_02/address_learning_2.png Graphic file (type png)
 <use immagini/NET_02/address_learning_2.png>
 Package pdftex.def Info: immagini/NET_02/address_learning_2.png  used on input 
@@ -878,17 +926,17 @@ line 39.
 (pdftex.def)             Requested size: 386.96027pt x 175.97801pt.
 
 
-[16 <./immagini/NET_02/adress_learning_1.png> <./immagini/NET_02/address_learni
+[17 <./immagini/NET_02/adress_learning_1.png> <./immagini/NET_02/address_learni
 ng_2.png>]
-<immagini//NET_02/DHCP.png, id=1745, 599.99156pt x 398.99063pt>
+<immagini//NET_02/DHCP.png, id=2037, 599.99156pt x 398.99063pt>
 File: immagini//NET_02/DHCP.png Graphic file (type png)
 <use immagini//NET_02/DHCP.png>
 Package pdftex.def Info: immagini//NET_02/DHCP.png  used on input line 84.
 (pdftex.def)             Requested size: 227.62206pt x 151.3684pt.
 
 
-[17 <./immagini//NET_02/DHCP.png>]
-<immagini//NET_02/ARP.png, id=1756, 569.12625pt x 312.41719pt>
+[18 <./immagini//NET_02/DHCP.png>]
+<immagini//NET_02/ARP.png, id=2048, 569.12625pt x 312.41719pt>
 File: immagini//NET_02/ARP.png Graphic file (type png)
 <use immagini//NET_02/ARP.png>
 Package pdftex.def Info: immagini//NET_02/ARP.png  used on input line 98.
@@ -900,9 +948,9 @@ Underfull \hbox (badness 10000) in paragraph at lines 118--119
 
 
 
-[18 <./immagini//NET_02/ARP.png>]
+[19 <./immagini//NET_02/ARP.png>]
 
-[19]
+[20]
 Underfull \hbox (badness 10000) in paragraph at lines 169--170
 
  []
@@ -912,21 +960,21 @@ Underfull \hbox (badness 10000) in paragraph at lines 187--188
 
  []
 
-<immagini//NET_02/MITM.png, id=1769, 514.92375pt x 255.20343pt>
+<immagini//NET_02/MITM.png, id=2060, 514.92375pt x 255.20343pt>
 File: immagini//NET_02/MITM.png Graphic file (type png)
 <use immagini//NET_02/MITM.png>
 Package pdftex.def Info: immagini//NET_02/MITM.png  used on input line 199.
 (pdftex.def)             Requested size: 227.62206pt x 112.81166pt.
 
 
-[20 <./immagini//NET_02/MITM.png>]
+[21 <./immagini//NET_02/MITM.png>]
 
-[21]
+[22]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 275.
 
 
-[22]
+[23]
 Underfull \hbox (badness 10000) in paragraph at lines 286--287
 
  []
@@ -956,7 +1004,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 335--336
 
 
 
-[23]
+[24]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 380.
@@ -968,7 +1016,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 380--381
 
 
 
-[24]
+[25]
 Underfull \hbox (badness 10000) in paragraph at lines 391--392
 
  []
@@ -980,9 +1028,9 @@ Underfull \hbox (badness 10000) in paragraph at lines 402--403
 
 
 
-[25])
+[26])
 
-[26]
+[27]
 \openout2 = `sezioni/net03.aux'.
 
  (./sezioni/net03.tex
@@ -990,40 +1038,40 @@ Underfull \hbox (badness 10000) in paragraph at lines 402--403
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 6.
 
-<immagini/NET_03/ip_subnet.png, id=1895, 754.82pt x 472.76625pt>
+<immagini/NET_03/ip_subnet.png, id=2187, 754.82pt x 472.76625pt>
 File: immagini/NET_03/ip_subnet.png Graphic file (type png)
 <use immagini/NET_03/ip_subnet.png>
 Package pdftex.def Info: immagini/NET_03/ip_subnet.png  used on input line 23.
 (pdftex.def)             Requested size: 386.96027pt x 242.3628pt.
 
 
-[27
+[28
 
 
 
  <./immagini/NET_03/ip_subnet.png>]
-<immagini/NET_03/vlan.png, id=1902, 707.64375pt x 322.20375pt>
+<immagini/NET_03/vlan.png, id=2194, 707.64375pt x 322.20375pt>
 File: immagini/NET_03/vlan.png Graphic file (type png)
 <use immagini/NET_03/vlan.png>
 Package pdftex.def Info: immagini/NET_03/vlan.png  used on input line 41.
 (pdftex.def)             Requested size: 386.96027pt x 176.18999pt.
-<immagini/NET_03/vlan2.png, id=1904, 703.62875pt x 426.59375pt>
+<immagini/NET_03/vlan2.png, id=2196, 703.62875pt x 426.59375pt>
 File: immagini/NET_03/vlan2.png Graphic file (type png)
 <use immagini/NET_03/vlan2.png>
 Package pdftex.def Info: immagini/NET_03/vlan2.png  used on input line 65.
 (pdftex.def)             Requested size: 386.96027pt x 234.60124pt.
 
 
-[28 <./immagini/NET_03/vlan.png>]
-<immagini/NET_03/vlan3.png, id=1912, 610.28pt x 453.695pt>
+[29 <./immagini/NET_03/vlan.png>]
+<immagini/NET_03/vlan3.png, id=2204, 610.28pt x 453.695pt>
 File: immagini/NET_03/vlan3.png Graphic file (type png)
 <use immagini/NET_03/vlan3.png>
 Package pdftex.def Info: immagini/NET_03/vlan3.png  used on input line 76.
 (pdftex.def)             Requested size: 295.90588pt x 219.98642pt.
 
 
-[29 <./immagini/NET_03/vlan2.png> <./immagini/NET_03/vlan3.png>]
-<immagini/NET_03/access_link.png, id=1925, 211.79124pt x 301.125pt>
+[30 <./immagini/NET_03/vlan2.png> <./immagini/NET_03/vlan3.png>]
+<immagini/NET_03/access_link.png, id=2217, 211.79124pt x 301.125pt>
 File: immagini/NET_03/access_link.png Graphic file (type png)
 <use immagini/NET_03/access_link.png>
 Package pdftex.def Info: immagini/NET_03/access_link.png  used on input line 14
@@ -1031,8 +1079,8 @@ Package pdftex.def Info: immagini/NET_03/access_link.png  used on input line 14
 (pdftex.def)             Requested size: 113.81102pt x 161.81476pt.
 
 
-[30]
-<immagini/NET_03/access_link_legacy.png, id=1930, 755.82375pt x 392.46625pt>
+[31]
+<immagini/NET_03/access_link_legacy.png, id=2223, 755.82375pt x 392.46625pt>
 File: immagini/NET_03/access_link_legacy.png Graphic file (type png)
 <use immagini/NET_03/access_link_legacy.png>
 Package pdftex.def Info: immagini/NET_03/access_link_legacy.png  used on input 
@@ -1040,15 +1088,15 @@ line 159.
 (pdftex.def)             Requested size: 386.96027pt x 200.93364pt.
 
 
-[31 <./immagini/NET_03/access_link.png> <./immagini/NET_03/access_link_legacy.p
+[32 <./immagini/NET_03/access_link.png> <./immagini/NET_03/access_link_legacy.p
 ng>]
-<immagini/NET_03/trunk_link.png, id=1940, 713.66624pt x 342.27875pt>
+<immagini/NET_03/trunk_link.png, id=2232, 713.66624pt x 342.27875pt>
 File: immagini/NET_03/trunk_link.png Graphic file (type png)
 <use immagini/NET_03/trunk_link.png>
 Package pdftex.def Info: immagini/NET_03/trunk_link.png  used on input line 186
 .
 (pdftex.def)             Requested size: 273.14923pt x 131.00214pt.
-<immagini/NET_03/hybrid_link.png, id=1941, 550.055pt x 379.4175pt>
+<immagini/NET_03/hybrid_link.png, id=2233, 550.055pt x 379.4175pt>
 File: immagini/NET_03/hybrid_link.png Graphic file (type png)
 <use immagini/NET_03/hybrid_link.png>
 Package pdftex.def Info: immagini/NET_03/hybrid_link.png  used on input line 21
@@ -1056,8 +1104,8 @@ Package pdftex.def Info: immagini/NET_03/hybrid_link.png  used on input line 21
 (pdftex.def)             Requested size: 341.43307pt x 235.5201pt.
 
 
-[32 <./immagini/NET_03/trunk_link.png>]
-<immagini/NET_03/multivlan_station.png, id=1948, 727.71875pt x 470.75874pt>
+[33 <./immagini/NET_03/trunk_link.png>]
+<immagini/NET_03/multivlan_station.png, id=2240, 727.71875pt x 470.75874pt>
 File: immagini/NET_03/multivlan_station.png Graphic file (type png)
 <use immagini/NET_03/multivlan_station.png>
 Package pdftex.def Info: immagini/NET_03/multivlan_station.png  used on input l
@@ -1065,14 +1113,14 @@ ine 239.
 (pdftex.def)             Requested size: 341.43307pt x 220.87593pt.
 
 
-[33 <./immagini/NET_03/hybrid_link.png>]
+[34 <./immagini/NET_03/hybrid_link.png>]
 
-[34 <./immagini/NET_03/multivlan_station.png>]
+[35 <./immagini/NET_03/multivlan_station.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 250--251
 
  []
 
-<immagini/NET_03/lab3_topology.png, id=1961, 1085.05376pt x 650.43pt>
+<immagini/NET_03/lab3_topology.png, id=2253, 1085.05376pt x 650.43pt>
 File: immagini/NET_03/lab3_topology.png Graphic file (type png)
 <use immagini/NET_03/lab3_topology.png>
 Package pdftex.def Info: immagini/NET_03/lab3_topology.png  used on input line 
@@ -1080,22 +1128,22 @@ Package pdftex.def Info: immagini/NET_03/lab3_topology.png  used on input line
 (pdftex.def)             Requested size: 341.43307pt x 204.66818pt.
 
 
-[35 <./immagini/NET_03/lab3_topology.png>]
+[36 <./immagini/NET_03/lab3_topology.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 317.
 
-<immagini/NET_03/example.png, id=1983, 1112.155pt x 662.475pt>
+<immagini/NET_03/example.png, id=2274, 1112.155pt x 662.475pt>
 File: immagini/NET_03/example.png Graphic file (type png)
 <use immagini/NET_03/example.png>
 Package pdftex.def Info: immagini/NET_03/example.png  used on input line 343.
 (pdftex.def)             Requested size: 386.96027pt x 230.50507pt.
 
 
-[36]
+[37]
 
-[37 <./immagini/NET_03/example.png>]
-<immagini/NET_03/mac_attack.png, id=2018, 483.8075pt x 482.80376pt>
+[38 <./immagini/NET_03/example.png>]
+<immagini/NET_03/mac_attack.png, id=2310, 483.8075pt x 482.80376pt>
 File: immagini/NET_03/mac_attack.png Graphic file (type png)
 <use immagini/NET_03/mac_attack.png>
 Package pdftex.def Info: immagini/NET_03/mac_attack.png  used on input line 387
@@ -1103,14 +1151,14 @@ Package pdftex.def Info: immagini/NET_03/mac_attack.png  used on input line 387
 (pdftex.def)             Requested size: 341.43307pt x 340.73769pt.
 
 
-[38 <./immagini/NET_03/mac_attack.png>]
-<immagini/NET_03/basic_vlan_hopping.png, id=2025, 507.8975pt x 310.15875pt>
+[39 <./immagini/NET_03/mac_attack.png>]
+<immagini/NET_03/basic_vlan_hopping.png, id=2317, 507.8975pt x 310.15875pt>
 File: immagini/NET_03/basic_vlan_hopping.png Graphic file (type png)
 <use immagini/NET_03/basic_vlan_hopping.png>
 Package pdftex.def Info: immagini/NET_03/basic_vlan_hopping.png  used on input 
 line 413.
 (pdftex.def)             Requested size: 227.62206pt x 139.00223pt.
-<immagini/NET_03/double_tagging.png, id=2026, 589.20125pt x 312.16624pt>
+<immagini/NET_03/double_tagging.png, id=2318, 589.20125pt x 312.16624pt>
 File: immagini/NET_03/double_tagging.png Graphic file (type png)
 <use immagini/NET_03/double_tagging.png>
 Package pdftex.def Info: immagini/NET_03/double_tagging.png  used on input line
@@ -1118,10 +1166,10 @@ Package pdftex.def Info: immagini/NET_03/double_tagging.png  used on input line
 (pdftex.def)             Requested size: 227.62206pt x 120.59639pt.
 
 
-[39 <./immagini/NET_03/basic_vlan_hopping.png> <./immagini/NET_03/double_taggin
+[40 <./immagini/NET_03/basic_vlan_hopping.png> <./immagini/NET_03/double_taggin
 g.png>]
 
-[40]
+[41]
 Underfull \hbox (badness 10000) in paragraph at lines 472--473
 
  []
@@ -1131,7 +1179,7 @@ File: immagini/NET_03/double_tagging.png Graphic file (type png)
 Package pdftex.def Info: immagini/NET_03/double_tagging.png  used on input line
  480.
 (pdftex.def)             Requested size: 364.19667pt x 192.95995pt.
-<immagini/NET_03/lab4_topology.png, id=2043, 1135.24126pt x 615.29875pt>
+<immagini/NET_03/lab4_topology.png, id=2335, 1135.24126pt x 615.29875pt>
 File: immagini/NET_03/lab4_topology.png Graphic file (type png)
 <use immagini/NET_03/lab4_topology.png>
 Package pdftex.def Info: immagini/NET_03/lab4_topology.png  used on input line 
@@ -1139,15 +1187,15 @@ Package pdftex.def Info: immagini/NET_03/lab4_topology.png  used on input line
 (pdftex.def)             Requested size: 341.43307pt x 185.05109pt.
 
 
-[41 <./immagini/NET_03/lab4_topology.png>]
+[42 <./immagini/NET_03/lab4_topology.png>]
 
-[42])
+[43])
 
-[43]
+[44]
 \openout2 = `sezioni/net04.aux'.
 
  (./sezioni/net04.tex
-<immagini/NET_04/architettura.png, id=2075, 930.47626pt x 582.175pt>
+<immagini/NET_04/architettura.png, id=2366, 930.47626pt x 582.175pt>
 File: immagini/NET_04/architettura.png Graphic file (type png)
 <use immagini/NET_04/architettura.png>
 Package pdftex.def Info: immagini/NET_04/architettura.png  used on input line 1
@@ -1160,7 +1208,7 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 
 
-[44
+[45
 
 
 
@@ -1176,14 +1224,14 @@ S tra-di-zio-na-li (\T1/lmtt/m/n/10.95 Access-Request/Accept/Reject\T1/lmr/m/n/
 10.95 (-20) )
  []
 
-<immagini/NET_04/eapor.png, id=2082, 1225.57875pt x 430.60875pt>
+<immagini/NET_04/eapor.png, id=2373, 1225.57875pt x 430.60875pt>
 File: immagini/NET_04/eapor.png Graphic file (type png)
 <use immagini/NET_04/eapor.png>
 Package pdftex.def Info: immagini/NET_04/eapor.png  used on input line 89.
 (pdftex.def)             Requested size: 364.19667pt x 127.96149pt.
 
 
-[45]
+[46]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 99.
@@ -1194,31 +1242,31 @@ Overfull \hbox (33.38443pt too wide) in paragraph at lines 106--109
 g-gi \T1/lmtt/m/n/10.95 Access-Request/Challenge/Accept/Reject
  []
 
-<immagini/NET_04/msg.png, id=2087, 597.23125pt x 501.875pt>
+<immagini/NET_04/msg.png, id=2378, 597.23125pt x 501.875pt>
 File: immagini/NET_04/msg.png Graphic file (type png)
 <use immagini/NET_04/msg.png>
 Package pdftex.def Info: immagini/NET_04/msg.png  used on input line 118.
 (pdftex.def)             Requested size: 295.90588pt x 248.66245pt.
 
 
-[46 <./immagini/NET_04/eapor.png> <./immagini/NET_04/msg.png>]
-<immagini/NET_04/msg2.png, id=2099, 730.73pt x 801.99625pt>
+[47 <./immagini/NET_04/eapor.png> <./immagini/NET_04/msg.png>]
+<immagini/NET_04/msg2.png, id=2391, 730.73pt x 801.99625pt>
 File: immagini/NET_04/msg2.png Graphic file (type png)
 <use immagini/NET_04/msg2.png>
 Package pdftex.def Info: immagini/NET_04/msg2.png  used on input line 148.
 (pdftex.def)             Requested size: 295.90588pt x 324.75775pt.
 
 
-[47 <./immagini/NET_04/msg2.png>]
+[48 <./immagini/NET_04/msg2.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 194.
 
 
 
-[48]
-
 [49]
+
+[50]
 Underfull \hbox (badness 10000) in paragraph at lines 255--256
 
  []
@@ -1227,7 +1275,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 255--256
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 259.
 
-<immagini/NET_04/topologia.png, id=2125, 984.67876pt x 696.6025pt>
+<immagini/NET_04/topologia.png, id=2417, 984.67876pt x 696.6025pt>
 File: immagini/NET_04/topologia.png Graphic file (type png)
 <use immagini/NET_04/topologia.png>
 Package pdftex.def Info: immagini/NET_04/topologia.png  used on input line 280.
@@ -1242,7 +1290,7 @@ Overfull \hbox (41.93944pt too wide) in paragraph at lines 293--295
 
 
 
-[50 <./immagini/NET_04/topologia.png>]
+[51 <./immagini/NET_04/topologia.png>]
 Overfull \hbox (19.08252pt too wide) in paragraph at lines 296--299
 []\T1/lmr/m/n/10.95 (-20) configurazione \T1/lmtt/m/n/10.95 hostapd.conf \T1/lm
 r/m/n/10.95 (-20) con: \T1/lmtt/m/n/10.95 ieee8021x=1\T1/lmr/m/n/10.95 (-20) , 
@@ -1259,7 +1307,7 @@ i-autenticazione.
 
 
 
-[51]
+[52]
 Overfull \hbox (18.18065pt too wide) in paragraph at lines 356--357
 []\T1/lmr/m/n/10.95 (-20) Il ser-ver RA-DIUS va-lu-ta le cre-den-zia-li e re-st
 i-tui-sce \T1/lmtt/m/n/10.95 Access-Challenge \T1/lmr/m/n/10.95 (-20) (MD5) o \
@@ -1268,24 +1316,24 @@ T1/lmtt/m/n/10.95 Access-Accept\T1/lmr/m/n/10.95 (-20) .
 
 
 
-[52]
-<immagini/NET_04/mka.png, id=2146, 1129.21875pt x 649.42625pt>
+[53]
+<immagini/NET_04/mka.png, id=2438, 1129.21875pt x 649.42625pt>
 File: immagini/NET_04/mka.png Graphic file (type png)
 <use immagini/NET_04/mka.png>
 Package pdftex.def Info: immagini/NET_04/mka.png  used on input line 391.
 (pdftex.def)             Requested size: 341.43307pt x 196.36534pt.
 
 
-[53 <./immagini/NET_04/mka.png>]
-
-[54]
+[54 <./immagini/NET_04/mka.png>]
 
 [55]
+
+[56]
 Underfull \hbox (badness 10000) in paragraph at lines 473--474
 
  []
 
-<immagini/NET_04/mka_topology.png, id=2170, 1129.21875pt x 649.42625pt>
+<immagini/NET_04/mka_topology.png, id=2461, 1129.21875pt x 649.42625pt>
 File: immagini/NET_04/mka_topology.png Graphic file (type png)
 <use immagini/NET_04/mka_topology.png>
 Package pdftex.def Info: immagini/NET_04/mka_topology.png  used on input line 4
@@ -1293,7 +1341,7 @@ Package pdftex.def Info: immagini/NET_04/mka_topology.png  used on input line 4
 (pdftex.def)             Requested size: 386.96027pt x 222.54607pt.
 
 
-[56 <./immagini/NET_04/mka_topology.png>]
+[57 <./immagini/NET_04/mka_topology.png>]
 Overfull \hbox (1.87363pt too wide) in paragraph at lines 554--555
 []\T1/lmr/bx/n/10.95 (-20) Interfaccia \T1/lmtt/b/n/10.95 macsec0 \T1/lmr/bx/n/
 10.95 (-20) as-sen-te\T1/lmr/m/n/10.95 (-20) : ve-ri-fi-ca-re \T1/lmtt/m/n/10.9
@@ -1303,10 +1351,117 @@ m/n/10.95 (-20) , \T1/lmtt/m/n/10.95 eapol_version=3\T1/lmr/m/n/10.95 (-20) .
 
 )
 
-[57]
+[58]
 \openout2 = `sezioni/net05.aux'.
 
- (./sezioni/net05.tex)
+ (./sezioni/net05.tex
+<immagini/NET_05/base.png, id=2474, 760.34062pt x 246.9225pt>
+File: immagini/NET_05/base.png Graphic file (type png)
+<use immagini/NET_05/base.png>
+Package pdftex.def Info: immagini/NET_05/base.png  used on input line 8.
+(pdftex.def)             Requested size: 273.14923pt x 88.7074pt.
+
+
+[59
+
+
+
+ <./immagini/NET_05/base.png>]
+<immagini/NET_05/firewall_charateristics.png, id=2481, 743.02594pt x 419.31656p
+t>
+File: immagini/NET_05/firewall_charateristics.png Graphic file (type png)
+<use immagini/NET_05/firewall_charateristics.png>
+Package pdftex.def Info: immagini/NET_05/firewall_charateristics.png  used on i
+nput line 39.
+(pdftex.def)             Requested size: 386.96027pt x 218.37857pt.
+
+
+[60 <./immagini/NET_05/firewall_charateristics.png>]
+<immagini/NET_05/filtering.png, id=2488, 292.84406pt x 251.43938pt>
+File: immagini/NET_05/filtering.png Graphic file (type png)
+<use immagini/NET_05/filtering.png>
+Package pdftex.def Info: immagini/NET_05/filtering.png  used on input line 62.
+(pdftex.def)             Requested size: 273.14923pt x 234.55365pt.
+<immagini/NET_05/ex1.png, id=2489, 1054.6903pt x 307.1475pt>
+File: immagini/NET_05/ex1.png Graphic file (type png)
+<use immagini/NET_05/ex1.png>
+Package pdftex.def Info: immagini/NET_05/ex1.png  used on input line 72.
+(pdftex.def)             Requested size: 273.14923pt x 79.54245pt.
+
+
+[61 <./immagini/NET_05/filtering.png> <./immagini/NET_05/ex1.png>]
+<immagini/NET_05/stateful_inspection_firewall.png, id=2499, 285.31593pt x 237.8
+8875pt>
+File: immagini/NET_05/stateful_inspection_firewall.png Graphic file (type png)
+<use immagini/NET_05/stateful_inspection_firewall.png>
+Package pdftex.def Info: immagini/NET_05/stateful_inspection_firewall.png  used
+ on input line 86.
+(pdftex.def)             Requested size: 273.14923pt x 227.74625pt.
+
+
+[62 <./immagini/NET_05/stateful_inspection_firewall.png>]
+
+[63]
+
+[64]
+<immagini/NET_05/from_in_to_out.png, id=2514, 914.66719pt x 533.74406pt>
+File: immagini/NET_05/from_in_to_out.png Graphic file (type png)
+<use immagini/NET_05/from_in_to_out.png>
+Package pdftex.def Info: immagini/NET_05/from_in_to_out.png  used on input line
+ 182.
+(pdftex.def)             Requested size: 318.66948pt x 185.94992pt.
+<immagini/NET_05/from_out_to_in.png, id=2515, 919.18407pt x 532.23843pt>
+File: immagini/NET_05/from_out_to_in.png Graphic file (type png)
+<use immagini/NET_05/from_out_to_in.png>
+Package pdftex.def Info: immagini/NET_05/from_out_to_in.png  used on input line
+ 187.
+(pdftex.def)             Requested size: 318.66948pt x 184.52391pt.
+<immagini/NET_05/from_out_to_out.png, id=2516, 922.19531pt x 523.9575pt>
+File: immagini/NET_05/from_out_to_out.png Graphic file (type png)
+<use immagini/NET_05/from_out_to_out.png>
+Package pdftex.def Info: immagini/NET_05/from_out_to_out.png  used on input lin
+e 192.
+(pdftex.def)             Requested size: 318.66948pt x 181.05334pt.
+
+
+[65 <./immagini/NET_05/from_in_to_out.png> <./immagini/NET_05/from_out_to_in.pn
+g>]
+
+[66 <./immagini/NET_05/from_out_to_out.png>]
+
+[67]
+Underfull \hbox (badness 10000) in paragraph at lines 264--265
+
+ []
+
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 268.
+
+<immagini/NET_05/topologia.png, id=2536, 826.58812pt x 504.38437pt>
+File: immagini/NET_05/topologia.png Graphic file (type png)
+<use immagini/NET_05/topologia.png>
+Package pdftex.def Info: immagini/NET_05/topologia.png  used on input line 281.
+
+(pdftex.def)             Requested size: 318.66948pt x 194.4541pt.
+
+
+[68 <./immagini/NET_05/topologia.png>]
+
+[69]
+Underfull \hbox (badness 10000) in paragraph at lines 345--346
+
+ []
+
+
+
+[70]
+
+[71]
+
+[72])
+
+[73]
 \openout2 = `sezioni/sys01.aux'.
 
  (./sezioni/sys01.tex
@@ -1316,36 +1471,33 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 
 
-[58
-
-
-
+[74
 
 
 
 ]
 
-[59]
+[75]
 
-[60])
+[76])
 
-[61]
+[77]
 \openout2 = `sezioni/sys02.aux'.
 
  (./sezioni/sys02.tex
-<immagini/SYS_02/pipeline.png, id=2205, 539.01375pt x 308.15125pt>
+<immagini/SYS_02/pipeline.png, id=2587, 539.01375pt x 308.15125pt>
 File: immagini/SYS_02/pipeline.png Graphic file (type png)
 <use immagini/SYS_02/pipeline.png>
 Package pdftex.def Info: immagini/SYS_02/pipeline.png  used on input line 26.
 (pdftex.def)             Requested size: 218.51521pt x 124.92282pt.
-<immagini/SYS_02/pipeline2.png, id=2206, 538.01pt x 316.18124pt>
+<immagini/SYS_02/pipeline2.png, id=2588, 538.01pt x 316.18124pt>
 File: immagini/SYS_02/pipeline2.png Graphic file (type png)
 <use immagini/SYS_02/pipeline2.png>
 Package pdftex.def Info: immagini/SYS_02/pipeline2.png  used on input line 32.
 (pdftex.def)             Requested size: 218.51521pt x 128.41936pt.
 
 
-[62
+[78
 
 
 
@@ -1354,36 +1506,36 @@ Package pdftex.def Info: immagini/SYS_02/pipeline2.png  used on input line 32.
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 46.
 
-<immagini/SYS_02/twobit.png, id=2215, 578.16pt x 357.335pt>
+<immagini/SYS_02/twobit.png, id=2597, 578.16pt x 357.335pt>
 File: immagini/SYS_02/twobit.png Graphic file (type png)
 <use immagini/SYS_02/twobit.png>
 Package pdftex.def Info: immagini/SYS_02/twobit.png  used on input line 66.
 (pdftex.def)             Requested size: 364.19667pt x 225.08952pt.
-<immagini/SYS_02/pht.png, id=2216, 578.16pt x 357.335pt>
+<immagini/SYS_02/pht.png, id=2598, 578.16pt x 357.335pt>
 File: immagini/SYS_02/pht.png Graphic file (type png)
 <use immagini/SYS_02/pht.png>
 Package pdftex.def Info: immagini/SYS_02/pht.png  used on input line 79.
 (pdftex.def)             Requested size: 227.62206pt x 140.67958pt.
 
 
-[63 <./immagini/SYS_02/twobit.png>]
+[79 <./immagini/SYS_02/twobit.png>]
 
-[64 <./immagini/SYS_02/pht.png>]
-<immagini/SYS_02/ooo.png, id=2230, 567.11874pt x 370.38374pt>
+[80 <./immagini/SYS_02/pht.png>]
+<immagini/SYS_02/ooo.png, id=2613, 567.11874pt x 370.38374pt>
 File: immagini/SYS_02/ooo.png Graphic file (type png)
 <use immagini/SYS_02/ooo.png>
 Package pdftex.def Info: immagini/SYS_02/ooo.png  used on input line 124.
 (pdftex.def)             Requested size: 364.19667pt x 237.86426pt.
 
 
-[65 <./immagini/SYS_02/ooo.png>]
-<immagini/SYS_02/cachemiss.png, id=2239, 578.16pt x 357.335pt>
+[81 <./immagini/SYS_02/ooo.png>]
+<immagini/SYS_02/cachemiss.png, id=2621, 578.16pt x 357.335pt>
 File: immagini/SYS_02/cachemiss.png Graphic file (type png)
 <use immagini/SYS_02/cachemiss.png>
 Package pdftex.def Info: immagini/SYS_02/cachemiss.png  used on input line 136.
 
 (pdftex.def)             Requested size: 341.43307pt x 211.02211pt.
-<immagini/SYS_02/memory_piramide.png, id=2240, 578.16pt x 357.335pt>
+<immagini/SYS_02/memory_piramide.png, id=2622, 578.16pt x 357.335pt>
 File: immagini/SYS_02/memory_piramide.png Graphic file (type png)
 <use immagini/SYS_02/memory_piramide.png>
 Package pdftex.def Info: immagini/SYS_02/memory_piramide.png  used on input lin
@@ -1396,14 +1548,14 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 
 
-[66 <./immagini/SYS_02/cachemiss.png> <./immagini/SYS_02/memory_piramide.png>]
-<immagini/SYS_02/direct_mapped.png, id=2249, 1145.27875pt x 634.37pt>
+[82 <./immagini/SYS_02/cachemiss.png> <./immagini/SYS_02/memory_piramide.png>]
+<immagini/SYS_02/direct_mapped.png, id=2631, 1145.27875pt x 634.37pt>
 File: immagini/SYS_02/direct_mapped.png Graphic file (type png)
 <use immagini/SYS_02/direct_mapped.png>
 Package pdftex.def Info: immagini/SYS_02/direct_mapped.png  used on input line 
 186.
 (pdftex.def)             Requested size: 295.90588pt x 163.89658pt.
-<immagini/SYS_02/fullyasso.png, id=2250, 1145.27875pt x 634.37pt>
+<immagini/SYS_02/fullyasso.png, id=2632, 1145.27875pt x 634.37pt>
 File: immagini/SYS_02/fullyasso.png Graphic file (type png)
 <use immagini/SYS_02/fullyasso.png>
 Package pdftex.def Info: immagini/SYS_02/fullyasso.png  used on input line 203.
@@ -1411,60 +1563,60 @@ Package pdftex.def Info: immagini/SYS_02/fullyasso.png  used on input line 203.
 (pdftex.def)             Requested size: 295.90588pt x 163.89658pt.
 
 
-[67 <./immagini/SYS_02/direct_mapped.png>]
-<immagini/SYS_02/4way.png, id=2258, 1145.27875pt x 634.37pt>
+[83 <./immagini/SYS_02/direct_mapped.png>]
+<immagini/SYS_02/4way.png, id=2639, 1145.27875pt x 634.37pt>
 File: immagini/SYS_02/4way.png Graphic file (type png)
 <use immagini/SYS_02/4way.png>
 Package pdftex.def Info: immagini/SYS_02/4way.png  used on input line 220.
 (pdftex.def)             Requested size: 295.90588pt x 163.89658pt.
 
 
-[68 <./immagini/SYS_02/fullyasso.png> <./immagini/SYS_02/4way.png>]
+[84 <./immagini/SYS_02/fullyasso.png> <./immagini/SYS_02/4way.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 260--263
 
  []
 
 
 
-[69]
+[85]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 272.
 
-<immagini/SYS_02/snooping.png, id=2273, 626.34pt x 483.8075pt>
+<immagini/SYS_02/snooping.png, id=2655, 626.34pt x 483.8075pt>
 File: immagini/SYS_02/snooping.png Graphic file (type png)
 <use immagini/SYS_02/snooping.png>
 Package pdftex.def Info: immagini/SYS_02/snooping.png  used on input line 305.
 (pdftex.def)             Requested size: 295.90588pt x 228.57072pt.
 
 
-[70]
-<immagini/SYS_02/vi.png, id=2278, 740.7675pt x 484.81125pt>
+[86]
+<immagini/SYS_02/vi.png, id=2660, 740.7675pt x 484.81125pt>
 File: immagini/SYS_02/vi.png Graphic file (type png)
 <use immagini/SYS_02/vi.png>
 Package pdftex.def Info: immagini/SYS_02/vi.png  used on input line 333.
 (pdftex.def)             Requested size: 273.14923pt x 178.77074pt.
 
 
-[71 <./immagini/SYS_02/snooping.png>]
+[87 <./immagini/SYS_02/snooping.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 350.
 
-<immagini/SYS_02/cache.png, id=2285, 334.24875pt x 173.64874pt>
+<immagini/SYS_02/cache.png, id=2668, 334.24875pt x 173.64874pt>
 File: immagini/SYS_02/cache.png Graphic file (type png)
 <use immagini/SYS_02/cache.png>
 Package pdftex.def Info: immagini/SYS_02/cache.png  used on input line 372.
 (pdftex.def)             Requested size: 295.90588pt x 153.7414pt.
 
 
-[72 <./immagini/SYS_02/vi.png>]
-<immagini/SYS_02/tsx_c.png, id=2292, 758.835pt x 507.8975pt>
+[88 <./immagini/SYS_02/vi.png>]
+<immagini/SYS_02/tsx_c.png, id=2675, 758.835pt x 507.8975pt>
 File: immagini/SYS_02/tsx_c.png Graphic file (type png)
 <use immagini/SYS_02/tsx_c.png>
 Package pdftex.def Info: immagini/SYS_02/tsx_c.png  used on input line 387.
 (pdftex.def)             Requested size: 213.96529pt x 143.21007pt.
-<immagini/SYS_02/tsx_asm.png, id=2293, 644.4075pt x 523.9575pt>
+<immagini/SYS_02/tsx_asm.png, id=2676, 644.4075pt x 523.9575pt>
 File: immagini/SYS_02/tsx_asm.png Graphic file (type png)
 <use immagini/SYS_02/tsx_asm.png>
 Package pdftex.def Info: immagini/SYS_02/tsx_asm.png  used on input line 394.
@@ -1476,7 +1628,7 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 
 
-[73 <./immagini/SYS_02/cache.png> <./immagini/SYS_02/tsx_c.png> <./immagini/SYS
+[89 <./immagini/SYS_02/cache.png> <./immagini/SYS_02/tsx_c.png> <./immagini/SYS
 _02/tsx_asm.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
@@ -1484,9 +1636,9 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 
 
-[74])
+[90])
 
-[75]
+[91]
 \openout2 = `sezioni/sys04.aux'.
 
  (./sezioni/sys04.tex
@@ -1494,19 +1646,19 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 18.
 
-<immagini/SYS_04/strcmp.png, id=2314, 395.22656pt x 173.14688pt>
+<immagini/SYS_04/strcmp.png, id=2697, 395.22656pt x 173.14688pt>
 File: immagini/SYS_04/strcmp.png Graphic file (type png)
 <use immagini/SYS_04/strcmp.png>
 Package pdftex.def Info: immagini/SYS_04/strcmp.png  used on input line 21.
 (pdftex.def)             Requested size: 227.62206pt x 99.71983pt.
 
 
-[76
+[92
 
 
 
  <./immagini/SYS_04/strcmp.png>]
-<immagini/SYS_04/constTime.png, id=2321, 710.655pt x 194.22563pt>
+<immagini/SYS_04/constTime.png, id=2704, 710.655pt x 194.22563pt>
 File: immagini/SYS_04/constTime.png Graphic file (type png)
 <use immagini/SYS_04/constTime.png>
 Package pdftex.def Info: immagini/SYS_04/constTime.png  used on input line 37.
@@ -1518,25 +1670,93 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 
 
-[77 <./immagini/SYS_04/constTime.png>]
+[93 <./immagini/SYS_04/constTime.png>]
 
-[78]
+[94]
 
-[79]
-<immagini/SYS_04/fool.png, id=2339, 480.79625pt x 268.00125pt>
+[95]
+<immagini/SYS_04/meltdown.png, id=2721, 449.68pt x 399.4925pt>
+File: immagini/SYS_04/meltdown.png Graphic file (type png)
+<use immagini/SYS_04/meltdown.png>
+Package pdftex.def Info: immagini/SYS_04/meltdown.png  used on input line 116.
+(pdftex.def)             Requested size: 227.62206pt x 202.22063pt.
+<immagini/SYS_04/fool.png, id=2722, 480.79625pt x 268.00125pt>
 File: immagini/SYS_04/fool.png Graphic file (type png)
 <use immagini/SYS_04/fool.png>
-Package pdftex.def Info: immagini/SYS_04/fool.png  used on input line 126.
+Package pdftex.def Info: immagini/SYS_04/fool.png  used on input line 131.
 (pdftex.def)             Requested size: 227.62206pt x 126.88069pt.
 
 
-[80 <./immagini/SYS_04/fool.png>]
+[96 <./immagini/SYS_04/meltdown.png>]
+<immagini/SYS_04/spectre.png, id=2733, 646.415pt x 446.66875pt>
+File: immagini/SYS_04/spectre.png Graphic file (type png)
+<use immagini/SYS_04/spectre.png>
+Package pdftex.def Info: immagini/SYS_04/spectre.png  used on input line 159.
+(pdftex.def)             Requested size: 227.62206pt x 157.28377pt.
 
-[81]
 
-[82])
+[97 <./immagini/SYS_04/fool.png> <./immagini/SYS_04/spectre.png>]
+<immagini/SYS_04/checks.png, id=2743, 677.53125pt x 358.33875pt>
+File: immagini/SYS_04/checks.png Graphic file (type png)
+<use immagini/SYS_04/checks.png>
+Package pdftex.def Info: immagini/SYS_04/checks.png  used on input line 179.
+(pdftex.def)             Requested size: 227.62206pt x 120.3846pt.
+<immagini/SYS_04/vm.png, id=2744, 625.33624pt x 433.62pt>
+File: immagini/SYS_04/vm.png Graphic file (type png)
+<use immagini/SYS_04/vm.png>
+Package pdftex.def Info: immagini/SYS_04/vm.png  used on input line 193.
+(pdftex.def)             Requested size: 227.62206pt x 157.8366pt.
 
-[83]
+
+[98 <./immagini/SYS_04/checks.png>]
+
+[99 <./immagini/SYS_04/vm.png>]
+<immagini/SYS_04/detection.png, id=2761, 1295.84125pt x 627.34375pt>
+File: immagini/SYS_04/detection.png Graphic file (type png)
+<use immagini/SYS_04/detection.png>
+Package pdftex.def Info: immagini/SYS_04/detection.png  used on input line 225.
+
+(pdftex.def)             Requested size: 227.62206pt x 110.18884pt.
+<immagini/SYS_04/isolation.png, id=2762, 671.50874pt x 513.92pt>
+File: immagini/SYS_04/isolation.png Graphic file (type png)
+<use immagini/SYS_04/isolation.png>
+Package pdftex.def Info: immagini/SYS_04/isolation.png  used on input line 233.
+
+(pdftex.def)             Requested size: 227.62206pt x 174.20508pt.
+
+
+[100 <./immagini/SYS_04/detection.png> <./immagini/SYS_04/isolation.png>]
+<immagini/SYS_04/cr3.png, id=2771, 747.79375pt x 345.29pt>
+File: immagini/SYS_04/cr3.png Graphic file (type png)
+<use immagini/SYS_04/cr3.png>
+Package pdftex.def Info: immagini/SYS_04/cr3.png  used on input line 251.
+(pdftex.def)             Requested size: 227.62206pt x 105.0999pt.
+<immagini/SYS_04/thunks.png, id=2772, 1279.78125pt x 431.6125pt>
+File: immagini/SYS_04/thunks.png Graphic file (type png)
+<use immagini/SYS_04/thunks.png>
+Package pdftex.def Info: immagini/SYS_04/thunks.png  used on input line 261.
+(pdftex.def)             Requested size: 227.62206pt x 76.76486pt.
+
+
+[101 <./immagini/SYS_04/cr3.png> <./immagini/SYS_04/thunks.png>]
+<immagini/SYS_04/rowhammer.png, id=2781, 520.94624pt x 591.20876pt>
+File: immagini/SYS_04/rowhammer.png Graphic file (type png)
+<use immagini/SYS_04/rowhammer.png>
+Package pdftex.def Info: immagini/SYS_04/rowhammer.png  used on input line 280.
+
+(pdftex.def)             Requested size: 227.62206pt x 258.31941pt.
+
+
+[102 <./immagini/SYS_04/rowhammer.png>]
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 310.
+
+
+
+[103])
+
+[104]
 \openout2 = `sezioni/sys05.aux'.
 
  (./sezioni/sys05.tex
@@ -1546,7 +1766,7 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 
 
-[84
+[105
 
 
 
@@ -1555,18 +1775,18 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 64.
 
-<immagini/SYS_05/accessi.png, id=2374, 1203.49625pt x 418.56375pt>
+<immagini/SYS_05/accessi.png, id=2801, 1203.49625pt x 418.56375pt>
 File: immagini/SYS_05/accessi.png Graphic file (type png)
 <use immagini/SYS_05/accessi.png>
 Package pdftex.def Info: immagini/SYS_05/accessi.png  used on input line 81.
 (pdftex.def)             Requested size: 295.90588pt x 102.90987pt.
 
 
-[85]
+[106]
 
-[86 <./immagini/SYS_05/accessi.png>]
+[107 <./immagini/SYS_05/accessi.png>]
 
-[87]
+[108]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 160.
@@ -1578,27 +1798,27 @@ Overfull \hbox (202.93684pt too wide) in paragraph at lines 162--175
 
 
 
-[88]
+[109]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 233.
 
 
 
-[89]
-<immagini/SYS_05/rmonitor.png, id=2406, 701.62125pt x 510.90875pt>
+[110]
+<immagini/SYS_05/rmonitor.png, id=2833, 701.62125pt x 510.90875pt>
 File: immagini/SYS_05/rmonitor.png Graphic file (type png)
 <use immagini/SYS_05/rmonitor.png>
 Package pdftex.def Info: immagini/SYS_05/rmonitor.png  used on input line 249.
 (pdftex.def)             Requested size: 364.19667pt x 265.20633pt.
 
 
-[90 <./immagini/SYS_05/rmonitor.png>]
+[111 <./immagini/SYS_05/rmonitor.png>]
 
-[91]
+[112]
 
-[92]
-<immagini/SYS_05/domainacl.png, id=2427, 825.0825pt x 447.6725pt>
+[113]
+<immagini/SYS_05/domainacl.png, id=2853, 825.0825pt x 447.6725pt>
 File: immagini/SYS_05/domainacl.png Graphic file (type png)
 <use immagini/SYS_05/domainacl.png>
 Package pdftex.def Info: immagini/SYS_05/domainacl.png  used on input line 389.
@@ -1606,8 +1826,8 @@ Package pdftex.def Info: immagini/SYS_05/domainacl.png  used on input line 389.
 (pdftex.def)             Requested size: 318.66948pt x 172.90433pt.
 
 
-[93 <./immagini/SYS_05/domainacl.png>]
-<immagini/SYS_05/selinux.png, id=2434, 928.46875pt x 540.0175pt>
+[114 <./immagini/SYS_05/domainacl.png>]
+<immagini/SYS_05/selinux.png, id=2860, 928.46875pt x 540.0175pt>
 File: immagini/SYS_05/selinux.png Graphic file (type png)
 <use immagini/SYS_05/selinux.png>
 Package pdftex.def Info: immagini/SYS_05/selinux.png  used on input line 409.
@@ -1619,17 +1839,17 @@ Overfull \hbox (12.18233pt too wide) in paragraph at lines 418--419
 i si-cu-rez-za (\T1/lmtt/m/n/10.95 subject_type\T1/lmr/m/n/10.95 (-20) ); 
  []
 
-<immagini/SYS_05/fase1.png, id=2435, 549.05125pt x 405.515pt>
+<immagini/SYS_05/fase1.png, id=2861, 549.05125pt x 405.515pt>
 File: immagini/SYS_05/fase1.png Graphic file (type png)
 <use immagini/SYS_05/fase1.png>
 Package pdftex.def Info: immagini/SYS_05/fase1.png  used on input line 426.
 (pdftex.def)             Requested size: 227.62206pt x 168.11232pt.
 
 
-[94 <./immagini/SYS_05/selinux.png>]
+[115 <./immagini/SYS_05/selinux.png>]
 
-[95 <./immagini/SYS_05/fase1.png>]
-<immagini/SYS_05/boot.png, id=2448, 953.5625pt x 491.8375pt>
+[116 <./immagini/SYS_05/fase1.png>]
+<immagini/SYS_05/boot.png, id=2875, 953.5625pt x 491.8375pt>
 File: immagini/SYS_05/boot.png Graphic file (type png)
 <use immagini/SYS_05/boot.png>
 Package pdftex.def Info: immagini/SYS_05/boot.png  used on input line 496.
@@ -1641,7 +1861,7 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 
 
-[96 <./immagini/SYS_05/boot.png>]
+[117 <./immagini/SYS_05/boot.png>]
 Overfull \hbox (14.8554pt too wide) in paragraph at lines 537--538
 []\T1/lmr/bx/n/10.95 (-20) Creare nuo-vi na-me-spa-ce e PID na-me-spa-ces \T1/l
 mr/m/n/10.95 (-20) usan-do chia-ma-te co-me \T1/lmtt/m/n/10.95 clone(CLONE_NEWP
@@ -1650,8 +1870,8 @@ ID,
 
 
 
-[97]
-<immagini/SYS_05/horse.png, id=2468, 444.66125pt x 378.41376pt>
+[118]
+<immagini/SYS_05/horse.png, id=2894, 444.66125pt x 378.41376pt>
 File: immagini/SYS_05/horse.png Graphic file (type png)
 <use immagini/SYS_05/horse.png>
 Package pdftex.def Info: immagini/SYS_05/horse.png  used on input line 547.
@@ -1673,105 +1893,127 @@ You may provide a definition with
 
 
 
-[98 <./immagini/SYS_05/horse.png>]
+[119 <./immagini/SYS_05/horse.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 583.
 
 
 
-[99]
+[120]
 
-[100]
-<immagini/SYS_05/so.png, id=2488, 1298.8525pt x 629.35126pt>
+[121]
+<immagini/SYS_05/so.png, id=2915, 1298.8525pt x 629.35126pt>
 File: immagini/SYS_05/so.png Graphic file (type png)
 <use immagini/SYS_05/so.png>
 Package pdftex.def Info: immagini/SYS_05/so.png  used on input line 665.
 (pdftex.def)             Requested size: 318.66948pt x 154.40848pt.
 )
 
-[101 <./immagini/SYS_05/so.png>]
+[122 <./immagini/SYS_05/so.png>]
 \openout2 = `sezioni/sys06.aux'.
 
  (./sezioni/sys06.tex
-Underfull \hbox (badness 10000) in paragraph at lines 3--4
+./sezioni/sys06.tex:4: Missing $ inserted.
+<inserted text> 
+                $
+l.4 \section{SYS_06 - Antivirus}
+                                
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
 
- []
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <14.4> on input line 4.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 4.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 4.
+./sezioni/sys06.tex:4: Missing $ inserted.
+<inserted text> 
+                $
+l.4 \section{SYS_06 - Antivirus}
+                                
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 4.
 
 
 
-[102
+[123
 
 
 
 ]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 44.
+(hyperref)                than one, level fixed on input line 43.
 
 
 
-[103]
-<immagini/SYS_06/unpack.png, id=2504, 634.37pt x 413.545pt>
+[124]
+<immagini/SYS_06/unpack.png, id=2932, 634.37pt x 413.545pt>
 File: immagini/SYS_06/unpack.png Graphic file (type png)
 <use immagini/SYS_06/unpack.png>
-Package pdftex.def Info: immagini/SYS_06/unpack.png  used on input line 102.
+Package pdftex.def Info: immagini/SYS_06/unpack.png  used on input line 101.
 (pdftex.def)             Requested size: 318.66948pt x 207.74374pt.
 
 
-[104]
-<immagini/SYS_06/poli.png, id=2514, 1280.785pt x 513.92pt>
+[125]
+<immagini/SYS_06/poli.png, id=2942, 1280.785pt x 513.92pt>
 File: immagini/SYS_06/poli.png Graphic file (type png)
 <use immagini/SYS_06/poli.png>
-Package pdftex.def Info: immagini/SYS_06/poli.png  used on input line 119.
+Package pdftex.def Info: immagini/SYS_06/poli.png  used on input line 118.
 (pdftex.def)             Requested size: 218.51521pt x 87.67891pt.
-<immagini/SYS_06/spaghetti.png, id=2515, 825.0825pt x 602.25pt>
+<immagini/SYS_06/spaghetti.png, id=2943, 825.0825pt x 602.25pt>
 File: immagini/SYS_06/spaghetti.png Graphic file (type png)
 <use immagini/SYS_06/spaghetti.png>
-Package pdftex.def Info: immagini/SYS_06/spaghetti.png  used on input line 125.
+Package pdftex.def Info: immagini/SYS_06/spaghetti.png  used on input line 124.
 
 (pdftex.def)             Requested size: 218.51521pt x 159.4944pt.
 
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 138.
+(hyperref)                than one, level fixed on input line 137.
 
 
 
-[105 <./immagini/SYS_06/unpack.png> <./immagini/SYS_06/poli.png> <./immagini/SY
+[126 <./immagini/SYS_06/unpack.png> <./immagini/SYS_06/poli.png> <./immagini/SY
 S_06/spaghetti.png>]
-<immagini/SYS_06/euristic.png, id=2525, 1110.1475pt x 673.51625pt>
+<immagini/SYS_06/euristic.png, id=2953, 1110.1475pt x 673.51625pt>
 File: immagini/SYS_06/euristic.png Graphic file (type png)
 <use immagini/SYS_06/euristic.png>
-Package pdftex.def Info: immagini/SYS_06/euristic.png  used on input line 180.
+Package pdftex.def Info: immagini/SYS_06/euristic.png  used on input line 179.
 (pdftex.def)             Requested size: 318.66948pt x 193.33124pt.
 
 
-[106]
-<immagini/SYS_06/cow.png, id=2530, 1024.82875pt x 242.9075pt>
+[127]
+<immagini/SYS_06/cow.png, id=2959, 1024.82875pt x 242.9075pt>
 File: immagini/SYS_06/cow.png Graphic file (type png)
 <use immagini/SYS_06/cow.png>
-Package pdftex.def Info: immagini/SYS_06/cow.png  used on input line 192.
+Package pdftex.def Info: immagini/SYS_06/cow.png  used on input line 191.
 (pdftex.def)             Requested size: 273.14923pt x 64.74081pt.
-<immagini/SYS_06/byteplots.png, id=2531, 1618.045pt x 572.1375pt>
+<immagini/SYS_06/byteplots.png, id=2960, 1618.045pt x 572.1375pt>
 File: immagini/SYS_06/byteplots.png Graphic file (type png)
 <use immagini/SYS_06/byteplots.png>
-Package pdftex.def Info: immagini/SYS_06/byteplots.png  used on input line 202.
+Package pdftex.def Info: immagini/SYS_06/byteplots.png  used on input line 201.
 
 (pdftex.def)             Requested size: 364.19667pt x 128.77776pt.
 
 
-[107 <./immagini/SYS_06/euristic.png> <./immagini/SYS_06/cow.png> <./immagini/S
+[128 <./immagini/SYS_06/euristic.png> <./immagini/SYS_06/cow.png> <./immagini/S
 YS_06/byteplots.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 220.
+(hyperref)                than one, level fixed on input line 219.
 
 
 
-[108])
+[129])
 
-[109] (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/main.aux
+[130] (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/main.aux
 (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net01.aux)
 (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net02.aux)
 (/home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/sezioni/net03.aux)
@@ -1788,38 +2030,35 @@ L3 programming layer <2025-01-18>
  ***********
 
 
-Package rerunfilecheck Warning: File `main.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package rerunfilecheck Info: Checksums for `main.out':
-(rerunfilecheck)             Before: C048912311431E7A68208A6E73FFAAC9;71290
-(rerunfilecheck)             After:  5D3E625862B89E620624AC7697F0F953;72306.
+Package rerunfilecheck Info: File `main.out' has not changed.
+(rerunfilecheck)             Checksum: 7CC3D1E41AE2BF706C1AFB76BD09AE1C;86423.
  ) 
 Here is how much of TeX's memory you used:
- 20250 strings out of 473197
- 331523 string characters out of 5718604
- 1161576 words of memory out of 5000000
- 42082 multiletter control sequences out of 15000+600000
- 641377 words of font info for 252 fonts, out of 8000000 for 9000
+ 20572 strings out of 473197
+ 339474 string characters out of 5718604
+ 1161719 words of memory out of 5000000
+ 42301 multiletter control sequences out of 15000+600000
+ 653920 words of font info for 273 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,10n,79p,1049b,2032s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/ty
 pe1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmbxi10.pfb></
 usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/
-public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/sh
-are/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/
-lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texm
-f/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10
-.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts
-/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb>
-</usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1
-/public/lm/lmtti10.pfb>
+public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi12.pfb></usr/s
+hare/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public
+/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/tex
+mf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8
+.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts
+/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb>
+</usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type
+1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
 Output written on /home/leonardo/uni/Appunti-Magistrale/Appunti_NSD/out/main.pd
-f (109 pages, 9510479 bytes).
+f (130 pages, 13257593 bytes).
 PDF statistics:
- 2805 PDF objects out of 2984 (max. 8388607)
- 2500 compressed objects within 25 object streams
- 753 named destinations out of 1000 (max. 500000)
- 52542 words of extra memory for PDF output out of 61914 (max. 10000000)
+ 3254 PDF objects out of 3580 (max. 8388607)
+ 2885 compressed objects within 29 object streams
+ 841 named destinations out of 1000 (max. 500000)
+ 59232 words of extra memory for PDF output out of 61914 (max. 10000000)
 
