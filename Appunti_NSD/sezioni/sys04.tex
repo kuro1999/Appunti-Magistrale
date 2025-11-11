@@ -1,31 +1,27 @@
-
 \newpage
-\maketitle
-\section{SYS\_04 — Attacchi Hardware e Contromisure}
+\section{SYS\_04 - Hardware attacks and countermeasures}
 \subsection{Introduzione agli Attacchi Hardware}
 Gli attacchi hardware sfruttano vulnerabilità fisiche e architetturali delle componenti elettroniche dei sistemi, come CPU, memoria e cache. Tali attacchi sono difficili da rilevare dai software di sicurezza e sfruttano caratteristiche intrinseche dell'hardware, come la temporizzazione, l'uso della cache e l'esecuzione speculativa. Gli attacchi hardware possono includere:
 
-\begin{itemize}
-    \item Attacchi di temporizzazione (Timing Attacks)
-    \item Attacchi a canale laterale (Side-Channel Attacks)
-    \item Manipolazioni della cache (Cache Attacks)
-    \item Attacchi alle funzioni speculative (Speculative Execution Attacks)
-    \item Attacchi basati su memoria (Memory-based Attacks)
-    \item Attacchi di RowHammer (attacchi a memoria dinamica)
+\begin{itemize} \item Attacchi di temporizzazione (Timing Attacks)
+\item Attacchi a canale laterale (Side-Channel Attacks)
+\item Manipolazioni della cache (Cache Attacks)
+\item Attacchi alle funzioni speculative (Speculative Execution Attacks)
+\item Attacchi basati su memoria (Memory-based Attacks)
+\item Attacchi di RowHammer (attacchi a memoria dinamica)
 \end{itemize}
 
 \subsection{Timing e Sicurezza}
 Gli attacchi di temporizzazione sfruttano la misurazione dei tempi di esecuzione di operazioni su dati sensibili per ottenere informazioni sui dati stessi. Ad esempio, se un algoritmo impiega più tempo per elaborare determinati dati, \'e possibile dedurre informazioni su di essi, come nel caso delle password o delle chiavi di crittografia.
 
 \paragraph{Uso della Funzione strcmp}
-La funzione `strcmp()` confronta due stringhe carattere per carattere. Se le stringhe sono uguali, la funzione restituisce un valore pari a zero. Tuttavia, se le stringhe differiscono, il tempo impiegato per confrontarle aumenta progressivamente, con il risultato che, più a fondo si arriva nel confronto, maggiore sarà il tempo impiegato. Ciò consente a un attaccante di dedurre quale carattere della stringa \'e corretto, basandosi sul tempo impiegato per completare il confronto.
+La funzione \texttt{strcmp()} confronta due stringhe carattere per carattere. Se le stringhe sono uguali, la funzione restituisce un valore pari a zero. Tuttavia, se le stringhe differiscono, il tempo impiegato per confrontarle aumenta progressivamente, con il risultato che, più a fondo si arriva nel confronto, maggiore sarà il tempo impiegato. Ciò consente a un attaccante di dedurre quale carattere della stringa \'e corretto, basandosi sul tempo impiegato per completare il confronto.
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=.85\linewidth]{immagini/SYS_04/strcmp.png}
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/strcmp.png}
 \end{figure}
 \paragraph{Timing attack in un Programma di Autenticazione}
-Supponiamo che un programma di autenticazione confronti un input (t) con la password corretta (s) usando `strcmp()`. Se `t = \"password\"` e `s = "password"`, il programma impiega più tempo per confrontare i caratteri quando l'input \'e corretto, rispetto a quando c'\'e un errore, permettendo all'attaccante di inferire gradualmente i caratteri della password.
-
+Supponiamo che un programma di autenticazione confronti un input (t) con la password corretta (s) usando \texttt{strcmp()}. Se \texttt{t = "password"} e \texttt{s = "password"}, il programma impiega più tempo per confrontare i caratteri quando l'input \'e corretto, rispetto a quando c'\'e un errore, permettendo all'attaccante di inferire gradualmente i caratteri della password.
 
 \subsubsection{Attacchi di Temporizzazione nel Mondo Reale: RSA}
 Nel contesto della crittografia, gli attacchi di temporizzazione possono essere utilizzati per ottenere informazioni sulla chiave privata di un sistema come RSA. La decrittazione RSA implica una serie di operazioni di esponentiazione modulare, che dipendono dal valore della chiave privata.
@@ -34,73 +30,181 @@ Nel contesto della crittografia, gli attacchi di temporizzazione possono essere 
 Gli attacchi alla decrittazione RSA si basano sul rilevamento delle differenze nei tempi di esecuzione durante il calcolo dell'esponentiazione modulare. Ad esempio, l'attaccante può inviare cifrati progettati per creare tempi di risposta differenti a causa dei passaggi computazionali coinvolti. Questo fenomeno, noto come il \"gap 0-1\", si verifica quando la decrittazione impiega meno tempo (0) quando certe condizioni sono soddisfatte e più tempo (1) quando altre condizioni richiedono più passaggi computazionali. Osservando queste differenze nei tempi di esecuzione, l'attaccante può inferire parti della chiave privata. Ad esempio, nel caso dell'esponente modulare, la modifica di uno dei bit della chiave può accelerare il calcolo, rivelando informazioni sul valore della chiave.
 
 \paragraph{Algoritmi a Tempo Costante}
-Per mitigare i Timing attacks, \'e essenziale utilizzare algoritmi che impiegano lo stesso tempo per ogni confronto, indipendentemente dai dati in ingresso. Un esempio di implementazione sicura di confronto di stringhe potrebbe essere la funzione `constantTimeStringCompare()` che confronta ogni carattere delle stringhe senza fermarsi fino a quando tutti i caratteri sono stati verificati, impedendo così che l'attaccante possa ottenere informazioni tramite differenze nei tempi di esecuzione.
+Per mitigare i Timing attacks, \'e essenziale utilizzare algoritmi che impiegano lo stesso tempo per ogni confronto, indipendentemente dai dati in ingresso. Un esempio di implementazione sicura di confronto di stringhe potrebbe essere la funzione \texttt{constantTimeStringCompare()} che confronta ogni carattere delle stringhe senza fermarsi fino a quando tutti i caratteri sono stati verificati, impedendo così che l'attaccante possa ottenere informazioni tramite differenze nei tempi di esecuzione.
 Ovviamente questo porta ad un peggioramento delle prestazioni, ma aumenta la sicurezza del sistema.
 \begin{figure}[H]
 \centering
 \includegraphics[width=.85\linewidth]{immagini/SYS_04/constTime.png}
 \end{figure}
 
-\subsection{Attacchi a Canale Laterale}
+% ======= PREAMBOLO INSERITO QUI =======
+\subsection{Preambolo: Side-Channel Attacks e Considerazioni Tecniche}
+I \textbf{side-channel attacks} sfruttano effetti micro-architetturali osservabili (tempi di accesso, stato delle cache, aborti transazionali, ecc.) per \emph{inferire} dati che dovrebbero restare isolati tra processi/VM. L’idea chiave è: portare il sottosistema (in primis la gerarchia di cache) in uno \emph{stato noto}, lasciare che la vittima esegua, quindi \emph{misurare} un segnale (latenze, aborti, rumore) che rivela pattern di accesso o contenuti. Tecniche tipiche includono \emph{Prime+Probe}, \emph{Flush+Reload}, \emph{Flush+Flush}, \emph{Evict+Time} e \emph{Prime+Abort}. Questi attacchi possono bypassare l’isolamento del sistema operativo sfruttando cache condivise (L3) o l’SMT per L1.
+
+\paragraph{Fasi operative}
+\begin{enumerate}
+  \item \textbf{Pre-attack:} selezione del target (set/linea di cache), calibrazione delle \emph{soglie temporali} per distinguere \emph{hit} (veloce) da \emph{miss} (lento).
+  \item \textbf{Active attack:} inizializzazione (flush/prime), attesa dell’accesso vittima, misure e analisi degli effetti (tempo di reload/probe, aborti TSX), iterazione finché il segreto (es.\ chiave, nonce) viene ricostruito.
+\end{enumerate}
+
+\paragraph{Scoprire i percorsi di codice}
+Anche algoritmi con conteggio operazioni costante (es.\ \emph{Montgomery Ladder}) possono rivelare \emph{quale ramo} viene seguito, osservando quali linee di cache vengono toccate: il \emph{timing della cache} permette di inferire il cammino senza cronometrare il numero di operazioni.
+
+\subsubsection{Technical Considerations}
+\begin{itemize}
+  \item \textbf{Precisione temporale:} servono timer ad alta risoluzione (\texttt{rdtsc}, \texttt{clock\_gettime}); drift e disallineamento tra core introducono rumore.
+  \item \textbf{Rumore e variabilità:} contesa CPU e \emph{cache miss} non correlati disturbano le misure; aumentare i campionamenti e usare statistiche robuste (mediana) aiuta.
+  \item \textbf{Ottimizzazioni HW/SW:} \emph{branch prediction} ed \emph{speculative execution} alterano i tempi; l’\emph{Hyper-Threading (SMT)} introduce interferenze tra thread sullo stesso core.
+  \item \textbf{Scheduling di processo:} l’interleaving del SO riduce la stabilità delle misure; \emph{CPU affinity/pinning} migliora accuratezza e ripetibilità.
+  \item \textbf{Gerarchie di cache e prefetch:} L1/L2/L3 hanno latenze diverse che plasmano il segnale; il \emph{prefetching} riduce la predicibilità dei miss e va considerato nel disegno dell’esperimento.
+\end{itemize}
+
+\paragraph{Nota pratica (TSX e detection)}
+Varianti come \emph{Prime+Abort} sfruttano aborti transazionali come \emph{callback hardware} (senza timing esplicito), ma possono essere limitate disabilitando TSX; in generale la costruzione del canale produce \emph{rumore} misurabile con \emph{Hardware Performance Counters} (HPC), utile per profili di detection—sebbene i contatori differiscano tra vendor e generazioni.
+% ======= FINE PREAMBOLO =======
+
+\subsection{Attacchi side channel}
 Gli attacchi a canale laterale sfruttano informazioni che possono essere osservate indirettamente durante l'esecuzione di un programma, come il consumo di energia, la radiazione elettromagnetica, o l'accesso alla memoria. Un esempio di attacco a canale laterale \'e quello che sfrutta il comportamento della cache, che può rivelare informazioni su operazioni sensibili come le operazioni crittografiche.
 
 \subsubsection{Timing della Cache}
-Quando si leggono i dati dalla memoria, la CPU li legge effettivamente dalla cache, che cerca di servire una richiesta di memoria il più velocemente possibile. Se un attaccante può controllare lo stato della cache, può sfruttare i tempi di accesso per ottenere informazioni sui dati memorizzati. Gli attacchi alla cache si possono dividere in varie tecniche, come `Prime + Probe` e `Flush + Reload`, che mirano a identificare quali dati sono stati caricati nella cache.
-
-\paragraph{Attacchi Prime + Probe}
-L'attacco `Prime + Probe` \'e uno degli attacchi più noti alla cache. L'attaccante "prime" la cache riempiendola con i propri dati e successivamente "prova" i dati osservando il tempo necessario per accedere ai propri dati. Se un dato \'e stato sostituito da un altro processo, l'accesso sarà più lento, rivelando informazioni sul comportamento del sistema .
+Quando si leggono i dati dalla memoria, la CPU li legge effettivamente dalla cache, che cerca di servire una richiesta di memoria il più velocemente possibile. Se un attaccante può controllare lo stato della cache, può sfruttare i tempi di accesso per ottenere informazioni sui dati memorizzati. Gli attacchi alla cache si possono dividere in varie tecniche, come \emph{Prime + Probe} e \emph{Flush + Reload}, che mirano a identificare quali dati sono stati caricati nella cache.
 
 \paragraph{Attacchi Flush + Reload}
-Il metodo `Flush + Reload` sfrutta il fatto che le linee di cache possono essere "scaricate" (flushed) e successivamente ricaricate. Misurando i tempi necessari per ricaricare una linea di cache, un attaccante può determinare se un altro processo ha accesso alla stessa linea di memoria, ottenendo così informazioni sensibili.
-
-\subsubsection{Mitigazioni agli Attacchi alla Cache}
-Gli attacchi alla cache sfruttano la memoria condivisa tra i processi per accedere a dati sensibili, come le chiavi di crittografia o altre informazioni private, osservando il comportamento della cache. Per mitigare tali attacchi, vengono implementate diverse soluzioni hardware e software.
-
-\paragraph{Soluzioni Hardware e Software}
-A livello hardware, una delle soluzioni più promettenti per contrastare gli attacchi alla cache \'e l'uso di **cache a tempo costante**, che elimina la variabilità nei tempi di accesso alle linee di cache, impedendo a un attaccante di dedurre informazioni sensibili tramite misurazioni temporali.
-
-Dal punto di vista del software, una tecnica comune di mitigazione \'e l'**isolamento dei processi**. In questo contesto, il sistema operativo può separare l'accesso alla memoria in modo che i dati sensibili siano meno vulnerabili agli attacchi di canale laterale. In aggiunta, le **memorie criptate** (ad esempio, l'uso di crittografia a livello di memoria) possono ridurre il rischio che i dati vengano estratti dalla cache durante un attacco.
-
-Una soluzione comune nel contesto delle CPU moderne \'e l'adozione di **sistemi di protezione della cache** che isolano le linee di cache tra i processi. Un altro approccio \'e l'uso di tecniche come **Cache Partitioning**, dove la cache \'e divisa in porzioni dedicate a specifici processi, riducendo le possibilità di un attacco cross-core.
-
-\subsection{Attacchi sul Processore}
-Gli attacchi sul processore sfruttano le vulnerabilità intrinseche nei moderni design dei processori, in particolare quelli legati alla **speculative execution** e alla **branch prediction**. Questi attacchi possono consentire l'accesso a informazioni sensibili, come chiavi di crittografia o dati privati, sfruttando il comportamento asincrono delle istruzioni nei processori.
-
-\subsubsection{Attacchi di Esecuzione Speculativa}
-L'esecuzione speculativa \'e una tecnica utilizzata dai processori moderni per migliorare le prestazioni, eseguendo operazioni in anticipo, basandosi su previsioni di ciò che accadrà. Tuttavia, questa tecnica può essere sfruttata da un attaccante per accedere a dati sensibili, come nel caso degli attacchi **Meltdown** e **Spectre**.
-
-\paragraph{Attacchi Meltdown e Spectre}
-**Meltdown** e **Spectre** sono tra gli attacchi più noti che sfruttano le vulnerabilità nell'esecuzione speculativa e nella predizione dei rami. Meltdown sfrutta una vulnerabilità che permette a un processo utente di accedere alla memoria kernel, che dovrebbe essere protetta. Questo avviene grazie alla speculazione del processore che non riesce a prevenire correttamente l'accesso a dati privilegiati.
-
-**Spectre**, invece, sfrutta la predizione dei rami, un meccanismo che i processori utilizzano per anticipare il percorso delle istruzioni future. Un attaccante può manipolare le previsioni del processore per eseguire operazioni speculativa e, successivamente, utilizzare i **side-channel** per recuperare dati da altre parti della memoria che altrimenti sarebbero stati protetti.
-
-\paragraph{Predizione dei Branchi}
-La **branch prediction** \'e un meccanismo dei processori per predire quale direzione prenderà una condizione if-else, migliorando le prestazioni. Tuttavia, se un attaccante riesce a influenzare la predizione di un ramo, può causare un comportamento indesiderato che lascia tracce micro-architetturali. Queste tracce possono essere osservate tramite attacchi a canale laterale, permettendo l'estrazione di dati sensibili.
-
-In particolare, gli attacchi basati sulla **branch target buffer (BTB)** possono manipolare le previsioni di salto per eseguire un'operazione speculativa non autorizzata, sfruttando il fatto che la CPU esegue il codice prima di sapere se il ramo \'e valido.
-
-\paragraph{Contromisure: Retpoline, IBRS, STIBP}
-Per contrastare gli attacchi come **Spectre** e **Meltdown**, sono state sviluppate diverse contromisure:
-
-- **Retpoline** \'e una tecnica software che impedisce agli attaccanti di manipolare la predizione dei rami, inserendo un "trampolino" per saltare direttamente ai risultati senza eseguire istruzioni speculative non sicure.
-  
-- **IBRS** (Indirect Branch Restricted Speculation) \'e un meccanismo hardware che impedisce ai processori di fare previsioni indirette sui rami, disabilitando la speculazione per le istruzioni di salto.
-  
-- **STIBP** (Single Thread Indirect Branch Prediction) impedisce la condivisione della predizione di rami indiretti tra i thread che girano sulla stessa CPU, proteggendo i processi in esecuzione in modalità multithreading (SMT).
-
-Queste tecniche vengono implementate nei processori moderni per limitare l'esecuzione speculativa non sicura, riducendo il rischio di attacchi basati sulla predizione dei rami.
-
-\subsubsection{Attacchi Foreshadow (L1TF)}
-**Foreshadow**, noto anche come **L1TF** (Level 1 Terminal Fault), \'e una vulnerabilità che sfrutta la speculazione nell'accesso alla memoria, ma a differenza di Meltdown e Spectre, riguarda la **memoria L1 cache**. Questo attacco sfrutta un comportamento del processore Intel che consente a un attaccante di ottenere l'accesso ai dati protetti, come le chiavi di crittografia utilizzate in **Intel SGX** (Software Guard Extensions), al di fuori dei limiti imposti dal sistema operativo o dalla virtualizzazione.
-
-\paragraph{Vulnerabilità di Intel}
-L1TF sfrutta la vulnerabilità nei processori Intel che consente a un processo non privilegiato di eseguire operazioni speculative che accedono alla memoria protetta tramite la L1 cache. Il processore, quando esegue operazioni speculativamente, non valida correttamente gli accessi a memoria sensibile, permettendo così a un attaccante di eseguire un **side-channel attack** per recuperare dati crittografici o altre informazioni sensibili.
-
-\paragraph{Mitigazione e Rilevamento}
-Le mitigazioni per Foreshadow (L1TF) includono **Kernel Page-Table Isolation (KPTI)**, che isola la memoria utente dalla memoria kernel, impedendo a un processo di accedere a memoria protetta. Inoltre, Intel ha introdotto **microcode updates** e patch software per disabilitare o limitare l'esecuzione speculativa su determinate operazioni, impedendo che dati sensibili vengano esposti.
-
-Altre misure di protezione includono il **disabilitare l'accesso condiviso alle L1 cache** tra i processi, in particolare nei sistemi con **SMT (Simultaneous Multi-Threading)**, per evitare che un processo malevolo possa monitorare o manipolare la cache di un altro processo.
+Il metodo \emph{Flush + Reload} sfrutta il fatto che le linee di cache possono essere ``scaricate'' (flushed) e successivamente ricaricate. Misurando i tempi necessari per ricaricare una linea di cache, un attaccante può determinare se un altro processo ha accesso alla stessa linea di memoria, ottenendo così informazioni sensibili.
 
 
+\paragraph{Evict + Time}
+La tecnica \emph{Evict + Time} combina l’evizione mirata di una linea/set di cache con la misura del \emph{tempo di esecuzione complessivo} della vittima. Prima si lascia girare la vittima per pre-caricare il proprio working set e si stabilisce una \emph{baseline} temporale; poi si \emph{evince} la linea di interesse accedendo ripetutamente a blocchi che mappano nello \emph{stesso cache set} (cache set-associative), quindi si rilancia la vittima: una variazione del tempo indica che quella linea è stata usata e deve essere stata ricaricata dalla memoria.
+Non richiede memoria condivisa (a differenza di \emph{Flush+Reload}), funziona su L1/L2/L3 e fornisce un segnale più \emph{coarse} (livello di set) perché si osserva il tempo del programma vittima, non il reload del singolo indirizzo. È utile per inferire \emph{code paths} dipendenti dai dati, ad esempio in implementazioni crittografiche con tabelle, dove il diverso accesso alle entry rivela bit della chiave.
+Operativamente è importante poter \emph{triggerare} la vittima più volte, usare timer ad alta risoluzione e barriere (preferire \texttt{rdtscp} o fence per rispettare il program order) e considerare rumore da scheduling, frequency scaling e prefetching, che alterano la stabilità della misura.
 
 
+\paragraph{Attacchi Prime + Probe}
+L'attacco \emph{Prime + Probe} \'e uno degli attacchi più noti alla cache. L'attaccante accede alla cache riempiendola con i propri dati e successivamente fa probing sui dati osservando il tempo necessario per accedere ai dati inseriti. Se un dato \'e stato sostituito da un altro processo, l'accesso sarà più lento, rivelando informazioni sul comportamento del sistema. Questo attacco targetta la cache di livello L1  ma può essere esteso fino ad L3 e può funzionare anche su una VM. Avere successo con questa tipologia di attacchi non \'e cosi semplice visto che l attaccante ha bisogno di un set di indirizzi che collidano.
+Una contromisura hardware implementata dalle cache moderne prevede la definizone del mapping della memoria di cache a runtime questo vuol dire che il mapping cambia nel tempo di conseguenza l'attaccante ha una finestra ridotta di tempo per creare il suo eviction set implementando questi step:
+\begin{itemize}
+    \item scegliere randomicamente N indirizzi di memoria
+    \item caricare nella cache accedendo agli indirizzi scelti
+    \item gli indirizzi che self-collidono devono essere rimossi dal set
+\end{itemize}
+
+\paragraph{Prime + Abort}
+\emph{Prime + Abort} sfrutta le transazioni hardware (Intel TSX) come una sorta di \emph{callback} micro-architetturale: si avvia una transazione, si accede \emph{dall’interno} della transazione alla linea di cache bersaglio e poi si osserva se la transazione va in \emph{abort}. L’\emph{abort} segnala un conflitto nel \emph{write set}/\emph{read set} causato dall’attività della vittima su quella linea, per cui \textbf{non serve alcuna misura temporale} (il segnale è l’evento di abort), a differenza di Prime+Probe o Flush+Reload. Requisito chiave: conoscere l’indirizzo preciso da monitorare (granularità a livello di \emph{cache line}).
+Nel caso di \textbf{L1}, la transazione include la linea nel \emph{write set}: una scrittura concorrente o un’evizione durante la finestra transazionale provoca abort; essendo L1 privata per core, lo \emph{spionaggio} è limitato a thread co-residente via SMT sullo \emph{stesso} core. In \textbf{L3}, invece, l’accesso transazionale mette la linea nel \emph{read set}: la coerenza cache su letture/scritture di altri core può indurre abort, consentendo osservazioni \emph{cross-core}. In sintesi: nessuna memoria condivisa richiesta, segnale netto (abort), granularità fine (linea), ma dipendenza da TSX e dalla possibilità di ripetere il trigger della vittima. In molti ambienti difensivi TSX può essere disabilitato o limitato; inoltre l’attività di preparazione/sonda introduce rumore rilevabile con \emph{Hardware Performance Counters}.
+
+\paragraph{Flush + Flush}
+\emph{Flush + Flush} è una variante di \emph{Flush + Reload} che usa come segnale non il tempo di \emph{reload}, ma il tempo d’esecuzione dell’istruzione di flush (es.\ \texttt{clflush}) sulla \emph{stessa} linea di cache ripetutamente. Poiché \texttt{clflush} impiega un tempo diverso a seconda che la linea sia presente o meno in cache, misurando la latenza del \emph{flush} si può inferire se la vittima ha toccato quella linea. Il vantaggio è duplice: è più \emph{stealthy} (non esegue accessi di reload “visibili”) ed è spesso più veloce; inoltre non richiede necessariamente memoria condivisa. La granularità resta a livello di \emph{cache line} e funziona su L1/L2/L3. Operativamente servono timer ad alta risoluzione e barriere per stabilizzare le misure, mentre rumore da scheduling, prefetching e frequenza CPU può influenzare la separazione delle soglie hit/miss; in ambienti difensivi, l’uso anomalo di \texttt{clflush} può essere monitorato o limitato.
+
+
+\subsubsection{Meeting Out-of-Order Pipelines: perché conta per la sicurezza}
+Nei processori moderni, \textbf{OOO + speculative execution} possono far eseguire alla pipeline \emph{istruzioni fantasma} (transient) che verranno poi scartate a livello architetturale, ma che lasciano \emph{effetti micro-architetturali} (es.\ stato della cache) osservabili con un canale laterale temporale. Questo è il razionale dei \emph{Transient Execution Attacks} (Spectre/Meltdown): anche se il backend “flusha” la pipeline, le tracce rimangono abbastanza a lungo da essere misurate. Il fenomeno riguarda più famiglie di CPU (Intel, AMD, ARM).
+
+\subsubsection{Meltdown: come funziona (Primer)}
+\paragraph{Idea chiave}
+Meltdown sfrutta il fatto che \textbf{il controllo di privilegio} sugli accessi memoria avviene \emph{dopo} che la pipeline ha già iniziato ad eseguire speculativamente l’accesso. Durante la finestra \emph{transient}, si può \emph{dereferenziare} un indirizzo kernel e usare il valore letto per \emph{indicare} (via stride di pagina) una linea di una \emph{probe array} utente, portandola in cache. Anche se l’accesso privilegiato causa \emph{segfault} e viene annullato architetturalmente, la cache resta “marcata” e il valore del byte si recupera misurando la latenza di reload sui 256 slot dell\'array di probing.
+
+\paragraph{Schema operativo Meltdown}
+\begin{enumerate}
+  \item \textbf{Flush} della cache.
+  \item \textbf{Read} di un byte \(B\)in memoria kernel (vietato in user mode ma \emph{transientmente} eseguito).
+  \item \textbf{Utilizzo} del byte \(B\) come offset: accesso a \texttt{probe\_array[B * 4096]} per portare in cache una linea alla volta.
+  \item \textbf{Reload \& Time}: si misura quale fra i 256 solt presenti nell array di probing è in cache.
+\end{enumerate}
+
+\paragraph{Perché è possibile}
+Storicamente, i kernel mappavano l’intero spazio kernel nello \emph{address space} dei processi utente (bit di privilegio nei PTE impediva l’uso lecito, ma l’entry era presente). La finestra \emph{transient} tra \emph{address translation}/\emph{data fetch} e \emph{privilege check} consente l’effetto in cache. Misurare la latenza di accesso alla probe array a fine sequenza rivela il valore reale del byte kernel.
+
+\subsubsection{Fooling the Branch Prediction Unit (BPU)}
+La \textbf{Branch Prediction Unit (BPU)} apprende dagli esiti recenti e tenta di anticipare il percorso di esecuzione.
+Un attaccante può \emph{avvelenare} (miss-train) la BPU eseguendo ripetutamente un pattern di codice così che la previsione
+diventi stabile; cambiando poi il comportamento del codice, la BPU continua a predire il ramo ``allenato'',
+consentendo l’esecuzione \emph{transient} di istruzioni non autorizzate. Anche se la pipeline viene poi \emph{flushata},
+gli effetti micro–architetturali (es.\ cache) restano osservabili via side–channel. :contentReference[oaicite:0]{index=0}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/fool.png}
+\end{figure}
+
+\paragraph{Dove si colpisce e perché funziona}
+Il \emph{branch target buffer} (BTB) e i predittori (locali/globali, \emph{tournament}) memorizzano storia e bersagli dei salti;
+l’attaccante può correlare rami, sfruttare la storia globale e indurre la predizione di un \emph{target} controllato
+(anche per salti indiretti). Questa architettura è descritta negli appunti: predittori correlati, tournament predictor,
+BTB come piccola cache indicizzata dal \emph{program counter}.
+
+\paragraph{Nota operativa}
+Il miss–training efficace richiede in genere \emph{lo stesso core} della vittima; la fase di misurazione del canale
+(\emph{timing}/cache) può avvenire anche su altri core. :contentReference[oaicite:2]{index=2}
+
+\subsubsection{Spectre Primer v1 (Bounds Check Bypass)}
+L’idea classica: si forza la speculazione oltre un controllo di bounds, usando l’indice per selezionare una linea di cache in
+una \emph{probe array}; a fine speculazione si misura quale linea è calda e si ricostruisce il dato.
+\begin{verbatim}
+if (x < array1_size) {
+  y = array2[array1[x] * 4096];
+}
+\end{verbatim}
+Anche se la condizione è falsificata, durante la finestra speculativa la CPU può accedere a \texttt{array1[x]} fuori limite
+e toccare \texttt{array2[ ... ]}, lasciando un’impronta in cache che rivela \texttt{array1[x]}.
+
+\paragraph{Fasi sintetiche}
+\begin{enumerate}
+  \item \textbf{Miss-train} del ramo per rendere probabile la predizione ``true'' su \texttt{x < array1\_size}.
+  \item \textbf{Trigger} con \texttt{x} fuori limite: accesso speculativo a \texttt{array1[x]}.
+  \item \textbf{Encode} nel canale: accesso a \texttt{array2[array1[x]*4096]}.
+  \item \textbf{Leak} via \emph{Flush+Reload}/\emph{Prime+Probe} su \texttt{array2} per ricostruire il byte.
+\end{enumerate}
+:contentReference[oaicite:4]{index=4}
+
+\paragraph{Note dalle slide}
+Il vendor-specific \emph{bypass} consente alla speculazione di attraversare il check; l’osservazione dello stato di cache
+di \texttt{array2} permette di inferire il valore letto speculativamente. :contentReference[oaicite:5]{index=5}
+
+\subsubsection{Spectre Primer v2 (BTB Poisoning e Gadget)}
+Qui si mira ai \textbf{salti indiretti}: l’attaccante sceglie un \emph{gadget} nell’\emph{executable address space} della vittima
+(anche in eBPF o in librerie condivise), poi \textbf{avvelena il BTB} per far \emph{mispredict} il salto indiretto verso quel gadget,
+che viene eseguito speculativamente. Il codice della vittima non è ``buggato'': è sfruttato come gadget per eseguire
+accessi che \emph{encodano} il dato in cache. Questo è concettualmente vicino alla ROP. :contentReference[oaicite:6]{index=6}
+
+\paragraph{Esempio di gadget dalle slide (Windows 10)}
+\begin{verbatim}
+adc edi, dword ptr [ebx+edx+13BE13BDh]
+adc dl,  byte  ptr [edi]
+\end{verbatim}
+Impostando \texttt{edi} alla base di una \emph{probe array} e \texttt{ebx = m - 0x13BE13BD - edx}, la prima istruzione legge 32 bit
+da \texttt{m} e li somma a \texttt{edi}, la seconda \emph{tocca} \texttt{probe[ m ]} portandone la linea in cache. Così si codifica
+l’indice \texttt{m} nel canale; l’attaccante controlla i registri e sfrutta la finestra speculativa per far eseguire il gadget.
+
+
+\paragraph{Requisiti e note}
+Il miss–training della BPU deve avvenire sullo stesso core; la lettura del canale (timing di cache) può accadere altrove.
+Esempi e note di impatto (CVE-2017-5753, CVE-2017-5715) sono riportati nelle slide. :contentReference[oaicite:8]{index=8}
+
+\paragraph{Contromisure (rimando)}
+Tecniche di hardening come \emph{Retpoline} (thunks di ritorno che intrappolano la speculazione) e le estensioni ISA
+\emph{IBRS/STIBP/IBPB} riducono l’efficacia del poisoning dei salti indiretti (si veda la sezione sulle contromisure).
+
+\subsubsection{L1TF (Foreshadow): principio e flusso}
+Durante la traduzione degli indirizzi, i processori Intel eseguono in \emph{parallelo} il flusso di traduzione (TLB, page-table walk, eventuale EPT walk per la VM, e verifica SGX) e la lookup nella \textbf{cache L1}, che è \emph{virtual-indexed, physically-tagged}. In questa finestra \emph{transient}, una voce di page table \emph{non valida} può essere \emph{speculativamente propagata} alla CPU: l’effetto risultante in L1 può essere osservato con un canale laterale “alla Meltdown” (le tracce rimangono in cache nonostante il flush architetturale). :contentReference[oaicite:0]{index=0}
+
+\paragraph{Perché funziona}
+L’accesso a una pagina che deve generare \emph{terminal fault} (voce PTE non presente o riservata) viene comunque speculato fino a lasciare side–effects in L1; poiché la lookup L1 procede mentre i controlli di privilegio/validità avanzano, l’indirizzo fisico speculativo può guidare una \emph{encode} nel canale (es.\ tocchi di una probe array), recuperabile poi via timing. L1TF, così, \textbf{bypassa} tre barriere: protezioni del SO (PT walk), dell’hypervisor (EPT walk) e SGX. :contentReference[oaicite:1]{index=1}
+
+\paragraph{Varianti e impatto}
+La famiglia include: \textbf{Foreshadow-SGX} (CVE-2018-3615), \textbf{Foreshadow-OS} (CVE-2018-3620), \textbf{Foreshadow-VMM} (CVE-2018-3646); scoperta a inizio 2018 e divulgata il 14 agosto 2018. Colpisce gran parte delle CPU Intel Core/Xeon (specie con SGX e virtualizzazione); AMD e ARM risultano non affette nello specifico L1TF.
+
+\paragraph{Schema operativo (dalle slide)}
+\begin{enumerate}
+  \item \textbf{Preparazione PTE/EPT}: creare una voce di page table \emph{per un indirizzo d’interesse} e marcarla come \emph{invalida} (bit \textit{present}/\textit{reserved} a 0) per generare un \emph{terminal fault}. \textit{Nota:} il kernel in genere non lo consente, ma un attaccante con \emph{guest OS} su una VM può manipolare le proprie PT. :contentReference[oaicite:3]{index=3}
+  \item \textbf{Trigger transiente}: causare l’accesso che, pur faultando, porta temporaneamente il dato in L1.
+  \item \textbf{Encode/leak}: usare un gadget di encode (cache-based) e misurare il canale per ricostruire il contenuto protetto (stile Meltdown). :contentReference[oaicite:4]{index=4}
+\end{enumerate}
+Nello scenario VMM, manipolando le PT del guest è possibile \emph{osservare} memoria dell’host o di altri guest co-locati sfruttando la finestra transiente e la condivisione delle strutture di traduzione. :contentReference[oaicite:5]{index=5}
+
+\paragraph{Mitigazioni (riassunto dalle slide \& appunti)}
+\begin{itemize}
+  \item \textbf{Hardening della microarchitettura/firmware \& OS/VMM}: aggiornamenti di microcode e patch che impediscono l’uso transiente di PTE non valide e mitigano l’esposizione durante i confini di privilegio/VM. (Vedi anche la separazione KPTI per Meltdown, concettualmente affine come scopo di ridurre superfici transiente utili.)
+  \item \textbf{Mitigazioni specifiche per L1}: gli attacchi \emph{cross-process} su L1 richiedono condivisione della L1 tra thread \emph{(SMT/Hyper-Threading)}; \textbf{disabilitare SMT} elimina quella via di attacco.
+  \item \textbf{Riduzione della superficie dei side channel}: limitare timer ad alta risoluzione, marcatura di regioni non cacheabili, implementazioni \emph{constant-time} e disabilitazione TSX dove rilevante per canali come Prime+Abort. (Costi prestazionali non trascurabili.)
+  \item \textbf{Rilevazione}: l’allestimento del canale crea \emph{rumore} (miss/flush/abort) osservabile con \emph{Hardware Performance Counters}; utile per detection adattiva, con limiti di portabilità tra vendor/generazioni.
+\end{itemize}
