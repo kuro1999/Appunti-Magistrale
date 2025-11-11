@@ -1,210 +1,334 @@
 \babel@toc {italian}{}\relax 
 \babel@toc {italian}{}\relax 
-\contentsline {section}{\numberline {1}NET\_01}{6}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Architettura di base e principi di rete}{6}{subsection.1.1}%
-\contentsline {subsubsection}{\numberline {1.1.1}Definizione e interconnessione}{6}{subsubsection.1.1.1}%
-\contentsline {subsubsection}{\numberline {1.1.2}Indirizzamento e instradamento}{6}{subsubsection.1.1.2}%
-\contentsline {subsubsection}{\numberline {1.1.3}Anatomia dell'indirizzo IP e subnetting}{6}{subsubsection.1.1.3}%
-\contentsline {paragraph}{\numberline {1.1.3.1}1) Cosa significa ``/27''}{7}{paragraph.1.1.3.1}%
-\contentsline {paragraph}{\numberline {1.1.3.2}2) Perché basta guardare l'ultimo ottetto}{7}{paragraph.1.1.3.2}%
-\contentsline {paragraph}{\numberline {1.1.3.3}3) Trova il blocco in cui cade 99}{7}{paragraph.1.1.3.3}%
-\contentsline {paragraph}{\numberline {1.1.3.4}4) Verifica con l'AND (ultimo ottetto)}{8}{paragraph.1.1.3.4}%
-\contentsline {paragraph}{\numberline {1.1.3.5}5) Broadcast: tutti i bit host a 1}{8}{paragraph.1.1.3.5}%
-\contentsline {paragraph}{\numberline {1.1.3.6}6) Intervallo host e conteggio}{8}{paragraph.1.1.3.6}%
-\contentsline {subsubsection}{\numberline {1.1.4}Sistemi autonomi (AS) e routing globale}{8}{subsubsection.1.1.4}%
-\contentsline {subsubsection}{\numberline {1.1.5}La routing table e l'algoritmo di lookup}{8}{subsubsection.1.1.5}%
-\contentsline {subsection}{\numberline {1.2}II. Il viaggio del pacchetto: esempio di richiesta DNS}{8}{subsection.1.2}%
-\contentsline {subsubsection}{\numberline {1.2.1}Topologia e hop}{8}{subsubsection.1.2.1}%
-\contentsline {subsubsection}{\numberline {1.2.2}Stack protocollare e incapsulamento}{9}{subsubsection.1.2.2}%
-\contentsline {subsection}{\numberline {1.3}III. Vulnerabilità intrinseche di IP e TCP}{9}{subsection.1.3}%
-\contentsline {subsubsection}{\numberline {1.3.1}Identificazione, spoofing e non-ripudio}{10}{subsubsection.1.3.1}%
-\contentsline {subsubsection}{\numberline {1.3.2}Confidenzialità}{10}{subsubsection.1.3.2}%
-\contentsline {subsubsection}{\numberline {1.3.3}Integrità dei dati}{10}{subsubsection.1.3.3}%
-\contentsline {subsubsection}{\numberline {1.3.4}Packet replication e anti-replay}{10}{subsubsection.1.3.4}%
-\contentsline {subsubsection}{\numberline {1.3.5}Insicurezza delle mappature dinamiche}{10}{subsubsection.1.3.5}%
-\contentsline {subsection}{\numberline {1.4}Laboratorio 1: MiTM e DNS spoofing}{11}{subsection.1.4}%
-\contentsline {subsubsection}{\numberline {1.4.1}Obiettivo e scenario}{11}{subsubsection.1.4.1}%
-\contentsline {subsubsection}{\numberline {1.4.2}Fasi dell'attacco}{11}{subsubsection.1.4.2}%
-\contentsline {subsubsection}{\numberline {1.4.3}STEP 1: ARP spoofing (MiTM)}{11}{subsubsection.1.4.3}%
-\contentsline {subsubsection}{\numberline {1.4.4}STEP 2 \& 3: intercettazione e DNS spoofing}{12}{subsubsection.1.4.4}%
-\contentsline {subsubsection}{\numberline {1.4.5}STEP 4: impersonificazione del sito web}{12}{subsubsection.1.4.5}%
-\contentsline {section}{\numberline {2}NET\_02}{13}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Sicurezza delle Reti Ethernet LAN (Livello 2)}{13}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Perché la LAN Ethernet è fragile per natura}{13}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Frame, indirizzamento e forwarding}{13}{subsubsection.2.2.1}%
-\contentsline {paragraph}{\numberline {2.2.1.1}Multiport Repeaters (Hub)}{13}{paragraph.2.2.1.1}%
-\contentsline {paragraph}{\numberline {2.2.1.2}Bridge/Switches}{13}{paragraph.2.2.1.2}%
-\contentsline {paragraph}{\numberline {2.2.1.3}Address Learning}{13}{paragraph.2.2.1.3}%
-\contentsline {subsubsection}{\numberline {2.2.2}Topologie e controllo dei loop: STP}{14}{subsubsection.2.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.3}Adattamento del Livello 3 su Livello 2: DHCP, ARP e NDP}{15}{subsubsection.2.2.3}%
-\contentsline {paragraph}{\numberline {2.2.3.1}DHCP — Dynamic Host Configuration Protocol (IPv4).}{15}{paragraph.2.2.3.1}%
-\contentsline {paragraph}{\numberline {2.2.3.2}ARP — Address Resolution Protocol (IPv4).}{16}{paragraph.2.2.3.2}%
-\contentsline {paragraph}{\numberline {2.2.3.3}NDP — Neighbor Discovery Protocol (IPv6).}{16}{paragraph.2.2.3.3}%
-\contentsline {subsubsection}{\numberline {2.2.4}Vulnerabilità e minacce principali}{16}{subsubsection.2.2.4}%
-\contentsline {paragraph}{\numberline {2.2.4.1}Accesso alla rete}{16}{paragraph.2.2.4.1}%
-\contentsline {paragraph}{\numberline {2.2.4.2}Compromissione e controllo dello switch.}{17}{paragraph.2.2.4.2}%
-\contentsline {paragraph}{\numberline {2.2.4.3}Riservatezza e intercettazione.}{17}{paragraph.2.2.4.3}%
-\contentsline {paragraph}{\numberline {2.2.4.4}Integrità del traffico e attacchi Man-in-the-Middle (MITM)}{18}{paragraph.2.2.4.4}%
-\contentsline {paragraph}{\numberline {2.2.4.5}Disponibilità e attacchi di Denial of Service (DoS)}{18}{paragraph.2.2.4.5}%
-\contentsline {subsubsection}{\numberline {2.2.5}Contromisure: dal minimo sindacale al robusto}{19}{subsubsection.2.2.5}%
-\contentsline {paragraph}{\numberline {2.2.5.1}Router-based security (segmentazione L3).}{19}{paragraph.2.2.5.1}%
-\contentsline {subsubsection}{\numberline {2.2.6}Controllo d’accesso (Access Control)}{20}{subsubsection.2.2.6}%
-\contentsline {paragraph}{\numberline {2.2.6.1}Obiettivo.}{20}{paragraph.2.2.6.1}%
-\contentsline {paragraph}{\numberline {2.2.6.2}802.1X (port-based NAC).}{20}{paragraph.2.2.6.2}%
-\contentsline {paragraph}{\numberline {2.2.6.3}Autorizzazione dinamica con 802.1X.}{20}{paragraph.2.2.6.3}%
-\contentsline {paragraph}{\numberline {2.2.6.4}Port Security \& ACL sugli switch.}{20}{paragraph.2.2.6.4}%
-\contentsline {paragraph}{\numberline {2.2.6.5}Segmentazione con VLAN (complemento).}{20}{paragraph.2.2.6.5}%
-\contentsline {subsection}{\numberline {2.3}Laboratorio 2A: ACL L2 con Linux Bridge ed \texttt {ebtables} (binding MAC→porta)}{21}{subsection.2.3}%
-\contentsline {paragraph}{\numberline {2.3.0.1}1) Preparazione host (MAC/IP dei client).}{21}{paragraph.2.3.0.1}%
-\contentsline {paragraph}{\numberline {2.3.0.2}2) Creazione del bridge L2 (lato “switch” Linux).}{21}{paragraph.2.3.0.2}%
-\contentsline {paragraph}{\numberline {2.3.0.3}3) ACL L2 con \texttt {ebtables} (NETFILTER).}{22}{paragraph.2.3.0.3}%
-\contentsline {subsection}{\numberline {2.4}Laboratorio 2B: MACsec su Linux (confidenzialità, integrità e anti-replay a L2)}{22}{subsection.2.4}%
-\contentsline {paragraph}{\numberline {2.4.0.1}Host A (\textbf {client1}).}{22}{paragraph.2.4.0.1}%
-\contentsline {paragraph}{\numberline {2.4.0.2}Host B (\textbf {client2}).}{23}{paragraph.2.4.0.2}%
-\contentsline {paragraph}{\numberline {2.4.0.3}Opzioni di sicurezza e test.}{23}{paragraph.2.4.0.3}%
-\contentsline {subsubsection}{\numberline {2.4.1}Secure Address Resolution (IPv4/IPv6)}{24}{subsubsection.2.4.1}%
-\contentsline {paragraph}{\numberline {2.4.1.1}IPv4: dal piano di switching ai vincoli per-presa.}{24}{paragraph.2.4.1.1}%
-\contentsline {paragraph}{\numberline {2.4.1.2}IPv4: proposte crittografiche.}{24}{paragraph.2.4.1.2}%
-\contentsline {paragraph}{\numberline {2.4.1.3}IPv6: NDP sicuro.}{24}{paragraph.2.4.1.3}%
-\contentsline {subsubsection}{\numberline {2.4.2}Security Monitoring}{24}{subsubsection.2.4.2}%
-\contentsline {paragraph}{\numberline {2.4.2.1}Firewall \& DPI.}{24}{paragraph.2.4.2.1}%
-\contentsline {paragraph}{\numberline {2.4.2.2}IDS/IPS e accesso al traffico.}{24}{paragraph.2.4.2.2}%
-\contentsline {paragraph}{\numberline {2.4.2.3}Dove il monitoring aiuta davvero.}{24}{paragraph.2.4.2.3}%
-\contentsline {paragraph}{\numberline {2.4.2.4}Messaggio chiave (dalle slide).}{24}{paragraph.2.4.2.4}%
-\contentsline {section}{\numberline {3}NET\_03 — Virtual LANs (VLAN)}{25}{section.3}%
-\contentsline {subsubsection}{\numberline {3.0.1}Definizione e motivazione}{25}{subsubsection.3.0.1}%
-\contentsline {subsubsection}{\numberline {3.0.2}Limiti delle reti fisicamente separate}{25}{subsubsection.3.0.2}%
-\contentsline {paragraph}{\numberline {3.0.2.1}Benefici principali delle VLAN}{25}{paragraph.3.0.2.1}%
-\contentsline {subsection}{\numberline {3.1}Assegnazione e membership delle VLAN}{26}{subsection.3.1}%
-\contentsline {subsubsection}{\numberline {3.1.1}Criteri di assegnazione}{26}{subsubsection.3.1.1}%
-\contentsline {subsubsection}{\numberline {3.1.2}Vista logica}{26}{subsubsection.3.1.2}%
-\contentsline {paragraph}{\numberline {3.1.2.1}Router “one-armed”}{27}{paragraph.3.1.2.1}%
-\contentsline {subsection}{\numberline {3.2}Trasporto dei frame: Tagging IEEE 802.1Q}{28}{subsection.3.2}%
-\contentsline {subsubsection}{\numberline {3.2.1}Porte di tipo Access, Trunk e Hybrid}{28}{subsubsection.3.2.1}%
-\contentsline {subsubsection}{\numberline {3.2.2}Access links}{28}{subsubsection.3.2.2}%
-\contentsline {subsubsection}{\numberline {3.2.3}Access links nelle regioni legacy}{29}{subsubsection.3.2.3}%
-\contentsline {subsubsection}{\numberline {3.2.4}Trunk links}{29}{subsubsection.3.2.4}%
-\contentsline {subsubsection}{\numberline {3.2.5}Hybrid links}{30}{subsubsection.3.2.5}%
-\contentsline {subsubsection}{\numberline {3.2.6}Una stazione può appartenere a più VLAN?}{31}{subsubsection.3.2.6}%
-\contentsline {subsection}{\numberline {3.3}Laboratorio 3: Configurazione VLAN e router one-armed}{33}{subsection.3.3}%
-\contentsline {paragraph}{\numberline {3.3.0.1}Isolamento del traffico}{34}{paragraph.3.3.0.1}%
-\contentsline {paragraph}{\numberline {3.3.0.2}Routing inter-VLAN}{34}{paragraph.3.3.0.2}%
-\contentsline {paragraph}{\numberline {3.3.0.3}Verifica del comportamento}{35}{paragraph.3.3.0.3}%
-\contentsline {paragraph}{\numberline {3.3.0.4}Osservazione pratica}{35}{paragraph.3.3.0.4}%
-\contentsline {subsection}{\numberline {3.4}Sicurezza delle VLAN e vulnerabilità di livello 2}{36}{subsection.3.4}%
-\contentsline {subsubsection}{\numberline {3.4.1}Minacce principali}{36}{subsubsection.3.4.1}%
-\contentsline {paragraph}{\numberline {3.4.1.1}1) MAC Flooding (CAM Overflow)}{36}{paragraph.3.4.1.1}%
-\contentsline {paragraph}{\numberline {3.4.1.2}2) ARP Spoofing / Poisoning}{36}{paragraph.3.4.1.2}%
-\contentsline {paragraph}{\numberline {3.4.1.3}3) VLAN Hopping}{37}{paragraph.3.4.1.3}%
-\contentsline {paragraph}{\numberline {3.4.1.4}4) Attacchi ai protocolli di controllo}{37}{paragraph.3.4.1.4}%
-\contentsline {subparagraph}{\numberline {3.4.1.4.1}Spanning Tree Attack (BPDU spoofing)}{38}{subparagraph.3.4.1.4.1}%
-\contentsline {subparagraph}{\numberline {3.4.1.4.2}VTP Attack (VLAN Trunking Protocol)}{38}{subparagraph.3.4.1.4.2}%
-\contentsline {subparagraph}{\numberline {3.4.1.4.3}Cisco Discovery Protocol Attack (information leakage)}{38}{subparagraph.3.4.1.4.3}%
-\contentsline {subsection}{\numberline {3.5}Laboratorio 4: VLAN Hopping e Double Tagging}{39}{subsection.3.5}%
-\contentsline {subsubsection}{\numberline {3.5.1}Scenario}{39}{subsubsection.3.5.1}%
-\contentsline {subsubsection}{\numberline {3.5.2}Topologia del laboratorio}{39}{subsubsection.3.5.2}%
-\contentsline {subsubsection}{\numberline {3.5.3}Prerequisiti perché l’attacco riesca}{40}{subsubsection.3.5.3}%
-\contentsline {subsubsection}{\numberline {3.5.4}Funzionamento dell’attacco (passo–passo)}{40}{subsubsection.3.5.4}%
-\contentsline {subsubsection}{\numberline {3.5.5}Esecuzione pratica (Linux)}{40}{subsubsection.3.5.5}%
-\contentsline {paragraph}{\numberline {3.5.5.1}Cosa osservare con lo sniffer}{41}{paragraph.3.5.5.1}%
-\contentsline {paragraph}{\numberline {3.5.5.2}Limitazioni pratiche}{41}{paragraph.3.5.5.2}%
-\contentsline {paragraph}{\numberline {3.5.5.3}Mitigazioni}{41}{paragraph.3.5.5.3}%
-\contentsline {section}{\numberline {4}NET\_04 — 802.1x}{42}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Quadro generale e obiettivo}{42}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Attori dell’architettura (vista di alto livello)}{42}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}EAP ed EAPoL: fondamenti}{42}{subsection.4.3}%
-\contentsline {paragraph}{\numberline {4.3.0.1}EAP (Extensible Authentication Protocol).}{42}{paragraph.4.3.0.1}%
-\contentsline {subsection}{\numberline {4.4}EAP termination vs EAP relay (EAPoR)}{43}{subsection.4.4}%
-\contentsline {paragraph}{\numberline {4.4.0.1} EAP termination mode (terminazione locale).}{43}{paragraph.4.4.0.1}%
-\contentsline {paragraph}{\numberline {4.4.0.2} EAP relay mode (EAP over RADIUS, EAPoR).}{43}{paragraph.4.4.0.2}%
-\contentsline {subsection}{\numberline {4.5}Processi di autenticazione: dai diagrammi alle implicazioni operative}{44}{subsection.4.5}%
-\contentsline {paragraph}{\numberline {4.5.0.1}Message exchange (visione di alto livello).}{44}{paragraph.4.5.0.1}%
-\contentsline {paragraph}{\numberline {4.5.0.2}Relay Mode (EAP-MD5) — sequenza dettagliata.}{45}{paragraph.4.5.0.2}%
-\contentsline {paragraph}{\numberline {4.5.0.3}EAP-TLS: esempio più complesso.}{46}{paragraph.4.5.0.3}%
-\contentsline {subsection}{\numberline {4.6}Operazioni aggiuntive: ri-autenticazione, logout, timer}{46}{subsection.4.6}%
-\contentsline {subsection}{\numberline {4.7}Autorizzazione post-autenticazione: VLAN, ACL, UCL}{46}{subsection.4.7}%
-\contentsline {paragraph}{\numberline {4.7.0.1}VLAN dinamiche.}{46}{paragraph.4.7.0.1}%
-\contentsline {paragraph}{\numberline {4.7.0.2}ACL per-utente.}{46}{paragraph.4.7.0.2}%
-\contentsline {paragraph}{\numberline {4.7.0.3}UCL (User Control List).}{47}{paragraph.4.7.0.3}%
-\contentsline {subsection}{\numberline {4.8}Vulnerabilità storiche e motivazione per MACsec}{47}{subsection.4.8}%
-\contentsline {subsection}{\numberline {4.9}Lab 5 — 802.1X Port-Based Authentication \& VLAN assignment}{48}{subsection.4.9}%
-\contentsline {paragraph}{\numberline {4.9.0.1}Obiettivo.}{48}{paragraph.4.9.0.1}%
-\contentsline {paragraph}{\numberline {4.9.0.2}Topologia di rete.}{48}{paragraph.4.9.0.2}%
-\contentsline {paragraph}{\numberline {4.9.0.3}Configurazione dello switch (Authenticator).}{48}{paragraph.4.9.0.3}%
-\contentsline {paragraph}{\numberline {4.9.0.4}Server di autenticazione (FreeRADIUS).}{49}{paragraph.4.9.0.4}%
-\contentsline {paragraph}{\numberline {4.9.0.5}Configurazione dei client (Supplicant).}{49}{paragraph.4.9.0.5}%
-\contentsline {paragraph}{\numberline {4.9.0.6}Controllo del traffico L2.}{49}{paragraph.4.9.0.6}%
-\contentsline {paragraph}{\numberline {4.9.0.7}Sequenza operativa.}{49}{paragraph.4.9.0.7}%
-\contentsline {paragraph}{\numberline {4.9.0.8}Osservazioni e risultati.}{50}{paragraph.4.9.0.8}%
-\contentsline {paragraph}{\numberline {4.9.0.9}Conclusioni.}{50}{paragraph.4.9.0.9}%
-\contentsline {subsection}{\numberline {4.10}MACsec e MKA (802.1AE + 802.1X-2010)}{51}{subsection.4.10}%
-\contentsline {subsubsection}{\numberline {4.10.1}Perch\'e MKA: il tassello mancante dopo 802.1X}{51}{subsubsection.4.10.1}%
-\contentsline {subsubsection}{\numberline {4.10.2}Le chiavi in gioco e come si ottengono}{51}{subsubsection.4.10.2}%
-\contentsline {paragraph}{\numberline {4.10.2.1}CAK e CKN}{51}{paragraph.4.10.2.1}%
-\contentsline {paragraph}{\numberline {4.10.2.2}ICK e KEK}{51}{paragraph.4.10.2.2}%
-\contentsline {paragraph}{\numberline {4.10.2.3}SAK}{52}{paragraph.4.10.2.3}%
-\contentsline {subsubsection}{\numberline {4.10.3}Due modalità d'uso del CAK}{52}{subsubsection.4.10.3}%
-\contentsline {paragraph}{\numberline {4.10.3.1}Static CAK}{52}{paragraph.4.10.3.1}%
-\contentsline {paragraph}{\numberline {4.10.3.2}Dynamic CAK}{52}{paragraph.4.10.3.2}%
-\contentsline {subsubsection}{\numberline {4.10.4}Cosa si scambiano i peer: il ciclo MKA}{52}{subsubsection.4.10.4}%
-\contentsline {paragraph}{\numberline {4.10.4.1}Annuncio, stato e priorit\`a}{52}{paragraph.4.10.4.1}%
-\contentsline {paragraph}{\numberline {4.10.4.2}Elezione del Key Server}{52}{paragraph.4.10.4.2}%
-\contentsline {paragraph}{\numberline {4.10.4.3}Apertura dei Secure Channel}{52}{paragraph.4.10.4.3}%
-\contentsline {paragraph}{\numberline {4.10.4.4}Vita della sessione}{53}{paragraph.4.10.4.4}%
-\contentsline {subsubsection}{\numberline {4.10.5}Collegamento con le policy 802.1X/NAC}{53}{subsubsection.4.10.5}%
-\contentsline {subsection}{\numberline {4.11}Simple MKA lab with Linux}{54}{subsection.4.11}%
-\contentsline {subsection}{\numberline {4.12}Laboratorio: MKA/MACsec su Linux (Static CAK)}{54}{subsection.4.12}%
-\contentsline {subsubsection}{\numberline {4.12.1}Scopo}{54}{subsubsection.4.12.1}%
-\contentsline {subsubsection}{\numberline {4.12.2}Topologia}{54}{subsubsection.4.12.2}%
-\contentsline {subsubsection}{\numberline {4.12.3}Procedura}{54}{subsubsection.4.12.3}%
-\contentsline {paragraph}{\numberline {4.12.3.1}Generazione delle chiavi (uguali su \emph {tutti} i peer)}{54}{paragraph.4.12.3.1}%
-\contentsline {paragraph}{\numberline {4.12.3.2}Configurazione MKA su ciascun host}{54}{paragraph.4.12.3.2}%
-\contentsline {paragraph}{\numberline {4.12.3.3}Avvio di MKA e creazione dell'interfaccia \texttt {macsec0}}{55}{paragraph.4.12.3.3}%
-\contentsline {paragraph}{\numberline {4.12.3.4}Indirizzamento IP sulla \texttt {macsec0}}{55}{paragraph.4.12.3.4}%
-\contentsline {paragraph}{\numberline {4.12.3.5}Test base di connettività}{55}{paragraph.4.12.3.5}%
-\contentsline {subsubsection}{\numberline {4.12.4}Verifiche}{55}{subsubsection.4.12.4}%
-\contentsline {paragraph}{\numberline {4.12.4.1}Log MKA}{55}{paragraph.4.12.4.1}%
-\contentsline {paragraph}{\numberline {4.12.4.2}Stato interfaccia}{55}{paragraph.4.12.4.2}%
-\contentsline {subsubsection}{\numberline {4.12.5}Troubleshooting}{55}{subsubsection.4.12.5}%
-\contentsline {subsubsection}{\numberline {4.12.6}Pulizia}{55}{subsubsection.4.12.6}%
-\contentsline {subsubsection}{\numberline {4.12.7}Estensioni \& domande d'esame}{55}{subsubsection.4.12.7}%
-\contentsline {paragraph}{\numberline {4.12.7.1}Dynamic CAK (accenno)}{55}{paragraph.4.12.7.1}%
-\contentsline {section}{\numberline {5}SYS\_01 — Introduzione ai Security Frameworks}{56}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Quadro generale e obiettivo}{56}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Principi fondamentali}{56}{subsection.5.2}%
-\contentsline {paragraph}{\numberline {5.2.0.1}Confidenzialità}{56}{paragraph.5.2.0.1}%
-\contentsline {paragraph}{\numberline {5.2.0.2}Integrità}{56}{paragraph.5.2.0.2}%
-\contentsline {paragraph}{\numberline {5.2.0.3}Disponibilità}{56}{paragraph.5.2.0.3}%
-\contentsline {paragraph}{\numberline {5.2.0.4}Autenticità e Autorizzazione}{57}{paragraph.5.2.0.4}%
-\contentsline {paragraph}{\numberline {5.2.0.5}Accountability}{57}{paragraph.5.2.0.5}%
-\contentsline {paragraph}{\numberline {5.2.0.6}Dipendibilità}{57}{paragraph.5.2.0.6}%
-\contentsline {subsection}{\numberline {5.3}Perché servono i Security Frameworks}{58}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Tre famiglie a confronto}{58}{subsection.5.4}%
-\contentsline {subsubsection}{\numberline {5.4.1}FIPS 200 — Requisiti minimi per i sistemi federali}{58}{subsubsection.5.4.1}%
-\contentsline {subsubsection}{\numberline {5.4.2}CIS Critical Security Controls — L’igiene prioritaria}{58}{subsubsection.5.4.2}%
-\contentsline {subsubsection}{\numberline {5.4.3}ISO/IEC 27000 — ISMS e gestione del rischio}{59}{subsubsection.5.4.3}%
-\contentsline {section}{\numberline {6}SYS\_02 — Hardware Primer}{60}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Moore’s Law e l’evoluzione del calcolo}{60}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Fine della crescita lineare e parallelismo}{60}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Pipeline e architettura superscalare}{60}{subsection.6.3}%
-\contentsline {subsection}{\numberline {6.4}Branch Prediction: principi e strategie}{60}{subsection.6.4}%
-\contentsline {paragraph}{\numberline {6.4.0.1}Perché serve una predizione}{61}{paragraph.6.4.0.1}%
-\contentsline {paragraph}{\numberline {6.4.0.2}Tipi di predizione}{61}{paragraph.6.4.0.2}%
-\contentsline {paragraph}{\numberline {6.4.0.3}Contatore a 2 bit saturante}{61}{paragraph.6.4.0.3}%
-\contentsline {paragraph}{\numberline {6.4.0.4}Predittori correlati e multilivello}{61}{paragraph.6.4.0.4}%
-\contentsline {paragraph}{\numberline {6.4.0.5}Ottimizzazioni hardware}{62}{paragraph.6.4.0.5}%
-\contentsline {paragraph}{\numberline {6.4.0.6}Importanza crescente della predizione}{62}{paragraph.6.4.0.6}%
-\contentsline {subsection}{\numberline {6.5}Simultaneous Multithreading (SMT)}{63}{subsection.6.5}%
-\contentsline {subsection}{\numberline {6.6}Pipeline interna nei processori Intel Xeon}{63}{subsection.6.6}%
-\contentsline {subsection}{\numberline {6.7}Gerarchia di memoria}{64}{subsection.6.7}%
-\contentsline {paragraph}{\numberline {6.7.0.1}Inclusività e mappatura}{64}{paragraph.6.7.0.1}%
-\contentsline {paragraph}{\numberline {6.7.0.2}Sostituzione ed aggiornamento}{66}{paragraph.6.7.0.2}%
-\contentsline {subsection}{\numberline {6.8}Cache coherence nei multicore}{67}{subsection.6.8}%
-\contentsline {paragraph}{\numberline {6.8.0.1}Protocolli di coerenza}{68}{paragraph.6.8.0.1}%
-\contentsline {subsection}{\numberline {6.9}Protocolli MOESI e VI}{69}{subsection.6.9}%
-\contentsline {paragraph}{\numberline {6.9.0.1}Virtual vs. Physical Cache Indexing}{70}{paragraph.6.9.0.1}%
-\contentsline {subsection}{\numberline {6.10}Hardware Transactional Memory (HTM)}{71}{subsection.6.10}%
-\contentsline {paragraph}{\numberline {6.10.0.1}Principio di funzionamento}{71}{paragraph.6.10.0.1}%
-\contentsline {paragraph}{\numberline {6.10.0.2}Casi di abort e codici di stato}{72}{paragraph.6.10.0.2}%
-\contentsline {subsection}{\numberline {6.11}DRAM e Refresh}{72}{subsection.6.11}%
-\contentsline {paragraph}{\numberline {6.11.0.1}Effetti del refresh}{72}{paragraph.6.11.0.1}%
+\contentsline {section}{\numberline {1}NET\_01}{8}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Architettura di base e principi di rete}{8}{subsection.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1}Definizione e interconnessione}{8}{subsubsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.2}Indirizzamento e instradamento}{8}{subsubsection.1.1.2}%
+\contentsline {subsubsection}{\numberline {1.1.3}Anatomia dell'indirizzo IP e subnetting}{8}{subsubsection.1.1.3}%
+\contentsline {paragraph}{\numberline {1.1.3.1}1) Cosa significa ``/27''}{9}{paragraph.1.1.3.1}%
+\contentsline {paragraph}{\numberline {1.1.3.2}2) Perché basta guardare l'ultimo ottetto}{9}{paragraph.1.1.3.2}%
+\contentsline {paragraph}{\numberline {1.1.3.3}3) Trova il blocco in cui cade 99}{9}{paragraph.1.1.3.3}%
+\contentsline {paragraph}{\numberline {1.1.3.4}4) Verifica con l'AND (ultimo ottetto)}{10}{paragraph.1.1.3.4}%
+\contentsline {paragraph}{\numberline {1.1.3.5}5) Broadcast: tutti i bit host a 1}{10}{paragraph.1.1.3.5}%
+\contentsline {paragraph}{\numberline {1.1.3.6}6) Intervallo host e conteggio}{10}{paragraph.1.1.3.6}%
+\contentsline {subsubsection}{\numberline {1.1.4}Sistemi autonomi (AS) e routing globale}{10}{subsubsection.1.1.4}%
+\contentsline {subsubsection}{\numberline {1.1.5}La routing table e l'algoritmo di lookup}{10}{subsubsection.1.1.5}%
+\contentsline {subsection}{\numberline {1.2}II. Il viaggio del pacchetto: esempio di richiesta DNS}{10}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}Topologia e hop}{10}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}Stack protocollare e incapsulamento}{11}{subsubsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.3}III. Vulnerabilità intrinseche di IP e TCP}{11}{subsection.1.3}%
+\contentsline {subsubsection}{\numberline {1.3.1}Identificazione, spoofing e non-ripudio}{12}{subsubsection.1.3.1}%
+\contentsline {subsubsection}{\numberline {1.3.2}Confidenzialità}{12}{subsubsection.1.3.2}%
+\contentsline {subsubsection}{\numberline {1.3.3}Integrità dei dati}{12}{subsubsection.1.3.3}%
+\contentsline {subsubsection}{\numberline {1.3.4}Packet replication e anti-replay}{12}{subsubsection.1.3.4}%
+\contentsline {subsubsection}{\numberline {1.3.5}Insicurezza delle mappature dinamiche}{12}{subsubsection.1.3.5}%
+\contentsline {subsection}{\numberline {1.4}Laboratorio 1: MiTM e DNS spoofing}{13}{subsection.1.4}%
+\contentsline {subsubsection}{\numberline {1.4.1}Obiettivo e scenario}{13}{subsubsection.1.4.1}%
+\contentsline {subsubsection}{\numberline {1.4.2}Fasi dell'attacco}{13}{subsubsection.1.4.2}%
+\contentsline {subsubsection}{\numberline {1.4.3}STEP 1: ARP spoofing (MiTM)}{13}{subsubsection.1.4.3}%
+\contentsline {subsubsection}{\numberline {1.4.4}STEP 2 \& 3: intercettazione e DNS spoofing}{14}{subsubsection.1.4.4}%
+\contentsline {subsubsection}{\numberline {1.4.5}STEP 4: impersonificazione del sito web}{14}{subsubsection.1.4.5}%
+\contentsline {section}{\numberline {2}NET\_02}{15}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Sicurezza delle Reti Ethernet LAN (Livello 2)}{15}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Perché la LAN Ethernet è fragile per natura}{15}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Frame, indirizzamento e forwarding}{15}{subsubsection.2.2.1}%
+\contentsline {paragraph}{\numberline {2.2.1.1}Multiport Repeaters (Hub)}{15}{paragraph.2.2.1.1}%
+\contentsline {paragraph}{\numberline {2.2.1.2}Bridge/Switches}{15}{paragraph.2.2.1.2}%
+\contentsline {paragraph}{\numberline {2.2.1.3}Address Learning}{15}{paragraph.2.2.1.3}%
+\contentsline {subsubsection}{\numberline {2.2.2}Topologie e controllo dei loop: STP}{16}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Adattamento del Livello 3 su Livello 2: DHCP, ARP e NDP}{17}{subsubsection.2.2.3}%
+\contentsline {paragraph}{\numberline {2.2.3.1}DHCP — Dynamic Host Configuration Protocol (IPv4).}{17}{paragraph.2.2.3.1}%
+\contentsline {paragraph}{\numberline {2.2.3.2}ARP — Address Resolution Protocol (IPv4).}{18}{paragraph.2.2.3.2}%
+\contentsline {paragraph}{\numberline {2.2.3.3}NDP — Neighbor Discovery Protocol (IPv6).}{18}{paragraph.2.2.3.3}%
+\contentsline {subsubsection}{\numberline {2.2.4}Vulnerabilità e minacce principali}{18}{subsubsection.2.2.4}%
+\contentsline {paragraph}{\numberline {2.2.4.1}Accesso alla rete}{18}{paragraph.2.2.4.1}%
+\contentsline {paragraph}{\numberline {2.2.4.2}Compromissione e controllo dello switch.}{19}{paragraph.2.2.4.2}%
+\contentsline {paragraph}{\numberline {2.2.4.3}Riservatezza e intercettazione.}{19}{paragraph.2.2.4.3}%
+\contentsline {paragraph}{\numberline {2.2.4.4}Integrità del traffico e attacchi Man-in-the-Middle (MITM)}{20}{paragraph.2.2.4.4}%
+\contentsline {paragraph}{\numberline {2.2.4.5}Disponibilità e attacchi di Denial of Service (DoS)}{20}{paragraph.2.2.4.5}%
+\contentsline {subsubsection}{\numberline {2.2.5}Contromisure: dal minimo sindacale al robusto}{21}{subsubsection.2.2.5}%
+\contentsline {paragraph}{\numberline {2.2.5.1}Router-based security (segmentazione L3).}{21}{paragraph.2.2.5.1}%
+\contentsline {subsubsection}{\numberline {2.2.6}Controllo d’accesso (Access Control)}{22}{subsubsection.2.2.6}%
+\contentsline {paragraph}{\numberline {2.2.6.1}Obiettivo.}{22}{paragraph.2.2.6.1}%
+\contentsline {paragraph}{\numberline {2.2.6.2}802.1X (port-based NAC).}{22}{paragraph.2.2.6.2}%
+\contentsline {paragraph}{\numberline {2.2.6.3}Autorizzazione dinamica con 802.1X.}{22}{paragraph.2.2.6.3}%
+\contentsline {paragraph}{\numberline {2.2.6.4}Port Security \& ACL sugli switch.}{22}{paragraph.2.2.6.4}%
+\contentsline {paragraph}{\numberline {2.2.6.5}Segmentazione con VLAN (complemento).}{22}{paragraph.2.2.6.5}%
+\contentsline {subsection}{\numberline {2.3}Laboratorio 2A: ACL L2 con Linux Bridge ed \texttt {ebtables} (binding MAC→porta)}{23}{subsection.2.3}%
+\contentsline {paragraph}{\numberline {2.3.0.1}1) Preparazione host (MAC/IP dei client).}{23}{paragraph.2.3.0.1}%
+\contentsline {paragraph}{\numberline {2.3.0.2}2) Creazione del bridge L2 (lato “switch” Linux).}{23}{paragraph.2.3.0.2}%
+\contentsline {paragraph}{\numberline {2.3.0.3}3) ACL L2 con \texttt {ebtables} (NETFILTER).}{24}{paragraph.2.3.0.3}%
+\contentsline {subsection}{\numberline {2.4}Laboratorio 2B: MACsec su Linux (confidenzialità, integrità e anti-replay a L2)}{24}{subsection.2.4}%
+\contentsline {paragraph}{\numberline {2.4.0.1}Host A (\textbf {client1}).}{24}{paragraph.2.4.0.1}%
+\contentsline {paragraph}{\numberline {2.4.0.2}Host B (\textbf {client2}).}{25}{paragraph.2.4.0.2}%
+\contentsline {paragraph}{\numberline {2.4.0.3}Opzioni di sicurezza e test.}{25}{paragraph.2.4.0.3}%
+\contentsline {subsubsection}{\numberline {2.4.1}Secure Address Resolution (IPv4/IPv6)}{26}{subsubsection.2.4.1}%
+\contentsline {paragraph}{\numberline {2.4.1.1}IPv4: dal piano di switching ai vincoli per-presa.}{26}{paragraph.2.4.1.1}%
+\contentsline {paragraph}{\numberline {2.4.1.2}IPv4: proposte crittografiche.}{26}{paragraph.2.4.1.2}%
+\contentsline {paragraph}{\numberline {2.4.1.3}IPv6: NDP sicuro.}{26}{paragraph.2.4.1.3}%
+\contentsline {subsubsection}{\numberline {2.4.2}Security Monitoring}{26}{subsubsection.2.4.2}%
+\contentsline {paragraph}{\numberline {2.4.2.1}Firewall \& DPI.}{26}{paragraph.2.4.2.1}%
+\contentsline {paragraph}{\numberline {2.4.2.2}IDS/IPS e accesso al traffico.}{26}{paragraph.2.4.2.2}%
+\contentsline {paragraph}{\numberline {2.4.2.3}Dove il monitoring aiuta davvero.}{26}{paragraph.2.4.2.3}%
+\contentsline {paragraph}{\numberline {2.4.2.4}Messaggio chiave (dalle slide).}{26}{paragraph.2.4.2.4}%
+\contentsline {section}{\numberline {3}NET\_03 — Virtual LANs (VLAN)}{27}{section.3}%
+\contentsline {subsubsection}{\numberline {3.0.1}Definizione e motivazione}{27}{subsubsection.3.0.1}%
+\contentsline {subsubsection}{\numberline {3.0.2}Limiti delle reti fisicamente separate}{27}{subsubsection.3.0.2}%
+\contentsline {paragraph}{\numberline {3.0.2.1}Benefici principali delle VLAN}{27}{paragraph.3.0.2.1}%
+\contentsline {subsection}{\numberline {3.1}Assegnazione e membership delle VLAN}{28}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Criteri di assegnazione}{28}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Vista logica}{28}{subsubsection.3.1.2}%
+\contentsline {paragraph}{\numberline {3.1.2.1}Router “one-armed”}{29}{paragraph.3.1.2.1}%
+\contentsline {subsection}{\numberline {3.2}Trasporto dei frame: Tagging IEEE 802.1Q}{30}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Porte di tipo Access, Trunk e Hybrid}{30}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Access links}{30}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}Access links nelle regioni legacy}{31}{subsubsection.3.2.3}%
+\contentsline {subsubsection}{\numberline {3.2.4}Trunk links}{31}{subsubsection.3.2.4}%
+\contentsline {subsubsection}{\numberline {3.2.5}Hybrid links}{32}{subsubsection.3.2.5}%
+\contentsline {subsubsection}{\numberline {3.2.6}Una stazione può appartenere a più VLAN?}{33}{subsubsection.3.2.6}%
+\contentsline {subsection}{\numberline {3.3}Laboratorio 3: Configurazione VLAN e router one-armed}{35}{subsection.3.3}%
+\contentsline {paragraph}{\numberline {3.3.0.1}Isolamento del traffico}{36}{paragraph.3.3.0.1}%
+\contentsline {paragraph}{\numberline {3.3.0.2}Routing inter-VLAN}{36}{paragraph.3.3.0.2}%
+\contentsline {paragraph}{\numberline {3.3.0.3}Verifica del comportamento}{37}{paragraph.3.3.0.3}%
+\contentsline {paragraph}{\numberline {3.3.0.4}Osservazione pratica}{37}{paragraph.3.3.0.4}%
+\contentsline {subsection}{\numberline {3.4}Sicurezza delle VLAN e vulnerabilità di livello 2}{38}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Minacce principali}{38}{subsubsection.3.4.1}%
+\contentsline {paragraph}{\numberline {3.4.1.1}1) MAC Flooding (CAM Overflow)}{38}{paragraph.3.4.1.1}%
+\contentsline {paragraph}{\numberline {3.4.1.2}2) ARP Spoofing / Poisoning}{38}{paragraph.3.4.1.2}%
+\contentsline {paragraph}{\numberline {3.4.1.3}3) VLAN Hopping}{39}{paragraph.3.4.1.3}%
+\contentsline {paragraph}{\numberline {3.4.1.4}4) Attacchi ai protocolli di controllo}{39}{paragraph.3.4.1.4}%
+\contentsline {subparagraph}{\numberline {3.4.1.4.1}Spanning Tree Attack (BPDU spoofing)}{40}{subparagraph.3.4.1.4.1}%
+\contentsline {subparagraph}{\numberline {3.4.1.4.2}VTP Attack (VLAN Trunking Protocol)}{40}{subparagraph.3.4.1.4.2}%
+\contentsline {subparagraph}{\numberline {3.4.1.4.3}Cisco Discovery Protocol Attack (information leakage)}{40}{subparagraph.3.4.1.4.3}%
+\contentsline {subsection}{\numberline {3.5}Laboratorio 4: VLAN Hopping e Double Tagging}{41}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Scenario}{41}{subsubsection.3.5.1}%
+\contentsline {subsubsection}{\numberline {3.5.2}Topologia del laboratorio}{41}{subsubsection.3.5.2}%
+\contentsline {subsubsection}{\numberline {3.5.3}Prerequisiti perché l’attacco riesca}{42}{subsubsection.3.5.3}%
+\contentsline {subsubsection}{\numberline {3.5.4}Funzionamento dell’attacco (passo–passo)}{42}{subsubsection.3.5.4}%
+\contentsline {subsubsection}{\numberline {3.5.5}Esecuzione pratica (Linux)}{42}{subsubsection.3.5.5}%
+\contentsline {paragraph}{\numberline {3.5.5.1}Cosa osservare con lo sniffer}{43}{paragraph.3.5.5.1}%
+\contentsline {paragraph}{\numberline {3.5.5.2}Limitazioni pratiche}{43}{paragraph.3.5.5.2}%
+\contentsline {paragraph}{\numberline {3.5.5.3}Mitigazioni}{43}{paragraph.3.5.5.3}%
+\contentsline {section}{\numberline {4}NET\_04 — 802.1x}{44}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Quadro generale e obiettivo}{44}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Attori dell’architettura (vista di alto livello)}{44}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}EAP ed EAPoL: fondamenti}{44}{subsection.4.3}%
+\contentsline {paragraph}{\numberline {4.3.0.1}EAP (Extensible Authentication Protocol).}{44}{paragraph.4.3.0.1}%
+\contentsline {subsection}{\numberline {4.4}EAP termination vs EAP relay (EAPoR)}{45}{subsection.4.4}%
+\contentsline {paragraph}{\numberline {4.4.0.1} EAP termination mode (terminazione locale).}{45}{paragraph.4.4.0.1}%
+\contentsline {paragraph}{\numberline {4.4.0.2} EAP relay mode (EAP over RADIUS, EAPoR).}{45}{paragraph.4.4.0.2}%
+\contentsline {subsection}{\numberline {4.5}Processi di autenticazione: dai diagrammi alle implicazioni operative}{46}{subsection.4.5}%
+\contentsline {paragraph}{\numberline {4.5.0.1}Message exchange (visione di alto livello).}{46}{paragraph.4.5.0.1}%
+\contentsline {paragraph}{\numberline {4.5.0.2}Relay Mode (EAP-MD5) — sequenza dettagliata.}{47}{paragraph.4.5.0.2}%
+\contentsline {paragraph}{\numberline {4.5.0.3}EAP-TLS: esempio più complesso.}{48}{paragraph.4.5.0.3}%
+\contentsline {subsection}{\numberline {4.6}Operazioni aggiuntive: ri-autenticazione, logout, timer}{48}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Autorizzazione post-autenticazione: VLAN, ACL, UCL}{48}{subsection.4.7}%
+\contentsline {paragraph}{\numberline {4.7.0.1}VLAN dinamiche.}{48}{paragraph.4.7.0.1}%
+\contentsline {paragraph}{\numberline {4.7.0.2}ACL per-utente.}{48}{paragraph.4.7.0.2}%
+\contentsline {paragraph}{\numberline {4.7.0.3}UCL (User Control List).}{49}{paragraph.4.7.0.3}%
+\contentsline {subsection}{\numberline {4.8}Vulnerabilità storiche e motivazione per MACsec}{49}{subsection.4.8}%
+\contentsline {subsection}{\numberline {4.9}Lab 5 — 802.1X Port-Based Authentication \& VLAN assignment}{50}{subsection.4.9}%
+\contentsline {paragraph}{\numberline {4.9.0.1}Obiettivo.}{50}{paragraph.4.9.0.1}%
+\contentsline {paragraph}{\numberline {4.9.0.2}Topologia di rete.}{50}{paragraph.4.9.0.2}%
+\contentsline {paragraph}{\numberline {4.9.0.3}Configurazione dello switch (Authenticator).}{50}{paragraph.4.9.0.3}%
+\contentsline {paragraph}{\numberline {4.9.0.4}Server di autenticazione (FreeRADIUS).}{51}{paragraph.4.9.0.4}%
+\contentsline {paragraph}{\numberline {4.9.0.5}Configurazione dei client (Supplicant).}{51}{paragraph.4.9.0.5}%
+\contentsline {paragraph}{\numberline {4.9.0.6}Controllo del traffico L2.}{51}{paragraph.4.9.0.6}%
+\contentsline {paragraph}{\numberline {4.9.0.7}Sequenza operativa.}{51}{paragraph.4.9.0.7}%
+\contentsline {paragraph}{\numberline {4.9.0.8}Osservazioni e risultati.}{52}{paragraph.4.9.0.8}%
+\contentsline {paragraph}{\numberline {4.9.0.9}Conclusioni.}{52}{paragraph.4.9.0.9}%
+\contentsline {subsection}{\numberline {4.10}MACsec e MKA (802.1AE + 802.1X-2010)}{53}{subsection.4.10}%
+\contentsline {subsubsection}{\numberline {4.10.1}Perch\'e MKA: il tassello mancante dopo 802.1X}{53}{subsubsection.4.10.1}%
+\contentsline {subsubsection}{\numberline {4.10.2}Le chiavi in gioco e come si ottengono}{53}{subsubsection.4.10.2}%
+\contentsline {paragraph}{\numberline {4.10.2.1}CAK e CKN}{53}{paragraph.4.10.2.1}%
+\contentsline {paragraph}{\numberline {4.10.2.2}ICK e KEK}{53}{paragraph.4.10.2.2}%
+\contentsline {paragraph}{\numberline {4.10.2.3}SAK}{54}{paragraph.4.10.2.3}%
+\contentsline {subsubsection}{\numberline {4.10.3}Due modalità d'uso del CAK}{54}{subsubsection.4.10.3}%
+\contentsline {paragraph}{\numberline {4.10.3.1}Static CAK}{54}{paragraph.4.10.3.1}%
+\contentsline {paragraph}{\numberline {4.10.3.2}Dynamic CAK}{54}{paragraph.4.10.3.2}%
+\contentsline {subsubsection}{\numberline {4.10.4}Cosa si scambiano i peer: il ciclo MKA}{54}{subsubsection.4.10.4}%
+\contentsline {paragraph}{\numberline {4.10.4.1}Annuncio, stato e priorit\`a}{54}{paragraph.4.10.4.1}%
+\contentsline {paragraph}{\numberline {4.10.4.2}Elezione del Key Server}{54}{paragraph.4.10.4.2}%
+\contentsline {paragraph}{\numberline {4.10.4.3}Apertura dei Secure Channel}{54}{paragraph.4.10.4.3}%
+\contentsline {paragraph}{\numberline {4.10.4.4}Vita della sessione}{55}{paragraph.4.10.4.4}%
+\contentsline {subsubsection}{\numberline {4.10.5}Collegamento con le policy 802.1X/NAC}{55}{subsubsection.4.10.5}%
+\contentsline {subsection}{\numberline {4.11}Simple MKA lab with Linux}{56}{subsection.4.11}%
+\contentsline {subsection}{\numberline {4.12}Laboratorio: MKA/MACsec su Linux (Static CAK)}{56}{subsection.4.12}%
+\contentsline {subsubsection}{\numberline {4.12.1}Scopo}{56}{subsubsection.4.12.1}%
+\contentsline {subsubsection}{\numberline {4.12.2}Topologia}{56}{subsubsection.4.12.2}%
+\contentsline {subsubsection}{\numberline {4.12.3}Procedura}{56}{subsubsection.4.12.3}%
+\contentsline {paragraph}{\numberline {4.12.3.1}Generazione delle chiavi (uguali su \emph {tutti} i peer)}{56}{paragraph.4.12.3.1}%
+\contentsline {paragraph}{\numberline {4.12.3.2}Configurazione MKA su ciascun host}{56}{paragraph.4.12.3.2}%
+\contentsline {paragraph}{\numberline {4.12.3.3}Avvio di MKA e creazione dell'interfaccia \texttt {macsec0}}{57}{paragraph.4.12.3.3}%
+\contentsline {paragraph}{\numberline {4.12.3.4}Indirizzamento IP sulla \texttt {macsec0}}{57}{paragraph.4.12.3.4}%
+\contentsline {paragraph}{\numberline {4.12.3.5}Test base di connettività}{57}{paragraph.4.12.3.5}%
+\contentsline {subsubsection}{\numberline {4.12.4}Verifiche}{57}{subsubsection.4.12.4}%
+\contentsline {paragraph}{\numberline {4.12.4.1}Log MKA}{57}{paragraph.4.12.4.1}%
+\contentsline {paragraph}{\numberline {4.12.4.2}Stato interfaccia}{57}{paragraph.4.12.4.2}%
+\contentsline {subsubsection}{\numberline {4.12.5}Troubleshooting}{57}{subsubsection.4.12.5}%
+\contentsline {subsubsection}{\numberline {4.12.6}Pulizia}{57}{subsubsection.4.12.6}%
+\contentsline {subsubsection}{\numberline {4.12.7}Estensioni \& domande d'esame}{57}{subsubsection.4.12.7}%
+\contentsline {paragraph}{\numberline {4.12.7.1}Dynamic CAK (accenno)}{57}{paragraph.4.12.7.1}%
+\contentsline {section}{\numberline {5}SYS\_01 — Introduzione ai Security Frameworks}{58}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Quadro generale e obiettivo}{58}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Principi fondamentali}{58}{subsection.5.2}%
+\contentsline {paragraph}{\numberline {5.2.0.1}Confidenzialità}{58}{paragraph.5.2.0.1}%
+\contentsline {paragraph}{\numberline {5.2.0.2}Integrità}{58}{paragraph.5.2.0.2}%
+\contentsline {paragraph}{\numberline {5.2.0.3}Disponibilità}{58}{paragraph.5.2.0.3}%
+\contentsline {paragraph}{\numberline {5.2.0.4}Autenticità e Autorizzazione}{59}{paragraph.5.2.0.4}%
+\contentsline {paragraph}{\numberline {5.2.0.5}Accountability}{59}{paragraph.5.2.0.5}%
+\contentsline {paragraph}{\numberline {5.2.0.6}Dipendibilità}{59}{paragraph.5.2.0.6}%
+\contentsline {subsection}{\numberline {5.3}Perché servono i Security Frameworks}{60}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Tre famiglie a confronto}{60}{subsection.5.4}%
+\contentsline {subsubsection}{\numberline {5.4.1}FIPS 200 — Requisiti minimi per i sistemi federali}{60}{subsubsection.5.4.1}%
+\contentsline {subsubsection}{\numberline {5.4.2}CIS Critical Security Controls — L’igiene prioritaria}{60}{subsubsection.5.4.2}%
+\contentsline {subsubsection}{\numberline {5.4.3}ISO/IEC 27000 — ISMS e gestione del rischio}{61}{subsubsection.5.4.3}%
+\contentsline {section}{\numberline {6}SYS\_02 — Hardware Primer}{62}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Moore’s Law e l’evoluzione del calcolo}{62}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Fine della crescita lineare e parallelismo}{62}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Pipeline e architettura superscalare}{62}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Branch Prediction: principi e strategie}{62}{subsection.6.4}%
+\contentsline {paragraph}{\numberline {6.4.0.1}Perché serve una predizione}{63}{paragraph.6.4.0.1}%
+\contentsline {paragraph}{\numberline {6.4.0.2}Tipi di predizione}{63}{paragraph.6.4.0.2}%
+\contentsline {paragraph}{\numberline {6.4.0.3}Contatore a 2 bit saturante}{63}{paragraph.6.4.0.3}%
+\contentsline {paragraph}{\numberline {6.4.0.4}Predittori correlati e multilivello}{63}{paragraph.6.4.0.4}%
+\contentsline {paragraph}{\numberline {6.4.0.5}Ottimizzazioni hardware}{64}{paragraph.6.4.0.5}%
+\contentsline {paragraph}{\numberline {6.4.0.6}Importanza crescente della predizione}{64}{paragraph.6.4.0.6}%
+\contentsline {subsection}{\numberline {6.5}Simultaneous Multithreading (SMT)}{65}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Pipeline interna nei processori Intel Xeon}{65}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}Gerarchia di memoria}{66}{subsection.6.7}%
+\contentsline {paragraph}{\numberline {6.7.0.1}Inclusività e mappatura}{66}{paragraph.6.7.0.1}%
+\contentsline {paragraph}{\numberline {6.7.0.2}Sostituzione ed aggiornamento}{68}{paragraph.6.7.0.2}%
+\contentsline {subsection}{\numberline {6.8}Cache coherence nei multicore}{69}{subsection.6.8}%
+\contentsline {paragraph}{\numberline {6.8.0.1}Protocolli di coerenza}{70}{paragraph.6.8.0.1}%
+\contentsline {subsection}{\numberline {6.9}Protocolli MOESI e VI}{71}{subsection.6.9}%
+\contentsline {paragraph}{\numberline {6.9.0.1}Virtual vs. Physical Cache Indexing}{72}{paragraph.6.9.0.1}%
+\contentsline {subsection}{\numberline {6.10}Hardware Transactional Memory (HTM)}{73}{subsection.6.10}%
+\contentsline {paragraph}{\numberline {6.10.0.1}Principio di funzionamento}{73}{paragraph.6.10.0.1}%
+\contentsline {paragraph}{\numberline {6.10.0.2}Casi di abort e codici di stato}{74}{paragraph.6.10.0.2}%
+\contentsline {subsection}{\numberline {6.11}DRAM e Refresh}{74}{subsection.6.11}%
+\contentsline {paragraph}{\numberline {6.11.0.1}Effetti del refresh}{74}{paragraph.6.11.0.1}%
+\contentsline {section}{\numberline {7}SYS\_04 - Hardware attacks and countermeasures}{76}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Introduzione agli Attacchi Hardware}{76}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Timing e Sicurezza}{76}{subsection.7.2}%
+\contentsline {paragraph}{\numberline {7.2.0.1}Uso della Funzione strcmp}{76}{paragraph.7.2.0.1}%
+\contentsline {paragraph}{\numberline {7.2.0.2}Timing attack in un Programma di Autenticazione}{76}{paragraph.7.2.0.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Attacchi di Temporizzazione nel Mondo Reale: RSA}{76}{subsubsection.7.2.1}%
+\contentsline {paragraph}{\numberline {7.2.1.1}Attacchi alla Decrittazione RSA}{77}{paragraph.7.2.1.1}%
+\contentsline {paragraph}{\numberline {7.2.1.2}Algoritmi a Tempo Costante}{77}{paragraph.7.2.1.2}%
+\contentsline {subsection}{\numberline {7.3}Preambolo: Side-Channel Attacks e Considerazioni Tecniche}{77}{subsection.7.3}%
+\contentsline {paragraph}{\numberline {7.3.0.1}Fasi operative}{77}{paragraph.7.3.0.1}%
+\contentsline {paragraph}{\numberline {7.3.0.2}Scoprire i percorsi di codice}{77}{paragraph.7.3.0.2}%
+\contentsline {subsubsection}{\numberline {7.3.1}Technical Considerations}{78}{subsubsection.7.3.1}%
+\contentsline {paragraph}{\numberline {7.3.1.1}Nota pratica (TSX e detection)}{78}{paragraph.7.3.1.1}%
+\contentsline {subsection}{\numberline {7.4}Attacchi side channel}{78}{subsection.7.4}%
+\contentsline {subsubsection}{\numberline {7.4.1}Timing della Cache}{78}{subsubsection.7.4.1}%
+\contentsline {paragraph}{\numberline {7.4.1.1}Attacchi Flush + Reload}{78}{paragraph.7.4.1.1}%
+\contentsline {paragraph}{\numberline {7.4.1.2}Evict + Time}{78}{paragraph.7.4.1.2}%
+\contentsline {paragraph}{\numberline {7.4.1.3}Attacchi Prime + Probe}{79}{paragraph.7.4.1.3}%
+\contentsline {paragraph}{\numberline {7.4.1.4}Prime + Abort}{79}{paragraph.7.4.1.4}%
+\contentsline {paragraph}{\numberline {7.4.1.5}Flush + Flush}{79}{paragraph.7.4.1.5}%
+\contentsline {subsubsection}{\numberline {7.4.2}Meeting Out-of-Order Pipelines: perché conta per la sicurezza}{79}{subsubsection.7.4.2}%
+\contentsline {subsubsection}{\numberline {7.4.3}Meltdown: come funziona (Primer)}{80}{subsubsection.7.4.3}%
+\contentsline {paragraph}{\numberline {7.4.3.1}Idea chiave}{80}{paragraph.7.4.3.1}%
+\contentsline {paragraph}{\numberline {7.4.3.2}Schema operativo Meltdown}{80}{paragraph.7.4.3.2}%
+\contentsline {paragraph}{\numberline {7.4.3.3}Perché è possibile}{80}{paragraph.7.4.3.3}%
+\contentsline {subsubsection}{\numberline {7.4.4}Fooling the Branch Prediction Unit (BPU)}{80}{subsubsection.7.4.4}%
+\contentsline {paragraph}{\numberline {7.4.4.1}Dove si colpisce e perché funziona}{80}{paragraph.7.4.4.1}%
+\contentsline {paragraph}{\numberline {7.4.4.2}Nota operativa}{81}{paragraph.7.4.4.2}%
+\contentsline {subsubsection}{\numberline {7.4.5}Spectre Primer v1 (Bounds Check Bypass)}{81}{subsubsection.7.4.5}%
+\contentsline {paragraph}{\numberline {7.4.5.1}Fasi sintetiche}{81}{paragraph.7.4.5.1}%
+\contentsline {paragraph}{\numberline {7.4.5.2}Note dalle slide}{81}{paragraph.7.4.5.2}%
+\contentsline {subsubsection}{\numberline {7.4.6}Spectre Primer v2 (BTB Poisoning e Gadget)}{81}{subsubsection.7.4.6}%
+\contentsline {paragraph}{\numberline {7.4.6.1}Esempio di gadget dalle slide (Windows 10)}{81}{paragraph.7.4.6.1}%
+\contentsline {paragraph}{\numberline {7.4.6.2}Requisiti e note}{81}{paragraph.7.4.6.2}%
+\contentsline {paragraph}{\numberline {7.4.6.3}Contromisure (rimando)}{82}{paragraph.7.4.6.3}%
+\contentsline {subsubsection}{\numberline {7.4.7}L1TF (Foreshadow): principio e flusso}{82}{subsubsection.7.4.7}%
+\contentsline {paragraph}{\numberline {7.4.7.1}Perché funziona}{82}{paragraph.7.4.7.1}%
+\contentsline {paragraph}{\numberline {7.4.7.2}Varianti e impatto}{82}{paragraph.7.4.7.2}%
+\contentsline {paragraph}{\numberline {7.4.7.3}Schema operativo (dalle slide)}{82}{paragraph.7.4.7.3}%
+\contentsline {paragraph}{\numberline {7.4.7.4}Mitigazioni (riassunto dalle slide \& appunti)}{82}{paragraph.7.4.7.4}%
+\contentsline {section}{\numberline {8}SYS\_05 - OS Security Principles}{84}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Introduzione}{84}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Identificazione e Autenticazione degli Utenti}{84}{subsection.8.2}%
+\contentsline {paragraph}{\numberline {8.2.0.1}/etc/passwd}{84}{paragraph.8.2.0.1}%
+\contentsline {paragraph}{\numberline {8.2.0.2}/etc/shadow}{84}{paragraph.8.2.0.2}%
+\contentsline {subsection}{\numberline {8.3}Gestione degli UID e dei Privilegi}{85}{subsection.8.3}%
+\contentsline {paragraph}{\numberline {8.3.0.1}su e sudo}{85}{paragraph.8.3.0.1}%
+\contentsline {subsection}{\numberline {8.4}Principio del Minimo Privilegio}{85}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Controllo degli Accessi}{85}{subsection.8.5}%
+\contentsline {subsubsection}{\numberline {8.5.1}Politiche di Sicurezza: DAC e MAC}{86}{subsubsection.8.5.1}%
+\contentsline {subsubsection}{\numberline {8.5.2}POSIX ACL e Access Control Fine-Grained}{86}{subsubsection.8.5.2}%
+\contentsline {paragraph}{\numberline {8.5.2.1}Esempio di ACL POSIX}{86}{paragraph.8.5.2.1}%
+\contentsline {paragraph}{\numberline {8.5.2.2}Meccanismo di valutazione delle ACL}{87}{paragraph.8.5.2.2}%
+\contentsline {subparagraph}{\numberline {8.5.2.2.1}Fase (i): Selezione della voce corrispondente}{87}{subparagraph.8.5.2.2.1}%
+\contentsline {subparagraph}{\numberline {8.5.2.2.2}Fase (ii): Decisione finale sull’accesso}{87}{subparagraph.8.5.2.2.2}%
+\contentsline {paragraph}{\numberline {8.5.2.3}Ruolo della Mask}{87}{paragraph.8.5.2.3}%
+\contentsline {subsection}{\numberline {8.6}Linux Capabilities}{87}{subsection.8.6}%
+\contentsline {paragraph}{\numberline {8.6.0.1}Esempi di capability}{88}{paragraph.8.6.0.1}%
+\contentsline {paragraph}{\numberline {8.6.0.2}Implementazione nel kernel}{88}{paragraph.8.6.0.2}%
+\contentsline {paragraph}{\numberline {8.6.0.3}Insiemi di capability di un thread}{88}{paragraph.8.6.0.3}%
+\contentsline {paragraph}{\numberline {8.6.0.4}File capabilities}{89}{paragraph.8.6.0.4}%
+\contentsline {paragraph}{\numberline {8.6.0.5}Capability Bounding Set}{89}{paragraph.8.6.0.5}%
+\contentsline {subsection}{\numberline {8.7}Linux Security Modules (LSM)}{89}{subsection.8.7}%
+\contentsline {paragraph}{\numberline {8.7.0.1}Concetto di base}{89}{paragraph.8.7.0.1}%
+\contentsline {paragraph}{\numberline {8.7.0.2}Struttura generale}{89}{paragraph.8.7.0.2}%
+\contentsline {paragraph}{\numberline {8.7.0.3}Funzionamento del framework}{90}{paragraph.8.7.0.3}%
+\contentsline {paragraph}{\numberline {8.7.0.4}Hook di sicurezza}{90}{paragraph.8.7.0.4}%
+\contentsline {paragraph}{\numberline {8.7.0.5}Categorie di hook}{91}{paragraph.8.7.0.5}%
+\contentsline {paragraph}{\numberline {8.7.0.6}Esempio: hook su un file system}{91}{paragraph.8.7.0.6}%
+\contentsline {paragraph}{\numberline {8.7.0.7}Estensioni del kernel per LSM}{91}{paragraph.8.7.0.7}%
+\contentsline {subsubsection}{\numberline {8.7.1}Esempi di Moduli MAC}{92}{subsubsection.8.7.1}%
+\contentsline {paragraph}{\numberline {8.7.1.1}S.M.A.C.K. (Simplified Mandatory Access Control Kernel)}{92}{paragraph.8.7.1.1}%
+\contentsline {paragraph}{\numberline {8.7.1.2}Etichette di default}{92}{paragraph.8.7.1.2}%
+\contentsline {paragraph}{\numberline {8.7.1.3}SMACKFS}{93}{paragraph.8.7.1.3}%
+\contentsline {paragraph}{\numberline {8.7.1.4}Caratteristiche e limiti}{93}{paragraph.8.7.1.4}%
+\contentsline {paragraph}{\numberline {8.7.1.5}Tomoyo Linux}{93}{paragraph.8.7.1.5}%
+\contentsline {paragraph}{\numberline {8.7.1.6}AppArmor}{93}{paragraph.8.7.1.6}%
+\contentsline {paragraph}{\numberline {8.7.1.7}SELinux (Security-Enhanced Linux)}{94}{paragraph.8.7.1.7}%
+\contentsline {paragraph}{\numberline {8.7.1.8}Fase 1: dal kernel alla query di autorizzazione}{94}{paragraph.8.7.1.8}%
+\contentsline {paragraph}{\numberline {8.7.1.9}Fase 2: ricerca della policy SELinux}{95}{paragraph.8.7.1.9}%
+\contentsline {paragraph}{\numberline {8.7.1.10}Stato di etichettamento (Labeling State)}{95}{paragraph.8.7.1.10}%
+\contentsline {paragraph}{\numberline {8.7.1.11}Stato di transizione (Transition State)}{95}{paragraph.8.7.1.11}%
+\contentsline {subparagraph}{\numberline {8.7.1.11.1}1. Transizione di file}{96}{subparagraph.8.7.1.11.1}%
+\contentsline {subparagraph}{\numberline {8.7.1.11.2}2. Transizione di processo}{96}{subparagraph.8.7.1.11.2}%
+\contentsline {subsection}{\numberline {8.8}Boot Time Security}{96}{subsection.8.8}%
+\contentsline {paragraph}{\numberline {8.8.0.1}Funzionamento del Ramdisk durante il Boot}{96}{paragraph.8.8.0.1}%
+\contentsline {paragraph}{\numberline {8.8.0.2}Horse Pills}{97}{paragraph.8.8.0.2}%
+\contentsline {paragraph}{\numberline {8.8.0.3}Cosa può fare un ramdisk infetto}{97}{paragraph.8.8.0.3}%
+\contentsline {paragraph}{\numberline {8.8.0.4}Mitigazioni e strategie di difesa}{98}{paragraph.8.8.0.4}%
+\contentsline {subparagraph}{\numberline {8.8.0.4.1}1. Rilevazione}{98}{subparagraph.8.8.0.4.1}%
+\contentsline {subparagraph}{\numberline {8.8.0.4.2}2. Prevenzione}{99}{subparagraph.8.8.0.4.2}%
+\contentsline {subsection}{\numberline {8.9}Sicurezza di Rete a Livello OS}{99}{subsection.8.9}%
+\contentsline {paragraph}{\numberline {8.9.0.1}inetd e xinetd}{99}{paragraph.8.9.0.1}%
+\contentsline {paragraph}{\numberline {8.9.0.2}TCP Wrappers e Reverse DNS}{99}{paragraph.8.9.0.2}%
+\contentsline {paragraph}{\numberline {8.9.0.3}File di configurazione}{99}{paragraph.8.9.0.3}%
+\contentsline {paragraph}{\numberline {8.9.0.4}Esempi pratici}{100}{paragraph.8.9.0.4}%
+\contentsline {paragraph}{\numberline {8.9.0.5}Ordine e logica di valutazione}{100}{paragraph.8.9.0.5}%
+\contentsline {paragraph}{\numberline {8.9.0.6}Reverse DNS Tampering: il problema}{100}{paragraph.8.9.0.6}%
+\contentsline {paragraph}{\numberline {8.9.0.7}Esempio di attacco semplificato}{100}{paragraph.8.9.0.7}%
+\contentsline {paragraph}{\numberline {8.9.0.8}Contromisure pratiche}{100}{paragraph.8.9.0.8}%
+\contentsline {paragraph}{\numberline {8.9.0.9}Conclusione}{101}{paragraph.8.9.0.9}%
+\contentsline {section}{\numberline {9}Concetti generali}{102}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Problemi principali degli antivirus}{102}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Evoluzione degli antivirus}{102}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Componenti di un antivirus}{102}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}Esempi di packing}{103}{subsection.9.4}%
+\contentsline {paragraph}{\numberline {9.4.0.1}1. Poche o nessuna importazione nella IAT (Import Address Table)}{103}{paragraph.9.4.0.1}%
+\contentsline {paragraph}{\numberline {9.4.0.2}2. Nomi di sezioni non standard o incoerenti}{103}{paragraph.9.4.0.2}%
+\contentsline {paragraph}{\numberline {9.4.0.3}3. Sezioni piccole su disco ma grandi in memoria}{103}{paragraph.9.4.0.3}%
+\contentsline {paragraph}{\numberline {9.4.0.4}4. Poche stringhe leggibili}{103}{paragraph.9.4.0.4}%
+\contentsline {paragraph}{\numberline {9.4.0.5}5. Sezioni con permessi RWX}{104}{paragraph.9.4.0.5}%
+\contentsline {paragraph}{\numberline {9.4.0.6}6. Salti o chiamate a registri/indirizzi anomali}{104}{paragraph.9.4.0.6}%
+\contentsline {subsection}{\numberline {9.5}Approccio operativo alla rilevazione}{104}{subsection.9.5}%
+\contentsline {subsection}{\numberline {9.6}Tecniche di evasione}{105}{subsection.9.6}%
+\contentsline {subsection}{\numberline {9.7}Analisi statica e comportamentale}{105}{subsection.9.7}%
+\contentsline {paragraph}{\numberline {9.7.0.1}Analisi statica}{106}{paragraph.9.7.0.1}%
+\contentsline {paragraph}{\numberline {9.7.0.2}Analisi comportamentale}{106}{paragraph.9.7.0.2}%
+\contentsline {subsection}{\numberline {9.8}Emulatori e Fingerprinting}{108}{subsection.9.8}%
+\contentsline {paragraph}{\numberline {9.8.0.1}Funzionamento degli emulatori}{108}{paragraph.9.8.0.1}%
+\contentsline {paragraph}{\numberline {9.8.0.2}Limiti e tecniche di evasione}{108}{paragraph.9.8.0.2}%
+\contentsline {paragraph}{\numberline {9.8.0.3}Fingerprinting dell’ambiente}{108}{paragraph.9.8.0.3}%
+\contentsline {paragraph}{\numberline {9.8.0.4}Contromisure adottate dagli antivirus}{109}{paragraph.9.8.0.4}%
+\contentsline {subsection}{\numberline {9.9}Analisi del traffico cifrato}{109}{subsection.9.9}%
+\contentsline {subsection}{\numberline {9.10}Fiducia e limiti del software antivirus}{109}{subsection.9.10}%
