@@ -111,6 +111,11 @@ Meltdown sfrutta il fatto che \textbf{il controllo di privilegio} sugli accessi 
   \item \textbf{Reload \& Time}: si misura quale fra i 256 solt presenti nell array di probing è in cache.
 \end{enumerate}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/meltdown.png}
+\end{figure}
+
 \paragraph{Perché è possibile}
 Storicamente, i kernel mappavano l’intero spazio kernel nello \emph{address space} dei processi utente (bit di privilegio nei PTE impediva l’uso lecito, ma l’entry era presente). La finestra \emph{transient} tra \emph{address translation}/\emph{data fetch} e \emph{privilege check} consente l’effetto in cache. Misurare la latenza di accesso alla probe array a fine sequenza rivela il valore reale del byte kernel.
 
@@ -119,7 +124,7 @@ La \textbf{Branch Prediction Unit (BPU)} apprende dagli esiti recenti e tenta di
 Un attaccante può \emph{avvelenare} (miss-train) la BPU eseguendo ripetutamente un pattern di codice così che la previsione
 diventi stabile; cambiando poi il comportamento del codice, la BPU continua a predire il ramo ``allenato'',
 consentendo l’esecuzione \emph{transient} di istruzioni non autorizzate. Anche se la pipeline viene poi \emph{flushata},
-gli effetti micro–architetturali (es.\ cache) restano osservabili via side–channel. :contentReference[oaicite:0]{index=0}
+gli effetti micro–architetturali (es.\ cache) restano osservabili via side–channel.
 
 \begin{figure}[H]
 \centering
@@ -132,10 +137,6 @@ l’attaccante può correlare rami, sfruttare la storia globale e indurre la pre
 (anche per salti indiretti). Questa architettura è descritta negli appunti: predittori correlati, tournament predictor,
 BTB come piccola cache indicizzata dal \emph{program counter}.
 
-\paragraph{Nota operativa}
-Il miss–training efficace richiede in genere \emph{lo stesso core} della vittima; la fase di misurazione del canale
-(\emph{timing}/cache) può avvenire anche su altri core. :contentReference[oaicite:2]{index=2}
-
 \subsubsection{Spectre Primer v1 (Bounds Check Bypass)}
 L’idea classica: si forza la speculazione oltre un controllo di bounds, usando l’indice per selezionare una linea di cache in
 una \emph{probe array}; a fine speculazione si misura quale linea è calda e si ricostruisce il dato.
@@ -144,28 +145,20 @@ if (x < array1_size) {
   y = array2[array1[x] * 4096];
 }
 \end{verbatim}
-Anche se la condizione è falsificata, durante la finestra speculativa la CPU può accedere a \texttt{array1[x]} fuori limite
+Anche se la condizione è falsa, durante la finestra speculativa la CPU può accedere a \texttt{array1[x]} fuori limite
 e toccare \texttt{array2[ ... ]}, lasciando un’impronta in cache che rivela \texttt{array1[x]}.
-
-\paragraph{Fasi sintetiche}
-\begin{enumerate}
-  \item \textbf{Miss-train} del ramo per rendere probabile la predizione ``true'' su \texttt{x < array1\_size}.
-  \item \textbf{Trigger} con \texttt{x} fuori limite: accesso speculativo a \texttt{array1[x]}.
-  \item \textbf{Encode} nel canale: accesso a \texttt{array2[array1[x]*4096]}.
-  \item \textbf{Leak} via \emph{Flush+Reload}/\emph{Prime+Probe} su \texttt{array2} per ricostruire il byte.
-\end{enumerate}
-:contentReference[oaicite:4]{index=4}
-
-\paragraph{Note dalle slide}
-Il vendor-specific \emph{bypass} consente alla speculazione di attraversare il check; l’osservazione dello stato di cache
-di \texttt{array2} permette di inferire il valore letto speculativamente. :contentReference[oaicite:5]{index=5}
 
 \subsubsection{Spectre Primer v2 (BTB Poisoning e Gadget)}
 Qui si mira ai \textbf{salti indiretti}: l’attaccante sceglie un \emph{gadget} nell’\emph{executable address space} della vittima
-(anche in eBPF o in librerie condivise), poi \textbf{avvelena il BTB} per far \emph{mispredict} il salto indiretto verso quel gadget,
+(anche in eBPF), poi \textbf{avvelena il BTB} per far \emph{mispredict} il salto indiretto verso quel gadget,
 che viene eseguito speculativamente. Il codice della vittima non è ``buggato'': è sfruttato come gadget per eseguire
-accessi che \emph{encodano} il dato in cache. Questo è concettualmente vicino alla ROP. :contentReference[oaicite:6]{index=6}
+accessi che \emph{encodano} il dato in cache. Questo è concettualmente vicino alla ROP.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/spectre.png}
+\end{figure}
+\newpage
 \paragraph{Esempio di gadget dalle slide (Windows 10)}
 \begin{verbatim}
 adc edi, dword ptr [ebx+edx+13BE13BDh]
@@ -178,33 +171,158 @@ l’indice \texttt{m} nel canale; l’attaccante controlla i registri e sfrutta 
 
 \paragraph{Requisiti e note}
 Il miss–training della BPU deve avvenire sullo stesso core; la lettura del canale (timing di cache) può accadere altrove.
-Esempi e note di impatto (CVE-2017-5753, CVE-2017-5715) sono riportati nelle slide. :contentReference[oaicite:8]{index=8}
-
-\paragraph{Contromisure (rimando)}
-Tecniche di hardening come \emph{Retpoline} (thunks di ritorno che intrappolano la speculazione) e le estensioni ISA
-\emph{IBRS/STIBP/IBPB} riducono l’efficacia del poisoning dei salti indiretti (si veda la sezione sulle contromisure).
 
 \subsubsection{L1TF (Foreshadow): principio e flusso}
-Durante la traduzione degli indirizzi, i processori Intel eseguono in \emph{parallelo} il flusso di traduzione (TLB, page-table walk, eventuale EPT walk per la VM, e verifica SGX) e la lookup nella \textbf{cache L1}, che è \emph{virtual-indexed, physically-tagged}. In questa finestra \emph{transient}, una voce di page table \emph{non valida} può essere \emph{speculativamente propagata} alla CPU: l’effetto risultante in L1 può essere osservato con un canale laterale “alla Meltdown” (le tracce rimangono in cache nonostante il flush architetturale). :contentReference[oaicite:0]{index=0}
-
+Durante la traduzione degli indirizzi virtuali in indirizzi fisici, i processori Intel eseguono in \emph{parallelo} sia il flusso di traduzione (consultazione della \textbf{TLB}, eventuale \textbf{EPT walk} — \emph{Extended Page Tables} in presenza di \textbf{VM}, e la verifica \textbf{SGX} — \emph{Software Guard eXtensions}) sia la ricerca nella \textbf{cache L1} \emph{VIPT} — \emph{Virtual-Indexed, Physically-Tagged}. In questa finestra \emph{transient}, una entry della tabella delle pagine \emph{non valida} può essere \emph{speculativamente propagata} alla CPU: l’effetto risultante nella L1 rimane osservabile con un side-channel nello \emph{stile Meltdown} (tracce in cache nonostante il flush architetturale). Questo consente a \textbf{L1TF} di \emph{bypassare} le verifiche di protezione del \textbf{SO} durante la navigazione nella tabella delle pagine (caso VM->EPT walk).
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/checks.png}
+\end{figure}
 \paragraph{Perché funziona}
-L’accesso a una pagina che deve generare \emph{terminal fault} (voce PTE non presente o riservata) viene comunque speculato fino a lasciare side–effects in L1; poiché la lookup L1 procede mentre i controlli di privilegio/validità avanzano, l’indirizzo fisico speculativo può guidare una \emph{encode} nel canale (es.\ tocchi di una probe array), recuperabile poi via timing. L1TF, così, \textbf{bypassa} tre barriere: protezioni del SO (PT walk), dell’hypervisor (EPT walk) e SGX. :contentReference[oaicite:1]{index=1}
-
-\paragraph{Varianti e impatto}
-La famiglia include: \textbf{Foreshadow-SGX} (CVE-2018-3615), \textbf{Foreshadow-OS} (CVE-2018-3620), \textbf{Foreshadow-VMM} (CVE-2018-3646); scoperta a inizio 2018 e divulgata il 14 agosto 2018. Colpisce gran parte delle CPU Intel Core/Xeon (specie con SGX e virtualizzazione); AMD e ARM risultano non affette nello specifico L1TF.
+Un accesso a una pagina che dovrebbe generare un \emph{terminal fault} (entry non presente o con bit riservati) può avanzare speculativamente abbastanza da lasciare effetti micro–architetturali nella L1. Poiché la ricerca in L1 procede mentre proseguono i controlli di privilegio/validità, l’indirizzo fisico speculativo può pilotare un’operazione di \emph{encode} nel canale (es.\ accessi a una \emph{probe array}); a fine finestra, il dato si ricostruisce misurando i tempi (hit/miss). In questo modo L1TF \textbf{aggira} i tre livelli di controllo: SO (PT walk), VMM/hypervisor (EPT walk) e SGX.
 
 \paragraph{Schema operativo (dalle slide)}
 \begin{enumerate}
-  \item \textbf{Preparazione PTE/EPT}: creare una voce di page table \emph{per un indirizzo d’interesse} e marcarla come \emph{invalida} (bit \textit{present}/\textit{reserved} a 0) per generare un \emph{terminal fault}. \textit{Nota:} il kernel in genere non lo consente, ma un attaccante con \emph{guest OS} su una VM può manipolare le proprie PT. :contentReference[oaicite:3]{index=3}
-  \item \textbf{Trigger transiente}: causare l’accesso che, pur faultando, porta temporaneamente il dato in L1.
-  \item \textbf{Encode/leak}: usare un gadget di encode (cache-based) e misurare il canale per ricostruire il contenuto protetto (stile Meltdown). :contentReference[oaicite:4]{index=4}
+  \item \textbf{Preparazione PTE/EPT}. Creare una voce per l’indirizzo d’interesse e marcarla \emph{invalida} (bit \emph{present}/\emph{reserved} a~0) così da generare un \emph{terminal fault}. \textit{Nota:} il kernel di norma non consente tali manipolazioni; però un attaccante con un \emph{guest OS} dentro una \textbf{VM} può modificare le proprie \textbf{PT} — \emph{Page Tables}. :contentReference[oaicite:3]{index=3}
+  \item \textbf{Trigger transiente}. Causare l’accesso che, pur faultando a livello architetturale, porta temporaneamente il dato in \textbf{L1}.
+  \item \textbf{Encode/Leak}. Usare un gadget di encodifica basato su cache (stile Meltdown) e misurare il canale per ricostruire il contenuto protetto. :contentReference[oaicite:4]{index=4}
 \end{enumerate}
-Nello scenario VMM, manipolando le PT del guest è possibile \emph{osservare} memoria dell’host o di altri guest co-locati sfruttando la finestra transiente e la condivisione delle strutture di traduzione. :contentReference[oaicite:5]{index=5}
+Nel caso \textbf{VMM}, manipolando le \textbf{PT} del guest si può arrivare a \emph{osservare} memoria dell’host o di altri guest co–locati, sfruttando la finestra transiente e la condivisione delle strutture di traduzione. :contentReference[oaicite:5]{index=5}
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/vm.png}
+\end{figure}
 
-\paragraph{Mitigazioni (riassunto dalle slide \& appunti)}
+
+
+
+\subsubsection{Mitigating Side-Channel Attacks}
+Mitigare gli attacchi a canale laterale è una sfida complessa, poiché molti di questi attacchi si basano su effetti micro-architetturali che sono intrinseci nelle architetture moderne delle CPU. Tuttavia, diverse strategie possono essere adottate per ridurre il rischio o rendere più difficili gli attacchi.
+
+\paragraph{Possible Mitigations and Detection}
+Gli attacchi di temporizzazione sono difficili da mitigare completamente, poiché il comportamento delle cache dovrebbe essere modificato in modo sostanziale. Una soluzione teorica sarebbe quella di utilizzare cache a tempo costante, in cui non vi siano differenze nei tempi di accesso alle linee di cache tra hit e miss. Tuttavia, ciò richiederebbe una modifica fondamentale dell'architettura della cache, riducendo drasticamente le prestazioni, rendendo tale soluzione impraticabile per la maggior parte dei sistemi.
+
+\paragraph{Mitigations: the hard way}
+Le mitigazioni più efficaci richiedono cambiamenti significativi nell'architettura e nel software:
+
 \begin{itemize}
-  \item \textbf{Hardening della microarchitettura/firmware \& OS/VMM}: aggiornamenti di microcode e patch che impediscono l’uso transiente di PTE non valide e mitigano l’esposizione durante i confini di privilegio/VM. (Vedi anche la separazione KPTI per Meltdown, concettualmente affine come scopo di ridurre superfici transiente utili.)
-  \item \textbf{Mitigazioni specifiche per L1}: gli attacchi \emph{cross-process} su L1 richiedono condivisione della L1 tra thread \emph{(SMT/Hyper-Threading)}; \textbf{disabilitare SMT} elimina quella via di attacco.
-  \item \textbf{Riduzione della superficie dei side channel}: limitare timer ad alta risoluzione, marcatura di regioni non cacheabili, implementazioni \emph{constant-time} e disabilitazione TSX dove rilevante per canali come Prime+Abort. (Costi prestazionali non trascurabili.)
-  \item \textbf{Rilevazione}: l’allestimento del canale crea \emph{rumore} (miss/flush/abort) osservabile con \emph{Hardware Performance Counters}; utile per detection adattiva, con limiti di portabilità tra vendor/generazioni.
+  \item Rimuovere o limitare l'accesso a timer ad alta risoluzione, come \texttt{rdtsc}, che vengono spesso utilizzati nei side-channel attacks. Questo è difficile, poiché tali timer sono necessari anche per il benchmark delle proprietà hardware.
+  \item Consentire che alcune aree di memoria siano marcate come non cacheabili, ma ciò rappresenta una sfida hardware significativa.
+  \item Utilizzare le istruzioni \textbf{AES-NI} (Advanced Encryption Standard New Instructions) nelle CPU Intel per eseguire AES, ma la stessa logica non si applica facilmente ad altri algoritmi di crittografia.
+  \item Implementare tecniche come \textbf{scatter-gather}, dove i dati segreti non dovrebbero influenzare l'accesso alla memoria su una granularità maggiore di una linea di cache.
+  \item Disabilitare le \textbf{TSX} (\emph{Transactional Synchronization Extensions}), che sono utilizzate in alcune operazioni atomiche e che potrebbero essere sfruttate negli attacchi di tipo Prime + Abort.
+  \item Disabilitare le pipeline \emph{out-of-order} (OOO), sebbene ciò abbia un impatto significativo sulle prestazioni.
 \end{itemize}
+
+\paragraph{Mitigations to L1 Attacks}
+Gli attacchi cross-process sulla cache L1 sono possibili solo quando due thread separati condividono la stessa L1. Poiché la cache L1 è privata per ogni core, gli attacchi a L1 sono praticabili solo se si fa affidamento sulla funzionalità \textbf{Simultaneous Multi-Threading (SMT)}. La soluzione più semplice per mitigare questi attacchi è \textbf{disabilitare SMT}, limitando la possibilità di attacchi tra thread di diversi processi che condividono lo stesso core.
+
+\paragraph{Mitigations: the detection way}
+L'allestimento di un canale laterale genera sempre un certo rumore nella gerarchia delle cache, soprattutto durante la fase di preparazione di alcuni attacchi. I moderni processori sono dotati di \textbf{Hardware Performance Counters (HPC)}, che consentono di tracciare eventi micro-architetturali e contarli. Questi contatori possono essere utilizzati per osservare il comportamento delle applicazioni in esecuzione nel sistema e attivare contromisure o mitigazioni selettive. Tuttavia, i contatori delle prestazioni non sono stabili tra diversi vendor e generazioni di CPU, quindi questa soluzione potrebbe non essere completamente affidabile.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/detection.png}
+\end{figure}
+
+\paragraph{Meltdown Mitigation: Kernel Page Table Isolation}
+Una delle principali mitigazioni per Meltdown è l'implementazione della \textbf{Kernel Page Table Isolation (KPTI)}. Senza KPTI, lo spazio di memoria utente e kernel sono mappati nello stesso spazio di indirizzamento virtuale, con il kernel che è protetto dai livelli di privilegio. Con KPTI, i due spazi di indirizzamento sono separati, impedendo l'accesso al kernel quando la CPU è in modalità utente. Questo riduce il rischio che un attaccante possa sfruttare Meltdown per accedere ai dati del kernel.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/isolation.png}
+\end{figure}
+
+
+
+
+
+
+\subsubsection{cpu\_entry\_area: Per-CPU Isolation}
+La struttura \textbf{cpu\_entry\_area} è utilizzata per isolare i dati specifici del processore, garantendo che le informazioni critiche, come la \emph{Global Descriptor Table (GDT)}, le \emph{Task State Segments (TSS)} e gli stack di eccezione, siano mantenute separate per ciascun core. Questo isolamento è fondamentale per proteggere i dati tra i core e per impedire che informazioni sensibili vengano intercettate o compromesse durante i cambi di contesto. La \textbf{cpu\_entry\_area} è utilizzata per gestire in modo sicuro le transizioni durante gli interrupt e le eccezioni. Quando un processo cambia core, il sistema opera correttamente separando i dati relativi ai diversi core, riducendo il rischio di fuga di dati attraverso le transizioni tra i contesti di esecuzione.
+
+\subsubsection{Double Page General Directory e Switch to CR3}
+La Double Page General Directory è una tecnica che separa le tabelle delle pagine tra spazio utente e spazio kernel, utilizzando due pagine di memoria da 4 KB ciascuna per mappare rispettivamente la memoria del kernel e quella utente. Questo approccio riduce il rischio di accessi non autorizzati alla memoria del kernel, come nel caso degli attacchi di tipo Meltdown. Il registro **CR3** è cruciale in questo contesto, poiché contiene il puntatore alla tabella delle pagine attualmente in uso. La transizione tra modalità kernel e utente richiede un aggiornamento del valore di CR3, garantendo l’isolamento tra i due spazi di memoria.
+
+Le transizioni tra modalità si gestiscono tramite macro come \texttt{SWITCH\_TO\_KERNEL\_CR3} e\\ \texttt{SWITCH\_TO\_USER\_CR3\_STACK}, che aggiornano CR3 durante il passaggio tra i due ambienti, assicurando che la separazione tra spazio utente e kernel venga mantenuta. Questo meccanismo è fondamentale per prevenire l'accesso non autorizzato alle risorse di sistema da parte di processi in esecuzione in modalità utente.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/cr3.png}
+\end{figure}
+
+\subsubsection{Retpoline: Protezione contro gli Attacchi di Branch Target Injection e Retpoline Thunks}
+Il \textbf{Retpoline} è una tecnica software progettata per prevenire gli attacchi di \emph{branch target injection}, tipici di Spectre, che sfruttano la predizione dei salti indiretti per manipolare l'esecuzione del codice. Il Retpoline impedisce che la CPU predica i salti indiretti, isolando queste istruzioni dall'esecuzione speculativa e forzando un salto controllato. Questo evita che gli attaccanti manipolino il flusso di esecuzione attraverso la speculazione e l'iniezione di indirizzi di salto non autorizzati. :contentReference[oaicite:0]{index=0}
+
+I \textbf{Retpoline Thunks} sono funzioni che rimandano l'esecuzione di un calcolo fino a quando non è effettivamente necessario, evitando che il processore risolva speculativamente il target di salto. Questo previene la speculazione su indirizzi di ritorno e protegge il flusso di controllo dagli attacchi basati sulla predizione dei salti indiretti. :contentReference[oaicite:1]{index=1}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/thunks.png}
+\end{figure}
+
+\subsubsection{Prevent Branch Poisoning: IBRS, STIBP, IBPB}
+Le vulnerabilità legate alla \emph{branch prediction} possono essere mitigate mediante tecniche come \textbf{IBRS}, \textbf{STIBP} e \textbf{IBPB}, che impediscono la contaminazione della predizione dei rami da parte di software non autorizzato.
+
+\begin{itemize}
+  \item \textbf{IBRS} (Indirect Branch Restricted Speculation) è una modalità speciale che viene attivata nei processori per evitare che i predittori dei rami vengano influenzati da istruzioni eseguite prima dell’attivazione di IBRS. Questo garantisce che la predizione del ramo venga isolata, prevenendo gli attacchi di \emph{branch target injection}.
+  \item \textbf{STIBP} (Single Thread Indirect Branch Prediction) impedisce la condivisione della predizione dei salti indiretti tra i thread che girano sullo stesso core, limitando le possibilità per un attaccante di sfruttare la predizione dei salti indiretti tra thread diversi.
+  \item \textbf{IBPB} (Indirect Branch Predictor Barrier) crea una barriera tra il software che viene eseguito prima e dopo l’impostazione della barriera. Questo impedisce al software che viene eseguito prima della barriera di influenzare la predizione del ramo per il software che viene eseguito dopo.
+\end{itemize}
+Queste tecniche contribuiscono a ridurre il rischio di attacchi come Spectre, migliorando la sicurezza dei processori moderni contro gli attacchi di predizione dei salti indiretti. :contentReference[oaicite:5]{index=5}
+
+
+\subsection{RowHammer: Attacco alla Memoria e le sue Mitigazioni}
+Il \textbf{RowHammer} è una vulnerabilità fisica che riguarda la memoria DRAM e sfrutta l'effetto di interferenza elettromagnetica tra celle di memoria adiacenti. Quando una riga di memoria viene attivata ripetutamente in modo intensivo, la fluttuazione di tensione risultante può causare un "flip" nei bit della riga vicina, anche se non è direttamente coinvolta nell'operazione. Questo fenomeno, noto come bit flipping, può essere sfruttato da un attaccante per compromettere la sicurezza dei dati memorizzati, alterando il contenuto di celle di memoria vicine e, quindi, manipolando informazioni sensibili.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\linewidth]{immagini/SYS_04/rowhammer.png}
+\end{figure}
+
+### Meccanismo dell'attacco RowHammer
+L'attacco RowHammer si basa su un principio semplice ma efficace: l'attaccante cerca di attivare ripetutamente una riga di memoria specifica, in modo che le fluttuazioni elettromagnetiche causino una modificazione dei dati nelle righe adiacenti. Questo accade perché, durante l'attivazione di una riga, il segnale elettrico può propagarsi nelle righe vicine, causando una carica indotta in queste celle di memoria.
+
+Il RowHammer è particolarmente potente perché sfrutta una caratteristica della memoria DRAM: l'alta densità e la vicinanza fisica delle celle di memoria. Le celle vicine possono essere influenzate da un'operazione di scrittura su una riga diversa, specialmente quando quest'ultima viene attivata ripetutamente. L'attacco non richiede l'accesso privilegiato alla memoria, ma può essere eseguito da un utente malintenzionato che sfrutta la capacità di manipolare l'accesso alle righe di memoria.
+
+### Impatti di RowHammer
+L'attacco RowHammer può avere gravi implicazioni per la sicurezza dei sistemi, in particolare in ambienti condivisi, come i sistemi cloud, dove più macchine virtuali (VM) sono eseguite sulla stessa architettura fisica. Se un attaccante è in grado di sfruttare RowHammer, potrebbe corrompere la memoria di un altro processo, rubare chiavi crittografiche o alterare i dati senza che il sistema operativo o le applicazioni possano rilevare l'intrusione.
+
+### Mitigazioni contro RowHammer
+Fortunatamente, esistono alcune contromisure per contrastare l'attacco RowHammer, sebbene nessuna di esse offra una protezione perfetta. Le soluzioni più comuni includono:
+
+\begin{itemize}
+    \item \textbf{Error Correction Codes (ECC)}: Tecnica che rileva e corregge i bit flip causati dal RowHammer, efficace solo per pochi bit flip per parola di memoria. Non sufficiente se i bit flip sono multipli.
+    \item \textbf{Memoria a bassa densità}: Le memorie DRAM con bassa densità o maggiore distanza tra le righe riducono il rischio di interferenze, rendendo più difficile per l'attaccante manipolare più righe contemporaneamente.
+    \item \textbf{Refresh rate più alto}: Aumentare la frequenza di aggiornamento della memoria per ridurre il rischio di perdita di carica nelle celle di memoria, ma con impatti sui consumi energetici e le prestazioni.
+    \item \textbf{Pseudo-Target Row Refresh (pTRR)}: Tecnica che rinfresca le righe vulnerabili della memoria per evitare bit flip, ma può aumentare i costi e la latenza.
+    \item \textbf{Tecniche di partizionamento della memoria}: Il \emph{Memory Partitioning} separa le righe di memoria, riducendo l'accesso non autorizzato, e può essere implementato hardware o software.
+    \item \textbf{Virtualizzazione e isolamento hardware}: L'isolamento tra macchine virtuali (VM) riduce il rischio che un attaccante acceda alla memoria di altre VM.
+\end{itemize}
+
+
+
+
+\subsection{Memory Performance Attacks: Attacchi alle Prestazioni della Memoria}
+Gli \textbf{attacchi alle prestazioni della memoria} mirano a sfruttare il comportamento non ottimale dei sistemi DRAM, in particolare durante la gestione della memoria in scenari multi-core. Questi attacchi sfruttano le caratteristiche di programmazione e accesso alla memoria, come la gestione dei buffer di riga e la concorrenza tra processi, per compromettere le prestazioni o, in alcuni casi, causare un Denial of Service (DoS) alla memoria.
+
+\paragraph{Denial of Service nei Sistemi Multi-Core}
+Nei sistemi multi-core, i pianificatori di memoria DRAM sono progettati per chip a singolo core, il che comporta inefficienze nelle operazioni di memoria quando più core tentano di accedere a risorse condivise. Ogni banco di memoria ha un buffer di riga e l'accesso alla memoria avviene attraverso questo buffer. Se due o più thread accedono simultaneamente a diverse righe di memoria, il sistema potrebbe dover risolvere conflitti, causando ritardi nei tempi di accesso alla memoria. Questo tipo di attacco può portare a rallentamenti significativi e persino al blocco dei processi, creando un attacco DoS a livello di memoria.
+
+\paragraph{Funzionamento degli Attacchi a Memoria Multi-Banca}
+Le memorie DRAM moderne hanno più banchi, ciascuno con un buffer di riga. Il \textbf{piano di accesso alla memoria} si occupa di risolvere le richieste in base alla disponibilità di ciascun banco. In uno scenario ottimale, la schedulazione della memoria cerca di minimizzare i conflitti tra le righe, ma nei sistemi multi-core il conflitto tra i processi che accedono simultaneamente agli stessi banchi o righe può compromettere gravemente le prestazioni. Gli attacchi in questo contesto sfruttano l'accesso a righe di memoria che non sono ottimizzate per l'esecuzione parallela, causando inefficienze nel sistema.
+
+\paragraph{Scheduling della Memoria e Contesa tra Banchi}
+Il piano di accesso \textbf{FR-FCFS} (First-Ready, First-Come, First-Serve) ottimizza le richieste che si allineano con la riga già disponibile nel buffer, riducendo i conflitti. Tuttavia, non gestisce bene i conflitti tra banchi diversi, causando inefficienze, specialmente quando un thread con alta località di riga accede a righe vicine. Inoltre, poiché i banchi di memoria condividono un bus centrale, un thread che accede frequentemente alla memoria può ridurre le risorse disponibili per altri thread, creando condizioni di contesa che rallentano l'accesso e, in alcuni casi, possono portare a un Denial of Service (DoS). Gli attaccanti possono sfruttare queste inefficienze con tecniche di scheduling avanzate.
+
+\paragraph{Mitigazioni e Strategie di Ottimizzazione}
+La protezione contro gli attacchi di prestazione della memoria dipende principalmente da tecniche di ottimizzazione a livello hardware e software. Alcuni approcci includono:
+
+\begin{itemize}
+  \item \textbf{Piani di accesso a memoria più avanzati}, come quelli che minimizzano i conflitti di accesso tra banchi.
+  \item \textbf{Affinità CPU} (CPU affinity), che assicura che i thread che accedono frequentemente a determinati dati vengano eseguiti sullo stesso core per migliorare la località di riferimento.
+  \item \textbf{Schedulazione intelligente delle richieste di memoria}, che ottimizza l'allocazione delle risorse di memoria per ridurre il rischio di conflitti tra i thread.
+  \item \textbf{Memoria di tipo HBM (High Bandwidth Memory)} che riduce la latenza e le collisioni nell'accesso alla memoria.
+\end{itemize}
+
+Tuttavia, come per la maggior parte delle soluzioni hardware, esiste un compromesso tra prestazioni e sicurezza, quindi è necessario un bilanciamento tra l'implementazione di difese contro gli attacchi a prestazione della memoria e l'ottimizzazione per le prestazioni generali del sistema.
