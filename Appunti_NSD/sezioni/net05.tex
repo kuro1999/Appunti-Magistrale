@@ -1,0 +1,441 @@
+
+
+\newpage
+
+\section{NET\_05 — Firewall e Algoritmi di Classificazione dei Pacchetti}
+
+\subsection{Panoramica sui Firewall}
+I firewall sono componenti fondamentali per la sicurezza delle reti, in quanto controllano il flusso di traffico tra reti interne di fiducia e reti esterne non sicure, come Internet. Agiscono come una barriera, bloccando o consentendo selettivamente i pacchetti in base a una politica di sicurezza definita. I firewall operano come un confine tra reti interne sicure e ambienti esterni non sicuri, e possono essere implementati sia in hardware che in software.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.6\linewidth]{immagini/NET_05/base.png}
+\end{figure}
+\subsubsection{Obiettivi di Progettazione dei Firewall}
+Gli obiettivi principali dei firewall includono:
+\begin{itemize}
+\item \textbf{Monitoraggio del Traffico:} Tutto il traffico deve passare attraverso il firewall, creando un unico punto di controllo per il monitoraggio e il controllo degli accessi alla rete.
+\item \textbf{Applicazione della Politica di Sicurezza:} Solo il traffico autorizzato dalla politica di sicurezza è consentito. Ciò include il filtraggio basato su indirizzi IP, porte, protocolli e tipi di applicazioni.
+\item \textbf{Resistenza alla Penetrazione:} Il firewall stesso deve essere altamente sicuro e resistente a tentativi di penetrazione, assicurando che gli attaccanti non possano facilmente eluderlo.
+\end{itemize}
+
+\subsubsection{Politica di Accesso del Firewall}
+La politica di accesso definisce i tipi di traffico che possono attraversare il firewall. Essa include:
+\begin{itemize}
+  \item \textbf{Intervalli di Indirizzi IP:} Definisce quali intervalli di indirizzi IP sono autorizzati o bloccati.
+  \item \textbf{Protocolli:} Specifica i protocolli di rete consentiti o negati (ad esempio, TCP, UDP, ICMP).
+  \item \textbf{Applicazioni:} Identifica applicazioni o servizi specifici che sono permessi o bloccati.
+  \item \textbf{Tipi di Contenuto:} Esamina il contenuto dei pacchetti (ad esempio, i metodi di richiesta HTTP) per far rispettare le politiche di sicurezza.
+\end{itemize}
+
+Queste politiche devono essere sviluppate sulla base della valutazione del rischio dell'organizzazione. Le politiche sono inizialmente definite a un livello elevato e successivamente perfezionate in regole dettagliate da implementare nel firewall. Questo processo implica comprendere i tipi di traffico necessari per le operazioni aziendali, minimizzando al contempo l'esposizione ai potenziali rischi.
+
+\subsubsection{Caratteristiche dei Firewall}
+Le caratteristiche principali dei firewall includono:
+\begin{itemize}
+  \item \textbf{Punto di Controllo Unico:} Un firewall definisce un punto di choke in cui tutto il traffico in ingresso e in uscita viene ispezionato.
+  \item \textbf{Monitoraggio Centralizzato della Sicurezza:} Il firewall funge da piattaforma per monitorare eventi di sicurezza e traffico di rete. Questa centralizzazione consente una gestione e un logging più facili.
+  \item \textbf{Protezione dei Confini:} Il firewall fornisce una protezione sicura tra le reti interne e quelle esterne, controllando l'accesso in base a politiche di sicurezza definite.
+\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.85\linewidth]{immagini/NET_05/firewall_charateristics.png}
+\end{figure}
+
+Tuttavia, i firewall hanno delle limitazioni:
+\begin{itemize}
+  \item \textbf{Non Proteggono dai Rischi Interni:} I firewall non sono generalmente in grado di proteggere da attacchi che provengono da sistemi compromessi all'interno della rete o da utenti non autorizzati già presenti nel sistema.
+  \item \textbf{Reti Wireless e VPN:} I firewall potrebbero non proteggere sempre dagli attacchi tramite reti wireless non sicure o VPN, che possono bypassare i confini tradizionali del firewall.
+\end{itemize}
+
+\subsection{Firewall di Filtraggio dei Pacchetti}
+Un \textbf{firewall di filtraggio dei pacchetti} applica un insieme di regole a ciascun pacchetto in ingresso e in uscita. Il firewall esamina l'intestazione di ciascun pacchetto e determina se deve essere inoltrato o scartato in base ai criteri definiti. I criteri di solito includono:
+\begin{itemize}
+  \item \textbf{Indirizzo IP Sorgente:} L'indirizzo IP da cui origina il pacchetto.
+  \item \textbf{Indirizzo IP di Destinazione:} L'indirizzo IP a cui è destinato il pacchetto.
+  \item \textbf{Numero di Porta Sorgente e di Destinazione:} Questi numeri vengono utilizzati per identificare applicazioni o servizi specifici.
+  \item \textbf{Campo Protocollo:} Specifica il protocollo utilizzato (ad esempio, TCP, UDP, ICMP).
+\end{itemize}
+
+I firewall di filtraggio dei pacchetti operano valutando ciascun pacchetto rispetto a un insieme di regole predefinite, e i pacchetti che soddisfano i criteri per l'accettazione vengono lasciati passare, altrimenti vengono scartati.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.6\linewidth]{immagini/NET_05/filtering.png}
+\end{figure}
+\subsubsection{Vantaggi e Svantaggi del Filtraggio dei Pacchetti}
+\textbf{Vantaggi}:
+\begin{itemize}
+  \item \textbf{Semplicità:} Il filtraggio dei pacchetti è relativamente semplice da implementare e configurare. È un processo rapido che non richiede un'ispezione approfondita del contenuto del pacchetto.
+  \item \textbf{Prestazioni:} I firewall di filtraggio dei pacchetti sono efficienti e trasparenti per gli utenti, con un minimo overhead che consente un alto throughput.
+\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.6\linewidth]{immagini/NET_05/ex1.png}
+\end{figure}
+
+\textbf{Svantaggi}:
+\begin{itemize}
+  \item \textbf{Vulnerabilità Specifiche dell'Applicazione:} Un firewall di filtraggio dei pacchetti non può prevenire attacchi che sfruttano vulnerabilità specifiche delle applicazioni. Ad esempio, un attaccante può sfruttare debolezze nelle applicazioni web che non vengono rilevate dal filtraggio dei pacchetti.
+  \item \textbf{Limitate Capacità di Logging e Audit:} I firewall di filtraggio dei pacchetti di solito hanno capacità limitate di registrare e analizzare dettagliatamente il traffico di rete, il che rende più difficile rilevare attacchi sofisticati.
+  \item \textbf{Vulnerabilità nei Protocolli TCP/IP:} I firewall di filtraggio dei pacchetti potrebbero essere vulnerabili a attacchi che prendono di mira le debolezze nella suite di protocolli TCP/IP (ad esempio, flooding SYN, spoofing IP).
+\end{itemize}
+
+\subsection{Firewall di Ispezione Stateful}
+Un \textbf{firewall di ispezione stateful} migliora il filtraggio dei pacchetti tracciando lo stato delle connessioni attive. A differenza dei firewall di filtraggio dei pacchetti, che ispezionano ogni pacchetto individualmente, i firewall stateful mantengono una \textit{tabella dello stato delle connessioni}, che registra lo stato delle connessioni attive. Ciò consente al firewall di tracciare l'intero ciclo di vita di una connessione, assicurandosi che solo i pacchetti appartenenti a connessioni legittime siano consentiti.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.6\linewidth]{immagini/NET_05/stateful_inspection_firewall.png}
+\end{figure}
+\subsubsection{Tabella dello Stato delle Connessioni}
+La tabella dello stato delle connessioni registra le informazioni su ciascuna connessione stabilita, tra cui:
+\begin{itemize}
+  \item \textbf{Inizio della Connessione:} Identifica l'inizio di nuove connessioni, come i pacchetti SYN in TCP.
+  \item \textbf{Stato della Connessione:} Traccia lo stato della connessione, che può essere \texttt{NEW}, \texttt{ESTABLISHED} o \texttt{RELATED}.
+  \item \textbf{Protocolli Rilevanti:} Il firewall traccia i protocolli coinvolti, come FTP, HTTP o altri protocolli a livello applicativo.
+\end{itemize}
+
+Questo fornisce una difesa più robusta contro gli attacchi, poiché il firewall si assicura che solo i pacchetti che appartengono a una sessione stabilita siano consentiti. Questo previene che gli attaccanti possano falsificare pacchetti facendoli sembrare appartenenti a connessioni legittime.
+
+\subsection{Gateway e Funzione del Default Gateway}
+Un \textbf{gateway} è un dispositivo che funge da punto di accesso tra due reti, permettendo la comunicazione tra reti con tecnologie diverse. Nel contesto di un firewall, il gateway è spesso posizionato come perimetro di rete per proteggere l'interno della rete da attacchi provenienti dall'esterno. Nel caso di un firewall stateful, il gateway monitora anche lo stato delle connessioni per garantire che solo il traffico legittimo venga consentito attraverso il firewall.
+
+\subsubsection{Funzioni di un Gateway}
+Il gateway ha il compito di:
+\begin{itemize}
+  \item \textbf{Filtraggio del Traffico:} Il gateway può applicare regole di filtraggio per determinare quali pacchetti possono passare attraverso la rete. Queste regole sono generalmente impostate in base a politiche di sicurezza definite.
+  \item \textbf{Network Address Translation (NAT):} Il gateway può svolgere il NAT per modificare gli indirizzi IP di origine o destinazione dei pacchetti che transitano. Questo è utile in ambienti domestici o aziendali con pochi indirizzi IP pubblici.
+  \item \textbf{Routing:} Il gateway indirizza il traffico tra reti locali (LAN) e reti esterne (Internet), gestendo il flusso di pacchetti tra reti diverse.
+\end{itemize}
+
+\subsection{Application-Level Gateway (ALG)}
+Un \textbf{Application-Level Gateway} (ALG) è un tipo di gateway che agisce come un proxy per i protocolli applicativi. Invece di gestire il traffico a livello di rete, come fanno i firewall di filtraggio dei pacchetti, un ALG analizza e modula il traffico applicativo, come HTTP o FTP.
+
+\subsubsection{Funzionamento dell'ALG}
+L'ALG agisce come un intermediario tra il client e il server:
+\begin{itemize}
+  \item L'utente invia una richiesta a un gateway applicativo tramite un'applicazione TCP/IP.
+  \item Il gateway applicativo autentica l'utente e inoltra la richiesta al server remoto.
+  \item I dati sono quindi inoltrati tra l'utente e il server attraverso il gateway.
+\end{itemize}
+
+Questo tipo di gateway è spesso più sicuro rispetto ai firewall packet filtering, poiché ispeziona il contenuto applicativo dei pacchetti. Tuttavia, ha anche uno svantaggio significativo in termini di overhead computazionale, poiché ogni connessione deve essere gestita dal gateway. Un grande svantaggio di questa tipologie è l'overhead di processamento  che viene introdotto su ogni connessione.
+
+\subsection{Circuit-Level Gateway}
+Il \textbf{Circuit-Level Gateway} (CLG) è simile all'ALG, ma opera a livello di connessione piuttosto che di applicazione. Il CLG stabilisce due connessioni TCP: una tra il client interno e il gateway, e una tra il gateway e il server esterno. Non esamina il contenuto del pacchetto, ma si limita a verificare che le connessioni siano valide.
+
+\subsubsection{Funzione del Circuit-Level Gateway}
+Il gateway stabilisce e gestisce due connessioni TCP separate:
+\begin{itemize}
+  \item Una connessione tra il client interno e il gateway,
+  \item Una connessione tra il gateway e il server esterno.
+\end{itemize}
+
+Questo tipo di gateway è meno sicuro rispetto agli ALG, poiché non esamina il contenuto delle connessioni, ma ha un overhead inferiore rispetto agli ALG.
+\subsection{Host-Based Firewall e Personal Firewall}
+
+Un \textbf{host-based firewall} è un firewall che viene implementato direttamente sui dispositivi terminali (computer, server, dispositivi mobili), monitorando il traffico in ingresso e in uscita dal singolo dispositivo. Il suo compito principale è proteggere il dispositivo da attacchi interni o esterni, applicando regole di filtraggio definite.
+
+I principali vantaggi del \textbf{host-based firewall} sono:
+\begin{itemize}
+  \item \textbf{Protezione mirata} per il dispositivo.
+  \item \textbf{Controllo fine del traffico} tra il dispositivo e la rete.
+\end{itemize}
+Gli svantaggi includono un possibile \textbf{overhead} sulle prestazioni e la \textbf{gestione complessa} su larga scala, poiché ogni dispositivo deve essere configurato separatamente.
+
+Il \textbf{personal firewall}, invece, è un firewall progettato per proteggere dispositivi individuali (ad esempio computer portatili o desktop) da attacchi provenienti dalla rete o da internet. Funziona a livello dell'utente, bloccando traffico indesiderato in ingresso o uscita, proteggendo dalle scansioni di porte e impedendo l'accesso non autorizzato.
+
+I vantaggi di un \textbf{personal firewall} sono:
+\begin{itemize}
+  \item \textbf{Protezione specifica} per ogni dispositivo.
+  \item \textbf{Facilità di configurazione} e gestione da parte dell'utente.
+\end{itemize}
+Gli svantaggi comprendono la \textbf{protezione limitata} al solo dispositivo e la \textbf{difficoltà di gestione} in ambienti con molti dispositivi da proteggere.
+\subsection{NETFILTER}
+
+NETFILTER è un framework che permette di intercettare e manipolare i pacchetti di rete all'interno del kernel Linux. Utilizza punti di hook (entry point) nel sottosistema di rete IPv4/IPv6 del kernel, consentendo operazioni di mangling(modifiche dirette all header dei pacchetti in transito) sui pacchetti. Questi hook vengono invocati quando un pacchetto attraversa la pila IP, permettendo di applicare regole di filtraggio e trasformazione prima che il pacchetto venga inoltrato.
+
+\subsubsection{Funzionamento di NETFILTER}
+I pacchetti che attraversano la rete (in ingresso, in uscita o inoltrati) vengono intercettati dai seguenti hook:
+
+\begin{itemize}
+  \item \textbf{PRE\_ROUTING}: Il pacchetto viene intercettato prima che venga presa una decisione di routing.
+  \item \textbf{LOCAL\_INPUT}: Il pacchetto \'e destinato al dispositivo locale.
+  \item \textbf{FORWARD}: Il pacchetto viene inoltrato a un altro dispositivo.
+  \item \textbf{LOCAL\_OUTPUT}: Il pacchetto viene originato da un processo locale.
+  \item \textbf{POST\_ROUTING}: Il pacchetto \'e stato instradato e sta per uscire dal dispositivo.
+\end{itemize}
+
+Ogni pacchetto intercettato dai hook passa attraverso una serie di tabelle predefinite, che gestiscono diversi tipi di attività di rete e sono controllate da catene di trasformazione e filtraggio dei pacchetti.
+
+\subsubsection{Le Tabelle di NETFILTER}
+Esistono quattro tabelle principali in NETFILTER:
+
+\begin{itemize}
+  \item \textbf{Filter}: Utilizzata per il filtraggio dei pacchetti (accettare, rifiutare).
+  \item \textbf{NAT}: Gestisce la traduzione degli indirizzi di rete (SNAT, DNAT, Masquerading).
+  \item \textbf{Mangle}: Modifica le intestazioni dei pacchetti, ad esempio il TTL (Time-to-Live) o il TOS (Type of Service).
+  \item \textbf{Raw}: Viene utilizzata per configurare le eccezioni dal tracciamento delle connessioni, come nel caso della connessione "NOTRACK".
+\end{itemize}
+
+Le regole in ciascuna tabella definiscono come devono essere trattati i pacchetti che soddisfano determinate condizioni. Ogni tabella ha una propria catena di regole che determinano le azioni da intraprendere, come "ACCEPT", "DROP" o "MASQUERADE".
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.7\linewidth]{immagini/NET_05/from_in_to_out.png}
+  \caption{processamento interno con forwarding esterno}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.7\linewidth]{immagini/NET_05/from_out_to_in.png}
+  \caption{arrivo esterno con processamento interno}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.7\linewidth]{immagini/NET_05/from_out_to_out.png}
+  \caption{Forwarding puro}
+\end{figure}
+\subsubsection{Iptables: Il Frontend di NETFILTER}
+Iptables è l'applicazione utente che consente di configurare le tabelle di NETFILTER nel kernel Linux. Con iptables, è possibile aggiungere, rimuovere e ispezionare le regole delle tabelle per il filtraggio dei pacchetti IPv4. Ogni tabella contiene una serie di catene predefinite, ma è anche possibile definire catene personalizzate.
+
+\paragraph{Comandi principali di iptables}
+Alcuni dei comandi principali di iptables includono:
+\begin{itemize}
+  \item \texttt{-A}: Aggiunge una regola alla fine di una catena.
+  \item \texttt{-D}: Rimuove una regola da una catena.
+  \item \texttt{-I}: Inserisce una regola all'inizio di una catena.
+  \item \texttt{-R}: Sostituisce una regola esistente.
+  \item \texttt{-P}: Imposta la politica di una catena.
+  \item \texttt{-F}: Elimina tutte le regole in una catena.
+  \item \texttt{-S}: Mostra tutte le regole di una catena.
+\end{itemize}
+
+Un esempio di comando per aggiungere una regola in iptables è:
+\begin{verbatim}
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+\end{verbatim}
+Questo comando consente il traffico TCP in ingresso sulla porta 80.
+
+\subsubsection{Network Address Translation (NAT)}
+Il NAT è una funzione importante di NETFILTER che consente di modificare gli indirizzi IP di origine o destinazione dei pacchetti. In Linux, il NAT è implementato da NETFILTER e può essere configurato per applicare la traduzione degli indirizzi in modo statico o dinamico.
+
+\paragraph{Tipi di NAT}
+\begin{itemize}
+  \item \textbf{Source NAT (SNAT)}: Modifica l'indirizzo IP di origine di un pacchetto, utile per mascherare gli indirizzi IP di una rete privata dietro un singolo indirizzo IP pubblico.
+  \item \textbf{Destination NAT (DNAT)}: Modifica l'indirizzo di destinazione di un pacchetto, spesso utilizzato per il port forwarding.
+  \item \textbf{Masquerading}: Una forma dinamica di SNAT che cambia l'indirizzo di origine ogni volta che un nuovo flusso di traffico viene avviato.
+\end{itemize}
+
+Un esempio di comando per il masquerading con iptables è:
+\begin{verbatim}
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+\end{verbatim}
+
+\subsubsection{Connection Tracking}
+NETFILTER tiene traccia dello stato delle connessioni attraverso il modulo di \textbf{conntrack}. I pacchetti vengono classificati in quattro stati: \texttt{NEW}, \texttt{ESTABLISHED}, \texttt{RELATED}, e \texttt{INVALID}. Questo permette di applicare regole più specifiche in base allo stato della connessione.
+
+\paragraph{Esempi di stato delle connessioni}
+\begin{itemize}
+  \item \textbf{NEW}: La connessione è appena stata avviata.
+  \item \textbf{ESTABLISHED}: La connessione è stata completamente negoziata.
+  \item \textbf{RELATED}: Il pacchetto è associato a una connessione già stabilita.
+  \item \textbf{INVALID}: Il pacchetto non è valido.
+\end{itemize}
+
+Per visualizzare le connessioni tracciate, è possibile utilizzare il comando:
+\begin{verbatim}
+cat /proc/net/ip_conntrack
+\end{verbatim}
+
+\subsubsection{Vantaggi e Limitazioni di NETFILTER}
+\textbf{Vantaggi}:
+\begin{itemize}
+  \item Alta flessibilità nella configurazione delle regole di filtraggio e NAT.
+  \item Supporto per diversi tipi di trasformazione dei pacchetti (filtraggio, NAT, mangling).
+  \item Integrazione nativa con il kernel Linux.
+\end{itemize}
+
+\textbf{Limitazioni}:
+\begin{itemize}
+  \item Scalabilità limitata quando si gestiscono grandi quantità di regole (come nei grandi data center).
+  \item La gestione di regole complesse può diventare difficoltosa in ambienti con configurazioni avanzate.
+\end{itemize}
+
+%%%%%%%%%% laboratorio
+\newpage
+\maketitle
+{\LARGE \textbf{Laboratorio}} \\[0.5em]
+
+\subsection{Lab 5 — Firewall con \texttt{iptables} e policy di sicurezza gateway/server}
+
+\paragraph{Obiettivo e componenti.} Realizzare e testare una configurazione firewall completa con \textbf{Linux \texttt{netfilter/iptables}}, seguendo la topologia logica \emph{LAN–DMZ–WAN}. Dimostrare come applicare politiche di accesso, NAT e filtraggio basate sullo stato delle connessioni.
+Ambiente: un \textbf{gateway/firewall} Linux con tre interfacce (\texttt{LAN}, \texttt{DMZ}, \texttt{WAN}), un \textbf{server DMZ} e host di test nella LAN e nella rete esterna.
+
+\paragraph{Struttura del laboratorio.}
+Si configurano le tre zone:
+\begin{itemize}
+ \item \textbf{LAN} (\texttt{10.0.0.0/24}): rete interna aziendale, soggetta a NAT in uscita;
+ \item \textbf{DMZ} (\texttt{160.80.200.0/24}): rete pubblica per server esposti;
+ \item \textbf{WAN} (\texttt{1.0.0.0/30}): collegamento al router Internet (R1).
+\end{itemize}
+Il gateway funge da \emph{firewall perimetrale} e da router tra le tre reti, con forwarding IPv4 abilitato.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.7\linewidth]{immagini/NET_05/topologia.png}
+\end{figure}
+
+\paragraph{Gateway (firewall principale).}
+\texttt{iptables -F} per azzerare le regole; politiche di default:
+\begin{verbatim}
+iptables -P FORWARD DROP
+iptables -P INPUT DROP
+iptables -P OUTPUT ACCEPT
+\end{verbatim}
+Le regole successive implementano la policy di sicurezza:
+
+\begin{itemize}
+ \item Consenti solo connessioni già \textbf{stabilite}:
+ \begin{verbatim}
+ iptables -A FORWARD -m state --state ESTABLISHED -j ACCEPT
+ \end{verbatim}
+ \item Consenti dalla LAN verso Internet servizi HTTP/HTTPS/SSH/DNS:
+ \begin{verbatim}
+ iptables -A FORWARD -i $LAN -p tcp --dport 80 -j ACCEPT
+ iptables -A FORWARD -i $LAN -p tcp --dport 443 -j ACCEPT
+ iptables -A FORWARD -i $LAN -p tcp --dport 22 -j ACCEPT
+ iptables -A FORWARD -i $LAN -p udp --dport 53 -j ACCEPT
+ \end{verbatim}
+ \item Consenti traffico LAN<->DMZ solo se iniziato dalla LAN:
+ \begin{verbatim}
+ iptables -A FORWARD -i $LAN -o $DMZ -j ACCEPT
+ \end{verbatim}
+ \item Permetti ICMP per diagnosi (ping, echo reply):
+ \begin{verbatim}
+ iptables -A INPUT -p icmp -j ACCEPT
+ iptables -A FORWARD -p icmp -j ACCEPT
+ \end{verbatim}
+ \item NAT in uscita (masquerading verso WAN):
+ \begin{verbatim}
+ iptables -t nat -A POSTROUTING -o $WAN -j MASQUERADE
+ \end{verbatim}
+\end{itemize}
+
+\paragraph{Server DMZ.}
+Firewall locale con policy di default:
+\begin{verbatim}
+iptables -P INPUT DROP
+iptables -P OUTPUT ACCEPT
+\end{verbatim}
+Regole per accettare solo i servizi pubblici e connessioni di ritorno:
+\begin{verbatim}
+iptables -A INPUT -m state --state ESTABLISHED -j ACCEPT
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+\end{verbatim}
+
+\paragraph{Testing.}
+Utilizzare \texttt{ping} e \texttt{nc (netcat)} per verificare la raggiungibilità e l’apertura delle porte:
+\begin{itemize}
+ \item \texttt{nc -l -p 80} sul server DMZ per aprire una porta TCP;
+ \item \texttt{nc <ip\_server> 80} dalla LAN o dal router R1 per verificare le regole;
+ \item analizzare con \texttt{tcpdump} o \texttt{iptables -L -v} il traffico filtrato.
+\end{itemize}
+
+
+\newpage
+\maketitle
+{\LARGE \textbf{Classificazione dei Pacchetti e Algoritmi di Matching}} \\[0.5em]
+
+\subsection{Classificazione dei Pacchetti}
+La **classificazione dei pacchetti** è una parte fondamentale dei firewall, della gestione della qualità del servizio (QoS), del routing multicast, e di altre applicazioni di rete come l'IDS, NAT, e il traffic engineering. In sostanza, si tratta di identificare il miglior “match” tra le informazioni contenute nell'intestazione di un pacchetto e le regole di classificazione definite.
+
+**Esempio pratico**:
+Un router in una rete aziendale potrebbe dover classificare i pacchetti in base alla destinazione, alla porta, o persino al protocollo. Se il pacchetto proviene da un'applicazione di VoIP, potrebbe essere trattato con priorità rispetto a un pacchetto generico di dati HTTP.
+
+\subsubsection{Perché è Importante la Classificazione dei Pacchetti?}
+La classificazione dei pacchetti è essenziale non solo per i firewall, ma anche per:
+\begin{itemize}
+  \item \textbf{Riservazione di risorse e QoS routing:} per garantire che il traffico critico riceva la priorità.
+  \item \textbf{Routing unicast e multicast:} per instradare i pacchetti correttamente in base alle politiche predefinite.
+  \item \textbf{NAT e monitoraggio del traffico:} per tracciare e gestire il flusso di pacchetti e proteggere la rete.
+\end{itemize}
+Le funzioni di classificazione vanno oltre il semplice matching degli indirizzi di destinazione IP e richiedono un'analisi più approfondita di campi multipli come l'indirizzo di origine, le porte, e persino i flag TCP. O magari per assegnare delle priorità.
+\subsubsection{Algoritmi di Classificazione dei Pacchetti}
+I pacchetti vengono analizzati in base a una serie di campi dell'intestazione (header), come l'indirizzo di origine e destinazione, la porta di origine e destinazione, il protocollo IP, e altri. Questi campi vengono utilizzati per abbinare i pacchetti a regole definite in un database di regole.
+
+Le regole di matching possono essere:
+\begin{itemize}
+  \item \textbf{Exact Match:} il campo del pacchetto deve corrispondere esattamente con il campo della regola.
+  \item \textbf{Prefix Match:} il campo del pacchetto viene confrontato con un prefisso della regola.
+  \item \textbf{Range Match:} il campo del pacchetto deve rientrare in un intervallo specificato.
+\end{itemize}
+
+**Esempio pratico**:
+Un esempio di **Exact Match** potrebbe essere una regola che blocca i pacchetti provenienti da un determinato indirizzo IP, come nel caso di un attacco DoS da un IP malevolo. Un esempio di **Prefix Match** è l'abbinamento di un pacchetto con una rete intera, come nel caso di un filtro che consente solo pacchetti destinati a un range di indirizzi IP `192.168.1.0/24`. Infine, un **Range Match** potrebbe essere usato per consentire l'accesso a una gamma di porte, come 1000–2000 per un servizio FTP.
+
+\subsection{Problema della Classificazione dei Pacchetti}
+Il problema della classificazione dei pacchetti riguarda l'identificazione della regola di matching più appropriata per ciascun pacchetto in arrivo. Questo problema diventa complesso quando ci sono molte regole, e la ricerca di un match può richiedere una grande quantità di risorse computazionali.
+
+Ogni pacchetto può essere confrontato con più regole, e la soluzione prevede l'adozione di algoritmi efficienti per ridurre la complessità della ricerca, specialmente in ambienti con un numero elevato di regole.
+
+**Esempio pratico**:
+Immagina una rete aziendale con 10.000 regole nel firewall. Se il firewall utilizza una ricerca lineare per confrontare i pacchetti, la ricerca di ogni pacchetto potrebbe richiedere tempi significativi, rallentando il traffico in caso di picchi di accesso. Questo problema è ancora più evidente nei router di backbone, dove ogni millisecondo può fare la differenza nelle prestazioni complessive della rete.
+
+\subsubsection{Struttura delle Regole di Classificazione}
+Ogni regola di classificazione è composta da un insieme di campi di intestazione (H[1], H[2], ..., H[K]) e specifica come il traffico deve essere trattato. Le regole possono includere:
+\begin{itemize}
+  \item Indirizzo di origine e destinazione.
+  \item Porta di origine e destinazione.
+  \item Tipo di protocollo (TCP, UDP, ICMP).
+  \item Altri parametri come i flag TCP.
+\end{itemize}
+Il compito del classificatore è determinare quale regola corrisponde meglio a un pacchetto in ingresso e applicare l'azione associata a tale regola (ad esempio, \texttt{ACCEPT}, \texttt{DROP}).
+
+**Esempio pratico**:
+Un pacchetto potrebbe corrispondere a una regola che consente solo pacchetti TCP sulla porta 80 (HTTP). Un altro pacchetto potrebbe corrispondere a una regola che accetta solo pacchetti ICMP (ping). Il sistema di classificazione determina quale regola applicare in base ai criteri specificati in ciascun campo dell'intestazione del pacchetto.
+
+\subsubsection{Combinazione di Regole con Match Multipli}
+Poiché un pacchetto può corrispondere a più regole, è necessario definire un metodo per risolvere questa ambiguità. Una soluzione comune è utilizzare una funzione di costo associata a ogni regola, che aiuta a determinare quale regola applicare in caso di conflitto.
+
+Nel caso di un firewall, ad esempio, si può configurare l'ordine delle regole in modo che la regola con la priorità più alta venga applicata per prima.
+
+**Esempio pratico**:
+Se un pacchetto corrisponde a una regola di tipo **DROP** e a una regola di tipo **ACCEPT**, la regola che ha la priorità più alta (determinata dalla posizione nella lista di regole) sarà applicata. Se le regole sono ordinate in ordine di priorità (ad esempio, le regole più restrittive vengono applicate per prime), il pacchetto verrà accettato o scartato in base alla prima regola che corrisponde.
+
+\subsubsection{Algoritmi di Matching}
+Diversi algoritmi sono stati sviluppati per ottimizzare il processo di classificazione. I più comuni sono:
+
+\begin{itemize}
+  \item \textbf{Algoritmi di Tries:} Utilizzati per il Longest Prefix Match (LPM), particolarmente efficaci per l'abbinamento degli indirizzi IP.
+  \item \textbf{Ricerche Binaria:} Usate per trovare il miglior match tra un pacchetto e un insieme di regole, soprattutto in ambienti con regole ordinate.
+  \item \textbf{Bit Vector Linear Search:} Ottimizza la ricerca riducendo il numero di confronti necessari utilizzando una rappresentazione in bit.
+  \item \textbf{Content-Addressable Memory (CAM):} Memorie specializzate utilizzate per il matching rapido di regole, ma non sempre scalabili in software.
+\end{itemize}
+
+**Esempio pratico**:
+Il **Longest Prefix Match (LPM)** è utilizzato in scenari in cui è necessario fare il matching dell'indirizzo di destinazione di un pacchetto con un database di regole di routing. L'algoritmo trie è particolarmente utile in questo caso, in quanto permette di trovare rapidamente il prefisso più lungo che corrisponde a un pacchetto, riducendo significativamente il tempo di ricerca rispetto a una ricerca lineare.
+
+\subsection{Approccio Bit Vector Linear Search}
+
+Il \textbf{Bit Vector Linear Search} è un metodo efficace per l'ottimizzazione della ricerca di regole. In questo approccio, ogni campo del pacchetto viene confrontato con le regole utilizzando una rappresentazione binaria (bitmask). Il risultato della ricerca di un match viene quindi combinato attraverso l'operazione logica AND, riducendo significativamente il numero di confronti da effettuare.
+
+Ogni regola di classificazione è associata a una bitmask che rappresenta i campi di intestazione. L'operazione di AND tra le bitmask riduce il numero di regole che devono essere controllate, migliorando l'efficienza del matching.
+
+\subsubsection{Funzionamento del Bit Vector Linear Search}
+Il sistema di bit vector funziona confrontando il pacchetto con i set di regole. Ad esempio, se un pacchetto ha una destinazione IP che corrisponde a un prefisso specificato in una regola, questa regola può essere "marcata" come un potenziale match. Successivamente, la ricerca avviene combinando i risultati di ciascun campo (destinazione IP, porta, ecc.) con un'operazione AND, per ridurre il numero di regole rimanenti da confrontare.
+
+**Esempio pratico**:
+Nel caso di un pacchetto con destinazione IP `192.168.1.100`, il sistema verifica quale regola ha il prefisso più lungo corrispondente. Se una regola ha un prefisso `192.168.1.0/24` e un'altra ha `192.168.1.100/32`, il sistema selezionerà la regola con il prefisso più specifico (quella con `/32`).
+
+\subsubsection{Vantaggi e Limiti del Bit Vector Linear Search}
+Il principale vantaggio di questo approccio è la sua capacità di ridurre il numero di regole da confrontare, migliorando l'efficienza della classificazione. Tuttavia, l'approccio ha alcuni limiti:
+\begin{itemize}
+  \item \textbf{Espansione della Memoria:} Con l'aumento del numero di regole, la memoria necessaria per memorizzare le bitmask cresce esponenzialmente.
+  \item \textbf{Efficacia Limitata in Caso di Ranges Dinamici:} Le regole che utilizzano intervalli dinamici di valori (ad esempio, intervalli di porte) possono complicare la gestione della bitmask.
+\end{itemize}
+
+\subsection{Contenuto e Prestazioni della Classificazione dei Pacchetti}
+Per migliorare le prestazioni della classificazione dei pacchetti, è essenziale considerare l'uso di tecniche come la memorizzazione cache, che permette di ridurre i tempi di ricerca. Inoltre, la gestione dinamica delle regole (come l'inserimento automatico di nuove regole per le connessioni UDP) può contribuire a mantenere alta l'efficienza anche in ambienti complessi.
+
+Nel caso di firewall ad alta velocità, è necessario bilanciare la velocità di classificazione con l'efficienza nella gestione della memoria. La combinazione di algoritmi di ricerca rapidi con hardware specializzato (come le CAM) può ridurre significativamente i costi computazionali.
+
+
+

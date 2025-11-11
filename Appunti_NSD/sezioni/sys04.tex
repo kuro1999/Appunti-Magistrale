@@ -280,15 +280,15 @@ Il \textbf{RowHammer} è una vulnerabilità fisica che riguarda la memoria DRAM 
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/rowhammer.png}
 \end{figure}
 
-### Meccanismo dell'attacco RowHammer
+Meccanismo dell'attacco RowHammer
 L'attacco RowHammer si basa su un principio semplice ma efficace: l'attaccante cerca di attivare ripetutamente una riga di memoria specifica, in modo che le fluttuazioni elettromagnetiche causino una modificazione dei dati nelle righe adiacenti. Questo accade perché, durante l'attivazione di una riga, il segnale elettrico può propagarsi nelle righe vicine, causando una carica indotta in queste celle di memoria.
 
 Il RowHammer è particolarmente potente perché sfrutta una caratteristica della memoria DRAM: l'alta densità e la vicinanza fisica delle celle di memoria. Le celle vicine possono essere influenzate da un'operazione di scrittura su una riga diversa, specialmente quando quest'ultima viene attivata ripetutamente. L'attacco non richiede l'accesso privilegiato alla memoria, ma può essere eseguito da un utente malintenzionato che sfrutta la capacità di manipolare l'accesso alle righe di memoria.
 
-### Impatti di RowHammer
+ Impatti di RowHammer
 L'attacco RowHammer può avere gravi implicazioni per la sicurezza dei sistemi, in particolare in ambienti condivisi, come i sistemi cloud, dove più macchine virtuali (VM) sono eseguite sulla stessa architettura fisica. Se un attaccante è in grado di sfruttare RowHammer, potrebbe corrompere la memoria di un altro processo, rubare chiavi crittografiche o alterare i dati senza che il sistema operativo o le applicazioni possano rilevare l'intrusione.
 
-### Mitigazioni contro RowHammer
+ Mitigazioni contro RowHammer
 Fortunatamente, esistono alcune contromisure per contrastare l'attacco RowHammer, sebbene nessuna di esse offra una protezione perfetta. Le soluzioni più comuni includono:
 
 \begin{itemize}
