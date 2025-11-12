@@ -556,7 +556,7 @@ Poiché il ramdisk è parte critica del processo di avvio, la sua compromissione
 \subparagraph{1. Rilevazione}
 \begin{itemize}
   \item \textbf{Analisi dei namespace:} esaminare i link in \texttt{/proc/<pid>/ns} per identificare configurazioni di namespace anomale o isolate.
-  \item \textbf{Verifica dei processi kernel:} analizzare i processi con \texttt{ppid ≠ 0} che potrebbero mascherarsi come thread del kernel.
+  \item \textbf{Verifica dei processi kernel:} analizzare i processi con \texttt{ppid != 0} che potrebbero mascherarsi come thread del kernel.
   \item \textbf{Audit e verifiche esterne:} effettuare controlli periodici e audit di sicurezza da fonti esterne al sistema (es. strumenti di forensics live).
   \item \textbf{Monitoraggio dell’integrità:} utilizzare strumenti come \textbf{AIDE} o \textbf{Tripwire} per rilevare modifiche al contenuto dell’initrd e ai file critici del sistema.
   \item \textbf{Verifica dei moduli kernel:} abilitare meccanismi di validazione come \textbf{dm-verity}, che consente al kernel di controllare la firma e l’integrità dei moduli caricati.
