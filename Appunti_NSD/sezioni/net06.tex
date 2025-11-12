@@ -1,0 +1,377 @@
+\newpage
+
+\section{Secure Protocols and Overlay VPNs}
+
+Dopo aver visto che i meccanismi di base dei protocolli IP non forniscono alcuna garanzia di sicurezza --- nessuna autenticazione, confidenzialità o integrità dei dati --- si rende necessario introdurre protocolli che, a diversi livelli dello stack ISO/OSI, permettano di realizzare comunicazioni sicure.  
+In precedenza abbiamo analizzato meccanismi di sicurezza \emph{perimetrale}, come VLAN, 802.1X, ACL e firewall. Tuttavia, quando la comunicazione esce dal perimetro aziendale e si estende su Internet, tali meccanismi non bastano più.  
+La protezione deve quindi avvenire tramite protocolli di sicurezza \emph{end-to-end}, basati su strumenti crittografici: cifratura, firme digitali, scambio di chiavi e codici di autenticazione dei messaggi (MAC).  
+
+Le tre principali famiglie di protocolli di sicurezza di rete sono:
+\begin{itemize}
+  \item \textbf{SSH (Secure Shell)} a livello applicativo;
+  \item \textbf{TLS (Transport Layer Security)} a livello di trasporto;
+  \item \textbf{IPsec (Internet Protocol Security)} a livello di rete.
+\end{itemize}
+A questi si aggiungono soluzioni di rete private sovrapposte, dette \textbf{Overlay VPNs}, che utilizzano tali protocolli per creare tunnel cifrati su reti pubbliche.
+
+\subsection{Sicurezza a livello applicativo: Secure Shell (SSH)}
+SSH nasce per sostituire protocolli insicuri come \texttt{telnet}, che trasmettevano in chiaro credenziali e dati sensibili. È un protocollo di \emph{remote login} sicuro, ma nel tempo si è evoluto in una suite di strumenti per connessioni protette, trasferimento file (\texttt{scp}), inoltro di porte (port forwarding) e proxy TCP.
+
+\paragraph{Architettura e RFC.}
+SSH è definito da tre RFC principali:
+\begin{itemize}
+  \item \textbf{RFC 4252:} Transport Layer Protocol – gestisce cifratura, scambio di chiavi e autenticazione del server;
+  \item \textbf{RFC 4253:} User Authentication Protocol – autentica l’utente tramite password o chiavi pubbliche;
+  \item \textbf{RFC 4254:} Connection Protocol – gestisce canali logici per servizi come shell remota o forwarding.
+\end{itemize}
+L’implementazione più diffusa è \textbf{OpenSSH}, disponibile su Linux e sistemi Unix-like.
+
+\paragraph{Obiettivi di sicurezza.}
+SSH fornisce:
+\begin{itemize}
+  \item \textbf{Autenticazione} dell’host remoto;
+  \item \textbf{Confidenzialità} dei dati trasmessi tramite cifratura simmetrica;
+  \item \textbf{Integrità} mediante HMAC (Hash-based Message Authentication Code).
+\end{itemize}
+
+\paragraph{Cifratura e handshake.}
+Durante la fase di handshake, client e server negoziano:
+\begin{itemize}
+  \item algoritmi di cifratura simmetrica (es. AES, ChaCha20-Poly1305);
+  \item algoritmi di scambio chiavi (Diffie–Hellman o ECDH);
+  \item algoritmi di firma (RSA, ECDSA, EdDSA);
+  \item funzioni hash (SHA-2, SHA-3).
+\end{itemize}
+Una volta scelti gli algoritmi, viene stabilita una \emph{session key} usata per cifrare il traffico del canale.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{immagini/NET_06/handshake}
+    \caption{Esempio di handshake SSH}
+    \label{fig:handshake}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/NET_06/dh}
+    \caption{Sequenza di messaggi nel protocollo SSH durante la fase di connessione: negoziazione della \emph{cipher suite}, autenticazione del server e del client, e apertura del canale sicuro per la sessione remota.}
+
+    \label{fig:dh}
+\end{figure}
+
+
+\paragraph{Autenticazione del server.}
+Alla prima connessione, il server invia la propria chiave pubblica: l’utente deve confermare manualmente l’impronta (fingerprint) per legare l’identità del server alla chiave ricevuta.  
+SSH non usa certificati X.509 né una PKI: la fiducia viene costruita progressivamente, salvando la chiave del server nel file \texttt{\~{}/.ssh/known\_hosts}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{immagini/NET_06/sshlogin}
+    \caption{Esempio di connessione SSH e verifica dell’impronta del server.}
+
+    \label{fig:sshlogin}
+\end{figure}
+
+
+\paragraph{Autenticazione del client.}
+Il client, di default, si autentica con username e password, ma è possibile abilitare l’autenticazione a chiave pubblica.  
+La coppia di chiavi è generata con:
+\begin{verbatim}
+$ ssh-keygen -t [rsa|dsa]
+\end{verbatim}
+La chiave pubblica del client (\texttt{id\_rsa.pub}) deve essere aggiunta sul server al file \texttt{\~{}/.ssh/authorized\_keys}.  
+Una volta installata, l’utente potrà accedere senza password, basandosi sul meccanismo di \emph{mutual authentication}.
+\paragraph{Servizi aggiuntivi.}
+Oltre all’accesso remoto sicuro, SSH offre numerose funzionalità aggiuntive che lo rendono uno strumento estremamente versatile per l’amministrazione di rete.
+Tra i principali utilizzi troviamo:
+\begin{itemize}
+  \item \textbf{Trasferimento di file sicuro} mediante i comandi \texttt{scp} o \texttt{sftp}, che sostituiscono i protocolli FTP tradizionali trasmettendo i dati cifrati:
+  \begin{verbatim}
+  $ scp [-r] [[user@]host1:]file1 ... [[user@]host2:]file2
+  \end{verbatim}
+
+  \item \textbf{Esecuzione remota di comandi} su un server senza aprire una shell interattiva:
+  \begin{verbatim}
+  $ ssh username@server command
+  \end{verbatim}
+
+  \item \textbf{Inoltro di sessioni grafiche X11}, che consente di eseguire applicazioni grafiche remote:
+  \begin{verbatim}
+  $ ssh -X username@server
+  \end{verbatim}
+
+  \item \textbf{Port forwarding} per creare tunnel TCP cifrati, utili per instradare traffico verso servizi interni:
+  \begin{itemize}
+    \item \textit{Locale:}
+    \begin{verbatim}
+    $ ssh -L lport:remote_addr:rport username@server
+    \end{verbatim}
+    \item \textit{Remoto:}
+    \begin{verbatim}
+    $ ssh -R rport:local_addr:lport username@server
+    \end{verbatim}
+  \end{itemize}
+
+  \item \textbf{Proxy SOCKS5 cifrato}, per instradare connessioni TCP di un’applicazione attraverso il tunnel SSH:
+  \begin{verbatim}
+  $ ssh -ND 9999 username@server
+  \end{verbatim}
+
+  \item \textbf{Montaggio di filesystem remoti} come se fossero directory locali, grazie a \texttt{sshfs}:
+  \begin{verbatim}
+  $ sshfs user@host: mountpoint
+  \end{verbatim}
+\end{itemize}
+
+Queste funzionalità dimostrano come SSH non sia soltanto un protocollo di autenticazione remota, ma un vero e proprio framework di sicurezza per la comunicazione cifrata, capace di adattarsi a diversi scenari operativi.
+
+\paragraph{Conclusione.}
+SSH implementa i propri meccanismi di sicurezza a livello applicativo. Tuttavia, estendere lo stesso approccio ad ogni protocollo applicativo (HTTP, FTP, SIP...) sarebbe inefficiente.
+È preferibile fornire i servizi di cifratura e autenticazione nei livelli inferiori, rendendoli disponibili come \emph{servizi di sicurezza trasparenti} alle applicazioni.
+Il problema di ssh è che funziona solo per le applicazioni che lo supportano esplicitamente ed è oneroso.
+Il seguente diagramma (Figura \ref{fig:sec}) riassume i principali protocolli di sicurezza a vari livelli dello stack ISO/OSI.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/NET_06/sec}
+    \caption{Tipi di sicurezza ai vari livelli}
+    \label{fig:sec}
+\end{figure}
+
+
+
+\subsection{Sicurezza a livello di trasporto: Transport Layer Security (TLS)}
+Il protocollo \textbf{Transport Layer Security (TLS)}, erede diretto di \textbf{SSL (Secure Sockets Layer)}, costituisce oggi lo standard per la protezione delle comunicazioni a livello di trasporto.
+Il suo obiettivo principale è fornire \textbf{confidenzialità}, \textbf{integrità} e \textbf{autenticazione} tra due applicazioni che comunicano su una rete potenzialmente insicura, come Internet.
+TLS opera sopra il livello di trasporto TCP, fornendo un canale cifrato e autenticato che garantisce protezione end-to-end alle applicazioni, indipendentemente dal protocollo applicativo utilizzato (HTTP, SMTP, IMAP, FTP, ecc.).
+
+\paragraph{Obiettivi di TLS.}
+Le finalità del protocollo TLS possono essere riassunte in tre fasi principali:
+\begin{itemize}
+  \item \textbf{Stabilire una sessione sicura (fase di Handshake).}
+  In questa fase le due parti concordano gli algoritmi crittografici da utilizzare, scambiano le chiavi necessarie per la cifratura e si autenticano reciprocamente, solitamente tramite certificati digitali X.509.
+  L’obiettivo è creare un canale cifrato condiviso e verificato, sul quale potranno transitare i dati applicativi.
+
+  \item \textbf{Trasferire dati applicativi in modo protetto.}
+  Una volta stabilita la sessione, la comunicazione avviene in modo privato e integro.
+  La \emph{confidenzialità} è garantita da algoritmi di cifratura simmetrica (ad esempio AES o ChaCha20), mentre l’\emph{integrità} dei dati è assicurata da un codice di autenticazione dei messaggi (\textbf{HMAC}, Hash-based Message Authentication Code), che impedisce modifiche non autorizzate ai pacchetti in transito.
+
+  \item \textbf{Un approccio unificato.}
+  A differenza di altri protocolli di sicurezza (come IPsec), che separano il protocollo di negoziazione delle chiavi (IKE) da quello di trasporto dei dati (ESP/AH), TLS integra entrambe le funzioni in un’unica architettura.
+  Ciò semplifica la gestione delle sessioni e consente alle applicazioni di utilizzare direttamente i servizi di sicurezza del livello di trasporto.
+\end{itemize}
+
+\paragraph{Ruolo nello stack di rete.}
+TLS si colloca tra i livelli 4 e 7 dello stack ISO/OSI: è trasparente per il livello applicativo, che si limita a inviare e ricevere dati sul canale cifrato, e per il livello di trasporto sottostante (TCP), che gestisce solo la consegna affidabile dei segmenti.
+In tal modo, TLS agisce come un servizio di sicurezza “plug-in” per qualsiasi applicazione che necessiti di autenticazione e riservatezza, rendendo la comunicazione immune da intercettazioni e manipolazioni.
+
+\paragraph{Esempio pratico.}
+Quando un utente visita un sito web \texttt{https://}, il browser instaura una connessione TCP sulla porta 443 e avvia la procedura TLS.
+Durante l’handshake, client e server negoziano algoritmi, verificano i certificati e generano chiavi di sessione.
+Da quel momento, ogni messaggio scambiato tra browser e server web è cifrato, autenticato e garantito contro modifiche o intercettazioni.
+
+\paragraph{Storia e porte standard.}
+In origine, le versioni “sicure” dei protocolli applicativi venivano pubblicate su porte dedicate:  
+HTTP (80) $\rightarrow$ HTTPS (443), SMTP (25) $\rightarrow$ SMTPS (465), POP3 (110) $\rightarrow$ POP3S (995).  
+Questo approccio è stato poi sostituito da meccanismi di \textit{upgrade in-band} (es. \texttt{STARTTLS}), che permettono di negoziare la sicurezza sulla stessa porta.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\linewidth]{immagini/NET_06/tls}
+    \caption{Come viene inserito TLS nello stack di protocolli.}
+    \label{fig:tls}
+\end{figure}
+
+
+\paragraph{Funzionamento.}
+TLS stabilisce una \textbf{sessione sicura} in due fasi:
+\begin{enumerate}
+  \item \textbf{Handshake:} negoziazione di algoritmi, scambio di chiavi, autenticazione reciproca;
+  \item \textbf{Data transfer:} cifratura simmetrica e autenticazione tramite MAC (Message Authentication Code).
+\end{enumerate}
+L’handshake si basa su certificati X.509 e su un’\textbf{infrastruttura a chiave pubblica (PKI)} che consente di verificare la legittimità del server e, facoltativamente, del client.
+
+\paragraph{Evoluzione a TLS 1.3.}
+La versione 1.3 del protocollo introduce miglioramenti sostanziali:
+\begin{itemize}
+  \item Rimozione di algoritmi deboli (MD5, RC4, DES, 3DES);
+  \item Uso esclusivo di cifrature AEAD (Authenticated Encryption with Associated Data);
+  \item Perfect Forward Secrecy (PFS) obbligatoria con Diffie–Hellman effimero;
+  \item Handshake più rapido (1-RTT);
+  \item Supporto per 0-RTT data per sessioni ripetute.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/NET_06/tls23}
+    \caption{TLS 1.2 vs TLS 1.3: confronto tra le fasi di handshake e i miglioramenti introdotti nella versione 1.3.}
+    \label{fig:tls23}
+\end{figure}
+
+
+\paragraph{Attacchi noti.}
+Nel tempo, TLS ha subito diversi attacchi:
+\begin{itemize}
+  \item \textbf{Downgrade attacks} (es. FREAK, Logjam): forzano l’uso di versioni o cifrari deboli;
+  \item \textbf{Compression attacks} (CRIME, BREACH): sfruttano la compressione per estrarre dati sensibili;
+  \item \textbf{Cipher attacks} (BEAST): attacchi ai blocchi CBC di TLS 1.0;
+  \item \textbf{Implementation flaws} (Heartbleed): vulnerabilità nel codice OpenSSL.
+\end{itemize}
+L’elenco completo degli attacchi noti è riportato in RFC 7457.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%laboratorio
+\newpage
+\maketitle
+{\LARGE \textbf{Laboratorio}} \\[0.5em]
+
+\subsection{Laboratorio: HTTPS con Apache2}
+Il laboratorio ha lo scopo di comprendere il funzionamento di un server HTTPS e la generazione dei certificati necessari per una comunicazione TLS.
+
+\paragraph{1. Creazione della CA.}
+Si realizza una gerarchia di certificati composta da:
+\begin{itemize}
+  \item una \textbf{Root CA} autofirmata;
+  \item una \textbf{Intermediate CA} firmata dalla root;
+  \item un \textbf{certificato server} firmato dall’intermediate.
+\end{itemize}
+Le operazioni vengono eseguite con il tool \texttt{openssl}:
+\begin{enumerate}
+  \item Generazione delle chiavi RSA per la Root CA:
+  \begin{verbatim}
+  openssl genrsa -out root.key 2048
+  openssl req -new -x509 -days 1460 -key root.key -out root.crt
+  \end{verbatim}
+  \item Creazione della chiave e CSR per la Intermediate CA e firma da parte della Root CA;
+  \item Generazione della chiave e CSR del server web, firmata dalla Intermediate CA.
+\end{enumerate}
+Infine, si concatenano i certificati per creare la \emph{certificate chain}:
+\begin{verbatim}
+cat intermediate.crt root.crt > chain.crt
+\end{verbatim}
+
+\paragraph{2. Configurazione di Apache2.}
+Nel file \texttt{/etc/apache2/sites-available/testssl.conf}:
+\begin{verbatim}
+<VirtualHost _default_:443>
+  DocumentRoot "/var/www/testssl"
+  ServerName www.sito.it
+  SSLEngine On
+  SSLCertificateFile /path/server.crt
+  SSLCertificateKeyFile /path/server.key
+  SSLCertificateChainFile /path/chain.crt
+</VirtualHost>
+\end{verbatim}
+Si abilita il modulo SSL e il sito:
+\begin{verbatim}
+a2enmod ssl
+a2ensite testssl
+service apache2 restart
+\end{verbatim}
+
+\paragraph{3. Accesso e verifica.}
+Visitando \texttt{https://www.sito.it}, il browser mostra un avviso poiché la CA non è riconosciuta: importando la Root CA nel browser, la connessione risulterà completamente valida.
+
+\paragraph{Redirect da HTTP a HTTPS.}
+È possibile implementare il reindirizzamento automatico aggiungendo una regola di rewrite:
+\begin{verbatim}
+<VirtualHost _default_:80>
+  ServerName www.sito.it
+  RewriteEngine On
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
+\end{verbatim}
+
+\subsection{Attacchi di downgrade e contromisure}
+Un attacco comune è l’\textbf{HTTPS Downgrade Attack}, in cui l’attaccante si interpone fra client e server (Man-in-the-Middle) e forza la vittima a usare HTTP invece di HTTPS.  
+Storicamente, molti siti erano misti (HTTP per la home e HTTPS per l’autenticazione). Oggi il rischio è mitigato da meccanismi come \textbf{HSTS (HTTP Strict Transport Security)}.
+
+\paragraph{HSTS.}
+Il server invia un header HTTP:
+\begin{verbatim}
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+\end{verbatim}
+Questo informa il browser che le connessioni future verso il dominio dovranno sempre usare HTTPS.  
+HSTS protegge quindi da downgrade futuri, ma non dal primo accesso in chiaro.  
+Alcuni browser integrano liste di domini pre-caricate (“HSTS preload list”) per evitare anche il rischio iniziale.
+
+\subsection{Overlay VPNs e OpenVPN}
+Le \textbf{Virtual Private Networks (VPN)} permettono di creare reti private sovrapposte a reti pubbliche, come Internet, garantendo cifratura e autenticazione del traffico.  
+Le VPN si dividono in due categorie:
+\begin{itemize}
+  \item \textbf{Intra-AS VPNs:} realizzate all’interno di un singolo dominio amministrativo (es. MPLS VPN);
+  \item \textbf{Overlay VPNs:} costruite sopra una rete pubblica non fidata, tipicamente tramite tunneling cifrato.
+\end{itemize}
+
+\paragraph{Concetto di tunneling.}
+Nel tunneling, un pacchetto IP “interno” viene incapsulato come payload in un altro pacchetto IP “esterno”.  
+Il pacchetto esterno contiene gli indirizzi pubblici dei nodi del tunnel, mentre quello interno trasporta gli indirizzi della rete privata.
+
+\subsubsection{OpenVPN}
+\textbf{OpenVPN} è una soluzione open source per la creazione di VPN a livello utente, basata su TLS e su un modello client/server.  
+Supporta due modalità operative:
+\begin{itemize}
+  \item \textbf{TUN mode:} tunnel punto-punto di livello 3 (IP);
+  \item \textbf{TAP mode:} tunnel di livello 2, utile per trasmettere frame Ethernet e traffico broadcast.
+\end{itemize}
+
+\paragraph{Architettura.}
+OpenVPN utilizza due canali:
+\begin{itemize}
+  \item un \textbf{canale di controllo}, che usa TLS per negoziare chiavi e autenticazione;
+  \item un \textbf{canale dati}, cifrato simmetricamente e incapsulato in UDP o TCP.
+\end{itemize}
+Il meccanismo di autenticazione si basa su certificati X.509 generati da una CA locale (facilmente realizzabile con \texttt{easy-rsa}).
+
+\paragraph{Configurazione di base.}
+\begin{itemize}
+  \item \textbf{Server:}
+  \begin{verbatim}
+  port 1194
+  proto udp
+  dev tun
+  ca ca.crt
+  cert server.crt
+  key server.key
+  dh dh.pem
+  server 10.8.0.0 255.255.255.0
+  \end{verbatim}
+  \item \textbf{Client:}
+  \begin{verbatim}
+  client
+  dev tun
+  proto udp
+  remote vpn.server.it 1194
+  ca ca.crt
+  cert client.crt
+  key client.key
+  \end{verbatim}
+\end{itemize}
+
+\paragraph{Routing e NAT.}
+Per permettere ai client di raggiungere la rete interna dietro il server VPN, è necessario abilitare il \texttt{IP forwarding} e applicare una regola di masquerade:
+\begin{verbatim}
+echo 1 > /proc/sys/net/ipv4/ip_forward
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+\end{verbatim}
+
+\paragraph{Autenticazione e cifratura.}
+Durante l’handshake TLS, server e client si autenticano con i propri certificati e negoziano i parametri di sicurezza (algoritmi di cifratura, HMAC e DH).  
+OpenVPN può usare sia chiavi statiche (\emph{pre-shared}) che dinamiche (via TLS), ma la seconda opzione garantisce PFS e sicurezza end-to-end.
+
+\paragraph{Vantaggi.}
+\begin{itemize}
+  \item Elevata compatibilità (lavora in user space);
+  \item Supporto a NAT e firewall;
+  \item Configurazione flessibile e integrabile con iptables;
+  \item Sicurezza basata su standard TLS.
+\end{itemize}
+
+\subsection{Conclusione}
+I protocolli di sicurezza a vari livelli dello stack cooperano per garantire comunicazioni affidabili su reti non sicure.  
+SSH protegge accessi e sessioni remote, TLS assicura la riservatezza delle applicazioni Internet e IPsec offre protezione nativa per il traffico IP.  
+Le Overlay VPNs, come OpenVPN, uniscono tali principi in un contesto pratico, creando reti private virtuali su infrastrutture pubbliche.  
+Questi meccanismi costituiscono i mattoni fondamentali della \textbf{difesa di rete moderna}, integrando autenticazione, cifratura e controllo dell’integrità in ogni fase della comunicazione.
