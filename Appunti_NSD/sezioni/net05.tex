@@ -347,7 +347,6 @@ Utilizzare \texttt{ping} e \texttt{nc (netcat)} per verificare la raggiungibilit
  \item analizzare con \texttt{tcpdump} o \texttt{iptables -L -v} il traffico filtrato.
 \end{itemize}
 
-
 \newpage
 \maketitle
 {\LARGE \textbf{Classificazione dei Pacchetti e Algoritmi di Matching}} \\[0.5em]
@@ -366,6 +365,11 @@ La classificazione dei pacchetti è essenziale non solo per i firewall, ma anche
   \item \textbf{NAT e monitoraggio del traffico:} per tracciare e gestire il flusso di pacchetti e proteggere la rete.
 \end{itemize}
 Le funzioni di classificazione vanno oltre il semplice matching degli indirizzi di destinazione IP e richiedono un'analisi più approfondita di campi multipli come l'indirizzo di origine, le porte, e persino i flag TCP. O magari per assegnare delle priorità.
+
+% --- AGGIUNTA ---
+\paragraph{Requisiti e metriche.}
+In contesti ad alta velocità è cruciale bilanciare: \textbf{throughput} (cicli/tempo per pacchetto a 10/40/100+ Gbps), \textbf{memory footprint} (strutture dati e bitset), e \textbf{tempo di aggiornamento} (inserimento/rimozione regole, aggiornamento di stati). Tali vincoli guidano la scelta tra approcci software (cache-friendly, parallelizzabili) e hardware (TCAM/ASIC), oltre che il disegno di strutture multi-campo con buona località in memoria.
+
 \subsubsection{Algoritmi di Classificazione dei Pacchetti}
 I pacchetti vengono analizzati in base a una serie di campi dell'intestazione (header), come l'indirizzo di origine e destinazione, la porta di origine e destinazione, il protocollo IP, e altri. Questi campi vengono utilizzati per abbinare i pacchetti a regole definite in un database di regole.
 
@@ -383,6 +387,10 @@ da un IP malevolo. Un esempio di \textbf{Prefix Match}
 come nel caso di un filtro che consente solo pacchetti destinati a
 un range di indirizzi IP `192.168.1.0/24`. Infine, un \textbf{Range Match}
 potrebbe essere usato per consentire l'accesso a una gamma di porte, come 1000–2000 per un servizio FTP.
+
+% --- AGGIUNTA ---
+\paragraph{Schema divide-and-conquer.}
+Un flusso tipico multi-campo è: (1) estrarre, per \emph{ogni} campo, una struttura di lookup specializzata (es. trie per prefissi IP, strutture per range, hash per exact); (2) eseguire i lookup per campo; (3) \textbf{combinare} i risultati con tecniche come \emph{Bit Vector AND}, \emph{cross-producting} o \emph{decision trees}, ottenendo l'insieme finale di regole candidate su cui applicare la selezione della “miglior regola”.
 
 \subsection{Problema della Classificazione dei Pacchetti}
 Il problema della classificazione dei pacchetti riguarda l'identificazione della regola di matching più appropriata per ciascun pacchetto in arrivo. Questo problema diventa complesso quando ci sono molte regole, e la ricerca di un match può richiedere una grande quantità di risorse computazionali.
@@ -415,6 +423,10 @@ Se un pacchetto corrisponde a una regola di tipo \textbf{DROP}
 e a una regola di tipo \textbf{ACCEPT}
 , la regola che ha la priorità più alta (determinata dalla posizione nella lista di regole) sarà applicata. Se le regole sono ordinate in ordine di priorità (ad esempio, le regole più restrittive vengono applicate per prime), il pacchetto verrà accettato o scartato in base alla prima regola che corrisponde.
 
+% --- AGGIUNTA ---
+\paragraph{Selezione efficiente della miglior regola.}
+Dopo la combinazione (es. con Bit Vector), è utile trovare rapidamente la regola “migliore” secondo il costo/priorità. Un’ottimizzazione classica è l’uso di \emph{de Bruijn} per individuare velocemente il bit più significativo/impostato nel vettore di candidati (massima priorità).
+
 \subsubsection{Algoritmi di Matching}
 Diversi algoritmi sono stati sviluppati per ottimizzare il processo di classificazione. I più comuni sono:
 
@@ -428,6 +440,16 @@ Diversi algoritmi sono stati sviluppati per ottimizzare il processo di classific
 \textbf{Esempio pratico}:
 Il \textbf{Longest Prefix Match (LPM)} è utilizzato in scenari in cui è necessario fare il matching dell'indirizzo di destinazione di un pacchetto con un database di regole di routing. L'algoritmo trie è particolarmente utile in questo caso, in quanto permette di trovare rapidamente il prefisso più lungo che corrisponde a un pacchetto, riducendo significativamente il tempo di ricerca rispetto a una ricerca lineare.
 
+% --- AGGIUNTA ---
+\paragraph{Altre famiglie chiave.}
+Oltre agli approcci sopra, nella pratica multi-campo si usano tre famiglie fondamentali:
+\begin{itemize}
+  \item \textbf{Bit Vector + AND per campo:} modello divide-and-conquer che combina i match parziali.
+  \item \textbf{Cross-producting:} pre-combina sottoinsiemi di risultati per accelerare la fase di combinazione.
+  \item \textbf{Decision Trees:} visita guidata dei campi/regioni per ridurre lo spazio di ricerca.
+\end{itemize}
+Per estendere le prestazioni su più dimensioni si impiegano anche strutture come i \textbf{Set-Pruning Tries}, che potano lo spazio dei candidati attraversando i set validi per ciascun campo.
+
 \subsection{Approccio Bit Vector Linear Search}
 
 Il \textbf{Bit Vector Linear Search} è un metodo efficace per l'ottimizzazione della ricerca di regole. In questo approccio, ogni campo del pacchetto viene confrontato con le regole utilizzando una rappresentazione binaria (bitmask). Il risultato della ricerca di un match viene quindi combinato attraverso l'operazione logica AND, riducendo significativamente il numero di confronti da effettuare.
@@ -440,6 +462,10 @@ Il sistema di bit vector funziona confrontando il pacchetto con i set di regole.
 \textbf{Esempio pratico}:
 Nel caso di un pacchetto con destinazione IP `192.168.1.100`, il sistema verifica quale regola ha il prefisso più lungo corrispondente. Se una regola ha un prefisso `192.168.1.0/24` e un'altra ha `192.168.1.100/32`, il sistema selezionerà la regola con il prefisso più specifico (quella con `/32`).
 
+% --- AGGIUNTA ---
+\paragraph{Nota tecnica (integrazione e correzione).}
+Dal punto di vista pratico, l’uso di bitset porta a una complessità di combinazione tipica \(\mathcal{O}(N \cdot K / W)\) (con \(N\) = numero di regole, \(K\) = numero di campi, \(W\) = ampiezza di parola/word-size), che risulta molto efficiente grazie ad operazioni bitwise vettorializzabili su CPU/GPU/ASIC. Inoltre, la selezione della regola con priorità massima può essere accelerata con tecniche come \emph{de Bruijn} per individuare rapidamente il primo bit significativo. Si noti infine che l’esempio LPM (\texttt{/24} vs \texttt{/32}) riguarda il \emph{lookup per campo} (indirizzo IP), mentre la scelta finale della regola avviene sulla combinazione dei bitset dei vari campi.
+
 \subsubsection{Vantaggi e Limiti del Bit Vector Linear Search}
 Il principale vantaggio di questo approccio è la sua capacità di ridurre il numero di regole da confrontare, migliorando l'efficienza della classificazione. Tuttavia, l'approccio ha alcuni limiti:
 \begin{itemize}
@@ -447,10 +473,199 @@ Il principale vantaggio di questo approccio è la sua capacità di ridurre il nu
   \item \textbf{Efficacia Limitata in Caso di Ranges Dinamici:} Le regole che utilizzano intervalli dinamici di valori (ad esempio, intervalli di porte) possono complicare la gestione della bitmask.
 \end{itemize}
 
+% --- AGGIUNTA (precisazione sulla memoria) ---
+\paragraph{Precisazione sulla memoria.}
+In molti design reali l’uso di bitset resta gestibile grazie a compressione, partizionamento e rappresentazioni a parole larghe; più che una crescita “esponenziale”, il costo memoria è determinato dalla cardinalità \(N\), dal numero di campi \(K\) e dal fattore di compressione/packing adottato.
+
 \subsection{Contenuto e Prestazioni della Classificazione dei Pacchetti}
 Per migliorare le prestazioni della classificazione dei pacchetti, è essenziale considerare l'uso di tecniche come la memorizzazione cache, che permette di ridurre i tempi di ricerca. Inoltre, la gestione dinamica delle regole (come l'inserimento automatico di nuove regole per le connessioni UDP) può contribuire a mantenere alta l'efficienza anche in ambienti complessi.
 
 Nel caso di firewall ad alta velocità, è necessario bilanciare la velocità di classificazione con l'efficienza nella gestione della memoria. La combinazione di algoritmi di ricerca rapidi con hardware specializzato (come le CAM) può ridurre significativamente i costi computazionali.
 
+% --- AGGIUNTA ---
+\subsubsection{Caching 5-tuple: benefici e limiti}
+Le cache (es. su 5-tuple) possono azzerare il costo medio in presenza di forte località, ma soffrono in scenari avversi (workload \emph{elephant/mice}, scansioni di porta, miss storm) e richiedono politiche di rimpiazzo attente. Inoltre non sostituiscono il classificatore: servono percorsi “cold/miss” efficienti e meccanismi di invalidazione coerenti quando le regole cambiano.
+
+% --- AGGIUNTA ---
+\subsubsection{TCAM/CAM: pro e contro}
+Le \textbf{TCAM} offrono match ternario in tempo quasi costante, molto adatte a wildcard/prefissi multipli. Pro: latenza prevedibile e parallelismo massivo. Contro: consumo energetico elevato, densità limitata, \emph{rule multiplication} per rappresentare range, costi e integrazione non banali. Spesso si adottano design ibridi: pre-filtri software + TCAM per hot paths.
 
 
+
+
+
+% --- EBPF ---
+\subsection{eBPF}
+eBPF è un framework (pensato in origine per Linux) che consente di scrivere piccoli programmi (tipicamente in C) che vengono compilati in \emph{bytecode} e caricati nel kernel su specifici \emph{hook}. L'esecuzione avviene in una sandbox con garanzie di sicurezza fornite dal \textbf{verifier} (controlli su accessi a memoria, loop non limitati, ecc.) e prestazioni vicine al nativo grazie al \textbf{JIT} che traduce il bytecode in ISA macchina. L'architettura eBPF è una VM RISC con 11 registri a 64 bit e stack fisso da 512 B.
+
+In pratica consente di estendere funzionalità del sistema operativo \emph{a runtime}, senza patch del kernel, interagendo tramite interfacce stabili: \textbf{helper} (API kernel) e \textbf{mappe} condivise kernel/user per configurazione e stato. Riduce anche i costi di contesto grazie all’accesso diretto alle risorse del kernel.
+% ----------------------------------------------------
+\subsubsection{Hook eBPF (punti di aggancio)}
+I programmi eBPF sono \emph{event–driven}: vengono eseguiti quando il kernel (o un'applicazione) attraversa un punto di aggancio (\emph{hook}) e consegna un evento al programma. Il codice viene caricato come bytecode e validato dal verifier; l’esecuzione avviene in sandbox nel kernel, con eventuale compilazione JIT. Le interazioni runtime e la conservazione di stato avvengono tramite \emph{mappe} condivise tra kernel e user space. :contentReference[oaicite:0]{index=0}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.7\linewidth]{immagini/NET_05/hooks.png}
+\end{figure}
+\subsubsection{Focus sui percorsi di rete}
+\paragraph{XDP}
+Tra i vari hook, quello di maggiore interesse per il networking a bassa latenza è \textbf{XDP}, posizionato molto in basso nel percorso di ricezione (nel driver della network interface card). Questo consente di intervenire precocemente sul pacchetto, riducendo al minimo la dipendenza dagli altri sottomoduli dello stack: si ottengono prestazioni elevate al prezzo di una flessibilità inferiore rispetto ad hook più “alti”. Programmi eBPF per XDP si scrivono in C ristretto, si compilano con LLVM e si caricano nel kernel (syscall \texttt{bpf}); il bytecode è verificato e poi JIT-traslato nell’ISA nativa. :contentReference[oaicite:1]{index=1}
+\paragraph{JIT}
+JIT sta per Just-In-Time compilation. È una tecnica in cui il codice non viene eseguito interpretandolo riga per riga, né compilato “una volta per tutte” prima di girare (AOT), ma compilato in codice macchina al volo, poco prima dell’esecuzione—o alla prima esecuzione.
+
+\paragraph{TC}
+Oltre a XDP, gli appunti inquadrano l’uso di eBPF come strumento generale per implementare logica di rete nel kernel; in questo contesto, hook a livello \texttt{tc} (ingress/egress) permettono classificazione e azioni su pacchetti a uno stadio superiore rispetto a XDP, con maggiore integrazione nel percorso standard dello stack.
+
+\paragraph{NETFILTER e Socket hooks}
+Nel percorso di rete “classico” il traffico attraversa i punti di aggancio del framework \textbf{NETFILTER}, che interfaccia tabelle e catene di filtraggio/trasformazione; in parallelo, hook sui \emph{socket} abilitano politiche vicino alle applicazioni. Questi punti consentono politiche più ricche e stateful (anche con ausilio di conntrack), a fronte di una maggior latenza rispetto a XDP perché più interni allo stack.
+
+% ----------------------------------------------------
+
+\subsection{Scrivere e caricare programmi eBPF}
+
+\paragraph{Pipeline operativa }
+\begin{enumerate}
+  \item \textbf{Compilazione} — Scrivi il programma in C ristretto e compila con LLVM/Clang in \emph{bytecode eBPF} destinato alla VM (11 registri a 64 bit, stack 512 B).
+  \item \textbf{Caricamento} — Usa la syscall \texttt{bpf()} per trasferire al kernel il bytecode e i metadati (tipo di programma, definizioni delle mappe, licenza).
+  \item \textbf{Verifica} — Il \textbf{verifier} controlla sicurezza e correttezza (accessi a memoria, bound dei loop, ecc.); se fallisce, il caricamento viene rifiutato.
+  \item \textbf{JIT} — Se la verifica passa, il kernel può \emph{JIT-compilare} il bytecode in istruzioni native della CPU per ottenere performance prossime al codice nativo.
+  \item \textbf{Attacco all’hook \& run-time} — Il programma viene \emph{attaccato} all’hook (es. XDP/TC/tracepoint) e viene eseguito sugli eventi/pacchetti in arrivo.
+\end{enumerate}
+
+\paragraph{Componenti di supporto}
+\begin{itemize}
+  \item \textbf{Helper functions} — API stabili del kernel per operazioni su socket, checksum, aggiornamenti mappe, manipolazione dei pacchetti e integrazione con lo stack.
+  \item \textbf{Mappe (key–value)} — Strutture condivise kernel/user per stato e controllo; tipi comuni: \emph{hash}, \emph{array}, \emph{LPM-trie}, ecc.
+\end{itemize}
+
+% ----------------------------------------------------
+%%%%%%%%%%%%%%%%%       laboratorio         %%%%%%%%%%
+\newpage
+\maketitle
+{\LARGE \textbf{Laboratorio}} \\[0.5em]
+\subsection{Laboratorio X: Warm-up con eBPF e XDP}
+
+\subsubsection{Scenario}
+Obiettivo: prendere confidenza con \textbf{XDP} (eBPF a livello driver NIC) implementando:
+\begin{enumerate}
+  \item un \emph{Basic PASS/DROP} con logging via \texttt{bpf\_printk()};
+  \item un \emph{Packet Filtering} minimale (IPv4) con i \textbf{boundary checks} richiesti dal verifier;
+  \item un \emph{Map Counter} (contatori per pacchetti/byte) con lettura lato user;
+  \item una semplice \emph{ACL denylist} basata su mappa hash aggiornata in tempo reale.
+\end{enumerate}
+
+\subsubsection{Topologia del laboratorio}
+Topologia minima a due nodi: \textbf{host A} (dove carichiamo XDP) e \textbf{host B} (generatori di pacchetti di test). Collegamento L2 diretto o tramite bridge.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.75\linewidth]{immagini/NET_05/xdp_topology.png}
+  \caption{Lab X — Topologia: host A con XDP sul driver di \texttt{eth0}; host B genera traffico (ping/Scapy).}
+  \label{fig:labx_topology}
+\end{figure}
+
+\noindent\textit{Nota operativa.} Ambiente consigliato: VM o container predisposto per eBPF (\texttt{clang/llvm}, \texttt{libbpf}, \texttt{bpftool}) e privilegi per \texttt{bpf()}. Interfaccia target: \texttt{eth0} (adatta se differente).
+
+\subsubsection{Prerequisiti}
+\begin{itemize}
+  \item Kernel con supporto eBPF/XDP e JIT abilitabile (\texttt{/proc/sys/net/core/bpf\_jit\_enable});
+  \item toolchain \texttt{clang/llvm} e \texttt{bpftool}, libreria \texttt{libbpf};
+  \item permessi amministrativi (\texttt{root}) sull’host A.
+\end{itemize}
+
+\subsubsection{Passi del laboratorio (step–by–step)}
+\paragraph{Step 1 — Basic PASS con logging}
+\begin{enumerate}
+  \item Scrivere un programma XDP minimale che ritorna \texttt{XDP\_PASS} e fa bpf\_printk("pkt len=%u", data\_end - data).
+  \item Compilare in bytecode eBPF (clang/llvm) e caricare su \texttt{eth0}.
+  \item Verificare i log con \texttt{cat /sys/kernel/debug/tracing/trace\_pipe}.
+\end{enumerate}
+
+\paragraph{Step 2 — Switch a DROP e detach}
+\begin{enumerate}
+  \item Modificare il verdetto a \texttt{XDP\_DROP} e ricaricare il programma.
+  \item Testare con \texttt{ping} da host B: i pacchetti vengono scartati.
+  \item Fare \emph{detach}: \texttt{ip link set dev eth0 xdp off}.
+\end{enumerate}
+
+\paragraph{Step 3 — Packet Filtering (hardcoded) con boundary checks}
+\begin{enumerate}
+  \item Implementare i controlli di \textbf{bound} su header Ethernet e IPv4 (verifier-friendly).
+  \item Eseguire parsing IPv4 (includere \texttt{<linux/ip.h>}); leggere \texttt{ip->saddr} / \texttt{ip->protocol}.
+  \item Applicare filtro hardcoded (es.\ DROP se \texttt{saddr == X} o se \texttt{proto == ICMP}); altrimenti PASS.
+  \item Caricare, testare con \texttt{ping} e \texttt{scapy} per verificare i rami \texttt{DROP}/\texttt{PASS}.
+\end{enumerate}
+
+\paragraph{Step 4 — Map Counter (pkt/byte)}
+\begin{enumerate}
+  \item Definire una \textbf{mappa} per contatori (\texttt{key = u32}, ad es.\ per-CPU o globale; \texttt{value} con \texttt{rx\_packets}, \texttt{rx\_bytes}).
+  \item In XDP: aggiornare \texttt{rx\_packets += 1} e \texttt{rx\_bytes += (data\_end - data)} (aggiorni atomici, es.\ \texttt{lock\_xadd} per byte).
+  \item Lato user: leggere periodicamente la mappa e stampare pps/mbps.
+\end{enumerate}
+
+\paragraph{Step 5 — ACL denylist con mappa hash}
+\begin{enumerate}
+  \item Creare una mappa \texttt{denylist} (\texttt{key = u32} indirizzo IPv4, \texttt{value = u8} segnaposto).
+  \item In XDP: se \texttt{lookup(denylist, ip->saddr)} \(\Rightarrow\) \texttt{XDP\_DROP}, altrimenti proseguire con la logica (PASS/altro).
+  \item Aggiornare la denylist a runtime: \texttt{bpftool map update} inserendo/rimuovendo IP senza ricompilare.
+\end{enumerate}
+
+\subsubsection{Esecuzione pratica (comandi essenziali)}
+\begin{lstlisting}[language=bash,caption={Abilitazione JIT, caricamento/isolamento log, attach/detach XDP}]
+# Abilita JIT (se disabilitato)
+echo 1 > /proc/sys/net/core/bpf_jit_enable
+
+# (Esempio) Build di un programma XDP minimal (clang/libbpf) -> xdp_prog.o
+# ... comandi di build specifici al tuo tree (Makefile o libbpf-bootstrap) ...
+
+# Attach su eth0 (loader a scelta: ip link, xdp-loader, o tool custom)
+ip link set dev eth0 xdp obj xdp_prog.o sec xdp
+
+# Osserva i log del printk
+cat /sys/kernel/debug/tracing/trace_pipe
+
+# Detach
+ip link set dev eth0 xdp off
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,caption={Aggiornamento mappa denylist via bpftool}]
+# Trovare l'ID della mappa (oppure usare pinning in bpffs)
+bpftool map show
+# Aggiungere un IP (u32 in endianness corretta, es. 192.0.2.10)
+bpftool map update id <MAP_ID> key hex C0 00 02 0A value hex 01
+# Rimuovere l'IP
+bpftool map delete id <MAP_ID> key hex C0 00 02 0A
+\end{lstlisting}
+
+\subsubsection{Cosa osservare con lo sniffer / tracing}
+\begin{itemize}
+  \item Con \textbf{XDP\_DROP}: assenza di echo reply; su \texttt{trace\_pipe} compaiono le linee \texttt{bpf\_printk()}.
+  \item Con \textbf{filter hardcoded}: pacchetti che rispettano la condizione vengono scartati; gli altri passano.
+  \item Con \textbf{Map Counter}: incremento coerente di \texttt{rx\_packets}/\texttt{rx\_bytes} in presenza di traffico.
+  \item Con \textbf{denylist}: inserendo l’IP in mappa gli ICMP da quel sorgente diventano DROP immediatamente.
+\end{itemize}
+
+\paragraph{Troubleshooting}
+\begin{itemize}
+  \item \textbf{Verifier errors}: controllare i boundary checks; evitare dereferenziazioni senza verifica di \texttt{data/data\_end}.
+  \item \textbf{JIT disabilitato}: verificare \texttt{/proc/sys/net/core/bpf\_jit\_enable}.
+  \item \textbf{Permessi}: molte operazioni richiedono privilegi root e mount di \texttt{bpffs} (\texttt{/sys/fs/bpf}).
+  \item \textbf{Detach mancato}: usare \texttt{ip link set dev eth0 xdp off} prima di ricaricare.
+\end{itemize}
+
+\subsubsection{Limitazioni pratiche}
+\begin{itemize}
+  \item XDP è estremamente veloce ma opera \emph{precoce} sul percorso: alcune funzionalità dello stack non sono disponibili.
+  \item Filtri hardcoded servono solo per il warm-up: per policy reali serve gestione dinamica (mappe) e selezione regole robusta.
+  \item Strumenti e offset dipendono dalla versione del kernel e dalla toolchain (compatibilità \texttt{libbpf}, pinning, ecc.).
+\end{itemize}
+
+\subsubsection{Mitigazioni / buone pratiche}
+\begin{itemize}
+  \item Validare sempre gli header con \textbf{boundary checks} prima di accedere ai campi.
+  \item Sfruttare le \textbf{mappe} per configurazione a caldo (niente ricompilazioni per cambiare policy).
+  \item Tenere i programmi \textbf{piccoli e deterministici} (aiuta il verifier e la latenza).
+  \item Loggare in modo \textbf{parsimonioso}: \texttt{bpf\_printk()} è utile in debug ma impatta le performance.
+\end{itemize}
+
+\subsection*{Conclusioni}
+Questo warm-up mostra come \textbf{XDP} consenta filtri e contatori ad altissima efficienza \emph{prima} dello stack IP. Dalla base (PASS/DROP, logging) si passa a parsing sicuro, contatori con mappe e \textbf{ACL} aggiornabili in tempo reale: fondamenta per un firewall \emph{eBPF/XDP} più evoluto.
