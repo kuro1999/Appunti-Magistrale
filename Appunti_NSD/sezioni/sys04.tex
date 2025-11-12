@@ -19,6 +19,7 @@ La funzione \texttt{strcmp()} confronta due stringhe carattere per carattere. Se
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/strcmp.png}
+    \caption{esempio di utilizzo di funzione strcmp}
 \end{figure}
 \paragraph{Timing attack in un Programma di Autenticazione}
 Supponiamo che un programma di autenticazione confronti un input (t) con la password corretta (s) usando \texttt{strcmp()}. Se \texttt{t = "password"} e \texttt{s = "password"}, il programma impiega più tempo per confrontare i caratteri quando l'input \'e corretto, rispetto a quando c'\'e un errore, permettendo all'attaccante di inferire gradualmente i caratteri della password.
@@ -35,6 +36,7 @@ Ovviamente questo porta ad un peggioramento delle prestazioni, ma aumenta la sic
 \begin{figure}[H]
 \centering
 \includegraphics[width=.85\linewidth]{immagini/SYS_04/constTime.png}
+    \caption{esempio di funzione constantTimeStringCompare}
 \end{figure}
 
 % ======= PREAMBOLO INSERITO QUI =======

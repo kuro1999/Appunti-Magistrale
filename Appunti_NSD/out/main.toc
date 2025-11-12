@@ -178,210 +178,210 @@
 \contentsline {subsubsection}{\numberline {5.2.1}Vantaggi e Svantaggi del Filtraggio dei Pacchetti}{61}{subsubsection.5.2.1}%
 \contentsline {subsection}{\numberline {5.3}Firewall di Ispezione Stateful}{62}{subsection.5.3}%
 \contentsline {subsubsection}{\numberline {5.3.1}Tabella dello Stato delle Connessioni}{62}{subsubsection.5.3.1}%
-\contentsline {subsection}{\numberline {5.4}Gateway e Funzione del Default Gateway}{62}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.4}Gateway e Funzione del Default Gateway}{63}{subsection.5.4}%
 \contentsline {subsubsection}{\numberline {5.4.1}Funzioni di un Gateway}{63}{subsubsection.5.4.1}%
 \contentsline {subsection}{\numberline {5.5}Application-Level Gateway (ALG)}{63}{subsection.5.5}%
 \contentsline {subsubsection}{\numberline {5.5.1}Funzionamento dell'ALG}{63}{subsubsection.5.5.1}%
 \contentsline {subsection}{\numberline {5.6}Circuit-Level Gateway}{63}{subsection.5.6}%
-\contentsline {subsubsection}{\numberline {5.6.1}Funzione del Circuit-Level Gateway}{63}{subsubsection.5.6.1}%
+\contentsline {subsubsection}{\numberline {5.6.1}Funzione del Circuit-Level Gateway}{64}{subsubsection.5.6.1}%
 \contentsline {subsection}{\numberline {5.7}Host-Based Firewall e Personal Firewall}{64}{subsection.5.7}%
 \contentsline {subsection}{\numberline {5.8}NETFILTER}{64}{subsection.5.8}%
 \contentsline {subsubsection}{\numberline {5.8.1}Funzionamento di NETFILTER}{64}{subsubsection.5.8.1}%
 \contentsline {subsubsection}{\numberline {5.8.2}Le Tabelle di NETFILTER}{65}{subsubsection.5.8.2}%
 \contentsline {subsubsection}{\numberline {5.8.3}Iptables: Il Frontend di NETFILTER}{66}{subsubsection.5.8.3}%
 \contentsline {paragraph}{\numberline {5.8.3.1}Comandi principali di iptables}{66}{paragraph.5.8.3.1}%
-\contentsline {subsubsection}{\numberline {5.8.4}Network Address Translation (NAT)}{66}{subsubsection.5.8.4}%
-\contentsline {paragraph}{\numberline {5.8.4.1}Tipi di NAT}{66}{paragraph.5.8.4.1}%
+\contentsline {subsubsection}{\numberline {5.8.4}Network Address Translation (NAT)}{67}{subsubsection.5.8.4}%
+\contentsline {paragraph}{\numberline {5.8.4.1}Tipi di NAT}{67}{paragraph.5.8.4.1}%
 \contentsline {subsubsection}{\numberline {5.8.5}Connection Tracking}{67}{subsubsection.5.8.5}%
 \contentsline {paragraph}{\numberline {5.8.5.1}Esempi di stato delle connessioni}{67}{paragraph.5.8.5.1}%
 \contentsline {subsubsection}{\numberline {5.8.6}Vantaggi e Limitazioni di NETFILTER}{67}{subsubsection.5.8.6}%
-\contentsline {subsection}{\numberline {5.9}Lab 5 — Firewall con \texttt {iptables} e policy di sicurezza gateway/server}{68}{subsection.5.9}%
-\contentsline {paragraph}{\numberline {5.9.0.1}Obiettivo e componenti.}{68}{paragraph.5.9.0.1}%
-\contentsline {paragraph}{\numberline {5.9.0.2}Struttura del laboratorio.}{68}{paragraph.5.9.0.2}%
-\contentsline {paragraph}{\numberline {5.9.0.3}Gateway (firewall principale).}{68}{paragraph.5.9.0.3}%
-\contentsline {paragraph}{\numberline {5.9.0.4}Server DMZ.}{69}{paragraph.5.9.0.4}%
-\contentsline {paragraph}{\numberline {5.9.0.5}Testing.}{69}{paragraph.5.9.0.5}%
-\contentsline {subsection}{\numberline {5.10}Classificazione dei Pacchetti}{70}{subsection.5.10}%
-\contentsline {subsubsection}{\numberline {5.10.1}Perché è Importante la Classificazione dei Pacchetti?}{70}{subsubsection.5.10.1}%
-\contentsline {subsubsection}{\numberline {5.10.2}Algoritmi di Classificazione dei Pacchetti}{70}{subsubsection.5.10.2}%
-\contentsline {subsection}{\numberline {5.11}Problema della Classificazione dei Pacchetti}{70}{subsection.5.11}%
-\contentsline {subsubsection}{\numberline {5.11.1}Struttura delle Regole di Classificazione}{71}{subsubsection.5.11.1}%
-\contentsline {subsubsection}{\numberline {5.11.2}Combinazione di Regole con Match Multipli}{71}{subsubsection.5.11.2}%
-\contentsline {subsubsection}{\numberline {5.11.3}Algoritmi di Matching}{71}{subsubsection.5.11.3}%
-\contentsline {subsection}{\numberline {5.12}Approccio Bit Vector Linear Search}{72}{subsection.5.12}%
-\contentsline {subsubsection}{\numberline {5.12.1}Funzionamento del Bit Vector Linear Search}{72}{subsubsection.5.12.1}%
-\contentsline {subsubsection}{\numberline {5.12.2}Vantaggi e Limiti del Bit Vector Linear Search}{72}{subsubsection.5.12.2}%
-\contentsline {subsection}{\numberline {5.13}Contenuto e Prestazioni della Classificazione dei Pacchetti}{72}{subsection.5.13}%
-\contentsline {section}{\numberline {6}SYS\_01 — Introduzione ai Security Frameworks}{74}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Quadro generale e obiettivo}{74}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Principi fondamentali}{74}{subsection.6.2}%
-\contentsline {paragraph}{\numberline {6.2.0.1}Confidenzialità}{74}{paragraph.6.2.0.1}%
-\contentsline {paragraph}{\numberline {6.2.0.2}Integrità}{74}{paragraph.6.2.0.2}%
-\contentsline {paragraph}{\numberline {6.2.0.3}Disponibilità}{74}{paragraph.6.2.0.3}%
-\contentsline {paragraph}{\numberline {6.2.0.4}Autenticità e Autorizzazione}{75}{paragraph.6.2.0.4}%
-\contentsline {paragraph}{\numberline {6.2.0.5}Accountability}{75}{paragraph.6.2.0.5}%
-\contentsline {paragraph}{\numberline {6.2.0.6}Dipendibilità}{75}{paragraph.6.2.0.6}%
-\contentsline {subsection}{\numberline {6.3}Perché servono i Security Frameworks}{76}{subsection.6.3}%
-\contentsline {subsection}{\numberline {6.4}Tre famiglie a confronto}{76}{subsection.6.4}%
-\contentsline {subsubsection}{\numberline {6.4.1}FIPS 200 — Requisiti minimi per i sistemi federali}{76}{subsubsection.6.4.1}%
-\contentsline {subsubsection}{\numberline {6.4.2}CIS Critical Security Controls — L’igiene prioritaria}{76}{subsubsection.6.4.2}%
-\contentsline {subsubsection}{\numberline {6.4.3}ISO/IEC 27000 — ISMS e gestione del rischio}{77}{subsubsection.6.4.3}%
-\contentsline {section}{\numberline {7}SYS\_02 — Hardware Primer}{78}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Moore’s Law e l’evoluzione del calcolo}{78}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Fine della crescita lineare e parallelismo}{78}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}Pipeline e architettura superscalare}{78}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}Branch Prediction: principi e strategie}{78}{subsection.7.4}%
-\contentsline {paragraph}{\numberline {7.4.0.1}Perché serve una predizione}{79}{paragraph.7.4.0.1}%
-\contentsline {paragraph}{\numberline {7.4.0.2}Tipi di predizione}{79}{paragraph.7.4.0.2}%
-\contentsline {paragraph}{\numberline {7.4.0.3}Contatore a 2 bit saturante}{79}{paragraph.7.4.0.3}%
-\contentsline {paragraph}{\numberline {7.4.0.4}Predittori correlati e multilivello}{79}{paragraph.7.4.0.4}%
-\contentsline {paragraph}{\numberline {7.4.0.5}Ottimizzazioni hardware}{80}{paragraph.7.4.0.5}%
-\contentsline {paragraph}{\numberline {7.4.0.6}Importanza crescente della predizione}{80}{paragraph.7.4.0.6}%
-\contentsline {subsection}{\numberline {7.5}Simultaneous Multithreading (SMT)}{81}{subsection.7.5}%
-\contentsline {subsection}{\numberline {7.6}Pipeline interna nei processori Intel Xeon}{81}{subsection.7.6}%
-\contentsline {subsection}{\numberline {7.7}Gerarchia di memoria}{82}{subsection.7.7}%
-\contentsline {paragraph}{\numberline {7.7.0.1}Inclusività e mappatura}{82}{paragraph.7.7.0.1}%
-\contentsline {paragraph}{\numberline {7.7.0.2}Sostituzione ed aggiornamento}{84}{paragraph.7.7.0.2}%
-\contentsline {subsection}{\numberline {7.8}Cache coherence nei multicore}{85}{subsection.7.8}%
-\contentsline {paragraph}{\numberline {7.8.0.1}Protocolli di coerenza}{86}{paragraph.7.8.0.1}%
-\contentsline {subsection}{\numberline {7.9}Protocolli MOESI e VI}{87}{subsection.7.9}%
-\contentsline {paragraph}{\numberline {7.9.0.1}Virtual vs. Physical Cache Indexing}{88}{paragraph.7.9.0.1}%
-\contentsline {subsection}{\numberline {7.10}Hardware Transactional Memory (HTM)}{89}{subsection.7.10}%
-\contentsline {paragraph}{\numberline {7.10.0.1}Principio di funzionamento}{89}{paragraph.7.10.0.1}%
-\contentsline {paragraph}{\numberline {7.10.0.2}Casi di abort e codici di stato}{90}{paragraph.7.10.0.2}%
-\contentsline {subsection}{\numberline {7.11}DRAM e Refresh}{90}{subsection.7.11}%
-\contentsline {paragraph}{\numberline {7.11.0.1}Effetti del refresh}{90}{paragraph.7.11.0.1}%
-\contentsline {section}{\numberline {8}SYS\_04 - Hardware attacks and countermeasures}{92}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Introduzione agli Attacchi Hardware}{92}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Timing e Sicurezza}{92}{subsection.8.2}%
-\contentsline {paragraph}{\numberline {8.2.0.1}Uso della Funzione strcmp}{92}{paragraph.8.2.0.1}%
-\contentsline {paragraph}{\numberline {8.2.0.2}Timing attack in un Programma di Autenticazione}{92}{paragraph.8.2.0.2}%
-\contentsline {subsubsection}{\numberline {8.2.1}Attacchi di Temporizzazione nel Mondo Reale: RSA}{92}{subsubsection.8.2.1}%
-\contentsline {paragraph}{\numberline {8.2.1.1}Attacchi alla Decrittazione RSA}{93}{paragraph.8.2.1.1}%
-\contentsline {paragraph}{\numberline {8.2.1.2}Algoritmi a Tempo Costante}{93}{paragraph.8.2.1.2}%
-\contentsline {subsection}{\numberline {8.3}Preambolo: Side-Channel Attacks e Considerazioni Tecniche}{93}{subsection.8.3}%
-\contentsline {paragraph}{\numberline {8.3.0.1}Fasi operative}{93}{paragraph.8.3.0.1}%
-\contentsline {paragraph}{\numberline {8.3.0.2}Scoprire i percorsi di codice}{93}{paragraph.8.3.0.2}%
-\contentsline {subsubsection}{\numberline {8.3.1}Technical Considerations}{94}{subsubsection.8.3.1}%
-\contentsline {paragraph}{\numberline {8.3.1.1}Nota pratica (TSX e detection)}{94}{paragraph.8.3.1.1}%
-\contentsline {subsection}{\numberline {8.4}Attacchi side channel}{94}{subsection.8.4}%
-\contentsline {subsubsection}{\numberline {8.4.1}Timing della Cache}{94}{subsubsection.8.4.1}%
-\contentsline {paragraph}{\numberline {8.4.1.1}Attacchi Flush + Reload}{94}{paragraph.8.4.1.1}%
-\contentsline {paragraph}{\numberline {8.4.1.2}Evict + Time}{94}{paragraph.8.4.1.2}%
-\contentsline {paragraph}{\numberline {8.4.1.3}Attacchi Prime + Probe}{95}{paragraph.8.4.1.3}%
-\contentsline {paragraph}{\numberline {8.4.1.4}Prime + Abort}{95}{paragraph.8.4.1.4}%
-\contentsline {paragraph}{\numberline {8.4.1.5}Flush + Flush}{95}{paragraph.8.4.1.5}%
-\contentsline {subsubsection}{\numberline {8.4.2}Meeting Out-of-Order Pipelines: perché conta per la sicurezza}{95}{subsubsection.8.4.2}%
-\contentsline {subsubsection}{\numberline {8.4.3}Meltdown: come funziona (Primer)}{96}{subsubsection.8.4.3}%
-\contentsline {paragraph}{\numberline {8.4.3.1}Idea chiave}{96}{paragraph.8.4.3.1}%
-\contentsline {paragraph}{\numberline {8.4.3.2}Schema operativo Meltdown}{96}{paragraph.8.4.3.2}%
-\contentsline {paragraph}{\numberline {8.4.3.3}Perché è possibile}{96}{paragraph.8.4.3.3}%
-\contentsline {subsubsection}{\numberline {8.4.4}Fooling the Branch Prediction Unit (BPU)}{96}{subsubsection.8.4.4}%
-\contentsline {paragraph}{\numberline {8.4.4.1}Dove si colpisce e perché funziona}{97}{paragraph.8.4.4.1}%
-\contentsline {subsubsection}{\numberline {8.4.5}Spectre Primer v1 (Bounds Check Bypass)}{97}{subsubsection.8.4.5}%
-\contentsline {subsubsection}{\numberline {8.4.6}Spectre Primer v2 (BTB Poisoning e Gadget)}{97}{subsubsection.8.4.6}%
-\contentsline {paragraph}{\numberline {8.4.6.1}Esempio di gadget dalle slide (Windows 10)}{98}{paragraph.8.4.6.1}%
-\contentsline {paragraph}{\numberline {8.4.6.2}Requisiti e note}{98}{paragraph.8.4.6.2}%
-\contentsline {subsubsection}{\numberline {8.4.7}L1TF (Foreshadow): principio e flusso}{98}{subsubsection.8.4.7}%
-\contentsline {paragraph}{\numberline {8.4.7.1}Perché funziona}{98}{paragraph.8.4.7.1}%
-\contentsline {paragraph}{\numberline {8.4.7.2}Schema operativo (dalle slide)}{98}{paragraph.8.4.7.2}%
-\contentsline {subsubsection}{\numberline {8.4.8}Mitigating Side-Channel Attacks}{99}{subsubsection.8.4.8}%
-\contentsline {paragraph}{\numberline {8.4.8.1}Possible Mitigations and Detection}{99}{paragraph.8.4.8.1}%
-\contentsline {paragraph}{\numberline {8.4.8.2}Mitigations: the hard way}{99}{paragraph.8.4.8.2}%
-\contentsline {paragraph}{\numberline {8.4.8.3}Mitigations to L1 Attacks}{100}{paragraph.8.4.8.3}%
-\contentsline {paragraph}{\numberline {8.4.8.4}Mitigations: the detection way}{100}{paragraph.8.4.8.4}%
-\contentsline {paragraph}{\numberline {8.4.8.5}Meltdown Mitigation: Kernel Page Table Isolation}{100}{paragraph.8.4.8.5}%
-\contentsline {subsubsection}{\numberline {8.4.9}cpu\_entry\_area: Per-CPU Isolation}{100}{subsubsection.8.4.9}%
-\contentsline {subsubsection}{\numberline {8.4.10}Double Page General Directory e Switch to CR3}{101}{subsubsection.8.4.10}%
-\contentsline {subsubsection}{\numberline {8.4.11}Retpoline: Protezione contro gli Attacchi di Branch Target Injection e Retpoline Thunks}{101}{subsubsection.8.4.11}%
-\contentsline {subsubsection}{\numberline {8.4.12}Prevent Branch Poisoning: IBRS, STIBP, IBPB}{102}{subsubsection.8.4.12}%
-\contentsline {subsection}{\numberline {8.5}RowHammer: Attacco alla Memoria e le sue Mitigazioni}{102}{subsection.8.5}%
-\contentsline {subsection}{\numberline {8.6}Memory Performance Attacks: Attacchi alle Prestazioni della Memoria}{103}{subsection.8.6}%
-\contentsline {paragraph}{\numberline {8.6.0.1}Denial of Service nei Sistemi Multi-Core}{103}{paragraph.8.6.0.1}%
-\contentsline {paragraph}{\numberline {8.6.0.2}Funzionamento degli Attacchi a Memoria Multi-Banca}{104}{paragraph.8.6.0.2}%
-\contentsline {paragraph}{\numberline {8.6.0.3}Scheduling della Memoria e Contesa tra Banchi}{104}{paragraph.8.6.0.3}%
-\contentsline {paragraph}{\numberline {8.6.0.4}Mitigazioni e Strategie di Ottimizzazione}{104}{paragraph.8.6.0.4}%
-\contentsline {section}{\numberline {9}SYS\_05 - OS Security Principles}{105}{section.9}%
-\contentsline {subsection}{\numberline {9.1}Introduzione}{105}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}Identificazione e Autenticazione degli Utenti}{105}{subsection.9.2}%
-\contentsline {paragraph}{\numberline {9.2.0.1}/etc/passwd}{105}{paragraph.9.2.0.1}%
-\contentsline {paragraph}{\numberline {9.2.0.2}/etc/shadow}{105}{paragraph.9.2.0.2}%
-\contentsline {subsection}{\numberline {9.3}Gestione degli UID e dei Privilegi}{106}{subsection.9.3}%
-\contentsline {paragraph}{\numberline {9.3.0.1}su e sudo}{106}{paragraph.9.3.0.1}%
-\contentsline {subsection}{\numberline {9.4}Principio del Minimo Privilegio}{106}{subsection.9.4}%
-\contentsline {subsection}{\numberline {9.5}Controllo degli Accessi}{106}{subsection.9.5}%
-\contentsline {subsubsection}{\numberline {9.5.1}Politiche di Sicurezza: DAC e MAC}{107}{subsubsection.9.5.1}%
-\contentsline {subsubsection}{\numberline {9.5.2}POSIX ACL e Access Control Fine-Grained}{107}{subsubsection.9.5.2}%
-\contentsline {paragraph}{\numberline {9.5.2.1}Esempio di ACL POSIX}{107}{paragraph.9.5.2.1}%
-\contentsline {paragraph}{\numberline {9.5.2.2}Meccanismo di valutazione delle ACL}{108}{paragraph.9.5.2.2}%
-\contentsline {subparagraph}{\numberline {9.5.2.2.1}Fase (i): Selezione della voce corrispondente}{108}{subparagraph.9.5.2.2.1}%
-\contentsline {subparagraph}{\numberline {9.5.2.2.2}Fase (ii): Decisione finale sull’accesso}{108}{subparagraph.9.5.2.2.2}%
-\contentsline {paragraph}{\numberline {9.5.2.3}Ruolo della Mask}{108}{paragraph.9.5.2.3}%
-\contentsline {subsection}{\numberline {9.6}Linux Capabilities}{108}{subsection.9.6}%
-\contentsline {paragraph}{\numberline {9.6.0.1}Esempi di capability}{109}{paragraph.9.6.0.1}%
-\contentsline {paragraph}{\numberline {9.6.0.2}Implementazione nel kernel}{109}{paragraph.9.6.0.2}%
-\contentsline {paragraph}{\numberline {9.6.0.3}Insiemi di capability di un thread}{109}{paragraph.9.6.0.3}%
-\contentsline {paragraph}{\numberline {9.6.0.4}File capabilities}{110}{paragraph.9.6.0.4}%
-\contentsline {paragraph}{\numberline {9.6.0.5}Capability Bounding Set}{110}{paragraph.9.6.0.5}%
-\contentsline {subsection}{\numberline {9.7}Linux Security Modules (LSM)}{110}{subsection.9.7}%
-\contentsline {paragraph}{\numberline {9.7.0.1}Concetto di base}{110}{paragraph.9.7.0.1}%
-\contentsline {paragraph}{\numberline {9.7.0.2}Struttura generale}{110}{paragraph.9.7.0.2}%
-\contentsline {paragraph}{\numberline {9.7.0.3}Funzionamento del framework}{111}{paragraph.9.7.0.3}%
-\contentsline {paragraph}{\numberline {9.7.0.4}Hook di sicurezza}{111}{paragraph.9.7.0.4}%
-\contentsline {paragraph}{\numberline {9.7.0.5}Categorie di hook}{112}{paragraph.9.7.0.5}%
-\contentsline {paragraph}{\numberline {9.7.0.6}Esempio: hook su un file system}{112}{paragraph.9.7.0.6}%
-\contentsline {paragraph}{\numberline {9.7.0.7}Estensioni del kernel per LSM}{112}{paragraph.9.7.0.7}%
-\contentsline {subsubsection}{\numberline {9.7.1}Esempi di Moduli MAC}{113}{subsubsection.9.7.1}%
-\contentsline {paragraph}{\numberline {9.7.1.1}S.M.A.C.K. (Simplified Mandatory Access Control Kernel)}{113}{paragraph.9.7.1.1}%
-\contentsline {paragraph}{\numberline {9.7.1.2}Etichette di default}{113}{paragraph.9.7.1.2}%
-\contentsline {paragraph}{\numberline {9.7.1.3}SMACKFS}{114}{paragraph.9.7.1.3}%
-\contentsline {paragraph}{\numberline {9.7.1.4}Caratteristiche e limiti}{114}{paragraph.9.7.1.4}%
-\contentsline {paragraph}{\numberline {9.7.1.5}Tomoyo Linux}{114}{paragraph.9.7.1.5}%
-\contentsline {paragraph}{\numberline {9.7.1.6}AppArmor}{114}{paragraph.9.7.1.6}%
-\contentsline {paragraph}{\numberline {9.7.1.7}SELinux (Security-Enhanced Linux)}{115}{paragraph.9.7.1.7}%
-\contentsline {paragraph}{\numberline {9.7.1.8}Fase 1: dal kernel alla query di autorizzazione}{115}{paragraph.9.7.1.8}%
-\contentsline {paragraph}{\numberline {9.7.1.9}Fase 2: ricerca della policy SELinux}{116}{paragraph.9.7.1.9}%
-\contentsline {paragraph}{\numberline {9.7.1.10}Stato di etichettamento (Labeling State)}{116}{paragraph.9.7.1.10}%
-\contentsline {paragraph}{\numberline {9.7.1.11}Stato di transizione (Transition State)}{116}{paragraph.9.7.1.11}%
-\contentsline {subparagraph}{\numberline {9.7.1.11.1}1. Transizione di file}{117}{subparagraph.9.7.1.11.1}%
-\contentsline {subparagraph}{\numberline {9.7.1.11.2}2. Transizione di processo}{117}{subparagraph.9.7.1.11.2}%
-\contentsline {subsection}{\numberline {9.8}Boot Time Security}{117}{subsection.9.8}%
-\contentsline {paragraph}{\numberline {9.8.0.1}Funzionamento del Ramdisk durante il Boot}{117}{paragraph.9.8.0.1}%
-\contentsline {paragraph}{\numberline {9.8.0.2}Horse Pills}{118}{paragraph.9.8.0.2}%
-\contentsline {paragraph}{\numberline {9.8.0.3}Cosa può fare un ramdisk infetto}{118}{paragraph.9.8.0.3}%
-\contentsline {paragraph}{\numberline {9.8.0.4}Mitigazioni e strategie di difesa}{119}{paragraph.9.8.0.4}%
-\contentsline {subparagraph}{\numberline {9.8.0.4.1}1. Rilevazione}{119}{subparagraph.9.8.0.4.1}%
-\contentsline {subparagraph}{\numberline {9.8.0.4.2}2. Prevenzione}{120}{subparagraph.9.8.0.4.2}%
-\contentsline {subsection}{\numberline {9.9}Sicurezza di Rete a Livello OS}{120}{subsection.9.9}%
-\contentsline {paragraph}{\numberline {9.9.0.1}inetd e xinetd}{120}{paragraph.9.9.0.1}%
-\contentsline {paragraph}{\numberline {9.9.0.2}TCP Wrappers e Reverse DNS}{120}{paragraph.9.9.0.2}%
-\contentsline {paragraph}{\numberline {9.9.0.3}File di configurazione}{120}{paragraph.9.9.0.3}%
-\contentsline {paragraph}{\numberline {9.9.0.4}Esempi pratici}{121}{paragraph.9.9.0.4}%
-\contentsline {paragraph}{\numberline {9.9.0.5}Ordine e logica di valutazione}{121}{paragraph.9.9.0.5}%
-\contentsline {paragraph}{\numberline {9.9.0.6}Reverse DNS Tampering: il problema}{121}{paragraph.9.9.0.6}%
-\contentsline {paragraph}{\numberline {9.9.0.7}Esempio di attacco semplificato}{121}{paragraph.9.9.0.7}%
-\contentsline {paragraph}{\numberline {9.9.0.8}Contromisure pratiche}{121}{paragraph.9.9.0.8}%
-\contentsline {paragraph}{\numberline {9.9.0.9}Conclusione}{122}{paragraph.9.9.0.9}%
-\contentsline {section}{\numberline {10}SYS_06 - Antivirus}{123}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Problemi principali degli antivirus}{123}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Evoluzione degli antivirus}{123}{subsection.10.2}%
-\contentsline {subsection}{\numberline {10.3}Componenti di un antivirus}{123}{subsection.10.3}%
-\contentsline {subsection}{\numberline {10.4}Esempi di packing}{124}{subsection.10.4}%
-\contentsline {paragraph}{\numberline {10.4.0.1}1. Poche o nessuna importazione nella IAT (Import Address Table)}{124}{paragraph.10.4.0.1}%
-\contentsline {paragraph}{\numberline {10.4.0.2}2. Nomi di sezioni non standard o incoerenti}{124}{paragraph.10.4.0.2}%
-\contentsline {paragraph}{\numberline {10.4.0.3}3. Sezioni piccole su disco ma grandi in memoria}{124}{paragraph.10.4.0.3}%
-\contentsline {paragraph}{\numberline {10.4.0.4}4. Poche stringhe leggibili}{124}{paragraph.10.4.0.4}%
-\contentsline {paragraph}{\numberline {10.4.0.5}5. Sezioni con permessi RWX}{125}{paragraph.10.4.0.5}%
-\contentsline {paragraph}{\numberline {10.4.0.6}6. Salti o chiamate a registri/indirizzi anomali}{125}{paragraph.10.4.0.6}%
-\contentsline {subsection}{\numberline {10.5}Approccio operativo alla rilevazione}{125}{subsection.10.5}%
-\contentsline {subsection}{\numberline {10.6}Tecniche di evasione}{126}{subsection.10.6}%
-\contentsline {subsection}{\numberline {10.7}Analisi statica e comportamentale}{126}{subsection.10.7}%
-\contentsline {paragraph}{\numberline {10.7.0.1}Analisi statica}{127}{paragraph.10.7.0.1}%
-\contentsline {paragraph}{\numberline {10.7.0.2}Analisi comportamentale}{127}{paragraph.10.7.0.2}%
-\contentsline {subsection}{\numberline {10.8}Emulatori e Fingerprinting}{129}{subsection.10.8}%
-\contentsline {paragraph}{\numberline {10.8.0.1}Funzionamento degli emulatori}{129}{paragraph.10.8.0.1}%
-\contentsline {paragraph}{\numberline {10.8.0.2}Limiti e tecniche di evasione}{129}{paragraph.10.8.0.2}%
-\contentsline {paragraph}{\numberline {10.8.0.3}Fingerprinting dell’ambiente}{129}{paragraph.10.8.0.3}%
-\contentsline {paragraph}{\numberline {10.8.0.4}Contromisure adottate dagli antivirus}{130}{paragraph.10.8.0.4}%
-\contentsline {subsection}{\numberline {10.9}Analisi del traffico cifrato}{130}{subsection.10.9}%
-\contentsline {subsection}{\numberline {10.10}Fiducia e limiti del software antivirus}{130}{subsection.10.10}%
+\contentsline {subsection}{\numberline {5.9}Lab 5 — Firewall con \texttt {iptables} e policy di sicurezza gateway/server}{69}{subsection.5.9}%
+\contentsline {paragraph}{\numberline {5.9.0.1}Obiettivo e componenti.}{69}{paragraph.5.9.0.1}%
+\contentsline {paragraph}{\numberline {5.9.0.2}Struttura del laboratorio.}{69}{paragraph.5.9.0.2}%
+\contentsline {paragraph}{\numberline {5.9.0.3}Gateway (firewall principale).}{69}{paragraph.5.9.0.3}%
+\contentsline {paragraph}{\numberline {5.9.0.4}Server DMZ.}{70}{paragraph.5.9.0.4}%
+\contentsline {paragraph}{\numberline {5.9.0.5}Testing.}{70}{paragraph.5.9.0.5}%
+\contentsline {subsection}{\numberline {5.10}Classificazione dei Pacchetti}{71}{subsection.5.10}%
+\contentsline {subsubsection}{\numberline {5.10.1}Perché è Importante la Classificazione dei Pacchetti?}{71}{subsubsection.5.10.1}%
+\contentsline {subsubsection}{\numberline {5.10.2}Algoritmi di Classificazione dei Pacchetti}{71}{subsubsection.5.10.2}%
+\contentsline {subsection}{\numberline {5.11}Problema della Classificazione dei Pacchetti}{71}{subsection.5.11}%
+\contentsline {subsubsection}{\numberline {5.11.1}Struttura delle Regole di Classificazione}{72}{subsubsection.5.11.1}%
+\contentsline {subsubsection}{\numberline {5.11.2}Combinazione di Regole con Match Multipli}{72}{subsubsection.5.11.2}%
+\contentsline {subsubsection}{\numberline {5.11.3}Algoritmi di Matching}{72}{subsubsection.5.11.3}%
+\contentsline {subsection}{\numberline {5.12}Approccio Bit Vector Linear Search}{73}{subsection.5.12}%
+\contentsline {subsubsection}{\numberline {5.12.1}Funzionamento del Bit Vector Linear Search}{73}{subsubsection.5.12.1}%
+\contentsline {subsubsection}{\numberline {5.12.2}Vantaggi e Limiti del Bit Vector Linear Search}{73}{subsubsection.5.12.2}%
+\contentsline {subsection}{\numberline {5.13}Contenuto e Prestazioni della Classificazione dei Pacchetti}{73}{subsection.5.13}%
+\contentsline {section}{\numberline {6}SYS\_01 — Introduzione ai Security Frameworks}{75}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Quadro generale e obiettivo}{75}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Principi fondamentali}{75}{subsection.6.2}%
+\contentsline {paragraph}{\numberline {6.2.0.1}Confidenzialità}{75}{paragraph.6.2.0.1}%
+\contentsline {paragraph}{\numberline {6.2.0.2}Integrità}{75}{paragraph.6.2.0.2}%
+\contentsline {paragraph}{\numberline {6.2.0.3}Disponibilità}{75}{paragraph.6.2.0.3}%
+\contentsline {paragraph}{\numberline {6.2.0.4}Autenticità e Autorizzazione}{76}{paragraph.6.2.0.4}%
+\contentsline {paragraph}{\numberline {6.2.0.5}Accountability}{76}{paragraph.6.2.0.5}%
+\contentsline {paragraph}{\numberline {6.2.0.6}Dipendibilità}{76}{paragraph.6.2.0.6}%
+\contentsline {subsection}{\numberline {6.3}Perché servono i Security Frameworks}{77}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Tre famiglie a confronto}{77}{subsection.6.4}%
+\contentsline {subsubsection}{\numberline {6.4.1}FIPS 200 — Requisiti minimi per i sistemi federali}{77}{subsubsection.6.4.1}%
+\contentsline {subsubsection}{\numberline {6.4.2}CIS Critical Security Controls — L’igiene prioritaria}{77}{subsubsection.6.4.2}%
+\contentsline {subsubsection}{\numberline {6.4.3}ISO/IEC 27000 — ISMS e gestione del rischio}{78}{subsubsection.6.4.3}%
+\contentsline {section}{\numberline {7}SYS\_02 — Hardware Primer}{79}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Moore’s Law e l’evoluzione del calcolo}{79}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Fine della crescita lineare e parallelismo}{79}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Pipeline e architettura superscalare}{79}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Branch Prediction: principi e strategie}{79}{subsection.7.4}%
+\contentsline {paragraph}{\numberline {7.4.0.1}Perché serve una predizione}{80}{paragraph.7.4.0.1}%
+\contentsline {paragraph}{\numberline {7.4.0.2}Tipi di predizione}{80}{paragraph.7.4.0.2}%
+\contentsline {paragraph}{\numberline {7.4.0.3}Contatore a 2 bit saturante}{80}{paragraph.7.4.0.3}%
+\contentsline {paragraph}{\numberline {7.4.0.4}Predittori correlati e multilivello}{80}{paragraph.7.4.0.4}%
+\contentsline {paragraph}{\numberline {7.4.0.5}Ottimizzazioni hardware}{81}{paragraph.7.4.0.5}%
+\contentsline {paragraph}{\numberline {7.4.0.6}Importanza crescente della predizione}{81}{paragraph.7.4.0.6}%
+\contentsline {subsection}{\numberline {7.5}Simultaneous Multithreading (SMT)}{82}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Pipeline interna nei processori Intel Xeon}{82}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}Gerarchia di memoria}{83}{subsection.7.7}%
+\contentsline {paragraph}{\numberline {7.7.0.1}Inclusività e mappatura}{83}{paragraph.7.7.0.1}%
+\contentsline {paragraph}{\numberline {7.7.0.2}Sostituzione ed aggiornamento}{85}{paragraph.7.7.0.2}%
+\contentsline {subsection}{\numberline {7.8}Cache coherence nei multicore}{86}{subsection.7.8}%
+\contentsline {paragraph}{\numberline {7.8.0.1}Protocolli di coerenza}{87}{paragraph.7.8.0.1}%
+\contentsline {subsection}{\numberline {7.9}Protocolli MOESI e VI}{88}{subsection.7.9}%
+\contentsline {paragraph}{\numberline {7.9.0.1}Virtual vs. Physical Cache Indexing}{89}{paragraph.7.9.0.1}%
+\contentsline {subsection}{\numberline {7.10}Hardware Transactional Memory (HTM)}{90}{subsection.7.10}%
+\contentsline {paragraph}{\numberline {7.10.0.1}Principio di funzionamento}{90}{paragraph.7.10.0.1}%
+\contentsline {paragraph}{\numberline {7.10.0.2}Casi di abort e codici di stato}{91}{paragraph.7.10.0.2}%
+\contentsline {subsection}{\numberline {7.11}DRAM e Refresh}{91}{subsection.7.11}%
+\contentsline {paragraph}{\numberline {7.11.0.1}Effetti del refresh}{91}{paragraph.7.11.0.1}%
+\contentsline {section}{\numberline {8}SYS\_04 - Hardware attacks and countermeasures}{93}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Introduzione agli Attacchi Hardware}{93}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Timing e Sicurezza}{93}{subsection.8.2}%
+\contentsline {paragraph}{\numberline {8.2.0.1}Uso della Funzione strcmp}{93}{paragraph.8.2.0.1}%
+\contentsline {paragraph}{\numberline {8.2.0.2}Timing attack in un Programma di Autenticazione}{93}{paragraph.8.2.0.2}%
+\contentsline {subsubsection}{\numberline {8.2.1}Attacchi di Temporizzazione nel Mondo Reale: RSA}{93}{subsubsection.8.2.1}%
+\contentsline {paragraph}{\numberline {8.2.1.1}Attacchi alla Decrittazione RSA}{94}{paragraph.8.2.1.1}%
+\contentsline {paragraph}{\numberline {8.2.1.2}Algoritmi a Tempo Costante}{94}{paragraph.8.2.1.2}%
+\contentsline {subsection}{\numberline {8.3}Preambolo: Side-Channel Attacks e Considerazioni Tecniche}{94}{subsection.8.3}%
+\contentsline {paragraph}{\numberline {8.3.0.1}Fasi operative}{94}{paragraph.8.3.0.1}%
+\contentsline {paragraph}{\numberline {8.3.0.2}Scoprire i percorsi di codice}{94}{paragraph.8.3.0.2}%
+\contentsline {subsubsection}{\numberline {8.3.1}Technical Considerations}{95}{subsubsection.8.3.1}%
+\contentsline {paragraph}{\numberline {8.3.1.1}Nota pratica (TSX e detection)}{95}{paragraph.8.3.1.1}%
+\contentsline {subsection}{\numberline {8.4}Attacchi side channel}{95}{subsection.8.4}%
+\contentsline {subsubsection}{\numberline {8.4.1}Timing della Cache}{95}{subsubsection.8.4.1}%
+\contentsline {paragraph}{\numberline {8.4.1.1}Attacchi Flush + Reload}{95}{paragraph.8.4.1.1}%
+\contentsline {paragraph}{\numberline {8.4.1.2}Evict + Time}{95}{paragraph.8.4.1.2}%
+\contentsline {paragraph}{\numberline {8.4.1.3}Attacchi Prime + Probe}{96}{paragraph.8.4.1.3}%
+\contentsline {paragraph}{\numberline {8.4.1.4}Prime + Abort}{96}{paragraph.8.4.1.4}%
+\contentsline {paragraph}{\numberline {8.4.1.5}Flush + Flush}{96}{paragraph.8.4.1.5}%
+\contentsline {subsubsection}{\numberline {8.4.2}Meeting Out-of-Order Pipelines: perché conta per la sicurezza}{96}{subsubsection.8.4.2}%
+\contentsline {subsubsection}{\numberline {8.4.3}Meltdown: come funziona (Primer)}{97}{subsubsection.8.4.3}%
+\contentsline {paragraph}{\numberline {8.4.3.1}Idea chiave}{97}{paragraph.8.4.3.1}%
+\contentsline {paragraph}{\numberline {8.4.3.2}Schema operativo Meltdown}{97}{paragraph.8.4.3.2}%
+\contentsline {paragraph}{\numberline {8.4.3.3}Perché è possibile}{97}{paragraph.8.4.3.3}%
+\contentsline {subsubsection}{\numberline {8.4.4}Fooling the Branch Prediction Unit (BPU)}{97}{subsubsection.8.4.4}%
+\contentsline {paragraph}{\numberline {8.4.4.1}Dove si colpisce e perché funziona}{98}{paragraph.8.4.4.1}%
+\contentsline {subsubsection}{\numberline {8.4.5}Spectre Primer v1 (Bounds Check Bypass)}{98}{subsubsection.8.4.5}%
+\contentsline {subsubsection}{\numberline {8.4.6}Spectre Primer v2 (BTB Poisoning e Gadget)}{98}{subsubsection.8.4.6}%
+\contentsline {paragraph}{\numberline {8.4.6.1}Esempio di gadget dalle slide (Windows 10)}{99}{paragraph.8.4.6.1}%
+\contentsline {paragraph}{\numberline {8.4.6.2}Requisiti e note}{99}{paragraph.8.4.6.2}%
+\contentsline {subsubsection}{\numberline {8.4.7}L1TF (Foreshadow): principio e flusso}{99}{subsubsection.8.4.7}%
+\contentsline {paragraph}{\numberline {8.4.7.1}Perché funziona}{99}{paragraph.8.4.7.1}%
+\contentsline {paragraph}{\numberline {8.4.7.2}Schema operativo (dalle slide)}{99}{paragraph.8.4.7.2}%
+\contentsline {subsubsection}{\numberline {8.4.8}Mitigating Side-Channel Attacks}{100}{subsubsection.8.4.8}%
+\contentsline {paragraph}{\numberline {8.4.8.1}Possible Mitigations and Detection}{100}{paragraph.8.4.8.1}%
+\contentsline {paragraph}{\numberline {8.4.8.2}Mitigations: the hard way}{100}{paragraph.8.4.8.2}%
+\contentsline {paragraph}{\numberline {8.4.8.3}Mitigations to L1 Attacks}{101}{paragraph.8.4.8.3}%
+\contentsline {paragraph}{\numberline {8.4.8.4}Mitigations: the detection way}{101}{paragraph.8.4.8.4}%
+\contentsline {paragraph}{\numberline {8.4.8.5}Meltdown Mitigation: Kernel Page Table Isolation}{101}{paragraph.8.4.8.5}%
+\contentsline {subsubsection}{\numberline {8.4.9}cpu\_entry\_area: Per-CPU Isolation}{101}{subsubsection.8.4.9}%
+\contentsline {subsubsection}{\numberline {8.4.10}Double Page General Directory e Switch to CR3}{102}{subsubsection.8.4.10}%
+\contentsline {subsubsection}{\numberline {8.4.11}Retpoline: Protezione contro gli Attacchi di Branch Target Injection e Retpoline Thunks}{102}{subsubsection.8.4.11}%
+\contentsline {subsubsection}{\numberline {8.4.12}Prevent Branch Poisoning: IBRS, STIBP, IBPB}{103}{subsubsection.8.4.12}%
+\contentsline {subsection}{\numberline {8.5}RowHammer: Attacco alla Memoria e le sue Mitigazioni}{103}{subsection.8.5}%
+\contentsline {subsection}{\numberline {8.6}Memory Performance Attacks: Attacchi alle Prestazioni della Memoria}{104}{subsection.8.6}%
+\contentsline {paragraph}{\numberline {8.6.0.1}Denial of Service nei Sistemi Multi-Core}{104}{paragraph.8.6.0.1}%
+\contentsline {paragraph}{\numberline {8.6.0.2}Funzionamento degli Attacchi a Memoria Multi-Banca}{105}{paragraph.8.6.0.2}%
+\contentsline {paragraph}{\numberline {8.6.0.3}Scheduling della Memoria e Contesa tra Banchi}{105}{paragraph.8.6.0.3}%
+\contentsline {paragraph}{\numberline {8.6.0.4}Mitigazioni e Strategie di Ottimizzazione}{105}{paragraph.8.6.0.4}%
+\contentsline {section}{\numberline {9}SYS\_05 - OS Security Principles}{106}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Introduzione}{106}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Identificazione e Autenticazione degli Utenti}{106}{subsection.9.2}%
+\contentsline {paragraph}{\numberline {9.2.0.1}/etc/passwd}{106}{paragraph.9.2.0.1}%
+\contentsline {paragraph}{\numberline {9.2.0.2}/etc/shadow}{106}{paragraph.9.2.0.2}%
+\contentsline {subsection}{\numberline {9.3}Gestione degli UID e dei Privilegi}{107}{subsection.9.3}%
+\contentsline {paragraph}{\numberline {9.3.0.1}su e sudo}{107}{paragraph.9.3.0.1}%
+\contentsline {subsection}{\numberline {9.4}Principio del Minimo Privilegio}{107}{subsection.9.4}%
+\contentsline {subsection}{\numberline {9.5}Controllo degli Accessi}{107}{subsection.9.5}%
+\contentsline {subsubsection}{\numberline {9.5.1}Politiche di Sicurezza: DAC e MAC}{108}{subsubsection.9.5.1}%
+\contentsline {subsubsection}{\numberline {9.5.2}POSIX ACL e Access Control Fine-Grained}{108}{subsubsection.9.5.2}%
+\contentsline {paragraph}{\numberline {9.5.2.1}Esempio di ACL POSIX}{108}{paragraph.9.5.2.1}%
+\contentsline {paragraph}{\numberline {9.5.2.2}Meccanismo di valutazione delle ACL}{109}{paragraph.9.5.2.2}%
+\contentsline {subparagraph}{\numberline {9.5.2.2.1}Fase (i): Selezione della voce corrispondente}{109}{subparagraph.9.5.2.2.1}%
+\contentsline {subparagraph}{\numberline {9.5.2.2.2}Fase (ii): Decisione finale sull’accesso}{109}{subparagraph.9.5.2.2.2}%
+\contentsline {paragraph}{\numberline {9.5.2.3}Ruolo della Mask}{109}{paragraph.9.5.2.3}%
+\contentsline {subsection}{\numberline {9.6}Linux Capabilities}{109}{subsection.9.6}%
+\contentsline {paragraph}{\numberline {9.6.0.1}Esempi di capability}{110}{paragraph.9.6.0.1}%
+\contentsline {paragraph}{\numberline {9.6.0.2}Implementazione nel kernel}{110}{paragraph.9.6.0.2}%
+\contentsline {paragraph}{\numberline {9.6.0.3}Insiemi di capability di un thread}{110}{paragraph.9.6.0.3}%
+\contentsline {paragraph}{\numberline {9.6.0.4}File capabilities}{111}{paragraph.9.6.0.4}%
+\contentsline {paragraph}{\numberline {9.6.0.5}Capability Bounding Set}{111}{paragraph.9.6.0.5}%
+\contentsline {subsection}{\numberline {9.7}Linux Security Modules (LSM)}{111}{subsection.9.7}%
+\contentsline {paragraph}{\numberline {9.7.0.1}Concetto di base}{111}{paragraph.9.7.0.1}%
+\contentsline {paragraph}{\numberline {9.7.0.2}Struttura generale}{111}{paragraph.9.7.0.2}%
+\contentsline {paragraph}{\numberline {9.7.0.3}Funzionamento del framework}{112}{paragraph.9.7.0.3}%
+\contentsline {paragraph}{\numberline {9.7.0.4}Hook di sicurezza}{112}{paragraph.9.7.0.4}%
+\contentsline {paragraph}{\numberline {9.7.0.5}Categorie di hook}{113}{paragraph.9.7.0.5}%
+\contentsline {paragraph}{\numberline {9.7.0.6}Esempio: hook su un file system}{113}{paragraph.9.7.0.6}%
+\contentsline {paragraph}{\numberline {9.7.0.7}Estensioni del kernel per LSM}{113}{paragraph.9.7.0.7}%
+\contentsline {subsubsection}{\numberline {9.7.1}Esempi di Moduli MAC}{114}{subsubsection.9.7.1}%
+\contentsline {paragraph}{\numberline {9.7.1.1}S.M.A.C.K. (Simplified Mandatory Access Control Kernel)}{114}{paragraph.9.7.1.1}%
+\contentsline {paragraph}{\numberline {9.7.1.2}Etichette di default}{114}{paragraph.9.7.1.2}%
+\contentsline {paragraph}{\numberline {9.7.1.3}SMACKFS}{115}{paragraph.9.7.1.3}%
+\contentsline {paragraph}{\numberline {9.7.1.4}Caratteristiche e limiti}{115}{paragraph.9.7.1.4}%
+\contentsline {paragraph}{\numberline {9.7.1.5}Tomoyo Linux}{115}{paragraph.9.7.1.5}%
+\contentsline {paragraph}{\numberline {9.7.1.6}AppArmor}{115}{paragraph.9.7.1.6}%
+\contentsline {paragraph}{\numberline {9.7.1.7}SELinux (Security-Enhanced Linux)}{116}{paragraph.9.7.1.7}%
+\contentsline {paragraph}{\numberline {9.7.1.8}Fase 1: dal kernel alla query di autorizzazione}{116}{paragraph.9.7.1.8}%
+\contentsline {paragraph}{\numberline {9.7.1.9}Fase 2: ricerca della policy SELinux}{117}{paragraph.9.7.1.9}%
+\contentsline {paragraph}{\numberline {9.7.1.10}Stato di etichettamento (Labeling State)}{117}{paragraph.9.7.1.10}%
+\contentsline {paragraph}{\numberline {9.7.1.11}Stato di transizione (Transition State)}{117}{paragraph.9.7.1.11}%
+\contentsline {subparagraph}{\numberline {9.7.1.11.1}1. Transizione di file}{118}{subparagraph.9.7.1.11.1}%
+\contentsline {subparagraph}{\numberline {9.7.1.11.2}2. Transizione di processo}{118}{subparagraph.9.7.1.11.2}%
+\contentsline {subsection}{\numberline {9.8}Boot Time Security}{118}{subsection.9.8}%
+\contentsline {paragraph}{\numberline {9.8.0.1}Funzionamento del Ramdisk durante il Boot}{118}{paragraph.9.8.0.1}%
+\contentsline {paragraph}{\numberline {9.8.0.2}Horse Pills}{119}{paragraph.9.8.0.2}%
+\contentsline {paragraph}{\numberline {9.8.0.3}Cosa può fare un ramdisk infetto}{119}{paragraph.9.8.0.3}%
+\contentsline {paragraph}{\numberline {9.8.0.4}Mitigazioni e strategie di difesa}{120}{paragraph.9.8.0.4}%
+\contentsline {subparagraph}{\numberline {9.8.0.4.1}1. Rilevazione}{120}{subparagraph.9.8.0.4.1}%
+\contentsline {subparagraph}{\numberline {9.8.0.4.2}2. Prevenzione}{121}{subparagraph.9.8.0.4.2}%
+\contentsline {subsection}{\numberline {9.9}Sicurezza di Rete a Livello OS}{121}{subsection.9.9}%
+\contentsline {paragraph}{\numberline {9.9.0.1}inetd e xinetd}{121}{paragraph.9.9.0.1}%
+\contentsline {paragraph}{\numberline {9.9.0.2}TCP Wrappers e Reverse DNS}{121}{paragraph.9.9.0.2}%
+\contentsline {paragraph}{\numberline {9.9.0.3}File di configurazione}{121}{paragraph.9.9.0.3}%
+\contentsline {paragraph}{\numberline {9.9.0.4}Esempi pratici}{122}{paragraph.9.9.0.4}%
+\contentsline {paragraph}{\numberline {9.9.0.5}Ordine e logica di valutazione}{122}{paragraph.9.9.0.5}%
+\contentsline {paragraph}{\numberline {9.9.0.6}Reverse DNS Tampering: il problema}{122}{paragraph.9.9.0.6}%
+\contentsline {paragraph}{\numberline {9.9.0.7}Esempio di attacco semplificato}{122}{paragraph.9.9.0.7}%
+\contentsline {paragraph}{\numberline {9.9.0.8}Contromisure pratiche}{122}{paragraph.9.9.0.8}%
+\contentsline {paragraph}{\numberline {9.9.0.9}Conclusione}{123}{paragraph.9.9.0.9}%
+\contentsline {section}{\numberline {10}SYS_06 - Antivirus}{124}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Problemi principali degli antivirus}{124}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Evoluzione degli antivirus}{124}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Componenti di un antivirus}{124}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}Esempi di packing}{125}{subsection.10.4}%
+\contentsline {paragraph}{\numberline {10.4.0.1}1. Poche o nessuna importazione nella IAT (Import Address Table)}{125}{paragraph.10.4.0.1}%
+\contentsline {paragraph}{\numberline {10.4.0.2}2. Nomi di sezioni non standard o incoerenti}{125}{paragraph.10.4.0.2}%
+\contentsline {paragraph}{\numberline {10.4.0.3}3. Sezioni piccole su disco ma grandi in memoria}{125}{paragraph.10.4.0.3}%
+\contentsline {paragraph}{\numberline {10.4.0.4}4. Poche stringhe leggibili}{125}{paragraph.10.4.0.4}%
+\contentsline {paragraph}{\numberline {10.4.0.5}5. Sezioni con permessi RWX}{126}{paragraph.10.4.0.5}%
+\contentsline {paragraph}{\numberline {10.4.0.6}6. Salti o chiamate a registri/indirizzi anomali}{126}{paragraph.10.4.0.6}%
+\contentsline {subsection}{\numberline {10.5}Approccio operativo alla rilevazione}{126}{subsection.10.5}%
+\contentsline {subsection}{\numberline {10.6}Tecniche di evasione}{127}{subsection.10.6}%
+\contentsline {subsection}{\numberline {10.7}Analisi statica e comportamentale}{127}{subsection.10.7}%
+\contentsline {paragraph}{\numberline {10.7.0.1}Analisi statica}{128}{paragraph.10.7.0.1}%
+\contentsline {paragraph}{\numberline {10.7.0.2}Analisi comportamentale}{128}{paragraph.10.7.0.2}%
+\contentsline {subsection}{\numberline {10.8}Emulatori e Fingerprinting}{130}{subsection.10.8}%
+\contentsline {paragraph}{\numberline {10.8.0.1}Funzionamento degli emulatori}{130}{paragraph.10.8.0.1}%
+\contentsline {paragraph}{\numberline {10.8.0.2}Limiti e tecniche di evasione}{130}{paragraph.10.8.0.2}%
+\contentsline {paragraph}{\numberline {10.8.0.3}Fingerprinting dell’ambiente}{130}{paragraph.10.8.0.3}%
+\contentsline {paragraph}{\numberline {10.8.0.4}Contromisure adottate dagli antivirus}{131}{paragraph.10.8.0.4}%
+\contentsline {subsection}{\numberline {10.9}Analisi del traffico cifrato}{131}{subsection.10.9}%
+\contentsline {subsection}{\numberline {10.10}Fiducia e limiti del software antivirus}{131}{subsection.10.10}%
