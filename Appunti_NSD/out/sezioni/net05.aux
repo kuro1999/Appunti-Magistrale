@@ -1,61 +1,98 @@
 \relax 
 \providecommand\hyper@newdestlabel[2]{}
-\@writefile{toc}{\contentsline {section}{\numberline {5}NET\_05 — Firewall e Algoritmi di Classificazione dei Pacchetti}{60}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Panoramica sui Firewall}{60}{subsection.5.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {34}{\ignorespaces Modello generale di firewall}}{60}{figure.caption.52}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}Obiettivi di Progettazione dei Firewall}{60}{subsubsection.5.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}Politica di Accesso del Firewall}{60}{subsubsection.5.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.3}Caratteristiche dei Firewall}{61}{subsubsection.5.1.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {35}{\ignorespaces Criteri di filtraggio adottati dai firewall: indirizzi IP e protocolli, protocolli applicativi, identità dell’utente e attività di rete. Ogni categoria definisce un diverso livello di controllo sull’accesso e sul traffico.}}{61}{figure.caption.53}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Firewall di Filtraggio dei Pacchetti}{61}{subsection.5.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {36}{\ignorespaces Schema di un \textbf  {packet filtering firewall}: il controllo avviene ai livelli inferiori dello stack (fino al trasporto), filtrando i pacchetti in base a indirizzi, porte e protocolli prima che raggiungano le applicazioni.}}{62}{figure.caption.54}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Vantaggi e Svantaggi del Filtraggio dei Pacchetti}{62}{subsubsection.5.2.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {37}{\ignorespaces Esempio di regole di filtraggio di un firewall basato su policy TCP: le regole consentono il traffico in ingresso e in uscita per porte specifiche (25 e >1023), mentre tutto il resto viene negato per impostazione predefinita.}}{62}{figure.caption.55}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Firewall di Ispezione Stateful}{63}{subsection.5.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {38}{\ignorespaces Schema di uno \textbf  {stateful inspection firewall}: monitora lo stato delle connessioni e mantiene informazioni di sessione (\textit  {state info}) per consentire solo pacchetti appartenenti a flussi legittimi.}}{63}{figure.caption.56}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Tabella dello Stato delle Connessioni}{63}{subsubsection.5.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Gateway e Funzione del Default Gateway}{64}{subsection.5.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}Funzioni di un Gateway}{64}{subsubsection.5.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Application-Level Gateway (ALG)}{64}{subsection.5.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.1}Funzionamento dell'ALG}{64}{subsubsection.5.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Circuit-Level Gateway}{64}{subsection.5.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.6.1}Funzione del Circuit-Level Gateway}{65}{subsubsection.5.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}Host-Based Firewall e Personal Firewall}{65}{subsection.5.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.8}NETFILTER}{65}{subsection.5.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.1}Funzionamento di NETFILTER}{65}{subsubsection.5.8.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.2}Le Tabelle di NETFILTER}{66}{subsubsection.5.8.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {39}{\ignorespaces processamento interno con forwarding esterno}}{66}{figure.caption.57}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {40}{\ignorespaces arrivo esterno con processamento interno}}{67}{figure.caption.58}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {41}{\ignorespaces Forwarding puro}}{67}{figure.caption.59}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.3}Iptables: Il Frontend di NETFILTER}{67}{subsubsection.5.8.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {5.8.3.1}Comandi principali di iptables}{67}{paragraph.5.8.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.4}Network Address Translation (NAT)}{68}{subsubsection.5.8.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {5.8.4.1}Tipi di NAT}{68}{paragraph.5.8.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.5}Connection Tracking}{68}{subsubsection.5.8.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {5.8.5.1}Esempi di stato delle connessioni}{68}{paragraph.5.8.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.6}Vantaggi e Limitazioni di NETFILTER}{68}{subsubsection.5.8.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.9}Lab 5 — Firewall con \texttt  {iptables} e policy di sicurezza gateway/server}{70}{subsection.5.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {5.9.0.1}Obiettivo e componenti.}{70}{paragraph.5.9.0.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {5.9.0.2}Struttura del laboratorio.}{70}{paragraph.5.9.0.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {42}{\ignorespaces Topologia di rete con firewall e zona demilitarizzata (DMZ): i server pubblici risiedono nella DMZ (160.80.200.0/24), separata dalla LAN interna (10.0.0.0/24). Il firewall (FW) filtra il traffico tra LAN, DMZ e Internet, collegato al router R1 tramite la rete 1.0.0.0/30.}}{70}{figure.caption.60}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {5.9.0.3}Gateway (firewall principale).}{70}{paragraph.5.9.0.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {5.9.0.4}Server DMZ.}{71}{paragraph.5.9.0.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {5.9.0.5}Testing.}{71}{paragraph.5.9.0.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.10}Classificazione dei Pacchetti}{72}{subsection.5.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.10.1}Perché è Importante la Classificazione dei Pacchetti?}{72}{subsubsection.5.10.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.10.2}Algoritmi di Classificazione dei Pacchetti}{72}{subsubsection.5.10.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.11}Problema della Classificazione dei Pacchetti}{72}{subsection.5.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.11.1}Struttura delle Regole di Classificazione}{73}{subsubsection.5.11.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.11.2}Combinazione di Regole con Match Multipli}{73}{subsubsection.5.11.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.11.3}Algoritmi di Matching}{73}{subsubsection.5.11.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.12}Approccio Bit Vector Linear Search}{74}{subsection.5.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.12.1}Funzionamento del Bit Vector Linear Search}{74}{subsubsection.5.12.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.12.2}Vantaggi e Limiti del Bit Vector Linear Search}{74}{subsubsection.5.12.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.13}Contenuto e Prestazioni della Classificazione dei Pacchetti}{74}{subsection.5.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}NET\_05 — Firewall e Algoritmi di Classificazione dei Pacchetti}{61}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Panoramica sui Firewall}{61}{subsection.5.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {34}{\ignorespaces Modello generale di firewall}}{61}{figure.caption.52}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}Obiettivi di Progettazione dei Firewall}{61}{subsubsection.5.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}Politica di Accesso del Firewall}{61}{subsubsection.5.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.3}Caratteristiche dei Firewall}{62}{subsubsection.5.1.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {35}{\ignorespaces Criteri di filtraggio adottati dai firewall: indirizzi IP e protocolli, protocolli applicativi, identità dell’utente e attività di rete. Ogni categoria definisce un diverso livello di controllo sull’accesso e sul traffico.}}{62}{figure.caption.53}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Firewall di Filtraggio dei Pacchetti}{62}{subsection.5.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {36}{\ignorespaces Schema di un \textbf  {packet filtering firewall}: il controllo avviene ai livelli inferiori dello stack (fino al trasporto), filtrando i pacchetti in base a indirizzi, porte e protocolli prima che raggiungano le applicazioni.}}{63}{figure.caption.54}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Vantaggi e Svantaggi del Filtraggio dei Pacchetti}{63}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {37}{\ignorespaces Esempio di regole di filtraggio di un firewall basato su policy TCP: le regole consentono il traffico in ingresso e in uscita per porte specifiche (25 e >1023), mentre tutto il resto viene negato per impostazione predefinita.}}{63}{figure.caption.55}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Firewall di Ispezione Stateful}{64}{subsection.5.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {38}{\ignorespaces Schema di uno \textbf  {stateful inspection firewall}: monitora lo stato delle connessioni e mantiene informazioni di sessione (\textit  {state info}) per consentire solo pacchetti appartenenti a flussi legittimi.}}{64}{figure.caption.56}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Tabella dello Stato delle Connessioni}{64}{subsubsection.5.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Gateway e Funzione del Default Gateway}{65}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}Funzioni di un Gateway}{65}{subsubsection.5.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Application-Level Gateway (ALG)}{65}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.1}Funzionamento dell'ALG}{65}{subsubsection.5.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Circuit-Level Gateway}{65}{subsection.5.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.6.1}Funzione del Circuit-Level Gateway}{66}{subsubsection.5.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}Host-Based Firewall e Personal Firewall}{66}{subsection.5.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.8}NETFILTER}{66}{subsection.5.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.1}Funzionamento di NETFILTER}{66}{subsubsection.5.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.2}Le Tabelle di NETFILTER}{67}{subsubsection.5.8.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {39}{\ignorespaces processamento interno con forwarding esterno}}{67}{figure.caption.57}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {40}{\ignorespaces arrivo esterno con processamento interno}}{68}{figure.caption.58}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {41}{\ignorespaces Forwarding puro}}{68}{figure.caption.59}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.3}Iptables: Il Frontend di NETFILTER}{68}{subsubsection.5.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.8.3.1}Comandi principali di iptables}{68}{paragraph.5.8.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.4}Network Address Translation (NAT)}{69}{subsubsection.5.8.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.8.4.1}Tipi di NAT}{69}{paragraph.5.8.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.5}Connection Tracking}{69}{subsubsection.5.8.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.8.5.1}Esempi di stato delle connessioni}{69}{paragraph.5.8.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.8.6}Vantaggi e Limitazioni di NETFILTER}{69}{subsubsection.5.8.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.9}Lab 5 — Firewall con \texttt  {iptables} e policy di sicurezza gateway/server}{71}{subsection.5.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.9.0.1}Obiettivo e componenti.}{71}{paragraph.5.9.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.9.0.2}Struttura del laboratorio.}{71}{paragraph.5.9.0.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {42}{\ignorespaces Topologia di rete con firewall e zona demilitarizzata (DMZ): i server pubblici risiedono nella DMZ (160.80.200.0/24), separata dalla LAN interna (10.0.0.0/24). Il firewall (FW) filtra il traffico tra LAN, DMZ e Internet, collegato al router R1 tramite la rete 1.0.0.0/30.}}{71}{figure.caption.60}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.9.0.3}Gateway (firewall principale).}{71}{paragraph.5.9.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.9.0.4}Server DMZ.}{72}{paragraph.5.9.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.9.0.5}Testing.}{72}{paragraph.5.9.0.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.10}Classificazione dei Pacchetti}{73}{subsection.5.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.10.1}Perché è Importante la Classificazione dei Pacchetti?}{73}{subsubsection.5.10.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.10.1.1}Requisiti e metriche.}{73}{paragraph.5.10.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.10.2}Algoritmi di Classificazione dei Pacchetti}{73}{subsubsection.5.10.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.10.2.1}Schema divide-and-conquer.}{74}{paragraph.5.10.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.11}Problema della Classificazione dei Pacchetti}{74}{subsection.5.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.11.1}Struttura delle Regole di Classificazione}{74}{subsubsection.5.11.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.11.2}Combinazione di Regole con Match Multipli}{74}{subsubsection.5.11.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.11.2.1}Selezione efficiente della miglior regola.}{75}{paragraph.5.11.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.11.3}Algoritmi di Matching}{75}{subsubsection.5.11.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.11.3.1}Altre famiglie chiave.}{75}{paragraph.5.11.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.12}Approccio Bit Vector Linear Search}{75}{subsection.5.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.12.1}Funzionamento del Bit Vector Linear Search}{76}{subsubsection.5.12.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.12.1.1}Nota tecnica (integrazione e correzione).}{76}{paragraph.5.12.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.12.2}Vantaggi e Limiti del Bit Vector Linear Search}{76}{subsubsection.5.12.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.12.2.1}Precisazione sulla memoria.}{76}{paragraph.5.12.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.13}Contenuto e Prestazioni della Classificazione dei Pacchetti}{76}{subsection.5.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.13.1}Caching 5-tuple: benefici e limiti}{77}{subsubsection.5.13.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.13.2}TCAM/CAM: pro e contro}{77}{subsubsection.5.13.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.14}eBPF}{77}{subsection.5.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.14.1}Hook eBPF (punti di aggancio)}{77}{subsubsection.5.14.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.14.2}Focus sui percorsi di rete}{77}{subsubsection.5.14.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.14.2.1}XDP}{77}{paragraph.5.14.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.14.2.2}JIT}{78}{paragraph.5.14.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.14.2.3}TC}{78}{paragraph.5.14.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.14.2.4}NETFILTER e Socket hooks}{78}{paragraph.5.14.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.15}Scrivere e caricare programmi eBPF}{78}{subsection.5.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.15.0.1}Pipeline operativa }{78}{paragraph.5.15.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.15.0.2}Componenti di supporto}{78}{paragraph.5.15.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.16}Laboratorio X: Warm-up con eBPF e XDP}{79}{subsection.5.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.16.1}Scenario}{79}{subsubsection.5.16.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.16.2}Topologia del laboratorio}{79}{subsubsection.5.16.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {43}{\ignorespaces Lab X — Topologia: host A con XDP sul driver di \texttt  {eth0}; host B genera traffico (ping/Scapy).}}{79}{figure.caption.62}\protected@file@percent }
+\newlabel{fig:labx_topology}{{43}{79}{Lab X — Topologia: host A con XDP sul driver di \texttt {eth0}; host B genera traffico (ping/Scapy)}{figure.caption.62}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.16.3}Prerequisiti}{79}{subsubsection.5.16.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.16.4}Passi del laboratorio (step–by–step)}{79}{subsubsection.5.16.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.16.4.1}Step 1 — Basic PASS con logging}{79}{paragraph.5.16.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.16.4.2}Step 2 — Switch a DROP e detach}{80}{paragraph.5.16.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.16.4.3}Step 3 — Packet Filtering (hardcoded) con boundary checks}{80}{paragraph.5.16.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.16.4.4}Step 4 — Map Counter (pkt/byte)}{80}{paragraph.5.16.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.16.4.5}Step 5 — ACL denylist con mappa hash}{80}{paragraph.5.16.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.16.5}Esecuzione pratica (comandi essenziali)}{80}{subsubsection.5.16.5}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {16}{\ignorespaces Abilitazione JIT, caricamento/isolamento log, attach/detach XDP}}{80}{lstlisting.16}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {17}{\ignorespaces Aggiornamento mappa denylist via bpftool}}{81}{lstlisting.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.16.6}Cosa osservare con lo sniffer / tracing}{81}{subsubsection.5.16.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {5.16.6.1}Troubleshooting}{81}{paragraph.5.16.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.16.7}Limitazioni pratiche}{81}{subsubsection.5.16.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.16.8}Mitigazioni / buone pratiche}{81}{subsubsection.5.16.8}\protected@file@percent }
 \@setckpt{sezioni/net05}{
-\setcounter{page}{76}
+\setcounter{page}{82}
 \setcounter{equation}{0}
-\setcounter{enumi}{4}
+\setcounter{enumi}{3}
 \setcounter{enumii}{0}
 \setcounter{enumiii}{0}
 \setcounter{enumiv}{0}
@@ -63,23 +100,23 @@
 \setcounter{mpfootnote}{0}
 \setcounter{part}{0}
 \setcounter{section}{5}
-\setcounter{subsection}{13}
-\setcounter{subsubsection}{0}
+\setcounter{subsection}{16}
+\setcounter{subsubsection}{8}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{42}
+\setcounter{figure}{43}
 \setcounter{table}{0}
 \setcounter{parentequation}{0}
-\setcounter{section@level}{2}
-\setcounter{Item}{47}
+\setcounter{section@level}{3}
+\setcounter{Item}{72}
 \setcounter{Hfootnote}{0}
-\setcounter{bookmark@seq@number}{209}
-\setcounter{lstnumber}{8}
+\setcounter{bookmark@seq@number}{242}
+\setcounter{lstnumber}{7}
 \setcounter{float@type}{8}
 \setcounter{LT@tables}{0}
 \setcounter{LT@chunks}{0}
 \setcounter{nlinenum}{0}
 \setcounter{caption@flags}{2}
 \setcounter{continuedfloat}{0}
-\setcounter{lstlisting}{15}
+\setcounter{lstlisting}{17}
 }
