@@ -1,0 +1,464 @@
+\newpage
+\section{SYS\_02 — Hardware Primer}
+
+\subsection{Moore’s Law e l’evoluzione del calcolo}
+Nel 1965 Gordon Moore osservò che il numero di transistor per unità di area nei circuiti integrati tendeva a raddoppiare ogni due anni.  
+Questa legge empirica — \emph{Moore’s Law} — ha guidato per decenni l’intera industria dei semiconduttori: più transistor significano clock più alti, parallelismo maggiore e costi inferiori per unità di potenza computazionale.  
+Per quasi quarant’anni il trend è stato rispettato, permettendo un’esplosione di potenza e miniaturizzazione, ma a partire dai primi anni 2000 sono emersi vincoli fisici e termici noti come \textbf{power wall}: oltre i $\sim130$ W di dissipazione termica per CPU, i guadagni marginali diventano insostenibili.  
+
+\subsection{Fine della crescita lineare e parallelismo}
+La stagnazione delle frequenze e la saturazione del numero di transistor utili (come mostrato da Hennessy e Patterson nella Turing Lecture 2018) hanno spinto verso architetture parallele: più core, pipeline più profonde e ottimizzazioni speculative.  
+Amdahl, già nel 1967, formalizzò il limite teorico di tale approccio: il guadagno complessivo $S_{latency}$ da un’ottimizzazione parziale dipende dalla frazione $p$ di codice migliorato e dal relativo speedup $s$, secondo  
+\[
+S_{latency} = \frac{1}{(1 - p) + \frac{p}{s}}
+\]
+da cui risulta chiaro che, se solo una piccola parte del programma è parallelizzabile, il beneficio totale resta limitato.
+
+\subsection{Pipeline e architettura superscalare}
+Per superare i limiti dei primi core multicycle (lenti ma complessi), negli anni ’80 si introdusse il \textbf{pipelining}: un’istruzione viene divisa in più fasi temporali (fetch, decode, execute, write-back), permettendo l’esecuzione “a catena”.  
+Idealmente il CPI (Cycles Per Instruction) diventa 1, ma solo se non vi sono conflitti o branch.  
+Negli anni ’90 arrivarono le \textbf{architetture superscalari}, capaci di eseguire più istruzioni contemporaneamente grazie a unità funzionali replicate e scheduling dinamico a runtime: il processore decide in tempo reale quali istruzioni emettere in parallelo, massimizzando il throughput.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{immagini/SYS_02/pipeline.png}
+        \caption{Architettura pipeline MIPS}
+        \label{fig:pipeline}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{immagini/SYS_02/pipeline2.png}
+        \caption{Esecuzione parallela di più istruzioni sulla stessa CPU}
+        \label{fig:pipeline2}
+    \end{minipage}
+\end{figure}
+
+
+
+
+\subsection{Branch Prediction: principi e strategie}
+La predizione dei salti è una delle ottimizzazioni più importanti per mantenere il \emph{throughput} della pipeline: ogni salto condizionale interrompe il flusso sequenziale di istruzioni e può costringere a svuotare (flush) la pipeline se la direzione effettiva non è quella prevista.  
+Con pipeline sempre più profonde e architetture superscalari che eseguono molte istruzioni per ciclo, il costo di una \textbf{misprediction} può arrivare a decine di cicli.
+
+\paragraph{Perché serve una predizione}
+Quando la CPU incontra un’istruzione di salto (\texttt{branch}), non può sapere immediatamente se il salto sarà preso (\emph{taken}) o meno (\emph{not taken}) finché il confronto logico non viene risolto nello stadio di esecuzione.  
+Attendere significherebbe fermare la pipeline: per questo, la CPU \textbf{indovina} il risultato e continua a caricare istruzioni dal percorso ipotizzato.
+
+\paragraph{Tipi di predizione}
+\begin{itemize}
+  \item \textbf{Statica:} la decisione è determinata a compile-time.  
+        È semplice e non richiede hardware dedicato: ad esempio, si assume che i salti in avanti (come in un \texttt{if}) non siano presi, mentre quelli all’indietro (come nei loop) lo siano.  
+        Alcuni compilatori o kernel possono anche inserire “hint” (es. attributi \texttt{likely}/\texttt{unlikely} o prefissi nel microcodice) per guidare il processore.
+  \item \textbf{Dinamica:} la CPU apprende dal comportamento passato del programma, usando \textbf{storia dei branch} e piccole strutture hardware che registrano se l’ultimo salto da un certo indirizzo è stato preso o meno.  
+        La predizione viene aggiornata a runtime, quindi si adatta a comportamenti ricorrenti del software.
+\end{itemize}
+
+\paragraph{Contatore a 2 bit saturante}
+Il modello più classico di predittore dinamico è il \textbf{2-bit saturating counter}:  
+ogni branch ha un contatore a due stati fortemente orientati (00 = “fortemente non preso”, 11 = “fortemente preso”).  
+Il contatore si incrementa o decrementa in base all’esito reale, ma non passa da un estremo all’altro in un solo errore, riducendo così le oscillazioni casuali.  
+Questo approccio funziona bene per branch regolari, ma fallisce con strutture di controllo più complesse come \textbf{loop annidati}, dove il contesto del branch esterno viene continuamente “sporcato” da quello interno.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{immagini/SYS_02/twobit.png}
+    \caption{2 bit saturating counter}
+    \label{fig:twobit}
+\end{figure}
+
+\paragraph{Predittori correlati e multilivello}
+Per migliorare l’accuratezza, i processori moderni impiegano predittori che tengono conto non solo della storia di un singolo branch, ma anche delle correlazioni tra branch consecutivi:
+\begin{itemize}
+  \item \textbf{Correlated (two-level) predictor:} mantiene una \textbf{Global History Register (GHR)} che codifica l’esito degli ultimi $m$ branch (presa = 1, non presa = 0).  
+        Il valore di questo registro viene usato come indice in una \textbf{Pattern History Table (PHT)}, che contiene i contatori a 2 bit.  
+        In questo modo la CPU “riconosce” sequenze ricorrenti di salti.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\linewidth]{immagini/SYS_02/pht.png}
+    \caption{Pattern History Table}
+    \label{fig:pht}
+\end{figure}
+  \item \textbf{Hybrid o Tournament predictor:} combina più predittori (ad esempio uno locale e uno globale) e sceglie dinamicamente quale usare in base alla precisione recente.  
+        Una piccola tabella di selezione con contatori a 2 bit tiene traccia di quale predittore ha vinto più spesso per un certo branch.
+\end{itemize}
+Un esempio celebre è quello del processore \textbf{DEC Alpha 21264}, che impiegava un algoritmo di predizione “tournament” con meno dell’1\% di mispredizioni totali, occupando appena il 2\% dell’area del chip.
+
+\paragraph{Ottimizzazioni hardware}
+Oltre ai predittori veri e propri, esistono altre strutture dedicate a ridurre il tempo di risoluzione del salto:
+\begin{itemize}
+  \item \textbf{Branch Target Buffer (BTB):} una piccola cache che associa a ciascun indirizzo di branch il suo target previsto.  
+        Se il salto è predetto “taken”, il BTB fornisce immediatamente il nuovo indirizzo di fetch, senza attendere l’ALU.
+  \item \textbf{Return Address Stack (RAS):} uno stack hardware che salva l’indirizzo di ritorno delle chiamate a funzione (\texttt{call}/\texttt{return}).  
+        Poiche la maggior parte dei salti indiretti sono proprio ritorni da funzione, questo migliora drasticamente la predizione nei linguaggi ad oggetti e nei programmi modulari.
+  \item \textbf{Fetch both targets:} alcune architetture ad alte prestazioni (es. mainframe IBM) prelevano simultaneamente le istruzioni da entrambi i possibili percorsi (taken e not-taken), per poi scartare quello errato.  
+        È una soluzione costosa in termini di banda e cache, ma riduce quasi a zero la penalità di mispredizione.
+\end{itemize}
+
+\paragraph{Importanza crescente della predizione}
+Con pipeline sempre più profonde e front-end superscalari, ogni ciclo perso per un salto errato può comportare la perdita di decine di istruzioni.  
+La branch prediction moderna è quindi un componente centrale della microarchitettura: la precisione di questi predittori incide direttamente sul consumo energetico, sull’IPC (\emph{Instructions Per Cycle}) e sulla sicurezza — come dimostrato dalle vulnerabilità speculative (\emph{Spectre}, \emph{Meltdown}) che sfruttano proprio l’esecuzione speculativa e il caching dei risultati predetti.
+
+
+
+\subsection{Simultaneous Multithreading (SMT)}
+Con la stagnazione del clock e i limiti di dissipazione, si è puntato a sfruttare meglio le risorse interne del core.  
+Lo \textbf{SMT} consente a un singolo core fisico di apparire come più core logici: ogni thread mantiene il proprio stato architetturale (registri, flag, PC), ma condivide le unità funzionali.  
+In caso di stallo di un thread (es. cache miss), un altro può utilizzare immediatamente le pipeline inutilizzate.  
+Intel implementa SMT come \textbf{Hyper-Threading}: due thread logici per core, con alternanza in caso di contesa.
+
+\subsection{Pipeline interna nei processori Intel Xeon}
+La pipeline dei Xeon è divisa in due macro-stadi:
+\begin{itemize}
+  \item \textbf{Front End:} decodifica le istruzioni CISC x86 in micro-operazioni RISC (\emph{µops}) tramite un microcode ROM e le memorizza nella \textbf{Trace Cache (TC)}.  
+        La TC conserva le µops nel loro ordine di esecuzione effettiva, evitando di ridurre in continuazione istruzioni già viste.
+  \item \textbf{Out-of-Order Engine:} gestisce l’esecuzione delle micro–operazioni (\emph{µops}) fuori ordine rispetto al flusso originale, massimizzando il parallelismo interno.  
+      Dopo il \textbf{µop Queue}, le istruzioni entrano nello stadio di \textbf{Register Rename}, dove i registri logici vengono mappati su registri fisici per eliminare conflitti (false dipendenze).  
+      Le µops vengono poi inserite in una \textbf{coda di scheduling} che decide, a runtime, quali operazioni emettere in base alla disponibilità delle risorse e dei dati.  
+      Una volta pronti gli operandi, il blocco \textbf{Execute} effettua le operazioni reali, accedendo alla \textbf{L1 Data Cache} per letture e scritture.  
+      I risultati vengono scritti nei registri fisici e infine \textbf{ritirati in ordine logico} dal \textbf{Reorder Buffer (ROB)}, che ricostruisce la sequenza originale del programma garantendo coerenza architetturale.
+      La figura~\ref{fig:xeon_ooo} mostra la sequenza interna del motore Out-of-Order nei processori Xeon.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{immagini/SYS_02/ooo.png}
+    \caption{Pipeline interna Out-of-Order nei processori Xeon: le µops attraversano gli stadi di rinomina, scheduling, esecuzione e \emph{retirement} nel \textbf{Reorder Buffer}, che garantisce il commit in ordine architetturale.}
+    \label{fig:xeon_ooo}
+\end{figure}
+
+\end{itemize}
+Un \emph{Trace Cache hit} consente al core di servire µops senza passare per la decodifica, mentre un miss richiede fetch e decode da L2 (ovvero il livello 2 della cache).  
+Questo modello riduce il collo di bottiglia di decodifica tipico dell’ISA x86, ottenendo parallelismo interno senza moltiplicare il numero di core.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.75\linewidth]{immagini/SYS_02/cachemiss.png}
+    \caption{Flusso del \textbf{front-end} nei processori Intel: le istruzioni x86 vengono prelevate dalla cache L2, decodificate in micro–operazioni (\emph{µops}) e memorizzate nella \textbf{Trace Cache}. In caso di \emph{hit}, le µops vengono fornite direttamente alla pipeline senza ripetere il ciclo di fetch e decode.}
+    \label{fig:trace_cache_pipeline}
+\end{figure}
+
+
+\subsection{Gerarchia di memoria}
+La distanza prestazionale tra CPU e memoria principale (DRAM) cresce di circa il 50\% l’anno: per colmare il gap si adotta una \textbf{memoria gerarchica} (L1, L2, L3, RAM, disco).  
+Ogni livello inferiore è più capiente ma più lento e meno costoso per bit.  
+Il processore interagisce direttamente solo con L1: un \textbf{cache hit} consente accesso immediato, mentre un \textbf{miss} causa richieste ricorsive ai livelli successivi fino alla RAM (da L1 vado a L2, se c'è hit copio dato in L1, altrimenti vado in L3 e vedo hit/miss e cosi via).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{immagini/SYS_02/memory_piramide.png}
+    \caption{Schema piramidale della gerarchia di memoria}
+    \label{fig:memory}
+\end{figure}
+
+\paragraph{Inclusività e mappatura}
+
+\textbf{Inclusività tra livelli di cache.}  
+Nelle gerarchie moderne (L1, L2, L3) ogni livello può decidere se mantenere o meno una copia dei dati già presenti nei livelli inferiori.  
+Si distinguono tre politiche principali:
+
+\begin{itemize}
+  \item \textbf{Inclusive:} tutti i blocchi presenti in L1 devono esistere anche in L2 (e, se presente, in L3).  
+        Ciò semplifica la \textbf{coerenza}: se un core invalida un dato in L3, si sa che anche le sue copie nelle cache inferiori devono essere invalidate.  
+        Tuttavia, l’inclusività riduce la capacità effettiva complessiva (L2 “spreca” spazio per dati già duplicati).
+  \item \textbf{Exclusive:} i blocchi si trovano in un solo livello alla volta — L1 e L2 contengono set disgiunti.  
+        Aumenta la capacità totale utile, ma complica la gestione: un miss in L1 può richiedere di “spostare” un blocco da L2 a L1, generando più traffico interno.
+  \item \textbf{Non-inclusive / Non-exclusive (NINE):} via di mezzo più flessibile; non impone regole rigide di duplicazione ma lascia la scelta all’hardware.  
+        È usata nei processori recenti (es. AMD Ryzen) per bilanciare prestazioni e flessibilità.
+\end{itemize}
+
+\textbf{Politiche di mappatura.}  
+Quando la CPU deve memorizzare un blocco di memoria nella cache, serve una regola per stabilire in quale linea (entry) posizionarlo.  
+Questa scelta influenza direttamente le prestazioni e il tasso di \emph{miss}.
+
+\begin{itemize}
+  \item \textbf{Direct-mapped cache.}\\
+        Ogni indirizzo di memoria corrisponde a una sola posizione possibile in cache, determinata da alcune bit dell’indirizzo (funzione modulo del numero di linee).  
+        È la struttura più semplice e veloce: un solo comparatore e accesso deterministico.  
+        Tuttavia, se due blocchi diversi mappano sulla stessa linea, si generano \textbf{conflitti ripetuti} (cache thrashing).  
+        È adatta a cache piccole e a livello L1, dove si privilegia la latenza minima.
+        \begin{itemize}
+            \item \emph{Pro:} accesso veloce, logica semplice, basso consumo.  
+            \item \emph{Contro:} tasso di miss elevato in presenza di conflitti.
+        \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.65\linewidth]{immagini/SYS_02/direct_mapped.png}
+        \caption{Direct mapped cache}
+        \label{fig:dm}
+    \end{figure}
+
+
+  \item \textbf{Fully associative cache.}\\
+        Un blocco di memoria può essere collocato in \emph{qualsiasi} linea della cache.  
+        L’indirizzo viene confrontato con tutte le etichette (tag) in parallelo per verificare un hit.  
+        Offre la massima flessibilità e il minor numero di conflitti, ma richiede \textbf{comparazioni parallele costose} in termini di area e potenza.  
+        È usata tipicamente per cache molto piccole o buffer speciali (es. TLB).
+        \begin{itemize}
+            \item \emph{Pro:} minimi miss da conflitto, utilizzo ottimale dello spazio.  
+            \item \emph{Contro:} costosa e lenta da scalare, elevato consumo energetico.
+        \end{itemize}
+     \begin{figure}[H]
+        \centering
+        \includegraphics[width=.65\linewidth]{immagini/SYS_02/fullyasso.png}
+        \caption{Fully associative cache}
+        \label{fig:fac}
+    \end{figure}
+
+  \item \textbf{Set-associative cache.}\\
+        È il compromesso più comune.  
+        La cache è divisa in gruppi (set) di $n$ linee ciascuno; un indirizzo mappa su un set specifico (tramite parte dell’indirizzo), ma può occupare \emph{una qualsiasi} delle $n$ linee di quel set.  
+        Il grado di associazione (2-way, 4-way, 8-way, …) determina quanti blocchi possono coesistere nello stesso set.  
+        L’hardware esegue fino a $n$ confronti paralleli, mantenendo un buon bilancio tra velocità e flessibilità.
+        \begin{itemize}
+            \item \emph{Pro:} riduce fortemente i miss da conflitto rispetto al direct-mapped, con costo contenuto.  
+            \item \emph{Contro:} leggermente più lenta e più complessa; aumento di consumo con l’associatività.
+        \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.65\linewidth]{immagini/SYS_02/4way.png}
+        \caption{4way set Associative cache}
+        \label{fig:4way}
+    \end{figure}
+\end{itemize}
+
+\textbf{Sintesi pratica.}  
+\begin{itemize}
+ \item L1 è spesso \textbf{direct-mapped o 2-way} per minimizzare la latenza.  
+ \item L2 e L3 sono di solito \textbf{8-way o più} per massimizzare la capacità.  
+ \item I processori moderni (Intel/AMD) adottano strutture \textbf{inclusive o NINE} per semplificare la coerenza cache tra core.
+    
+\end{itemize}
+
+\paragraph{Sostituzione ed aggiornamento}
+
+Le politiche di rimpiazzamento (cambio dei blocchi di cache) determinano quale blocco deve essere espulso quando lo spazio di memoria nella cache è pieno. Le politiche più comuni sono:
+
+\begin{itemize}
+  \item \textbf{LRU (Least Recently Used):} il blocco meno recentemente utilizzato viene espulso. Questo approccio è basato sull’assunzione che i blocchi recentemente usati abbiano più probabilità di essere riutilizzati rispetto a quelli che non sono stati usati di recente. È uno dei metodi più efficaci, ma richiede la gestione di un registro dei tempi di accesso per ogni blocco, il che può aumentare la complessità hardware.
+  
+  \item \textbf{FIFO (First In, First Out):} il blocco che è stato caricato per primo nella cache è quello che viene espulso. È semplice da implementare, ma meno ottimizzato rispetto a LRU, poiché non tiene conto dell'effettivo utilizzo recente dei dati.
+  
+  \item \textbf{Random:} espelle un blocco scelto a caso. Questo metodo è semplice da implementare e veloce, ma può comportare una maggiore probabilità di espulsione di blocchi che saranno riutilizzati di frequente, riducendo l'efficienza della cache.
+  
+  \item \textbf{Round Robin:} utilizza un ciclo continuo per scegliere quale blocco espellere, utilizzando un puntatore che viene aggiornato a ogni rimpiazzo. Questo approccio è meno comune ma può essere utilizzato in alcune cache completamente associative.
+\end{itemize}
+
+Per quanto riguarda le scritture nelle cache, esistono due principali strategie di gestione:
+
+\begin{itemize}
+  \item \textbf{Write-through:} ogni volta che viene eseguita una scrittura nella cache, la stessa scrittura viene immediatamente propagata nella memoria principale (o nella cache di livello superiore). Questo approccio è semplice da implementare, ma comporta un rallentamento delle prestazioni, in quanto ogni scrittura nella cache necessita anche di una scrittura nella memoria principale, aumentando il traffico sulla memoria.
+  
+  \item \textbf{Write-back:} le scritture vengono effettuate solo nella cache, e i dati vengono trasferiti alla memoria principale solo quando il blocco viene rimosso dalla cache, cioè al momento della sostituzione. Questo approccio riduce il traffico di scrittura nella memoria principale e quindi migliora le prestazioni, ma è più complesso da gestire, in quanto è necessario tenere traccia dei blocchi modificati nella cache.
+\end{itemize}
+
+La scelta tra queste due strategie dipende dalle specifiche esigenze di prestazione e dalla complessità del sistema: \texttt{write-through} è più semplice e garantisce la coerenza immediata tra cache e memoria, mentre \texttt{write-back} è più efficiente ma richiede un meccanismo di aggiornamento ritardato, aumentando la complessità nella gestione della coerenza dei dati.
+
+
+\subsection{Cache coherence nei multicore}
+Nei sistemi multicore, ogni core dispone di una cache privata: per evitare inconsistenze sui dati condivisi serve un \textbf{protocollo di coerenza}.  
+La coerenza (CC, Cache Coherence) garantisce che tutti i core osservino la stessa sequenza logica di aggiornamenti per una cella di memoria condivisa.  
+Il caso ideale — \textbf{strong coherence} — impone che tutte le letture e scritture siano viste nello stesso ordine da tutti i core. Al contrario, con \textbf{weaker coherence}, le operazioni di scrittura possono non essere immediatamente visibili dagli altri core. Questo approccio riduce il carico di gestione della coerenza, permettendo al processore di eseguire altre operazioni in parallelo senza dover aspettare che tutte le scritture siano propagate e visibili a tutti i core.\\
+ 
+Condizioni sufficienti:
+\begin{enumerate}
+  \item \textbf{Single-Writer/Multiple-Readers (SWMR):} in un dato istante un solo core può scrivere su una cella, ma più core possono leggerla.
+  \item \textbf{Data-Value (DV):} il valore della cella è identico per tutti i core all’inizio di ogni epoca.
+\end{enumerate}
+Molti sistemi reali adottano varianti \textbf{weaker coherence}, sacrificando temporaneamente la visibilità per migliorare prestazioni e parallelismo.
+
+\paragraph{Protocolli di coerenza}
+In un sistema multi-core, i dati condivisi devono essere coerenti tra le varie cache locali (L1, L2) per evitare letture di valori obsoleti o incoerenti.  
+Esistono due principali categorie di protocolli per garantire la coerenza:
+
+\begin{itemize}
+  \item \textbf{Invalidate:} quando un core scrive in un blocco di memoria, invalida tutte le copie di quel blocco nelle altre cache.  
+        Questo significa che ogni altro core che ha una copia del blocco dovrà ricaricarlo dalla memoria principale o dal livello superiore della cache prima di poterlo usare di nuovo.  
+        L'Invalidate è un approccio semplice, che riduce il traffico di coerenza, ma può aumentare la latenza se i dati invalidati sono frequentemente richiesti.
+        \begin{itemize}
+            \item \emph{Pro:} riduce il traffico di coerenza, adatto per carichi di lavoro con bassa contesa.
+            \item \emph{Contro:} può causare elevata latenza in caso di \textbf{cache miss}, poiché le copie devono essere ricaricate dalla memoria.
+        \end{itemize}
+  
+  \item \textbf{Update:} quando un core scrive un dato, aggiorna tutte le copie di quel blocco nelle altre cache.  
+        Questo approccio garantisce che ogni copia in cache sia aggiornata in tempo reale, riducendo il rischio di letture obsolete, ma comporta un maggiore traffico di coerenza tra i core.
+        \begin{itemize}
+            \item \emph{Pro:} garantisce che tutti i core vedano subito i dati più recenti.
+            \item \emph{Contro:} aumenta il traffico di coerenza e può ridurre le prestazioni, specialmente in sistemi con molteplici core che scrivono frequentemente.
+        \end{itemize}
+\end{itemize}
+
+\textbf{Implementazioni dei protocolli:}  
+I protocolli di coerenza possono essere implementati in due principali modalità:
+
+\begin{itemize}
+  \item \textbf{Snooping:} ogni controller di cache “sente” (snoops) le richieste di accesso sulla linea di comunicazione condivisa tra i core, e reagisce di conseguenza.  
+        Ogni core monitora il bus di comunicazione (ad esempio il \textbf{system bus}) per rilevare accessi a blocchi condivisi e determinare se deve aggiornare o invalidare una cache.  
+        Questo approccio è tipico nelle architetture con un bus condiviso, come quelle usate nei sistemi a singolo socket o con numero limitato di core.
+        \begin{itemize}
+            \item \emph{Pro:} semplice da implementare, non richiede una struttura centralizzata.
+            \item \emph{Contro:} inefficiente per sistemi con molti core, poiché ogni cache deve monitorare l'intero bus, aumentando il carico e il traffico.
+        \end{itemize}
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=.65\linewidth]{immagini/SYS_02/snooping}
+      \caption{Snooping cache system model}
+      \label{fig: snooping}
+  \end{figure}
+
+  \item \textbf{Directory-based:} in questo modello esiste un nodo centrale, una \textbf{directory}, che tiene traccia di quali core possiedono una copia di ogni blocco di memoria.  
+        La directory riceve richieste di accesso da parte dei core e, quando un core scrive su un blocco, essa aggiorna o invalida le copie nelle altre cache.  
+        Questo modello è più scalabile rispetto allo snooping, poiché centralizza la gestione della coerenza, evitando che ogni cache debba monitorare il bus.
+        \begin{itemize}
+            \item \emph{Pro:} più scalabile in sistemi con molti core, riduce il traffico di coerenza.
+            \item \emph{Contro:} maggiore complessità nell’implementazione e potenziale punto di congestione nella directory.
+        \end{itemize}
+\end{itemize}
+
+\textbf{Sintesi:}  
+\begin{itemize}
+    \item   Il modello \textbf{Invalidate} è efficace in scenari con bassa contesa ma può rallentare l'accesso in caso di cache miss.  
+    \item   Il modello \textbf{Update} è più costoso in termini di traffico di coerenza ma offre una visione più coerente dei dati.  
+    \item   Il modello \textbf{Snooping} è semplice da implementare ma non scala bene per sistemi a molti core, mentre \textbf{Directory-based} è scalabile ma più complesso da gestire.
+\end{itemize}
+
+\subsection{Protocolli MOESI e VI}
+I protocolli di coerenza sono descritti come \textbf{macchine a stati finiti} (FSM), dove ciascun blocco in cache può trovarsi in diversi stati di validità.  
+Il protocollo più semplice è il \textbf{VI}, con due soli stati (Valid/Invalid).
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\linewidth]{immagini/SYS_02/vi}
+    \caption{The vi protocol}
+    \label{fig:vi}
+\end{figure}
+
+Tuttavia, i sistemi moderni adottano versioni più espressive come il \textbf{MOESI}, che introduce:
+\begin{itemize}
+  \item \textbf{M (Modified):} il blocco è valido, esclusivo, potenzialmente sporco; solo questa cache lo possiede.
+  \item \textbf{O (Owned):} valido e potenzialmente sporco ma condiviso; la cache risponde alle richieste di altri core.
+  \item \textbf{E (Exclusive):} valido e pulito; nessun’altra cache lo possiede.
+  \item \textbf{S (Shared):} valido e condiviso, non modificabile.
+  \item \textbf{I (Invalid):} non contiene dati validi.
+\end{itemize}
+Il protocollo MOESI consente di minimizzare traffico e latenza mantenendo comunque una visione coerente dei dati, sfruttando il concetto di \emph{ownership} per coordinare chi deve rispondere a richieste remote.
+
+
+\paragraph{Virtual vs. Physical Cache Indexing}
+Le cache possono essere \textbf{indicizzate} usando l’indirizzo virtuale o quello fisico, a seconda del livello e della microarchitettura.
+La scelta influisce su latenza, complessità hardware
+e rischi di inconsistenza tra TLB e cache.
+
+\begin{itemize}
+  \item \textbf{Virtual-indexed caches:} usano l’indirizzo virtuale generato dalla CPU, prima della traduzione tramite il \textbf{Translation Lookaside Buffer (TLB)}.
+  Questo approccio è tipico della \textbf{L1 cache}, dove la priorità è la \emph{bassa latenza} e la velocità di accesso supera i rischi di incoerenza.
+  Tuttavia, poiché la traduzione virtuale→fisica non è ancora disponibile, il sistema deve gestire eventuali aliasing (lo stesso indirizzo fisico visto come virtuale diverso da più processi).
+
+  \item \textbf{Physically-indexed caches:} usano invece l’indirizzo fisico, cioè quello tradotto dal TLB.
+  Questo evita i problemi di aliasing e garantisce coerenza tra processi e livelli di cache diversi, ma richiede che la traduzione sia già avvenuta, aumentando leggermente la latenza.
+  Le \textbf{L2 e L3 cache} usano quasi sempre indicizzazione fisica.
+
+  \item \textbf{TLB (Translation Lookaside Buffer):} memorizza le traduzioni virtuale→fisico più recenti, riducendo il costo di accesso alla memoria principale.
+  Quando il TLB fornisce rapidamente la traduzione, l’indicizzazione fisica non penalizza eccessivamente le prestazioni.
+\end{itemize}
+
+In sintesi, la cache L1 privilegia l’accesso immediato e può usare indirizzi virtuali, mentre i livelli esterni (L2, L3) scelgono la coerenza globale e usano indirizzi fisici.
+Questo bilanciamento permette di minimizzare la latenza mantenendo consistenza tra processi, TLB e memoria principale.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.65\linewidth]{immagini/SYS_02/cache}
+    \caption{Virtual Vs Physical cache indexing}
+    \label{fig:cache}
+\end{figure}
+
+\subsection{Hardware Transactional Memory (HTM)}
+Per ridurre la complessità della sincronizzazione esplicita tra thread (lock, mutex), le CPU moderne supportano la \textbf{Transactional Memory} hardware, introdotta da Intel nel 2013 (TSX).  
+Un blocco di codice viene eseguito come transazione: tutte le operazioni sono provvisorie fino al commit, e se si verifica un conflitto con altri thread, la transazione viene annullata automaticamente.  
+Questo approccio fornisce concorrenza “lock-free” e semplifica il codice multithreaded.
+
+\begin{figure}[H]
+  \centering
+  % --- immagine sinistra ---
+  \begin{minipage}[t]{0.47\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{immagini/SYS_02/tsx_c.png}
+    \caption*{Esempio in C con \texttt{\_xbegin()} e \texttt{\_xend()}}
+  \end{minipage}
+  \hfill
+  % --- immagine destra ---
+  \begin{minipage}[t]{0.47\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{immagini/SYS_02/tsx_asm.png}
+    \caption*{Equivalente in assembly con \texttt{xbegin/xend}}
+  \end{minipage}
+  \caption{Confronto tra implementazione C e assembly di una transazione TSX}
+  \label{fig:tsx_confronto}
+\end{figure}
+
+\paragraph{Principio di funzionamento}
+Le transazioni si appoggiano alla coerenza cache: le scritture restano nella L1 finché non si effettua il commit.  
+Durante l’esecuzione, l’hardware tiene traccia di due insiemi:
+\begin{itemize}
+  \item \textbf{Read set:} blocchi letti dalla transazione.
+  \item \textbf{Write set:} blocchi modificati (marcati nella cache come tentativi).
+\end{itemize}
+Un conflitto si verifica se un altro core tenta di accedere a un blocco presente in questi insiemi; il core rileva la violazione e \emph{aborta} la transazione, ripristinando lo stato precedente.  
+Le istruzioni principali sono \texttt{xbegin}, \texttt{xend}, \texttt{xabort}, \texttt{xtest}.  
+Un’implementazione comune è la \textbf{RTM (Restricted Transactional Memory)}, che richiede fallback non transazionale in caso di fallimenti ripetuti.
+
+\paragraph{Casi di abort e codici di stato}
+Quando una transazione fallisce, l’istruzione \texttt{\_xbegin()} restituisce in \texttt{EAX} un \textbf{codice di stato} che indica la causa dell’abort.
+Le ragioni più comuni sono:
+
+\begin{itemize}
+  \item \textbf{Conflitti di accesso:} un altro core accede (in lettura o scrittura) a una linea di cache inclusa nel \emph{write set} della transazione corrente.
+  \item \textbf{Interruzioni o eccezioni asincrone:} interrupt, context switch, page fault o eventi che invalidano il contesto transazionale.
+  \item \textbf{Overflow o limiti hardware:} superamento della capacità dei buffer interni o del numero massimo di linee L1 monitorabili (tipicamente poche decine di KB).
+  \item \textbf{Abort esplicito:} uso dell’istruzione \texttt{XABORT}, che forza la terminazione e può passare un argomento nei bit 24–31 del registro \texttt{EAX}.
+  \item \textbf{Assenza di supporto TSX:} il bit \texttt{CPUID.07H.EBX.RTM} non è impostato, quindi le istruzioni transazionali vengono ignorate o causano eccezione.
+\end{itemize}
+
+\noindent
+I bit del registro \texttt{EAX} restituiti in caso di abort sono così interpretati:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|l}
+\textbf{EAX Bit} & \textbf{Significato} \\
+\hline
+0 & Abort causato da istruzione \texttt{XABORT} \\
+1 & Transazione potenzialmente ripetibile al retry \\
+2 & Conflitto con altro processore su indirizzo monitorato \\
+3 & Overflow del buffer interno \\
+4 & Hit di breakpoint o debug event \\
+5 & Abort durante una transazione annidata \\
+6--23 & Riservati \\
+24--31 & Argomento passato a \texttt{XABORT} \\
+\end{tabular}
+\caption{Codici di stato restituiti nel registro \texttt{EAX} in caso di abort transazionale}
+\label{tab:tsx_abort_codes}
+\end{table}
+
+\noindent
+Se nessun bit è impostato (\texttt{EAX = 0}), significa che la transazione è stata abortita senza una causa specifica riconoscibile (abort generico).
+
+\subsection{DRAM e Refresh}
+La \textbf{Dynamic RAM (DRAM)} conserva ciascun bit come carica elettrica in un piccolo condensatore, controllato da un transistor.  
+Col tempo la carica si disperde attraverso resistenze parassite, quindi ogni cella deve essere periodicamente \textbf{rinfrescata} per non perdere il dato.  
+Il tempo caratteristico di scarica è $\tau = RC$, e ogni riga viene tipicamente refreshata ogni 64 ms.
+
+\paragraph{Effetti del refresh}
+\begin{itemize}
+  \item \textbf{Energia:} ogni ciclo di refresh consuma energia addizionale.
+  \item \textbf{Prestazioni:} durante il refresh le righe interessate non sono accessibili.
+  \item \textbf{Scalabilità:} più capacità significa più righe da aggiornare e quindi pause più lunghe.
+\end{itemize}
+Per mitigare l’impatto si adottano tecniche di \textbf{distributed refresh}: il controller rinfresca blocchi separati in tempi diversi, riducendo le pause globali.  
+Altre strategie (es. \emph{retention-aware refresh}) regolano dinamicamente la frequenza in base alla stabilità elettrica delle celle, riducendo consumi senza compromettere l’integrità dei dati.
+
+\subsection*{Conclusione}
+Questo modulo mostra come l’evoluzione hardware — dal parallelismo a livello di pipeline e thread, alla gestione speculativa e coerente delle cache, fino alle transazioni e alla DRAM — influenzi direttamente i modelli di programmazione e le garanzie di sicurezza dei sistemi moderni.  
+Ogni livello della gerarchia hardware (CPU, cache, memoria, controller) contribuisce a bilanciare potenza, latenza e coerenza, delineando le fondamenta su cui si costruiscono le architetture di sicurezza e difesa dei sistemi.

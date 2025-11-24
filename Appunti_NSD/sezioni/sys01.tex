@@ -1,0 +1,137 @@
+\newpage
+
+\section{SYS\_01 — Introduzione ai Security Frameworks}
+
+\subsection{Quadro generale e obiettivo}
+La sicurezza informatica non è uno stato binario ma un processo continuo: si riduce il \emph{costo d’attacco} mantenendo usabilità e disponibilità accettabili.
+ Ogni strato (hardware, firmware, kernel, librerie, applicazioni) introduce superfici d’attacco e dipendenze; 
+ perciò servono principi comuni e \emph{framework} che rendano il miglioramento \emph{ripetibile, misurabile e auditabile}.
+  L’obiettivo del modulo è collegare i \textbf{principi fondativi} (autenticità, autorizzazione, accountability) con i \textbf{framework operativi} (FIPS 200, CIS Controls, ISO/IEC 27000) e mostrare come si traducano in piani d’azione.
+
+
+
+
+\subsection{Principi fondamentali}
+
+\paragraph{Confidenzialità}\mbox{}\\
+\textbf{Che cos’è:}\\
+È la proprietà per cui l’informazione è accessibile solo ai soggetti autorizzati, impedendo letture, copie o divulgazioni non consentite.\\[0.3em]
+\textbf{Perché serve:}\\
+Senza confidenzialità, qualsiasi misura di sicurezza perde significato: un’informazione rubata o intercettata può compromettere l’intero sistema.\\[0.3em]
+\textbf{Come si ottiene:}\\
+Attraverso cifratura in transito (TLS, SSH) e a riposo (Full Disk Encryption, database encryption), una gestione sicura delle chiavi (KMS, HSM), segmentazione di rete, principio del need-to-know e riduzione dei dati trattati al minimo necessario.\\[0.3em]
+I Modelli sono: \emph{simmetrica} (AES: veloce, chiave condivisa) e \emph{asimmetrica} (RSA/EC: coppie pub/priv, abilita anche firme). Sicurezza “computazionale”: l’obiettivo è rendere impraticabile la ricerca esaustiva della chiave. La gestione delle chiavi (KMS, rotazione, \emph{separation of duties}) è parte integrante del controllo.
+
+\textbf{Trappole comuni:}\\
+Chiavi salvate in chiaro o condivise tra utenti, backup e log non cifrati, assenza di cifratura interna su link “fidati”.
+
+\paragraph{Integrità}\mbox{}\\
+\textbf{Che cos’è:}\\
+È la garanzia che i dati o i componenti software non siano stati modificati in modo non autorizzato, oppure che ogni modifica sia tracciabile e verificabile.\\[0.3em]
+\textbf{Come si ottiene:}\\
+Con hash e HMAC, firme digitali, controlli di modifica (change management e principi 4–eyes), log e backup immutabili (WORM), validazioni in pipeline CI/CD.\\[0.3em]
+\textbf{Esempi:}\\
+Checksum end-to-end, code signing, manifest firmati, blockchain privata per log e supply-chain verification.\\[0.3em]
+\textbf{Attenzioni:}\\
+CRC o hash non firmati non offrono sicurezza reale; le chiavi di firma vanno custodite e ruotate; occorre distinguere tra collisione e preimage per valutare la robustezza di un algoritmo.
+
+\paragraph{Disponibilità}\mbox{}\\
+\textbf{Che cos’è:}\\
+È la capacità di mantenere servizi e dati accessibili con prestazioni accettabili, anche in presenza di guasti o attacchi.\\[0.3em]
+\textbf{Come si ottiene:}\\
+Con ridondanza (N+1, active–active), strategie di degrado controllato (graceful degradation), meccanismi di protezione come circuit breaker, capacity planning, autoscaling e piani di continuità (DR/BCP).\\[0.3em]
+\textbf{Minacce tipiche:}\\
+Attacchi DoS/DDoS, saturazione delle risorse, errori di configurazione, catene di dipendenze non ridondate, aggiornamenti mal pianificati.
+
+\paragraph{Autenticità e Autorizzazione}\mbox{}\\
+\textbf{Autenticità — che cos’è:}\\
+È la garanzia che l’identità dichiarata da un soggetto corrisponda effettivamente a chi afferma di essere.\\[0.3em]
+\textbf{Autenticità — come si ottiene:}\\
+Tramite meccanismi di autenticazione a più fattori (MFA), gestione sicura delle credenziali, certificati digitali, attestazione hardware e protocolli di handshake sicuro.\\[0.3em]
+\textbf{Autorizzazione — che cos’è:}\\
+È il processo di assegnare o negare risorse a un soggetto autenticato in base al suo ruolo, contesto o policy.\\[0.3em]
+\textbf{Autorizzazione — come si ottiene:}\\
+Applicando il principio del least privilege, modelli RBAC (Role-Based Access Control) o ABAC (Attribute-Based), segregazione dei doveri, accessi JIT/JEA e revisioni periodiche dei permessi.\\[0.3em]
+\textbf{Pattern utili:}\\
+SSO centralizzato, token scadibili, sessioni brevi, meccanismi di break-glass tracciato per accessi di emergenza.
+
+\paragraph{Accountability}\mbox{}\\
+\textbf{Che cos’è:}\\
+È la possibilità di attribuire in modo affidabile ogni azione compiuta in un sistema a un soggetto identificabile.\\[0.3em]
+\textbf{Come si ottiene:}\\
+Attraverso logging centralizzato e immutabile (SIEM), sincronizzazione oraria precisa (NTP/PTP), integrità dei log (HMAC, firme o catene di hash), correlation ID end-to-end e una catena di custodia documentata per la forensica.\\[0.3em]
+\textbf{Attenzioni:}\\
+Bilanciare privacy e obblighi di tracciabilità; proteggere sia il canale di logging sia il repository; stabilire tempi di retention coerenti con GDPR e compliance interna.
+
+\paragraph{Dipendibilità}\mbox{}\\
+\textbf{Che cos’è:}\\
+È la qualità complessiva di un sistema nel fornire un servizio affidabile, sicuro, mantenibile e resiliente nel tempo.\\[0.3em]
+\textbf{Come si ottiene:}\\
+Attraverso osservabilità (metriche, log, tracing), deploy sicuri (feature flags, canary release, rollback), chaos engineering, e post-incident review per il miglioramento continuo.\\[0.3em]
+\textbf{Connessioni:}\\
+La CIA tutela dati e servizi, autenticità e autorizzazione controllano chi accede, accountability ne permette la verifica, e la dipendibilità orchestra tutto il ciclo di vita — dalla progettazione, all’esercizio, fino alla risposta agli incidenti.
+
+
+
+
+\subsection{Perché servono i Security Frameworks}
+La sicurezza non può più basarsi solo su “buone pratiche” isolate: i sistemi moderni sono troppo complessi, distribuiti e interdipendenti. Senza una struttura comune, ogni reparto o fornitore valuterebbe i rischi in modo diverso, rendendo impossibile il confronto e la gestione coerente della sicurezza.\\[0.3em]
+I \textbf{Security Frameworks} servono proprio a questo: forniscono un linguaggio condiviso, un insieme ordinato di controlli riusabili e una base di confronto per misurare maturità e copertura.\\[0.3em]
+Ogni framework traduce i principi astratti (come confidenzialità, integrità e disponibilità) in \textbf{controlli pratici}, assegnando priorità e responsabilità operative. Inoltre, introducono un metodo sistematico di miglioramento continuo basato sul ciclo \emph{Plan–Do–Check–Act} (PDCA): pianificare i controlli, attuarli, verificarne l’efficacia e correggere le lacune.\\[0.3em]
+In sintesi, i framework rendono la sicurezza:
+\begin{itemize}
+  \item \textbf{misurabile}, grazie a controlli e metriche standard;
+  \item \textbf{ripetibile}, perché le procedure possono essere replicate e auditabili;
+  \item \textbf{comunicabile}, poiché tecnologia, processi e persone usano la stessa terminologia;
+  \item \textbf{migliorabile}, grazie al monitoraggio continuo del rischio residuo.
+\end{itemize}
+
+\subsection{Tre famiglie a confronto}
+
+\subsubsection{FIPS 200 — Requisiti minimi per i sistemi federali}
+Il \textbf{FIPS 200} (Federal Information Processing Standard) definisce i requisiti minimi di sicurezza per i sistemi informativi delle agenzie federali statunitensi. È un approccio prescrittivo e normativo: stabilisce quali controlli devono essere presenti e come verificarne l’attuazione.\\[0.3em]
+Le principali famiglie di controllo comprendono:
+\emph{Access Control, Audit and Accountability, Configuration Management, Contingency Planning, Identification and Authentication, Incident Response, Maintenance, Risk Assessment} e molte altre.\\[0.3em]
+Ogni organizzazione deve:
+\begin{itemize}
+  \item valutare periodicamente i controlli implementati;
+  \item pianificare e attuare azioni correttive;
+  \item ottenere l’autorizzazione all’operatività dei propri sistemi (\emph{Authorization to Operate, ATO});
+  \item mantenere un monitoraggio continuo dell’efficacia delle misure.
+\end{itemize}
+Il FIPS 200 è quindi una \textbf{baseline di conformità} utile dove esistono vincoli regolatori o contrattuali (es. ambienti governativi o fornitori di enti pubblici). Fornisce un modello forte in termini di \emph{assurance} e tracciabilità dei controlli, ma poco flessibile in contesti dinamici o non federali.
+
+\subsubsection{CIS Critical Security Controls — L’igiene prioritaria}
+I \textbf{CIS Controls} (Center for Internet Security) rappresentano un insieme pratico e prioritarizzato di buone pratiche operative, pensato per essere attuabile rapidamente anche da organizzazioni non grandi.\\[0.3em]
+I controlli sono 20 (raggruppati in famiglie come \emph{Inventory and Control, Secure Configuration, Continuous Vulnerability Management, Controlled Use of Administrative Privileges, Malware Defense, Incident Response}...), ciascuno articolato in sotto-controlli concreti.\\[0.3em]
+I primi cinque sono considerati la “\textbf{cyber hygiene di base}”, cioè le difese fondamentali che riducono fino all’85\% delle minacce comuni:
+\begin{enumerate}
+  \item inventario di dispositivi autorizzati e non autorizzati;
+  \item inventario del software installato;
+  \item configurazioni sicure di host e apparati;
+  \item gestione continua delle vulnerabilità e delle patch;
+  \item uso controllato dei privilegi amministrativi.
+\end{enumerate}
+La forza dei CIS Controls sta nella loro concretezza: sono pensati per rispondere alla domanda “\emph{da dove cominciare domani mattina?}”. Sono verificabili, misurabili e fortemente orientati all’operatività quotidiana.\\[0.3em]
+Per questo motivo vengono spesso adottati come base operativa su cui innestare framework più ampi (ISO, NIST, ecc.), fungendo da \textbf{checklist pragmatica} per il miglioramento rapido della postura di sicurezza.
+
+\subsubsection{ISO/IEC 27000 — ISMS e gestione del rischio}
+La famiglia \textbf{ISO/IEC 27000} fornisce un modello internazionale per la gestione della sicurezza delle informazioni basato sull’approccio \textbf{ISMS} (\emph{Information Security Management System}).\\[0.3em]
+Il cuore della famiglia è la \textbf{ISO/IEC 27001}, che definisce i requisiti per stabilire, mantenere e migliorare un ISMS certificabile. La \textbf{27002} fornisce linee guida e buone pratiche per l’attuazione dei controlli, mentre la \textbf{27005} approfondisce la gestione del rischio.\\[0.3em]
+Esistono inoltre estensioni verticali per contesti specifici:
+\begin{itemize}
+  \item \textbf{27017} e \textbf{27018} per la sicurezza e privacy nel cloud;
+  \item \textbf{27019} per i sistemi industriali (ICS/SCADA);
+  \item \textbf{27011} (ITU-T X.1051) per operatori telco.
+\end{itemize}
+Il modello ISO si basa su un approccio \textbf{risk-based} e adattabile: ogni organizzazione identifica e valuta i propri rischi, seleziona i controlli più adatti (dall’\emph{Annex A}) e li integra nei processi aziendali secondo il ciclo PDCA.\\[0.3em]
+L’obiettivo non è la “sicurezza assoluta”, ma la \textbf{gestione consapevole del rischio}, bilanciando protezione, costi e conformità. Il valore aggiunto della serie ISO 27000 è la sua scalabilità e certificabilità: consente audit esterni, comparabilità e riconoscimento internazionale, fungendo da ponte tra \emph{compliance} e \emph{governance}.
+
+\subsubsection*{Sintesi comparativa}
+\begin{itemize}
+  \item \textbf{FIPS 200:} prescrittivo, orientato alla conformità e all’accreditamento dei sistemi federali. Ottimo per la \emph{baseline} normativa, poco flessibile fuori da contesti regolati.
+  \item \textbf{CIS Controls:} operativo e immediato, fornisce priorità chiare e controlli attuabili. Ideale per migliorare rapidamente l’igiene di sicurezza.
+  \item \textbf{ISO/IEC 27000:} gestionale e certificabile, integra sicurezza, rischio e governance. Indicato per aziende che mirano a maturità e riconoscimento formale.
+\end{itemize}
+Molte organizzazioni combinano i tre approcci: i \emph{CIS Controls} come base operativa, la \emph{ISO 27001} come cornice di governance, e il \emph{FIPS 200} come riferimento di conformità in ambiti regolati.
+

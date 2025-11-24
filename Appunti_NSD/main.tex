@@ -1,0 +1,86 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{lmodern}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{makecell}
+\usepackage{caption}
+\usepackage{array}
+\captionsetup[table]{labelfont=bf,font=small}
+
+
+\geometry{margin=2.5cm}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!7},
+  columns=fullflexible
+}
+
+\title{Fondamenti dell'Architettura Internet e Vulnerabilità Intrinseche dei Protocolli IP/TCP\\
+\large (Appunti elaborati a partire dalle slide del corso \\ \normalsize Network and System Defense, A.A. 2025/2026)}
+\author{Leonardo Polidori, Edoardo Marchionni, Chat GPT}
+
+% Profondità dell’indice e della numerazione
+\setcounter{tocdepth}{4}   % fino a \paragraph
+\setcounter{secnumdepth}{20} % numera fino a \subparagraph
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\clearpage
+
+%%%%%%%%%%%%% NET_01 %%%%%%%%%%%%%%%%%%%%%%%%
+
+\include{sezioni/net01}
+
+
+%%%%%%%%%%%%%%%%%% NET_02 %%%%%%%%%%%%%%%%%%%%%
+\include{sezioni/net02}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% NET_03 %%%%%%%%%%%%%%%%%%%
+
+\include{sezioni/net03}
+%%%%%%%%%%%%%%%%%%%%%%%% NET_04 %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\include{sezioni/net04}
+
+
+%%%%%%%%%%%%%%%%%%  NET_05%%%%%%%%%%%%%%%%%
+\include{sezioni/net05}
+
+%%%%%%  NET_06  %%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{sezioni/net06}
+
+%%%%%%%%%%%%%%%%%%%% SYS_01 %%%%%%%%%%%%%%%%%%%%%
+\include{sezioni/sys01}
+
+
+\include{sezioni/sys02}
+
+\include{sezioni/sys04}
+
+
+\include{sezioni/sys05}
+
+\include{sezioni/sys06}
+
+\include{sezioni/sys07}
+
+\end{document}

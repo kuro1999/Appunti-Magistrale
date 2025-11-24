@@ -1,0 +1,286 @@
+\newpage
+
+
+\section{SYS\_06 - Antivirus}
+Un \textbf{antivirus} è un software che opera in background con l’obiettivo di \textbf{rilevare, prevenire e rimuovere} software malevolo. Il suo scopo principale è la \emph{prevenzione}, ma nel caso in cui il malware riesca a penetrare nel sistema, deve essere in grado di \textbf{disinfettare i programmi infetti} e ripulire il computer.  
+
+Il primo esempio di virus informatico fu il \textbf{Creeper} (1971), creato da Bob Thomas alla BBN: si diffondeva nella rete ARPANET mostrando il messaggio \emph{“I’m the Creeper, catch me if you can!”}. Poco dopo nacque \textbf{Reaper}, il primo programma antivirus, progettato per individuare e rimuovere Creeper: un esempio precoce del gioco “gatto e topo” tra virus e software di sicurezza.
+
+\subsection{Problemi principali degli antivirus}
+Gli antivirus affrontano diverse difficoltà:
+\begin{itemize}
+  \item i malware cercano attivamente di nascondersi e auto-proteggersi, implementando tecniche di \textbf{evasione} e usando \textbf{funzionalità non documentate} dei sistemi operativi;
+  \item la \textbf{superficie di attacco} dei sistemi moderni è enorme: include applicazioni, servizi, OS, email e rete;
+  \item ogni giorno vengono rilasciate centinaia o migliaia di nuove varianti di software malevolo;
+  \item l’obiettivo del malware è passato dal puro interesse tecnico al \textbf{profitto economico} o allo \textbf{spionaggio}.
+\end{itemize}
+
+\subsection{Evoluzione degli antivirus}
+In origine gli antivirus erano semplici scanner a riga di comando basati su \textbf{pattern matching}.  
+Oggi includono firewall, moduli di protezione web e componenti residenti che monitorano file e processi in tempo reale.  
+A causa della quantità di nuovi campioni ricevuti giornalmente, le tecniche di sola firma non bastano più: vengono quindi impiegate \textbf{euristiche e analisi comportamentali}.
+
+\subsection{Componenti di un antivirus}
+Un antivirus moderno è composto da più moduli cooperanti:
+\begin{itemize}
+  \item \textbf{Kernel dell’antivirus:} processo residente in memoria, avviato allo startup. È responsabile delle funzioni core e dei meccanismi di \textbf{self-protection} (es. intercetta segnali come \texttt{SIGKILL} per evitare la terminazione).
+  \item \textbf{Scanner:} controlla i file creati o modificati, sfruttando i meccanismi di \emph{publish/subscribe} del SO.
+  \item \textbf{Filter driver per file system e rete:} analizzano il traffico prima che venga scritto o consegnato, spesso implementati con \textbf{eBPF}.
+  \item \textbf{Database delle firme:} contiene hash, checksum o fingerprint di malware conosciuti; viene aggiornato frequentemente.
+  \item \textbf{Unpacker:} analizza file compressi o cifrati, poiché molti malware sono “impacchettati”.
+  \item \textbf{Interpreti di formati:} moduli in grado di comprendere strutture complesse (PE, ELF, PDF, DOCX, PNG, JPG), spesso basati su conoscenza parziale dei formati.
+  \item \textbf{Emulatori:} ambienti sandbox per analizzare dinamicamente il comportamento di binari sospetti.
+  \item \textbf{Meccanismi di autoprotezione:} come ASLR, DEP e anti-debugging.
+\end{itemize}
+
+
+
+
+\subsection{Esempi di packing}
+I malware spesso ricorrono al \textbf{packing} per ostacolare l'analisi statica: il payload reale viene compresso, cifrato o trasformato in una rappresentazione intermedia e accompagnato da uno \emph{stub}/unpacker che, a runtime, ripristina il codice originale in memoria. Di seguito sono spiegati con maggior dettaglio gli indicatori più utili per riconoscere un eseguibile impacchettato e come interpretarli.
+
+\paragraph{1. Poche o nessuna importazione nella IAT (Import Address Table)}
+Un eseguibile legittimo normalmente importa funzioni di librerie di sistema (es. kernel32.dll, libc, ecc.). I packer spesso creano un eseguibile con una IAT minimale (perché l'unpacker esegue la risoluzione dinamica delle API dopo lo \emph{depack}). Pertanto:
+\begin{itemize}
+  \item \textbf{Indicatore:} IAT con poche voci o assente.
+  \item \textbf{Strumenti:} \texttt{readelf -d}, \texttt{objdump -p} (ELF), \texttt{pefile / CFF Explorer / dumpbin} (PE).
+  \item \textbf{Interpretazione:} sospetto di packing quando l'eseguibile non importa funzioni di libreria comuni o importa solamente poche funzioni ``bootstrap''.
+\end{itemize}
+
+\paragraph{2. Nomi di sezioni non standard o incoerenti}
+I packer tendono a rinominare o creare sezioni con nomi strani (es. \texttt{.upx}, \texttt{.vmp0}, sezioni con nomi casuali) oppure mettono tutto in poche sezioni generiche.
+\begin{itemize}
+  \item \textbf{Indicatore:} sezioni con nomi sconosciuti o ripartizione non usuale di \texttt{.text}, \texttt{.data}, \texttt{.rdata}.
+  \item \textbf{Strumenti:} \texttt{readelf -S}, \texttt{objdump -h}, \texttt{peheader/PEview}.
+  \item \textbf{Interpretazione:} naming anomalo spesso correlate a packer noti; attenzione però ai compiler/linker proprietari che possono produrre nomi non standard.
+\end{itemize}
+
+\paragraph{3. Sezioni piccole su disco ma grandi in memoria}
+I packer memorizzano il codice compresso in disco (raw size piccola) e lo espandono in memoria al momento dell'esecuzione (virtual size grande).
+\begin{itemize}
+  \item \textbf{Indicatore:} grande differenza tra \emph{raw\_size} (su file) e \emph{virtual\_size} (in memoria) per una sezione.
+  \item \textbf{Strumenti:} \texttt{readelf -S}, \texttt{pefile}, \texttt{radare2}.
+  \item \textbf{Interpretazione:} forte indizio di packing / unpacking runtime.
+\end{itemize}
+
+\paragraph{4. Poche stringhe leggibili}
+Poiché il payload è spesso compresso o cifrato, nell'eseguibile su disco ci sono poche stringhe ASCII/Unicode riconoscibili (URL, user-agent, messaggi di debug).
+\begin{itemize}
+  \item \textbf{Indicatore:} basso numero di stringhe significative trovate con \texttt{strings}.
+  \item \textbf{Strumenti:} \texttt{strings}, \texttt{floss} (per stringhe de-obfuscated), analisi con \texttt{rabin2} o \texttt{binwalk}.
+  \item \textbf{Interpretazione:} packing o cifratura del contenuto; attenzione a false positive (ad esempio eseguibili minimizzati).
+\end{itemize}
+
+\paragraph{5. Sezioni con permessi RWX}
+Sezioni marcate Read-Write-Execute (RWX) sono sospette perché permettono di scrivere codice in memoria e quindi eseguirlo — comportamento tipico dell’unpacker che scrive il payload in memoria e salta lì.
+\begin{itemize}
+  \item \textbf{Indicatore:} presenza di sezioni con permessi RWX o pagine mappate RWX a runtime.
+  \item \textbf{Strumenti:} \texttt{readelf -l} (ELF), \texttt{Process Explorer}, \texttt{VMMap}, oppure con un debugger vedere le mappature di memoria.
+  \item \textbf{Interpretazione:} RWX è raro in software benigno moderno (che preferisce W\,+\,X separati per mitigazioni), è quindi un forte campanello d’allarme.
+\end{itemize}
+
+\paragraph{6. Salti o chiamate a registri/indirizzi anomali}
+I packer/unpacker spesso usano indirezioni (call/jmp su registri, valori calcolati, table-driven jumps) per trasferire il controllo al codice unpacked.
+\begin{itemize}
+  \item \textbf{Indicatore:} molte istruzioni del tipo \texttt{jmp eax}, \texttt{call rax}, o calcoli di indirizzo complessi nelle prime regioni di codice.
+  \item \textbf{Strumenti:} disassembler (IDA, Ghidra, radare2), \texttt{objdump -d}.
+  \item \textbf{Interpretazione:} pattern tipico dello stub unpacker che risolve indirizzi e salta al codice decompresso.
+\end{itemize}
+
+\subsection{Approccio operativo alla rilevazione}
+\begin{enumerate}
+  \item \textbf{Prima ispezione statica rapida:} \texttt{strings}, \texttt{readelf/objdump} o \texttt{PE tools} per IAT e sezioni anomale.
+  \item \textbf{Heuristics/ML:} n-grams di byte, istogrammi di opcode o grafi di chiamata per confrontare con dataset di benign/malware (utile quando le firme falliscono).
+  \item \textbf{Analisi dinamica controllata:} eseguire il sample in sandbox/emulatore per osservare unpacking runtime — monitorare la creazione di memoria RWX, le Write+Execute transition e le API di allocazione (es. \texttt{VirtualAlloc}, \texttt{mmap} con PROT\_EXEC).
+  \item \textbf{Fingerprinting dei packer:} molti packer lasciano artefatti riconoscibili (sezioni .upx, firme nello stub). Usare DB di packer per matching.
+\end{enumerate}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/SYS_06/unpack}
+    \caption{Processo di unpacking di un eseguibile: l’unpacker estrare il codice originale e trasferisce il controllo al programma legittimo.}
+    \label{fig:unpack}
+\end{figure}
+
+
+\subsection{Tecniche di evasione}
+Le tecniche di evasione mirano a rendere inefficace la firma dell’antivirus:
+\begin{itemize}
+  \item aggiunta di \textbf{codice inutile o trasposto} (\emph{spaghetti code});
+  \item uso di \textbf{polimorfismo}, dove ogni infezione genera una versione leggermente diversa del codice;
+  \item \textbf{metamorfismo}, in cui il virus si ricompila in una forma logicamente equivalente ma sintatticamente diversa, alterando anche il proprio motore di cifratura.
+\end{itemize}
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{immagini/SYS_06/poli}
+    \caption{Evasion tramite \textbf{ineffective code sequences}: inserimento di codice inutile per alterare la firma.}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{immagini/SYS_06/spaghetti}
+    \caption{Evasion tramite \textbf{code transposition}: riordino delle istruzioni per creare “spaghetti code”.}
+  \end{minipage}
+\end{figure}
+
+
+\subsection{Analisi statica e comportamentale}
+
+La rilevazione del malware può essere condotta secondo due approcci principali:
+\textbf{analisi statica} (senza esecuzione) e \textbf{analisi comportamentale} (con esecuzione controllata o emulata).
+Le due tecniche sono complementari: la prima punta a riconoscere le firme del codice, la seconda ne studia il comportamento.
+
+\paragraph{Analisi statica}
+L’analisi statica si basa sull’esame del codice o dei binari senza eseguirli.
+È utile per individuare minacce note o pattern sospetti in modo rapido e sicuro.
+Le principali tecniche includono:
+
+\begin{itemize}
+  \item \textbf{Disassembly:} conversione del codice binario in istruzioni assembly leggibili.
+  Permette di osservare la struttura del programma (funzioni, loop, indirizzi di salto) e individuare pattern tipici di exploit o unpacker.
+
+  \item \textbf{Analisi delle stringhe:} ricerca di sequenze ASCII o Unicode che possano rivelare domini di comando e controllo, URL, percorsi sospetti o messaggi diagnostici.
+  Strumenti comuni sono \texttt{strings} o \texttt{floss} (per stringhe de-offuscate).
+
+  \item \textbf{Ispezione degli header:} controllo dei metadati del file (es. intestazioni PE o ELF) per verificare incongruenze o campi modificati.
+  Le intestazioni possono rivelare compilatori non standard o sezioni aggiuntive tipiche del packing.
+
+  \item \textbf{Regole YARA:} rappresentano una forma evoluta di pattern matching.
+  Ogni regola definisce un insieme di stringhe, espressioni regolari e condizioni logiche usate per identificare varianti di malware appartenenti alla stessa famiglia.
+  YARA viene spesso definito il “coltellino svizzero” dell’analisi malware e può essere applicato a file, dump di memoria o interi filesystem.
+
+  \item \textbf{Analisi della IAT (Import Address Table):} la IAT contiene i riferimenti alle funzioni importate da librerie dinamiche.
+  La presenza simultanea di API come \texttt{OpenProcess}, \texttt{VirtualAllocEx}, \texttt{WriteProcessMemory} e \texttt{CreateRemoteThreadEx} è un forte indicatore di tentativo di \textbf{process injection}.
+\end{itemize}
+
+L’analisi statica è estremamente utile per malware conosciuti o con caratteristiche ricorrenti, ma risulta limitata quando il codice è offuscato o impacchettato: in questi casi diventa necessario il ricorso a tecniche dinamiche.
+
+\paragraph{Analisi comportamentale}
+L’analisi comportamentale, detta anche \textbf{behavioral analysis}, valuta ciò che un programma \emph{fa} piuttosto che ciò che \emph{contiene}.
+Il suo obiettivo è osservare il comportamento in un ambiente controllato (sandbox, emulatore o macchina virtuale) e costruire una \textbf{firma comportamentale} basata su sequenze di azioni.
+
+\begin{itemize}
+  \item \textbf{Behavioral signatures:} si basano sull’osservazione delle azioni del programma (creazione di processi, accesso a registro o file system, comunicazioni di rete).
+  Sistemi come quelli di Symantec utilizzano istogrammi che contano la frequenza delle istruzioni o coppie di istruzioni per classificare il codice in base al comportamento.
+
+  \item \textbf{Heuristic engines:} introducono algoritmi di apprendimento automatico (\emph{machine learning}) per distinguere malware da software benigno.
+  Le feature più comuni sono:
+  \begin{itemize}
+    \item \textbf{sequenze di chiamate API} (indicative delle interazioni con il sistema operativo);
+    \item \textbf{sequenze di opcode} (n-grammi di istruzioni macchina);
+    \item \textbf{grafo delle funzioni chiamate} (\emph{Call Function Graph}), che rappresenta i blocchi base del programma e i collegamenti logici fra essi, indipendentemente da mutazioni o offuscamento.
+  \end{itemize}
+
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=.7\linewidth]{immagini/SYS_06/euristic}
+      \caption{Esempio di Call Function Graph per estrarre blocchi di esecuzione}
+      \label{fig:euristic}
+  \end{figure}
+  
+
+  \item \textbf{n-grams:} in questo contesto rappresentano sequenze contigue di byte o istruzioni, analoghe ai n-grammi linguistici nel testo.
+  Servono per creare feature vettoriali che alimentano modelli di classificazione come \emph{Naive Bayes}, \emph{Support Vector Machine} o \emph{Decision Tree}.
+  Le varianti potenziate (\emph{boosted decision tree}) forniscono spesso i risultati migliori.
+
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=.6\linewidth]{immagini/SYS_06/cow}
+      \caption{esempio di n-grams con n=2}
+      \label{fig:cow}
+  \end{figure}
+  
+  \item \textbf{Byteplots:} tecnica visiva che converte i binari in immagini, confrontate con dataset di malware noti.
+  Malware della stessa famiglia tendono a produrre pattern visivi simili, facilitando l’identificazione tramite analisi automatica.
+
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=.8\linewidth]{immagini/SYS_06/byteplots}
+      \caption{Esempio di byteplots}
+      \label{fig:byteplots}
+  \end{figure}
+    
+\end{itemize}
+
+
+
+In generale, l’analisi comportamentale è più robusta contro malware polimorfici o metamorfici, ma è più costosa in termini di tempo e risorse, poiché richiede ambienti di esecuzione controllati.
+L’unione delle due tecniche — statica e dinamica — costituisce la base dei moderni motori antivirus, che combinano pattern matching, euristiche e modelli di apprendimento automatico per fornire una protezione completa.
+
+\subsection{Emulatori e Fingerprinting}
+
+Le tecniche di rilevamento basate su \textbf{firme statiche} o \textbf{euristiche} possono essere facilmente aggirate tramite offuscamento del codice o metamorfismo.
+Per questo motivo molti antivirus moderni includono \textbf{emulatori}, ovvero componenti che eseguono i campioni sospetti in un ambiente controllato (\textbf{sandbox}) capace di riprodurre in parte il comportamento del sistema reale.
+
+\paragraph{Funzionamento degli emulatori}
+Gli emulatori simulano:
+\begin{itemize}
+  \item l’\textbf{Instruction Set Architecture} (ISA) della CPU, interpretando le istruzioni del malware;
+  \item le \textbf{API di sistema} principali, offrendo funzioni di sistema emulate (file I/O, rete, memoria, ecc.);
+  \item un ambiente operativo virtuale in cui il programma può essere eseguito in sicurezza senza compromettere l’host.
+\end{itemize}
+
+Grazie a questa esecuzione controllata, l’antivirus può:
+\begin{itemize}
+  \item osservare comportamenti sospetti che non emergono durante l’analisi statica;
+  \item rilevare malware che si attiva solo dopo la decrittazione o il de–packing;
+  \item superare molte tecniche di offuscamento del codice, poiché il malware viene eseguito e analizzato nel suo stato “reale”.
+\end{itemize}
+
+\paragraph{Limiti e tecniche di evasione}
+Nonostante la loro utilità, gli emulatori non riescono a riprodurre fedelmente tutte le funzionalità del sistema operativo.
+Per semplicità o motivi di performance, molte API sono simulate tramite \emph{stub}, ovvero funzioni che restituiscono valori fissi o predefiniti.
+Un esempio famoso è l’API \texttt{OpenMutexW} nel motore Comodo, che restituisce sempre il valore \texttt{0xBBBB}.
+Poiché in un sistema reale è altamente improbabile ottenere tale valore, il malware può usarlo come indizio della presenza di un ambiente emulato.
+
+\paragraph{Fingerprinting dell’ambiente}
+Il \textbf{fingerprinting} consiste proprio nel testare l’ambiente circostante per capire se il programma sta girando in una sandbox o su una macchina reale.
+I malware più sofisticati verificano:
+\begin{itemize}
+  \item valori anomali restituiti dalle API (come nel caso degli stub);
+  \item presenza di processi, driver o nomi di dispositivi tipici delle VM (es. \texttt{VBoxService.exe}, \texttt{vmtoolsd.exe});
+  \item quantità di RAM o numero di core ridotti, parametri comuni nelle sandbox;
+  \item assenza di interazione dell’utente (movimenti del mouse, eventi di input);
+  \item tempi di esecuzione troppo rapidi (assenza di \emph{sleep reali}).
+\end{itemize}
+
+Se il malware rileva la presenza di un ambiente virtualizzato o un emulatore, può:
+\begin{itemize}
+  \item eseguire solo codice benigno per ingannare il motore antivirus;
+  \item ritardare l’attivazione (time bomb) o attendere eventi specifici;
+  \item disattivarsi completamente per evitare di essere analizzato.
+\end{itemize}
+
+\paragraph{Contromisure adottate dagli antivirus}
+Per contrastare queste tecniche di evasione, gli antivirus implementano:
+\begin{itemize}
+  \item emulatori più completi e realistici, capaci di restituire valori pseudo–casuali invece di costanti;
+  \item ambienti sandbox che mascherano gli artefatti tipici delle macchine virtuali;
+  \item \textbf{anti–anti–debugging}, per neutralizzare controlli sul debugger o sull’orologio di sistema;
+  \item cifratura e offuscamento dei moduli interni, per impedire che il malware riconosca la firma dell’antivirus stesso.
+\end{itemize}
+
+In conclusione, gli emulatori rappresentano uno strumento essenziale per la difesa dinamica contro il malware, ma il loro successo dipende dal livello di realismo dell’ambiente simulato e dalla capacità di resistere ai test di fingerprinting condotti dai malware più avanzati.
+
+\subsection{Analisi del traffico cifrato}
+Alcuni antivirus analizzano anche traffico HTTPS, effettuando un \textbf{Man-in-the-Middle controllato}: installano un certificato CA sul sistema e generano certificati on-the-fly per ogni sito visitato.  
+Questa tecnica può introdurre vulnerabilità:
+\begin{itemize}
+  \item violazione di \textbf{HTTP Public Key Pinning (HPKP)};
+  \item esposizione a attacchi MITM se l’implementazione è errata;
+  \item accettazione di \textbf{Diffie–Hellman a 8 bit};
+  \item indebolimento della sicurezza anche durante gli aggiornamenti AV.
+\end{itemize}
+È consigliabile \textbf{non abilitare l’ispezione HTTPS} sugli antivirus.
+
+\subsection{Fiducia e limiti del software antivirus}
+Gli antivirus restano strumenti essenziali ma non infallibili:
+\begin{itemize}
+  \item sono scritti in linguaggi compilati e \textbf{memory-unsafe}, quindi vulnerabili a bug;
+  \item possono essere aggirati da malware avanzato o configurazioni errate;
+  \item inducono talvolta un \textbf{falso senso di sicurezza} negli utenti, riducendo la vigilanza.
+\end{itemize}
+Un computer completamente sicuro non esiste: l’antivirus deve essere visto come una \textbf{difesa a più livelli} all’interno di una strategia di sicurezza complessiva.

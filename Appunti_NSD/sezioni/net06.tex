@@ -1,0 +1,716 @@
+\newpage
+
+
+%%%% DA FINIRE %%%%%%%%%%%%%%
+\section{NET\_06 - Secure Protocols and Overlay VPNs}
+
+Dopo aver visto che i meccanismi di base dei protocolli IP non forniscono alcuna garanzia di sicurezza --- nessuna autenticazione, confidenzialità o integrità dei dati --- si rende necessario introdurre protocolli che, a diversi livelli dello stack ISO/OSI, permettano di realizzare comunicazioni sicure.  
+In precedenza abbiamo analizzato meccanismi di sicurezza \emph{perimetrale}, come VLAN, 802.1X, ACL e firewall. Tuttavia, quando la comunicazione esce dal perimetro aziendale e si estende su Internet, tali meccanismi non bastano più.  
+La protezione deve quindi avvenire tramite protocolli di sicurezza \emph{end-to-end}, basati su strumenti crittografici: cifratura, firme digitali, scambio di chiavi e codici di autenticazione dei messaggi (MAC).  
+
+Le tre principali famiglie di protocolli di sicurezza di rete sono:
+\begin{itemize}
+  \item \textbf{SSH (Secure Shell)} a livello applicativo;
+  \item \textbf{TLS (Transport Layer Security)} a livello di trasporto;
+  \item \textbf{IPsec (Internet Protocol Security)} a livello di rete.
+\end{itemize}
+A questi si aggiungono soluzioni di rete private sovrapposte, dette \textbf{Overlay VPNs}, che utilizzano tali protocolli per creare tunnel cifrati su reti pubbliche.
+
+\subsection{Sicurezza a livello applicativo: Secure Shell (SSH)}
+SSH nasce per sostituire protocolli insicuri come \texttt{telnet}, che trasmettevano in chiaro credenziali e dati sensibili. È un protocollo di \emph{remote login} sicuro, ma nel tempo si è evoluto in una suite di strumenti per connessioni protette, trasferimento file (\texttt{scp}), inoltro di porte (port forwarding) e proxy TCP.
+
+\paragraph{Architettura e RFC.}
+SSH è definito da tre RFC principali:
+\begin{itemize}
+  \item \textbf{RFC 4252:} Transport Layer Protocol – gestisce cifratura, scambio di chiavi e autenticazione del server;
+  \item \textbf{RFC 4253:} User Authentication Protocol – autentica l’utente tramite password o chiavi pubbliche;
+  \item \textbf{RFC 4254:} Connection Protocol – gestisce canali logici per servizi come shell remota o forwarding.
+\end{itemize}
+L’implementazione più diffusa è \textbf{OpenSSH}, disponibile su Linux e sistemi Unix-like.
+
+\paragraph{Obiettivi di sicurezza.}
+SSH fornisce:
+\begin{itemize}
+  \item \textbf{Autenticazione} dell’host remoto;
+  \item \textbf{Confidenzialità} dei dati trasmessi tramite cifratura simmetrica;
+  \item \textbf{Integrità} mediante HMAC (Hash-based Message Authentication Code).
+\end{itemize}
+
+\paragraph{Cifratura e handshake.}
+Durante la fase di handshake, client e server negoziano:
+\begin{itemize}
+  \item algoritmi di cifratura simmetrica (es. AES, ChaCha20-Poly1305);
+  \item algoritmi di scambio chiavi (Diffie–Hellman o ECDH);
+  \item algoritmi di firma (RSA, ECDSA, EdDSA);
+  \item funzioni hash (SHA-2, SHA-3).
+\end{itemize}
+Una volta scelti gli algoritmi, viene stabilita una \emph{session key} usata per cifrare il traffico del canale.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{immagini/NET_06/handshake}
+    \caption{Esempio di handshake SSH}
+    \label{fig:handshake}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/NET_06/dh}
+    \caption{Sequenza di messaggi nel protocollo SSH durante la fase di connessione: negoziazione della \emph{cipher suite}, autenticazione del server e del client, e apertura del canale sicuro per la sessione remota.}
+
+    \label{fig:dh}
+\end{figure}
+
+
+\paragraph{Autenticazione del server.}
+Alla prima connessione, il server invia la propria chiave pubblica: l’utente deve confermare manualmente l’impronta (fingerprint) per legare l’identità del server alla chiave ricevuta.  
+SSH non usa certificati X.509 né una PKI: la fiducia viene costruita progressivamente, salvando la chiave del server nel file \texttt{\~{}/.ssh/known\_hosts}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{immagini/NET_06/sshlogin}
+    \caption{Esempio di connessione SSH e verifica dell’impronta del server.}
+
+    \label{fig:sshlogin}
+\end{figure}
+
+
+\paragraph{Autenticazione del client.}
+Il client, di default, si autentica con username e password, ma è possibile abilitare l’autenticazione a chiave pubblica.  
+La coppia di chiavi è generata con:
+\begin{verbatim}
+$ ssh-keygen -t [rsa|dsa]
+\end{verbatim}
+La chiave pubblica del client (\texttt{id\_rsa.pub}) deve essere aggiunta sul server al file \texttt{\~{}/.ssh/authorized\_keys}.  
+Una volta installata, l’utente potrà accedere senza password, basandosi sul meccanismo di \emph{mutual authentication}.
+\paragraph{Servizi aggiuntivi.}
+Oltre all’accesso remoto sicuro, SSH offre numerose funzionalità aggiuntive che lo rendono uno strumento estremamente versatile per l’amministrazione di rete.
+Tra i principali utilizzi troviamo:
+\begin{itemize}
+  \item \textbf{Trasferimento di file sicuro} mediante i comandi \texttt{scp} o \texttt{sftp}, che sostituiscono i protocolli FTP tradizionali trasmettendo i dati cifrati:
+  \begin{verbatim}
+  $ scp [-r] [[user@]host1:]file1 ... [[user@]host2:]file2
+  \end{verbatim}
+
+  \item \textbf{Esecuzione remota di comandi} su un server senza aprire una shell interattiva:
+  \begin{verbatim}
+  $ ssh username@server command
+  \end{verbatim}
+
+  \item \textbf{Inoltro di sessioni grafiche X11}, che consente di eseguire applicazioni grafiche remote:
+  \begin{verbatim}
+  $ ssh -X username@server
+  \end{verbatim}
+
+  \item \textbf{Port forwarding} per creare tunnel TCP cifrati, utili per instradare traffico verso servizi interni:
+  \begin{itemize}
+    \item \textit{Locale:}
+    \begin{verbatim}
+    $ ssh -L lport:remote_addr:rport username@server
+    \end{verbatim}
+    \item \textit{Remoto:}
+    \begin{verbatim}
+    $ ssh -R rport:local_addr:lport username@server
+    \end{verbatim}
+  \end{itemize}
+
+  \item \textbf{Proxy SOCKS5 cifrato}, per instradare connessioni TCP di un’applicazione attraverso il tunnel SSH:
+  \begin{verbatim}
+  $ ssh -ND 9999 username@server
+  \end{verbatim}
+
+  \item \textbf{Montaggio di filesystem remoti} come se fossero directory locali, grazie a \texttt{sshfs}:
+  \begin{verbatim}
+  $ sshfs user@host: mountpoint
+  \end{verbatim}
+\end{itemize}
+
+Queste funzionalità dimostrano come SSH non sia soltanto un protocollo di autenticazione remota, ma un vero e proprio framework di sicurezza per la comunicazione cifrata, capace di adattarsi a diversi scenari operativi.
+
+\paragraph{Conclusione.}
+SSH implementa i propri meccanismi di sicurezza a livello applicativo. Tuttavia, estendere lo stesso approccio ad ogni protocollo applicativo (HTTP, FTP, SIP...) sarebbe inefficiente.
+È preferibile fornire i servizi di cifratura e autenticazione nei livelli inferiori, rendendoli disponibili come \emph{servizi di sicurezza trasparenti} alle applicazioni.
+Il problema di ssh è che funziona solo per le applicazioni che lo supportano esplicitamente ed è oneroso.
+Il seguente diagramma (Figura \ref{fig:sec}) riassume i principali protocolli di sicurezza a vari livelli dello stack ISO/OSI.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/NET_06/sec}
+    \caption{Tipi di sicurezza ai vari livelli}
+    \label{fig:sec}
+\end{figure}
+
+
+
+\subsection{Sicurezza a livello di trasporto: Transport Layer Security (TLS)}
+Il protocollo \textbf{Transport Layer Security (TLS)}, erede diretto di \textbf{SSL (Secure Sockets Layer)}, costituisce oggi lo standard per la protezione delle comunicazioni a livello di trasporto.
+Il suo obiettivo principale è fornire \textbf{confidenzialità}, \textbf{integrità} e \textbf{autenticazione} tra due applicazioni che comunicano su una rete potenzialmente insicura, come Internet.
+TLS opera sopra il livello di trasporto TCP, fornendo un canale cifrato e autenticato che garantisce protezione end-to-end alle applicazioni, indipendentemente dal protocollo applicativo utilizzato (HTTP, SMTP, IMAP, FTP, ecc.).
+
+\paragraph{Obiettivi di TLS.}
+Le finalità del protocollo TLS possono essere riassunte in tre fasi principali:
+\begin{itemize}
+  \item \textbf{Stabilire una sessione sicura (fase di Handshake).}
+  In questa fase le due parti concordano gli algoritmi crittografici da utilizzare, scambiano le chiavi necessarie per la cifratura e si autenticano reciprocamente, solitamente tramite certificati digitali X.509.
+  L’obiettivo è creare un canale cifrato condiviso e verificato, sul quale potranno transitare i dati applicativi.
+
+  \item \textbf{Trasferire dati applicativi in modo protetto.}
+  Una volta stabilita la sessione, la comunicazione avviene in modo privato e integro.
+  La \emph{confidenzialità} è garantita da algoritmi di cifratura simmetrica (ad esempio AES o ChaCha20), mentre l’\emph{integrità} dei dati è assicurata da un codice di autenticazione dei messaggi (\textbf{HMAC}, Hash-based Message Authentication Code), che impedisce modifiche non autorizzate ai pacchetti in transito.
+
+  \item \textbf{Un approccio unificato.}
+  A differenza di altri protocolli di sicurezza (come IPsec), che separano il protocollo di negoziazione delle chiavi (IKE) da quello di trasporto dei dati (ESP/AH), TLS integra entrambe le funzioni in un’unica architettura.
+  Ciò semplifica la gestione delle sessioni e consente alle applicazioni di utilizzare direttamente i servizi di sicurezza del livello di trasporto.
+\end{itemize}
+
+\paragraph{Ruolo nello stack di rete.}
+TLS si colloca tra i livelli 4 e 7 dello stack ISO/OSI: è trasparente per il livello applicativo, che si limita a inviare e ricevere dati sul canale cifrato, e per il livello di trasporto sottostante (TCP), che gestisce solo la consegna affidabile dei segmenti.
+In tal modo, TLS agisce come un servizio di sicurezza “plug-in” per qualsiasi applicazione che necessiti di autenticazione e riservatezza, rendendo la comunicazione immune da intercettazioni e manipolazioni.
+
+\paragraph{Esempio pratico.}
+Quando un utente visita un sito web \texttt{https://}, il browser instaura una connessione TCP sulla porta 443 e avvia la procedura TLS.
+Durante l’handshake, client e server negoziano algoritmi, verificano i certificati e generano chiavi di sessione.
+Da quel momento, ogni messaggio scambiato tra browser e server web è cifrato, autenticato e garantito contro modifiche o intercettazioni.
+
+\paragraph{Storia e porte standard.}
+In origine, le versioni “sicure” dei protocolli applicativi venivano pubblicate su porte dedicate:  
+HTTP (80) $\rightarrow$ HTTPS (443), SMTP (25) $\rightarrow$ SMTPS (465), POP3 (110) $\rightarrow$ POP3S (995).  
+Questo approccio è stato poi sostituito da meccanismi di \textit{upgrade in-band} (es. \texttt{STARTTLS}), che permettono di negoziare la sicurezza sulla stessa porta.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\linewidth]{immagini/NET_06/tls}
+    \caption{Come viene inserito TLS nello stack di protocolli.}
+    \label{fig:tls}
+\end{figure}
+
+
+\paragraph{Funzionamento.}
+TLS stabilisce una \textbf{sessione sicura} in due fasi:
+\begin{enumerate}
+  \item \textbf{Handshake:} negoziazione di algoritmi, scambio di chiavi, autenticazione reciproca;
+  \item \textbf{Data transfer:} cifratura simmetrica e autenticazione tramite MAC (Message Authentication Code).
+\end{enumerate}
+L’handshake si basa su certificati X.509 e su un’\textbf{infrastruttura a chiave pubblica (PKI)} che consente di verificare la legittimità del server e, facoltativamente, del client.
+
+\paragraph{Evoluzione a TLS 1.3.}
+La versione 1.3 del protocollo introduce miglioramenti sostanziali:
+\begin{itemize}
+  \item Rimozione di algoritmi deboli (MD5, RC4, DES, 3DES);
+  \item Uso esclusivo di cifrature AEAD (Authenticated Encryption with Associated Data);
+  \item Perfect Forward Secrecy (PFS) obbligatoria con Diffie–Hellman effimero;
+  \item Handshake più rapido (1-RTT);
+  \item Supporto per 0-RTT data per sessioni ripetute.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/NET_06/tls23}
+    \caption{TLS 1.2 vs TLS 1.3: confronto tra le fasi di handshake e i miglioramenti introdotti nella versione 1.3.}
+    \label{fig:tls23}
+\end{figure}
+
+
+\paragraph{Attacchi noti.}
+Nel tempo, TLS ha subito diversi attacchi:
+\begin{itemize}
+  \item \textbf{Downgrade attacks} (es. FREAK, Logjam): forzano l’uso di versioni o cifrari deboli;
+  \item \textbf{Compression attacks} (CRIME, BREACH): sfruttano la compressione per estrarre dati sensibili;
+  \item \textbf{Cipher attacks} (BEAST): attacchi ai blocchi CBC di TLS 1.0;
+  \item \textbf{Implementation flaws} (Heartbleed): vulnerabilità nel codice OpenSSL.
+\end{itemize}
+L’elenco completo degli attacchi noti è riportato in RFC 7457.
+
+
+%%%%%%%%%%%%%%% 6 BIS       555555%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{X.509 Certificates e Public Key Infrastructure (PKI)}
+
+
+\subsection{Public Key Certificates}
+
+I certificati a chiave pubblica rappresentano il meccanismo fondamentale per associare in modo verificabile
+un’identità ad una chiave pubblica. L’idea di base è semplice: una Certification Authority (CA) firma un
+certificato che contiene la chiave pubblica di un soggetto, rendendo possibile a terzi fidarsi di tale chiave senza
+aver bisogno di contattare direttamente il soggetto stesso.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.35\linewidth]{immagini/NET_06/ca.png}
+    \caption{Illustrazione del processo di certificazione: la Certification Authority (CA) firma il certificato di Bob
+    (\texttt{CERT\_bob}), permettendo ai terzi di verificare la firma della CA, considerare autentica la chiave pubblica
+    di Bob e utilizzarla in modo sicuro. L'intera fiducia deriva dal possesso della chiave pubblica della CA.}
+\end{figure}
+
+Una volta verificato che il certificato è autentico, rimane da dimostrare che il soggetto sia davvero in possesso
+della corrispondente chiave privata. Per questo viene utilizzato un semplice protocollo di \textit{challenge–response},
+che consente di provare la proprietà della chiave senza rivelarla.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{immagini/NET_06/challenge_response.png}
+    \caption{Protocollo di challenge–response utilizzato per verificare il possesso della chiave privata:
+    Alice invia a Bob un nonce casuale; Bob lo firma con la propria chiave privata; Alice verifica la firma
+    usando la chiave pubblica contenuta nel certificato. Se la verifica ha successo, Bob è autenticato
+    come legittimo proprietario della chiave privata associata al certificato X.509.}
+\end{figure}
+
+Questo meccanismo, unito alla firma della CA, permette di stabilire un rapporto di fiducia tra identità e chiave
+pubblica, garantendo autenticazione e sicurezza nelle comunicazioni successive.
+
+\subsubsection{Public Key Infrastructure (PKI)}
+La protezione delle comunicazioni su reti insicure richiede un meccanismo affidabile per associare chiavi pubbliche all’identità dei loro proprietari.
+Questo compito è svolto dalla \textbf{Public Key Infrastructure (PKI)}, che definisce protocolli, politiche e componenti per la gestione sicura dei certificati digitali.
+
+Il fulcro della PKI è il \textbf{certificato X.509}, un documento digitale che collega in modo verificabile una chiave pubblica all’identità del soggetto che la detiene. Una volta firmato da una Certification Authority (CA) fidata, il certificato consente di stabilire comunicazioni affidabili (es. HTTPS, TLS, VPN).
+
+
+\subsubsection{Certificati X.509}
+Un certificato X.509 contiene una serie di informazioni organizzate secondo uno standard preciso:
+\begin{itemize}
+    \item \textbf{Metadata} (versione, numero seriale, validità)
+    \item \textbf{Issuer}: identità della CA che firma il certificato
+    \item \textbf{Subject}: identità del soggetto a cui appartiene la chiave pubblica
+    \item \textbf{Subject Public Key}: la chiave pubblica del soggetto
+    \item \textbf{Extensions}: attributi aggiuntivi, tipici dei certificati X.509v3
+    \item \textbf{Issuer Signature}: firma digitale della CA
+\end{itemize}
+
+Il certificato funge quindi da “passaporto digitale”, garantendo il legame tra l’identità del soggetto e la sua chiave pubblica.
+
+\subsubsection{Esempio di certificato X.509 reale}
+
+Come mostrato in Figura~\ref{fig:x509-wikipedia}, riportiamo un certificato reale rilasciato da
+\textit{Let’s Encrypt} per \texttt{*.wikipedia.org}. L’immagine evidenzia i campi fondamentali di un certificato
+X.509v3 tipicamente usato nei server HTTPS.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.95\linewidth]{immagini/NET_06/x509_wikipedia.png}
+    \caption{Certificato X.509 rilasciato da Let’s Encrypt per \texttt{*.wikipedia.org}.}
+    \label{fig:x509-wikipedia}
+\end{figure}
+
+\paragraph{Commento sintetico dei campi principali.}
+
+\begin{itemize}
+    \item \textbf{Common Name (CN): \texttt{*.wikipedia.org}}
+    Wildcard: valido per tutti i sottodomini del dominio \texttt{wikipedia.org}.
+
+    \item \textbf{Issuer: Let's Encrypt Authority X3}
+    CA intermedia che ha firmato il certificato. La CA radice è ISRG Root X1.
+
+    \item \textbf{Serial Number}
+    Identificatore univoco del certificato all’interno della CA che lo ha emesso.
+
+    \item \textbf{Version: 3}
+    Certificato X.509v3, necessario per utilizzare estensioni moderne (SAN, KeyUsage, ecc.).
+
+    \item \textbf{Signature Algorithm: SHA-256 with RSA Encryption}
+    Algoritmo utilizzato dalla CA per firmare digitalmente il certificato.
+
+    \item \textbf{Validity (Not Before / Not After)}
+    Intervallo di validità temporale. Let’s Encrypt utilizza periodi brevi (circa 90 giorni)
+    per motivi di sicurezza operativa.
+
+    \item \textbf{Public Key Info: ECDSA su curva secp256r1 (P-256)}
+    Chiave pubblica del server: moderna, efficiente e molto diffusa in HTTPS.
+
+    \item \textbf{Key Usage: Encrypt, Verify, Derive}
+    Indica gli scopi ammessi per la chiave pubblica del soggetto.
+
+    \item \textbf{Signature}
+    Firma digitale della CA, utilizzata dai client per verificare l’autenticità del certificato.
+\end{itemize}
+
+In sintesi, il certificato della Figura~\ref{fig:x509-wikipedia} mostra i campi essenziali
+che caratterizzano un certificato X.509 moderno: identità del soggetto, autorità certificante,
+validità, chiave pubblica e parametri crittografici.
+
+\subsubsection{Meccanismo di fiducia e firma della CA}
+Il certificato è considerato valido perché firmato da una CA ritenuta attendibile.
+Il processo è:
+
+\begin{enumerate}
+    \item Il soggetto genera una coppia di chiavi (pubblica/privata).
+    \item Invia alla CA una CSR contenente la chiave pubblica.
+    \item La CA verifica l’identità del richiedente.
+    \item Se la verifica ha successo, la CA firma digitalmente il certificato.
+\end{enumerate}
+
+Chi possiede la chiave pubblica della CA può verificare la firma, garantendo l’autenticità del certificato.
+
+\subsubsection{Challenge–Response}
+Verificare un certificato non basta: occorre assicurarsi che il soggetto possieda la chiave privata corrispondente.
+Questo avviene tramite un meccanismo di \textbf{challenge/response}:
+
+\begin{enumerate}
+    \item Alice invia un numero casuale (nonce) a Bob.
+    \item Bob firma il nonce con la propria chiave privata.
+    \item Alice verifica la firma usando la chiave pubblica nel certificato.
+\end{enumerate}
+
+Solo il vero proprietario della chiave privata può rispondere correttamente.
+
+\subsubsection{Certificate Signing Request (CSR)}
+Per ottenere un certificato, il richiedente deve produrre una CSR (Certificate Signing Request), tipicamente in formato \textbf{PKCS\#10}.
+Il CSR contiene:
+\begin{itemize}
+    \item i campi X.509 del soggetto;
+    \item la chiave pubblica;
+    \item eventuali estensioni richieste (KeyUsage, SAN, ecc.);
+    \item la firma digitale, generata con la chiave privata del richiedente.
+\end{itemize}
+
+La chiave privata non viene mai trasmessa.
+
+\subsubsection{Estensioni X.509v3}
+Le estensioni dei certificati X.509v3 vengono utilizzate per definire vincoli, scopi d’uso e proprietà aggiuntive. Tra le principali:
+
+\begin{itemize}
+    \item \textbf{Subject Key Identifier (SKI)}: identifica univocamente la chiave pubblica del soggetto.
+    \item \textbf{Authority Key Identifier (AKI)}: collega il certificato alla CA che lo ha firmato.
+    \item \textbf{Key Usage}: specifica cosa la chiave può fare (firma, cifratura, keyEncipherment...).
+    \item \textbf{Extended Key Usage}: scopi applicativi (es. TLS Web Server Authentication).
+    \item \textbf{Subject Alternative Name (SAN)}: identifica nomi alternativi, domini aggiuntivi, IP, email.
+    \item \textbf{Basic Constraints}: distingue certificati CA da certificati end-entity.
+\end{itemize}
+
+L’estensione \textbf{Basic Constraints} è cruciale:
+un certificato con `CA = FALSE` \textbf{non può firmare altri certificati}.
+I browser rigettano automaticamente catene illegittime.
+
+\subsubsection{Root CA e Trust Store}
+Una Root CA è una CA che si autofirma.
+Caratteristiche principali:
+
+\begin{itemize}
+    \item \textbf{Issuer = Subject} (autofirma)
+    \item SKI e AKI coincidono
+    \item È la base della catena di fiducia (\textit{trust anchor})
+\end{itemize}
+
+I certificati delle Root CA vengono distribuiti in modo sicuro nei sistemi operativi e nei browser, all’interno dei cosiddetti \textbf{trust store}, non modificabili dagli utenti non privilegiati.
+
+\subsubsection{Certificate Chain}
+Nella pratica, la firma diretta da parte della Root CA è rara.
+I certificati server sono quasi sempre firmati da una o più \textbf{Intermediate CA}.
+Una catena di certificati valida deve rispettare:
+
+\begin{itemize}
+    \item ogni certificato è firmato dalla CA immediatamente superiore;
+    \item l’ultimo certificato è una Root CA;
+    \item tutte le firme devono risultare valide;
+    \item l’estensione BasicConstraints deve essere coerente con il ruolo del certificato.
+\end{itemize}
+
+Le catene permettono di compartimentare la sicurezza: la Root CA può essere mantenuta offline e utilizzata solo raramente.
+
+\subsubsection{Sono pericolose le certificate chain?}
+
+A prima vista potrebbe sembrare che, una volta ottenuto un certificato valido, un attaccante possa
+generare una nuova coppia di chiavi e firmare certificati fasulli costruendo catene apparentemente
+legittime. Tuttavia, lo standard X.509 impedisce categoricamente questo tipo di attacco.
+
+La Figura~\ref{fig:chain-danger} mostra un esempio in cui un soggetto tenta di creare un certificato
+falso per un dominio (\texttt{goolge.com}) firmandolo con la propria chiave privata.
+Nonostante la firma sia matematicamente possibile, \textbf{il certificato risulta immediatamente
+invalido per qualsiasi client conforme allo standard}, poiché l’entità che lo ha firmato non è una CA
+legittima.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.95\linewidth]{immagini/NET_06/chain_danger.png}
+    \caption{Tentativo di generare un certificato fasullo partendo da una certificate chain valida.
+    Solo i certificati con \texttt{BasicConstraints: CA=TRUE} possono firmare altri certificati.
+    Un certificato end-entity (come \texttt{bonny.com} nella figura) non può agire come CA, e ogni
+    certificato firmato da esso viene rifiutato dai client.}
+    \label{fig:chain-danger}
+\end{figure}
+
+\paragraph{Perché l’attacco è impossibile.}
+Il motivo fondamentale è l’estensione \textbf{BasicConstraints}, introdotta in X.509v3, che impone un
+vincolo essenziale:
+
+\[
+\texttt{CA = TRUE} \quad \Rightarrow \quad \text{il certificato può firmare altri certificati}
+\]
+
+\[
+\texttt{CA = FALSE} \quad \Rightarrow \quad \text{il certificato \textbf{non} può agire come CA}
+\]
+
+Nei certificati rilasciati per i server — come \texttt{bonny.com} — \textbf{BasicConstraints è sempre impostato a CA=FALSE}.
+Qualunque certificato generato e firmato con la loro chiave privata:
+
+- non ha un Issuer valido,
+- non appartiene a una CA riconosciuta,
+- viene automaticamente scartato dai browser e dai client TLS.
+
+\paragraph{Conclusione.}
+Le certificate chain non sono pericolose:
+sono progettate per impedire che un soggetto non autorizzato possa generare certificati illegittimi.
+Il controllo dell’estensione \texttt{BasicConstraints}, insieme alla verifica della firma e del trust
+store, rende impossibile «promuovere» un certificato end-entity al ruolo di CA.
+
+
+
+\subsubsection{Wildcard Certificates}
+Un wildcard certificate permette di autenticare tutti i sottodomini di un dominio.
+Ad esempio:
+\[
+\texttt{CN = *.company.it}
+\]
+
+Questo è utile quando un’azienda ha molti servizi con nomi diversi all’interno dello stesso dominio.
+Va però usato con cautela: la compromissione della chiave privata comprometterebbe tutti i sottodomini.
+
+\subsubsection{Revoca dei certificati}
+Una PKI deve prevedere meccanismi per gestire certificati che non sono più affidabili
+(ad esempio chiavi private compromesse, smarrite o certificati non più utilizzati).
+Oltre al naturale \textbf{periodo di validità} (Validity Period), il meccanismo classico
+di revoca esplicita è la \textbf{Certificate Revocation List (CRL)}.
+
+\paragraph{Certificate Revocation List (CRL).}
+Una CRL è un elenco, firmato digitalmente dalla CA, che contiene i numeri di serie
+dei certificati revocati \emph{prima} della loro scadenza naturale.
+Ogni CRL include almeno:
+\begin{itemize}
+    \item l’\textbf{Issuer} (la CA che ha emesso la lista);
+    \item la \textbf{data dell’ultimo aggiornamento} e la \textbf{data del prossimo aggiornamento};
+    \item la \textbf{lista dei serial number} revocati e le relative date di revoca;
+    \item la \textbf{firma digitale} della CA, che garantisce l’integrità della lista.
+\end{itemize}
+
+Dal punto di vista del client, la procedura ideale sarebbe:
+\begin{enumerate}
+    \item scaricare la CRL pubblicata dalla CA (tipicamente via HTTP/HTTPS, URL indicato
+          nel certificato stesso tramite l’estensione \texttt{CRL Distribution Points});
+    \item verificare la firma della CRL con la chiave pubblica della CA;
+    \item controllare se il serial number del certificato che si sta validando compare nella lista.
+\end{enumerate}
+
+\paragraph{Impatto su scalabilità e prestazioni.}
+Questo approccio introduce alcuni limiti pratici:
+\begin{itemize}
+    \item \textbf{Overhead di rete}: ogni client dovrebbe scaricare periodicamente CRL potenzialmente grandi;
+    \item \textbf{Latenza}: la verifica di revoca può richiedere una richiesta HTTP addizionale verso il server CRL;
+    \item \textbf{Scalabilità}: più certificati emette una CA, più la CRL cresce, aumentando tempo di download e parsing;
+    \item \textbf{Revoca non “real-time”}: tra una pubblicazione di CRL e la successiva può passare tempo, durante il
+          quale un certificato compromesso può risultare ancora valido ai client che non hanno aggiornato la lista.
+\end{itemize}
+
+Per questi motivi, nella pratica molte applicazioni non critiche effettuano controlli di revoca in modo sporadico
+o addirittura li omettono, affidandosi principalmente alla breve durata dei certificati.
+In contesti ad alta sicurezza, invece, la gestione e la verifica delle CRL diventano un requisito essenziale,
+oppure vengono sostituite/affiancate da meccanismi più dinamici (es. protocolli online tipo OCSP).
+
+\subsubsection{Conclusioni}
+La PKI e i certificati X.509 costituiscono il fondamento dell’intero ecosistema TLS/HTTPS.
+Capire struttura, catene, estensioni e meccanismi di revoca è essenziale per comprendere come funziona la sicurezza delle comunicazioni moderne, dai browser alle VPN fino ai sistemi di autenticazione federata.
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%       laboratorio         %%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\maketitle
+{\LARGE \textbf{Laboratorio}} \\[0.5em]
+
+\subsection{Laboratorio 6: HTTPS con Apache2 e Downgrade Attack}
+
+\subsubsection{Scenario}
+L’obiettivo del laboratorio è duplice:
+\begin{enumerate}
+  \item configurare un server HTTPS tramite Apache2 utilizzando certificati X.509 generati manualmente;
+  \item dimostrare un attacco di \textbf{HTTPS Downgrade}, in cui un attaccante in posizione di Man-in-the-Middle forza un client a utilizzare HTTP non cifrato, consentendo il furto di credenziali.
+\end{enumerate}
+Entrambe le attività condividono la stessa infrastruttura di rete.
+
+\subsubsection{Topologia del laboratorio}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.88\linewidth]{immagini/NET_06/attacco.png}
+  \caption{Topologia del laboratorio: la stessa LAN \texttt{10.0.0.0/24} è condivisa tra client, attaccante e gateway/server HTTPS. Il gateway funge anche da web server per il dominio \texttt{www.sito.it}, mentre l’attaccante esegue l’attacco MITM nel secondo esperimento.}
+\end{figure}
+
+\paragraph{Descrizione dei nodi.}
+\begin{itemize}
+  \item \textbf{VMclient (10.0.0.100)}:
+  agisce come client nel primo laboratorio e come vittima nel secondo.
+
+  \item \textbf{Attacker (10.0.0.200)}:
+  utilizzato solo nel secondo laboratorio; esegue ARP spoofing e ospita un sito HTTP falsificato.
+
+  \item \textbf{Default Gateway / HTTPS Server (10.0.0.1)}:
+  è il router della LAN e ospita Apache2 configurato per rispondere a \texttt{https://www.sito.it}.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Parte 1: Configurazione di un server HTTPS con Apache2}
+
+\subsubsection{Step 1 – Creazione della CA e dei certificati}
+Per poter configurare un server HTTPS è necessario disporre di una gerarchia di certificati valida.
+Nel laboratorio viene creata una piccola PKI locale, composta da:
+\begin{itemize}
+  \item una \textbf{Root CA} autofirmata, che rappresenta l’autorità di fiducia primaria;
+  \item una \textbf{Intermediate CA}, utilizzata per firmare i certificati dei server;
+  \item un \textbf{certificato di server} emesso per il dominio \texttt{www.sito.it}.
+\end{itemize}
+
+Questa struttura riproduce in piccolo il funzionamento reale di una PKI su Internet, dove la Root CA firma solo CA intermedie, mentre i certificati finali destinati ai server vengono firmati da queste ultime.
+
+\paragraph{Creazione della Root CA.}
+La Root CA rappresenta la base della fiducia. Generiamo la chiave privata e il certificato autofirmato:
+\begin{verbatim}
+openssl genrsa -out root.key 2048
+openssl req -new -x509 -days 1460 -key root.key -out root.crt
+\end{verbatim}
+
+\paragraph{Creazione dell’Intermediate CA.}
+Per evitare che la Root CA firmi direttamente certificati server (pratica sconsigliata anche nel mondo reale), si introduce un livello intermedio:
+\begin{verbatim}
+openssl genrsa -out intermediate.key 2048
+openssl req -new -key intermediate.key -out intermediate.csr
+openssl x509 -req -in intermediate.csr -out intermediate.crt \
+  -CA root.crt -CAkey root.key -CAserial serial \
+  -days 365 -extfile /etc/ssl/openssl.cnf -extensions v3_intermediate_ca
+\end{verbatim}
+Il file \texttt{openssl.cnf} specifica le estensioni X.509 necessarie per indicare che il certificato intermedio è abilitato a firmare altri certificati.
+
+\paragraph{Generazione del certificato del server.}
+Si procede quindi a creare la chiave privata e la CSR (Certificate Signing Request) per il server:
+\begin{verbatim}
+openssl genrsa -out server.key 2048
+openssl req -new -key server.key -out server.csr
+\end{verbatim}
+
+La firma viene eseguita dalla Intermediate CA:
+\begin{verbatim}
+openssl x509 -req -in server.csr -out server.crt \
+  -CA intermediate.crt -CAkey intermediate.key \
+  -CAserial serial -days 365 -extfile /etc/ssl/openssl.cnf \
+  -extensions usr_cert
+\end{verbatim}
+
+\paragraph{Creazione della certificate chain.}
+Poiché i browser devono poter risalire la catena di fiducia, si crea il file contenente Intermediate + Root:
+\begin{verbatim}
+cat intermediate.crt root.crt > chain.crt
+\end{verbatim}
+
+\subsubsection{Step 2 – Configurazione del Virtual Host HTTPS}
+Una volta generati i certificati, si configura Apache2. Nel file:
+\texttt{/etc/apache2/sites-available/testssl.conf}
+si definisce il VirtualHost HTTPS:
+\begin{verbatim}
+<VirtualHost _default_:443>
+  DocumentRoot "/var/www/testssl"
+  ServerName www.sito.it
+  SSLEngine On
+  SSLCertificateFile /path/server.crt
+  SSLCertificateKeyFile /path/server.key
+  SSLCertificateChainFile /path/chain.crt
+</VirtualHost>
+\end{verbatim}
+
+Si abilitano quindi il modulo SSL e il sito:
+\begin{verbatim}
+a2enmod ssl
+a2ensite testssl
+service apache2 restart
+\end{verbatim}
+
+\subsubsection{Step 3 – Verifica del funzionamento}
+Accedendo con un browser all’indirizzo:
+\begin{center}
+\texttt{https://www.sito.it}
+\end{center}
+viene visualizzato inizialmente un avviso: il browser non riconosce la Root CA poiché non appartiene a una CA pubblica nota.
+
+Importando manualmente il certificato \texttt{root.crt} nell’archivio delle CA fidate del browser, la connessione risulta correttamente autenticata e la catena Root → Intermediate → Server viene validata.
+
+\paragraph{Redirect automatico da HTTP a HTTPS.}
+Per evitare che un utente acceda accidentalmente alla versione HTTP del sito (non cifrata), si configura un VirtualHost dedicato:
+\begin{verbatim}
+<VirtualHost _default_:80>
+  ServerName www.sito.it
+  RewriteEngine On
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
+\end{verbatim}
+Questo comportamento replica ciò che avviene nei siti reali, dove tutto il traffico viene immediatamente instradato verso HTTPS.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Parte 2: HTTPS Downgrade Attack}
+
+\subsubsection{Scenario}
+Lo scopo della seconda parte del laboratorio è comprendere come, in assenza di meccanismi avanzati di protezione, un attaccante possa interferire con la comunicazione HTTPS forzando il client a utilizzare HTTP in chiaro.
+L’attacco sfrutta il fatto che molti utenti digitano un URL senza specificare \texttt{https://}, causando l'invio iniziale di una richiesta HTTP vulnerabile.
+
+Per ottenere una posizione privilegiata nella rete, l'attaccante utilizza una tecnica consolidata: l’\textbf{ARP Spoofing}.
+In questo modo il traffico della vittima passa attraverso la sua macchina, permettendo la modifica delle richieste e la sostituzione della pagina HTTPS con una copia HTTP malevola.
+
+\subsubsection{Step 1 – Mirroring del sito}
+Per realizzare una copia credibile del sito originale, l’attaccante utilizza \texttt{wget}:
+\begin{verbatim}
+wget --mirror --convert-links --html-extension --no-parent \
+     --no-check-certificate www.webank.it
+\end{verbatim}
+
+La directory ottenuta viene servita da un VirtualHost HTTP sulla porta 80, simulando il vero sito.
+
+\subsubsection{Step 2 – ARP Spoofing}
+L’attaccante inganna sia il client sia il gateway, facendo credere a ciascuno che il proprio MAC address sia quello dell'altro.
+Lo script Scapy crea continuamente entry ARP false, mantenendo il MITM attivo:
+
+\begin{verbatim}
+# Attacker → Victim (fingendosi il gateway)
+# Attacker → Gateway (fingendosi la vittima)
+while True:
+    sendp(arp_to_victim)
+    sendp(arp_to_router)
+    time.sleep(1)
+\end{verbatim}
+
+\subsubsection{Step 3 – Redirezione del traffico HTTP}
+Una volta instaurata la posizione MITM, tutto il traffico HTTP destinato al sito reale viene dirottato verso il sito fasullo tramite iptables:
+\begin{verbatim}
+iptables -t nat -A PREROUTING -p tcp --dport 80 \
+  -d <IP_reale_del_sito> -j REDIRECT
+\end{verbatim}
+
+Di conseguenza, quando la vittima effettua un accesso iniziale al sito senza specificare \texttt{https://}, riceverà la copia HTTP malevola.
+
+\subsubsection{Risultato dell’attacco}
+Il browser della vittima visualizza una versione in chiaro del sito, apparentemente legittima.
+Qualsiasi credenziale inserita in questo contesto viene trasmessa senza cifratura e può essere catturata dall’attaccante.
+
+\paragraph{Mitigazione: HSTS.}
+Il meccanismo \textbf{HTTP Strict Transport Security} è progettato per impedire esattamente questo tipo di attacco.
+Quando un sito invia l’header:
+\begin{verbatim}
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+\end{verbatim}
+il browser registra la policy e, per un anno intero, effettuerà sempre e solo richieste HTTPS a quel dominio, rendendo impossibile il downgrade.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Conclusioni del laboratorio}
+Il laboratorio mette in evidenza due dimensioni complementari della sicurezza HTTPS:
+
+\begin{itemize}
+  \item da un lato, la complessità e l’importanza della corretta generazione dei certificati e della configurazione del server;
+  \item dall’altro, la fragilità delle comunicazioni non protette nel primo istante e il valore di meccanismi come HSTS nel prevenire attacchi attivi.
+\end{itemize}
+
+Sperimentare direttamente sia la configurazione di un server HTTPS sia l’attacco MITM permette di comprendere a fondo come funzionano le difese crittografiche e quali errori di configurazione possano esporre gli utenti a rischi concreti.
+

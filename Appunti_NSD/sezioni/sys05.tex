@@ -1,0 +1,674 @@
+\newpage
+
+\section{SYS\_05 - OS Security Principles}
+
+\subsection{Introduzione}
+La sicurezza dei sistemi operativi rappresenta uno dei pilastri fondamentali della difesa informatica.
+L’obiettivo di questo modulo è comprendere come i sistemi operativi moderni — in particolare Unix e Linux — gestiscano la sicurezza a livello di utenti, processi, permessi e politiche di controllo degli accessi.
+Un sistema operativo sicuro deve assicurare che solo utenti legittimi possano accedere alle risorse e che ogni processo operi entro i limiti dei privilegi assegnati, prevenendo così l’abuso di poteri amministrativi o l’escalation di privilegi.
+
+Il principio guida è quello di ridurre la superficie d’attacco, garantendo al contempo la piena funzionalità del sistema per gli utenti autorizzati.
+Questo implica la corretta gestione dell’autenticazione, dei permessi, dei privilegi, e l’adozione di politiche di controllo (DAC e MAC) e meccanismi modulari come i Linux Security Modules (LSM).
+
+\subsection{Identificazione e Autenticazione degli Utenti}
+L’accesso a un sistema operativo avviene tramite un meccanismo di autenticazione, tipicamente basato su password.
+Nel mondo Unix/Linux, le informazioni sugli utenti e le password sono conservate in due file distinti: \texttt{/etc/passwd} e \texttt{/etc/shadow}.
+
+\paragraph{/etc/passwd}
+Il file \texttt{/etc/passwd} contiene i dati pubblici degli utenti con il seguente formato:
+\begin{verbatim}
+username:passwd:UID:GID:full_name:directory:shell
+\end{verbatim}
+Ad esempio:
+\begin{verbatim}
+user1:Npge08pfz4wuk:503:100:TheUser:/home/user1:/bin/sh
+\end{verbatim}
+Qui \texttt{Np} rappresenta il salt e \texttt{ge08pfz4wuk} la password cifrata.
+Nei sistemi moderni, tuttavia, il campo della password è sostituito da una semplice \texttt{x}, e il valore cifrato è spostato in \texttt{/etc/shadow}, inaccessibile agli utenti non privilegiati.
+
+\paragraph{/etc/shadow}
+Il file \texttt{/etc/shadow} contiene le informazioni sensibili relative alle password e alle politiche di scadenza degli account.
+Per ragioni di sicurezza questo file è accessibile soltanto all'utente \texttt{root} (tipicamente con permessi \texttt{600} e proprietà \texttt{root:root}), mentre il corrispondente \texttt{/etc/passwd} rimane leggibile da tutti.
+
+Il formato standard di una riga di \texttt{/etc/shadow} è il seguente:
+\begin{verbatim}
+username:password:lastchg:min:max:warn:inactive:expire:reserved
+\end{verbatim}
+
+\begin{itemize}
+  \item \textbf{username}: nome dell'account utente.
+  \item \textbf{password}: hash della password (ad es. \texttt{\$6\$salt\$...} per SHA-512). Se contiene un carattere speciale come ``\texttt{!}'' o ``\texttt{*}'' il login con password è disabilitato per quell'account.
+  \item \textbf{lastchg} (spesso indicato come \texttt{ult}): numero di giorni trascorsi dal 1/1/1970 (Unix epoch) dall'ultimo cambio password. Viene usato come riferimento per le politiche di aging.
+  \item \textbf{min} (nella tua versione \texttt{can}): intervallo minimo (in giorni) che deve trascorrere prima che l'utente possa cambiare di nuovo la password. Valore comune: \texttt{0} (nessuna restrizione) o \texttt{1}.
+  \item \textbf{max} (nella tua versione \texttt{must}): intervallo massimo (in giorni) di validità della password; dopo questo periodo l'utente deve cambiare password.
+  \item \textbf{warn} (nella tua versione \texttt{note}): numero di giorni prima della scadenza in cui il sistema avvisa l'utente che la password sta per scadere.
+  \item \textbf{inactive} (nella tua versione \texttt{exp}): numero di giorni che intercorrono dopo la scadenza della password dopo i quali l'account viene reso inattivo (disabilitato) se la password non viene aggiornata.
+  \item \textbf{expire} (nella tua versione \texttt{disab}): data (in giorni dall'epoch) dopo la quale l'account è definitivamente disabilitato, indipendentemente dallo stato della password. Spesso lasciato vuoto se non si intende disabilitare l'account in una data fissa.
+  \item \textbf{reserved}: campo riservato per usi futuri (di solito vuoto).
+\end{itemize}
+
+\subsection{Gestione degli UID e dei Privilegi}
+In Unix, il nome utente è un’etichetta simbolica, mentre le vere autorizzazioni sono legate al numero identificativo (\textbf{UID}).
+Ogni processo è associato a tre differenti UID:
+\begin{itemize}
+  \item \textbf{Real UID (RUID)}: identifica chi è l’utente effettivo;
+  \item \textbf{Effective UID (EUID)}: determina cosa può effettivamente fare;
+  \item \textbf{Saved UID (SUID)}: rappresenta chi può tornare ad essere.
+\end{itemize}
+
+Questo modello consente di cambiare temporaneamente i privilegi di un processo.
+Le chiamate di sistema \texttt{setuid()} e \texttt{seteuid()} permettono a processi privilegiati di modificare gli identificatori utente.
+La prima è irreversibile e sovrascrive tutti e tre gli UID, mentre la seconda consente un cambio temporaneo e reversibile del contesto di esecuzione.
+
+\paragraph{su e sudo}
+I comandi \texttt{su} e \texttt{sudo} sfruttano il meccanismo SUID per assumere privilegi elevati.
+Entrambi sono contrassegnati con il bit “setuid-root”, che permette loro di eseguire operazioni con i permessi del superutente.
+Mentre \texttt{su} cambia completamente l’identità utente, \texttt{sudo} esegue un singolo comando come \texttt{root}, dopo aver verificato l’autorizzazione nel file \texttt{/etc/sudoers}.
+
+\subsection{Principio del Minimo Privilegio}
+Il \textbf{Principle of Least Privilege} stabilisce che ogni entità del sistema — utente, processo o applicazione — debba poter accedere solo alle risorse strettamente necessarie alla sua funzione.
+Questo principio aumenta la stabilità, riduce la possibilità di sfruttamento di vulnerabilità e semplifica la verifica del comportamento delle applicazioni.
+
+In pratica, ciò significa che un servizio non deve mai essere eseguito come \texttt{root} se non strettamente necessario, e che le operazioni privilegiate devono essere segmentate in processi specifici e confinati.
+
+\subsection{Controllo degli Accessi}
+Il controllo degli accessi definisce quali soggetti (utenti o processi) possano eseguire determinate azioni sugli oggetti del sistema (file, socket, dispositivi).
+L’obiettivo è limitare i danni derivanti da errori o comportamenti malevoli, applicando una politica di sicurezza che stabilisca chi può fare cosa.
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\linewidth]{immagini/SYS_05/accessi}
+\caption{Accesso Control Fundamentals}
+\label{fig:accessi}
+\end{figure}
+
+\subsubsection{Politiche di Sicurezza: DAC e MAC}
+Due principali modelli di sicurezza regolano il controllo degli accessi:
+\begin{itemize}
+  \item \textbf{Discretionary Access Control (DAC)}: l’accesso è deciso dal proprietario della risorsa, che può modificare liberamente i permessi (classico modello Unix con \texttt{rwx});
+  \item \textbf{Mandatory Access Control (MAC)}: l’accesso è imposto dal sistema in base a politiche centrali e non può essere cambiato dagli utenti.
+\end{itemize}
+Il primo offre flessibilità, il secondo garantisce rigore e isolamento, essenziale in ambienti ad alta sicurezza.
+\subsubsection{POSIX ACL e Access Control Fine-Grained}
+Il modello \textbf{POSIX ACL (Access Control List)} rappresenta un'estensione del tradizionale schema \textbf{DAC (Discretionary Access Control)} tipico di Unix, introducendo un livello di granularità più fine nella gestione dei permessi.
+In un sistema Unix classico, i permessi di accesso ai file sono definiti da tre soli insiemi di diritti: \textbf{owner}, \textbf{group} e \textbf{others}.
+Con le ACL, invece, è possibile definire regole specifiche per più utenti e più gruppi, andando oltre la rigidità della tripla \texttt{rwx} standard.
+
+Le ACL consentono quindi di specificare quali utenti o gruppi possano leggere, scrivere o eseguire un file, anche se non sono il proprietario o non appartengono al gruppo principale del file.
+Il sistema continua a basarsi su un modello \textbf{DAC} (cioè le decisioni d’accesso dipendono dalle scelte del proprietario), ma con la possibilità di definire eccezioni molto più precise.
+
+\paragraph{Esempio di ACL POSIX}
+Un esempio reale di ACL può essere il seguente:
+\begin{verbatim}
+# file: audio
+# owner: gwurster
+# group: audio
+user::rwx
+group::r-x
+group:powerdev:r-x
+mask::r-x
+other::---
+\end{verbatim}
+In questo esempio:
+\begin{itemize}
+  \item Il proprietario del file (\texttt{gwurster}) ha tutti i permessi (\texttt{rwx});
+  \item Il gruppo principale \texttt{audio} può leggere ed eseguire (\texttt{r-x});
+  \item È stato aggiunto un gruppo aggiuntivo \texttt{powerdev} con gli stessi permessi;
+  \item La \textbf{mask} (\texttt{r-x}) definisce il livello massimo di permesso che gli altri utenti e gruppi possono effettivamente ottenere;
+  \item Gli utenti “other” non hanno alcun permesso (\texttt{---}).
+\end{itemize}
+
+\paragraph{Meccanismo di valutazione delle ACL}
+Quando un processo tenta di accedere a un file protetto da ACL, il kernel segue una precisa sequenza di controlli per determinare se concedere o meno il permesso.
+La decisione si basa sulla corrispondenza tra l’identità (UID/GID) del processo e le voci presenti nella lista di controllo.
+
+\subparagraph{Fase (i): Selezione della voce corrispondente}
+\begin{enumerate}
+  \item Se l'UID del processo coincide con quello del proprietario, si applicano i permessi dell’entry \texttt{user::}.
+  \item Altrimenti, se l’UID del processo corrisponde a uno degli utenti elencati in una \texttt{user:<nome>} specifica, quella entry determina l’accesso.
+  \item Se nessuna delle precedenti condizioni è vera, si verifica se uno dei GID del processo corrisponde al gruppo proprietario del file e la relativa entry \texttt{group::} contiene i permessi richiesti.
+  \item Se non è così, ma uno dei GID del processo corrisponde a un gruppo elencato in una entry \texttt{group:<nome>}, e quella entry concede i permessi richiesti, l’accesso viene determinato da quella voce.
+  \item Se invece uno dei gruppi del processo corrisponde a un gruppo menzionato, ma né la entry del gruppo proprietario né le altre entry di gruppo concedono i permessi richiesti, l’accesso è negato.
+  \item In tutti gli altri casi, l’accesso viene determinato dalla entry \texttt{other::}.
+\end{enumerate}
+
+\subparagraph{Fase (ii): Decisione finale sull’accesso}
+Una volta individuata la entry corrispondente:
+\begin{itemize}
+  \item Se la voce trovata è \texttt{user::} o \texttt{other::} e include i permessi richiesti, l’accesso è \textbf{concesso}.
+  \item Se la voce è una \texttt{user:<nome>} o \texttt{group:<nome>} e include i permessi richiesti, allora il sistema controlla anche la \textbf{mask}:
+        solo se la \texttt{mask} include gli stessi permessi, l’accesso è effettivamente \textbf{concesso}.
+  \item In caso contrario, l’accesso è \textbf{negato}.
+\end{itemize}
+
+\paragraph{Ruolo della Mask}
+La voce \texttt{mask::} ha un ruolo cruciale: essa rappresenta un limite massimo di permessi che può essere effettivamente applicato a tutte le entry di tipo gruppo o utente nominato.
+Anche se una voce ACL concede permessi più ampi, questi vengono ridotti al livello della maschera.
+In pratica, la \textbf{mask} agisce come un filtro: se la mask non contiene il bit di lettura, anche un gruppo che possiede \texttt{rwx} non potrà leggere il file.
+
+
+\subsection{Linux Capabilities}
+Nel modello Unix tradizionale, un processo è considerato \textbf{privilegiato} se ha \texttt{EUID = 0}, ossia se viene eseguito come \texttt{root}.
+Questo modello binario, seppur semplice, presenta un limite significativo: qualsiasi processo con \texttt{EUID = 0} ha accesso completo al sistema, potendo bypassare tutti i controlli di sicurezza del kernel.
+Le \textbf{Linux Capabilities} sono state introdotte per risolvere questo problema, frammentando i privilegi del superutente in unità indipendenti, chiamate \textit{capabilities}.
+Ogni capability rappresenta un potere specifico (ad esempio gestire la rete, montare filesystem, modificare l’orario di sistema, ecc.), e può essere assegnata o rimossa in modo granulare.
+
+In sostanza, le capabilities trasformano l’amministrazione dei privilegi da un modello “tutto o niente” a un modello modulare, dove un processo può avere solo i permessi strettamente necessari.
+
+\paragraph{Esempi di capability}
+Alcune delle capabilities più comuni sono definite nel file sorgente del kernel \texttt{linux/include/linux/capability.h}:
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Nome} & \textbf{Descrizione} \\
+\midrule
+\texttt{CAP\_CHOWN} & Permette di cambiare la proprietà di un file, ignorando i controlli DAC. \\
+\texttt{CAP\_KILL} & Consente di inviare segnali ad altri processi. \\
+\texttt{CAP\_NET\_RAW} & Autorizza l’uso di socket raw (es. per \texttt{ping}). \\
+\texttt{CAP\_NET\_BIND\_SERVICE} & Permette di bindare porte TCP/UDP inferiori a 1024. \\
+\texttt{CAP\_SYS\_NICE} & Consente di modificare la priorità dei processi. \\
+\texttt{CAP\_SYS\_TIME} & Permette di impostare l’orologio di sistema. \\
+\texttt{CAP\_SYS\_ADMIN} & È la capability più ampia, spesso considerata “il nuovo root”, poiché copre molte operazioni amministrative. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Implementazione nel kernel}
+Durante l’esecuzione di un’operazione privilegiata, il kernel verifica se il thread richiedente possiede la capability necessaria nel proprio insieme di capabilities attive.
+Le capabilities vengono gestite tramite apposite system call:
+\begin{verbatim}
+int capget(cap_user_header_t hdrp, cap_user_data_t datap);
+int capset(cap_user_header_t hdrp, const cap_user_data_t datap);
+\end{verbatim}
+Inoltre, la libreria \texttt{libcap} fornisce funzioni di più alto livello per la gestione da spazio utente.
+
+Per funzionare correttamente, il filesystem deve supportare gli \textbf{attributi estesi} (xattr), poiché le capabilities possono essere associate direttamente agli eseguibili.
+Quando un processo esegue un file dotato di capability, eredita automaticamente quei privilegi al momento dell’\texttt{execve()}.
+
+Tutti questi meccanismi sono pienamente supportati a partire dal kernel Linux 2.6.24.
+
+\paragraph{Insiemi di capability di un thread}
+Ogni thread in Linux mantiene quattro insiemi distinti di capabilities, che determinano i privilegi effettivi e potenziali del processo:
+\begin{itemize}
+  \item \textbf{Permitted set (P)}: è il superset dei privilegi che il thread può potenzialmente utilizzare.
+        Se una capability viene rimossa da questo insieme, non potrà mai più essere recuperata (nemmeno da un processo privilegiato).
+  \item \textbf{Inheritable set (I)}: definisce le capabilities che possono essere ereditate dai nuovi processi tramite \texttt{execve()}, purché anche il file eseguibile consenta l’ereditarietà.
+  \item \textbf{Effective set (E)}: contiene le capabilities attualmente attive e utilizzate dal kernel per i controlli di autorizzazione.
+        Solo le capabilities in questo set sono operative in un dato momento.
+  \item \textbf{Ambient set (A)}: introdotto nelle versioni più recenti del kernel, consente di mantenere alcune capabilities anche attraverso l’esecuzione di un programma non privilegiato.
+        È utile per preservare privilegi minimi in catene di processi.
+\end{itemize}
+Quando un processo genera un figlio con \texttt{fork()}, quest’ultimo eredita una copia di tutti gli insiemi di capability del padre.
+
+\paragraph{File capabilities}
+Le capabilities possono essere associate anche ai file eseguibili, mediante attributi estesi del filesystem.
+Ciò consente a un programma di ottenere automaticamente specifici privilegi al momento dell’esecuzione, senza dover essere eseguito come \texttt{root}.
+Sono previsti due insiemi di capabilities associate al file:
+\begin{itemize}
+  \item \textbf{Permitted}: capabilities che vengono sempre concesse al thread che esegue il file, indipendentemente dall’insieme ereditabile del processo.
+  \item \textbf{Inheritable}: capabilities che vengono combinate (tramite un AND logico) con l’insieme ereditabile del processo per determinare quali privilegi passano nel nuovo contesto.
+\end{itemize}
+È inoltre presente un flag denominato \textbf{Effective}, che indica se le capabilities ottenute dal file devono essere immediatamente attive nel set \texttt{Effective} dopo l’\texttt{execve()}.
+
+
+\paragraph{Capability Bounding Set}
+Il \textbf{bounding set} agisce come un filtro di sicurezza globale per il sistema.
+Serve a limitare le capabilities che possono essere acquisite da un processo anche se il file eseguibile ne possiede di più.
+In pratica:
+\begin{itemize}
+  \item durante l’esecuzione, il bounding set viene intersecato con le capabilities del file per determinare quali possono essere aggiunte al set \texttt{Permitted};
+  \item un processo non può mai aggiungere a sé stesso una capability che non sia contenuta nel proprio bounding set;
+  \item rimuovere una capability dal bounding set la rende definitivamente inaccessibile fino al riavvio.
+\end{itemize}
+
+\subsection{Linux Security Modules (LSM)}
+Il framework \textbf{Linux Security Modules (LSM)} rappresenta la base architetturale su cui si fondano le estensioni di sicurezza del kernel Linux.
+È stato introdotto per fornire un’infrastruttura modulare e generica che permetta l’integrazione di diversi modelli di controllo d’accesso, in particolare di tipo \textbf{MAC (Mandatory Access Control)}, senza dover modificare in modo invasivo il codice sorgente del kernel.
+
+L’idea alla base di LSM nasce dall’esigenza di colmare una lacuna del modello tradizionale Linux, che nativamente implementa solo meccanismi di tipo \textbf{DAC (Discretionary Access Control)} e capabilities.
+Nel tempo, la comunità di sicurezza ha sviluppato molte proposte su come introdurre politiche MAC nel kernel, ma senza una struttura comune: LSM nasce proprio per fornire un punto di estensione unificato e standard.
+
+\paragraph{Concetto di base}
+Il framework LSM fornisce una serie di \textbf{hook di sicurezza}, ossia punti di intersezione nel codice del kernel dove è possibile eseguire controlli di accesso aggiuntivi.
+Questi hook sono chiamati ogni volta che un processo tenta di compiere un’operazione sensibile (ad esempio aprire un file, creare un socket, eseguire un processo o accedere a una memoria condivisa).
+In questo modo, i moduli LSM possono decidere se consentire o negare l’operazione in base a politiche definite dall’amministratore di sistema.
+
+\paragraph{Struttura generale}
+Il comportamento del framework è ispirato al modello classico del \textbf{Reference Monitor}, un concetto cardine della sicurezza dei sistemi operativi.
+Il Reference Monitor agisce come un "guardiano centrale" che controlla tutte le operazioni di accesso alle risorse del sistema secondo tre principi:
+\begin{itemize}
+  \item \textbf{Tamper-resistant:} non deve essere aggirabile o modificabile da utenti o processi non autorizzati;
+  \item \textbf{Always invoked:} deve essere sempre invocato per ogni richiesta di accesso, senza eccezioni;
+  \item \textbf{Simple and analyzable:} deve essere progettato in modo semplice e verificabile, così da poter garantire la correttezza delle decisioni.
+\end{itemize}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\linewidth]{immagini/SYS_05/rmonitor}
+\caption{Reference Monitor Model}
+\label{fig:rmonitor}
+\end{figure}
+
+In Linux, LSM fornisce l’implementazione pratica di questo modello: tutte le richieste di accesso passano attraverso i suoi hook, che possono essere sovrascritti da moduli di sicurezza specifici (come SELinux, AppArmor, SMACK o Tomoyo).
+
+\paragraph{Funzionamento del framework}
+Durante la fase di boot, il kernel inizializza una struttura di funzione chiamata \texttt{security\_ops}, che contiene i puntatori alle funzioni di sicurezza predefinite (i controlli DAC standard e le capabilities).
+Quando un modulo LSM viene caricato, può registrarsi tramite la funzione \texttt{register\_security()} e sostituire i puntatori relativi alle operazioni che vuole controllare.
+Ad esempio:
+\begin{verbatim}
+int register_security(struct security_operations *ops) {
+    if (verify(ops)) return -EINVAL;
+    if (security_ops != &default_security_ops) return -EAGAIN;
+    security_ops = ops;
+    return 0;
+}
+\end{verbatim}
+In questo modo, il kernel rimpiazza le funzioni di sicurezza predefinite con quelle del modulo LSM caricato.
+Solo un modulo principale può essere attivo alla volta, anche se esistono meccanismi per la \textit{stacking} (esecuzione in catena) introdotti nelle versioni più recenti.
+
+\paragraph{Hook di sicurezza}
+Gli hook LSM sono \textbf{restrittivi}: possono solo ridurre i privilegi concessi da DAC o capabilities, mai ampliare i diritti.
+In altre parole, un LSM può negare un accesso anche se DAC lo consentirebbe, ma non viceversa.
+Questo garantisce che i meccanismi tradizionali rimangano sempre compatibili e che il framework mantenga un comportamento conservativo.
+
+Gli hook sono definiti all’interno della struttura \texttt{security\_operations}, che può essere personalizzata da ciascun modulo:
+\begin{verbatim}
+struct security_operations {
+    int (*ptrace)(struct task_struct *parent, struct task_struct *child);
+    int (*inode_setattr)(struct dentry *dentry, struct iattr *attr);
+    ...
+};
+\end{verbatim}
+Ogni voce rappresenta un punto di controllo specifico nel flusso di esecuzione del kernel (ad esempio operazioni sui processi, sui file o sul networking).
+
+\paragraph{Categorie di hook}
+Gli hook LSM sono organizzati in diverse categorie, in base al tipo di risorsa o evento che controllano:
+\begin{itemize}
+  \item \textbf{Task hooks:} controllano le operazioni legate ai processi (creazione, esecuzione, terminazione, segnalazioni, cambio UID/GID).
+  \item \textbf{Program loading hooks:} gestiscono la sicurezza durante il caricamento di nuovi eseguibili (\texttt{execve()}, mapping di binari, interpreti, ecc.).
+  \item \textbf{IPC hooks:} controllano l’accesso ai meccanismi di comunicazione interprocesso (code di messaggi, memoria condivisa, semafori).
+  \item \textbf{Filesystem hooks:} verificano i permessi su file, directory, inode e attributi estesi.
+  \item \textbf{Network hooks:} gestiscono la sicurezza a livello di rete (socket, pacchetti, dispositivi).
+\end{itemize}
+
+\paragraph{Esempio: hook su un file system}
+Quando un processo tenta di creare una directory tramite una chiamata come:
+\begin{verbatim}
+mkdir("/home/user/docs", 0777);
+\end{verbatim}
+il kernel attraversa diversi livelli:
+\begin{enumerate}
+  \item Controlla i permessi DAC sul percorso;
+  \item Verifica le capabilities del processo;
+  \item Invoca l’hook LSM corrispondente, ad esempio \texttt{inode\_mkdir()}, definito dal modulo attivo;
+  \item Se l’hook restituisce un errore (es. \texttt{-EPERM}), l’operazione viene negata e il file system non viene modificato.
+\end{enumerate}
+Questo meccanismo consente di applicare controlli specifici e coerenti con le policy MAC, come nel caso di SELinux, che confronta le etichette di sicurezza di soggetto e oggetto prima di approvare l’operazione.
+
+\paragraph{Estensioni del kernel per LSM}
+Per integrare il framework nel kernel, molte strutture dati sono state estese con campi aggiuntivi che puntano a metadati di sicurezza.
+Tra queste troviamo:
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Struttura kernel} & \textbf{Oggetto rappresentato} \\
+\midrule
+\texttt{task\_struct} & Thread/processo \\
+\texttt{linux\_binprm} & Programma in fase di caricamento \\
+\texttt{super\_block} & Filesystem \\
+\texttt{inode} & File, socket o pipe \\
+\texttt{file} & File aperto \\
+\texttt{sk\_buff} & Buffer di rete (pacchetto) \\
+\texttt{net\_device} & Dispositivo di rete \\
+\texttt{kern\_ipc\_perm} & Oggetti IPC (memoria condivisa, semafori, code) \\
+\bottomrule
+\end{tabular}
+\end{center}
+Ogni modulo LSM può utilizzare questi puntatori per mantenere e consultare informazioni di sicurezza specifiche associate a ogni risorsa.
+
+
+\subsubsection{Esempi di Moduli MAC}
+\paragraph{S.M.A.C.K. (Simplified Mandatory Access Control Kernel)}
+Il \textbf{Simplified Mandatory Access Control Kernel (SMACK)} è un modulo LSM che implementa un meccanismo di sicurezza di tipo \textbf{MAC} basato su etichette (\textit{labels}) associate a soggetti e oggetti.
+Ogni processo (soggetto) e ogni risorsa (oggetto) del sistema possiede un’etichetta testuale — una semplice stringa — che rappresenta la sua identità di sicurezza.
+A differenza di SELinux, dove le etichette sono strettamente tipizzate e fanno parte di un modello complesso di domini e ruoli, in SMACK le etichette non hanno alcun significato semantico intrinseco: sono semplici stringhe confrontate tra loro secondo regole esplicite.
+
+Un processo può accedere a un oggetto solo se esiste una regola che consente l’interazione tra le rispettive etichette.
+La forma generale di una regola di accesso è:
+\begin{verbatim}
+<subject-label> <object-label> <access>
+\end{verbatim}
+dove \texttt{<access>} è espresso nel tradizionale formato Unix (es. \texttt{rwx}) e specifica i permessi consentiti per la coppia \texttt{soggetto–oggetto}.
+Se non esiste una regola corrispondente, l’accesso viene negato in modo predefinito, realizzando così un modello \textit{default-deny}.
+
+Le etichette sono memorizzate come \textbf{attributi estesi} (\texttt{xattr}) nei file e in altre risorse del sistema.
+Solo i processi dotati della capability \texttt{CAP\_MAC\_ADMIN} possono modificare queste etichette o le regole di accesso associate.
+
+\paragraph{Etichette di default}
+SMACK utilizza tre etichette predefinite, che semplificano la configurazione del sistema e ne definiscono il comportamento di base:
+\begin{itemize}
+  \item \texttt{\_} (\textit{floor}): rappresenta il livello più basso; tutti i soggetti possono leggere o eseguire oggetti etichettati con \texttt{\_}.
+  \item \texttt{*} (\textit{star}): indica un’entità completamente isolata; nessun soggetto può accedere a risorse etichettate con \texttt{*}, e tali soggetti non possono interagire con altri.
+  \item \texttt{\^} (\textit{hat}): rappresenta un livello privilegiato; i soggetti etichettati con \texttt{\^} possono accedere liberamente in lettura o esecuzione ad altre etichette.
+\end{itemize}
+
+Le tre etichette predefinite consentono di gestire in modo semplice i comportamenti più comuni:
+\begin{itemize}
+  \item un oggetto etichettato con \texttt{*} è completamente protetto;
+  \item un soggetto con etichetta \texttt{\^} ha accesso ampio in lettura/esecuzione;
+  \item un oggetto etichettato con \texttt{\_} è leggibile o eseguibile da chiunque.
+\end{itemize}
+
+\paragraph{SMACKFS}
+La configurazione del sistema SMACK avviene attraverso un \textbf{filesystem virtuale} dedicato, chiamato \texttt{smackfs}, montato nel percorso \texttt{/sys/fs/smack}.
+Questo pseudo-filesystem fornisce una serie di file speciali che consentono di consultare e modificare dinamicamente le regole di accesso e le etichette.
+Tra i più importanti troviamo:
+\begin{itemize}
+  \item \texttt{access2}: permette di interrogare i permessi di accesso tra due etichette. Scrivendo una regola nel formato \texttt{<subject> <object> <access>} e leggendo la risposta, si può verificare se un’operazione è consentita.
+  \item \texttt{change-rule}: consente di modificare i permessi associati a una specifica coppia di etichette.
+  \item \texttt{load2}: serve per caricare nuove regole di accesso in blocco, tipicamente all’avvio del sistema.
+  \item \texttt{onlycap}: elenca le etichette dei processi che possiedono la capability \texttt{CAP\_MAC\_ADMIN}; solo questi soggetti possono cambiare regole o etichette.
+  \item \texttt{revoke-subject}: rimuove tutte le regole di accesso associate a un determinato soggetto.
+\end{itemize}
+
+Questi file rendono SMACK altamente configurabile senza la necessità di strumenti esterni: basta scrivere e leggere file di testo per modificare il comportamento di sicurezza del kernel.
+
+\paragraph{Caratteristiche e limiti}
+SMACK è apprezzato per la sua semplicità e leggerezza rispetto a sistemi più complessi come SELinux.
+Tuttavia, questa semplicità è anche la sua principale limitazione: il modello basato su stringhe e regole dirette non supporta costrutti avanzati come domini, ruoli o attributi contestuali.
+È quindi adatto a sistemi embedded, IoT o ambienti dove la configurazione deve essere essenziale ma efficace.
+
+\paragraph{Tomoyo Linux}
+Tomoyo adotta un approccio più leggibile, basato sui percorsi dei file anziché su etichette astratte.
+Ogni processo appartiene a un dominio definito dalla sequenza di eseguibili attraversati, e le ACL possono specificare permessi dettagliati per dominio, mantenendo un labeling sempre coerente.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/SYS_05/domainacl}
+    \caption{Domain ACL in Tomoyo Linux}
+    \label{fig:domainacl}
+\end{figure}
+
+\paragraph{AppArmor}
+AppArmor applica una politica centrata sui task, dove ogni programma ha un profilo specifico che definisce i file, le capacità e le risorse accessibili.
+I profili sono scritti nel linguaggio AppArmor e caricati in \texttt{/etc/apparmor.d}.
+I processi non confinati seguono invece le regole DAC tradizionali.
+
+\paragraph{SELinux (Security-Enhanced Linux)}
+\textbf{SELinux (Security-Enhanced Linux)} è il modulo LSM più potente e complesso, nato da un progetto congiunto tra NSA e Red Hat per implementare un controllo d’accesso di tipo \textbf{MAC completo} all’interno del kernel Linux.
+Il suo obiettivo è garantire che ogni accesso a una risorsa (file, processo, socket, memoria, ecc.) avvenga in accordo a una \textbf{policy di sicurezza formale}, basata sul concetto di \textbf{security context}.
+
+Ogni soggetto (processo) e oggetto (risorsa di sistema) è associato a un’etichetta di sicurezza, e ogni operazione tra due entità è autorizzata solo se esiste una regola esplicita che lo consente.
+SELinux, dunque, sostituisce il modello DAC predefinito (basato sul proprietario e sui permessi \texttt{rwx}) con un modello in cui le decisioni d’accesso sono dettate da regole globali definite da un amministratore di sistema di sicurezza.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/SYS_05/selinux}
+    \caption{Security-Enhanced Linux (SELinux): mapping di soggetti e oggetti in base al loro contesto di sicurezza.}
+    \label{fig:selinux}
+\end{figure}
+
+\paragraph{Fase 1: dal kernel alla query di autorizzazione}
+Quando un processo effettua un’operazione (es. apre un file, crea un socket, o esegue un binario), il kernel intercetta la richiesta attraverso gli \textbf{hook LSM}.
+Questi parametri vengono convertiti in una \textit{authorization query} che identifica:
+\begin{itemize}
+  \item Il \textbf{soggetto} (processo) che effettua la richiesta, associato a un tipo di sicurezza (\texttt{subject\_type});
+  \item L’\textbf{oggetto} (file, socket, ecc.) su cui si vuole agire, con un tipo e una classe (\texttt{object\_type} e \texttt{object\_class});
+  \item L’\textbf{operazione} richiesta (lettura, scrittura, esecuzione, ecc.).
+\end{itemize}
+A questo punto SELinux verifica se esiste una regola nella policy che consenta l’operazione richiesta.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\linewidth]{immagini/SYS_05/fase1}
+    \caption{Security-Enhanced Linux (SELinux): fase 1 - generazione della query di autorizzazione.}
+    \label{fig:fase1}
+\end{figure}
+
+\paragraph{Fase 2: ricerca della policy SELinux}
+Le regole SELinux sono espresse con una sintassi formale del tipo:
+\begin{verbatim}
+allow <subject_type> <object_type>:<object_class> <operation_set>;
+\end{verbatim}
+Ad esempio:
+\begin{verbatim}
+allow user_t passwd_exec_t:file execute;
+allow passwd_t shadow_t:file { read write };
+\end{verbatim}
+La prima regola permette a un processo con tipo \texttt{user\_t} di eseguire un file etichettato come \texttt{passwd\_exec\_t};
+la seconda consente a un processo \texttt{passwd\_t} di leggere e scrivere file con etichetta \texttt{shadow\_t}.
+In assenza di una regola esplicita, l’accesso è negato: SELinux opera quindi secondo una politica \textbf{default-deny}.
+
+
+
+\paragraph{Stato di etichettamento (Labeling State)}
+Il meccanismo di labeling in SELinux mappa tutte le risorse del sistema (file, dispositivi, processi, socket) su etichette di sicurezza permanenti, chiamate \textbf{security context}.
+Ogni contesto è composto da tre campi:
+\begin{verbatim}
+user:role:type[:level]
+\end{verbatim}
+Esempio:
+\texttt{system\_u:object\_r:shadow\_t:s0}
+
+Il campo \texttt{user} rappresenta l’utente SELinux, \texttt{role} il ruolo assegnato (utile per il Role-Based Access Control), mentre il campo \texttt{type} è il più importante ed è quello utilizzato nel \textbf{Type Enforcement}, il principale meccanismo di policy.
+Il livello (\texttt{level}) è opzionale e viene usato nei sistemi multilevel (MLS).
+
+Le policy di labeling specificano come assegnare automaticamente etichette a nuovi file e processi.
+Ad esempio:
+\begin{verbatim}
+/etc/shadow.*    system_u:object_r:shadow_t:s0
+/etc/*.*         system_u:object_r:etc_t:s0
+\end{verbatim}
+In questo modo, ogni nuovo file creato nel percorso \texttt{/etc} riceverà un tipo coerente con la destinazione, garantendo una separazione logica delle risorse di sistema.
+
+\paragraph{Stato di transizione (Transition State)}
+Oltre al labeling statico, SELinux gestisce anche le \textbf{transizioni di tipo}, che stabiliscono come devono cambiare le etichette dei soggetti o degli oggetti in seguito a determinate operazioni.
+Esistono due tipi principali di transizione:
+
+\subparagraph{1. Transizione di file}
+Definisce come viene assegnata l’etichetta a un nuovo file creato da un processo.
+Ad esempio:
+\begin{verbatim}
+type_transition passwd_t etc_t:file shadow_t;
+\end{verbatim}
+Con questa regola, un processo con etichetta \texttt{passwd\_t} che crea un file in una directory etichettata come \texttt{etc\_t} produrrà un file con tipo \texttt{shadow\_t}.
+Questo comportamento è essenziale per mantenere la coerenza delle etichette nei file di sistema sensibili (es. \texttt{/etc/shadow}).
+
+\subparagraph{2. Transizione di processo}
+Stabilisce come cambia l’etichetta di un processo quando esegue un certo programma.
+Ad esempio:
+\begin{verbatim}
+type_transition user_t passwd_exec_t:process passwd_t;
+\end{verbatim}
+Quando un utente con tipo \texttt{user\_t} esegue il binario \texttt{passwd} (etichettato come \texttt{passwd\_exec\_t}), il nuovo processo generato assume il tipo \texttt{passwd\_t}.
+In questo modo, il programma viene confinato in un dominio sicuro che gli consente di accedere solo ai file strettamente necessari (ad esempio \texttt{/etc/shadow}) senza ereditare tutti i privilegi dell’utente che lo ha avviato.
+
+
+\subsection{Boot Time Security}
+La fase di avvio è estremamente critica poiché rappresenta il momento in cui il sistema carica kernel, moduli e servizi.
+Un attacco in questa fase può compromettere tutto il sistema prima dell’applicazione delle policy di sicurezza.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\linewidth]{immagini/SYS_05/boot}
+    \caption{How your computer boots}
+    \label{fig:boot}
+\end{figure}
+
+\paragraph{Funzionamento del Ramdisk durante il Boot}
+Durante la fase iniziale dell’avvio di un sistema Linux, il \textbf{ramdisk} (o \textit{initramfs/initrd}) svolge un ruolo fondamentale per la preparazione dell’ambiente necessario al caricamento del sistema operativo vero e proprio.
+Il ramdisk è un piccolo filesystem temporaneo caricato in memoria dal bootloader, che contiene gli script e i moduli indispensabili per montare la root reale e avviare il processo \texttt{init}.
+
+In un sistema sano e non compromesso, il flusso di esecuzione del ramdisk segue una sequenza ben definita di passaggi:
+\begin{enumerate}
+  \item \textbf{Caricare i moduli necessari:} vengono caricati i moduli del kernel indispensabili per il riconoscimento dei dispositivi hardware (es. driver del filesystem, controller SATA, moduli per la rete o per i dischi NVMe).
+  \item \textbf{Gestire gli eventi di hotplug:} il sistema risponde agli eventi generati da dispositivi collegati dinamicamente durante la fase di boot (ad esempio rilevamento di periferiche USB o partizioni di disco).
+  \item \textbf{Eseguire \texttt{cryptsetup} (opzionale):} se il sistema adotta cifratura a livello di disco, il ramdisk gestisce la fase di sblocco dei volumi crittografati prima del montaggio della root.
+  \item \textbf{Trovare e montare la root filesystem:} viene identificato il dispositivo che ospita la partizione principale del sistema (\texttt{/}) e ne viene eseguito il montaggio.
+  Questo è uno dei momenti più critici, poiché da qui il controllo passa al sistema reale.
+  \item \textbf{Pulire l’ambiente temporaneo:} una volta montata la root reale, il contenuto del ramdisk (inizialmente residente in memoria) viene smontato e liberato per ridurre il consumo di RAM.
+  \item \textbf{Eseguire \texttt{init}:} infine, viene lanciato il processo \texttt{/sbin/init} (o equivalenti come \texttt{systemd}), che avvia la vera sequenza di bootstrap del sistema operativo.
+\end{enumerate}
+
+Questi sei passaggi rappresentano il comportamento atteso di un \textbf{ramdisk legittimo}.
+Qualsiasi deviazione da questa sequenza — ad esempio l’inserimento di codice non autorizzato o la modifica di script di inizializzazione — può essere sintomo di un compromesso del processo di boot.
+Ed è proprio su queste deviazioni che si basano attacchi come le \textit{Horse Pills}, in grado di eseguire codice malevolo già nella fase di avvio, prima ancora che i meccanismi di sicurezza del kernel siano operativi.
+
+
+
+\paragraph{Horse Pills}
+L’attacco denominato \textbf{Horse Pills} rappresenta una forma particolarmente insidiosa di compromissione del sistema, poiché avviene durante la fase di \textbf{boot}, quando la catena di fiducia non è ancora completamente stabilita.
+In particolare, l’attacco prende di mira il \textbf{ramdisk} (o \texttt{initramfs/initrd}), che viene caricato in memoria prima del sistema operativo vero e proprio e che contiene gli script necessari per il montaggio del filesystem principale e l’avvio del processo \texttt{init}.
+
+Un ramdisk compromesso può contenere moduli, script o binari alterati che si eseguono con privilegi totali, ottenendo così il controllo completo del sistema prima che vengano avviate le difese tradizionali (come SELinux, AppArmor o i meccanismi PAM).
+Da quel momento, l’attaccante può manipolare il comportamento del kernel, iniettare codice, installare backdoor o persistere in modo invisibile.
+
+\paragraph{Cosa può fare un ramdisk infetto}
+Una volta eseguito, un ramdisk malevolo può replicare tutte le operazioni di un initrd legittimo, ma con aggiunte o sostituzioni di comandi che modificano il comportamento del sistema.
+Tra le operazioni che un \textit{Horse Pill} può eseguire:
+\begin{itemize}
+  \item \textbf{Caricare moduli kernel} o librerie modificati, compromettendo i meccanismi di sicurezza a livello di spazio kernel;
+  \item \textbf{Gestire la cifratura (cryptsetup)} in modo malevolo, esfiltrando password o chiavi prima di montare il filesystem cifrato;
+  \item \textbf{Montare e manipolare il root filesystem} (\texttt{/}) per inserire file o alterare binari di sistema prima che il vero OS prenda il controllo;
+  \item \textbf{Enumerare e modificare i thread del kernel} per inserire processi fittizi o mascherare moduli caricati;
+  \item \textbf{Creare nuovi namespace e PID namespaces} usando chiamate come \texttt{clone(CLONE\_NEWPID, CLONE\_NEWNS)}, isolando i processi malevoli dal resto del sistema e rendendoli invisibili ai normali strumenti di analisi;
+  \item \textbf{Eseguire fork() multipli} per installare hook o aprire \textbf{backdoor persistenti}, ad esempio intercettando aggiornamenti futuri dell’initrd o lanciando shell nascoste;
+  \item \textbf{Rimontare filesystem critici} come \texttt{/proc} e creare \textbf{thread kernel falsi} per simulare processi legittimi;
+  \item \textbf{Ripulire il ramdisk e rieseguire init}, completando il boot in modo apparentemente normale, così da non lasciare indizi immediati della compromissione.
+\end{itemize}
+
+In sostanza, l’attacco “Horse Pills” è una forma di \textbf{rootkit pre-boot}, che agisce prima della transizione dallo spazio d’inizializzazione a quello del sistema operativo vero e proprio, rendendo la rilevazione estremamente difficile.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\linewidth]{immagini/SYS_05/horse}
+    \caption{Horse Pills: compromissione del ramdisk durante la fase di boot.}
+    \label{fig:horse}
+\end{figure}
+
+\paragraph{Mitigazioni e strategie di difesa}
+Le contromisure contro gli attacchi Horse Pills si dividono in due categorie: \textbf{rilevazione} e \textbf{prevenzione}.
+Poiché il ramdisk è parte critica del processo di avvio, la sua compromissione può essere individuata solo tramite controlli di integrità e monitoraggio mirato.
+
+\subparagraph{1. Rilevazione}
+\begin{itemize}
+  \item \textbf{Analisi dei namespace:} esaminare i link in \texttt{/proc/<pid>/ns} per identificare configurazioni di namespace anomale o isolate.
+  \item \textbf{Verifica dei processi kernel:} analizzare i processi con \texttt{ppid != 0} che potrebbero mascherarsi come thread del kernel.
+  \item \textbf{Audit e verifiche esterne:} effettuare controlli periodici e audit di sicurezza da fonti esterne al sistema (es. strumenti di forensics live).
+  \item \textbf{Monitoraggio dell’integrità:} utilizzare strumenti come \textbf{AIDE} o \textbf{Tripwire} per rilevare modifiche al contenuto dell’initrd e ai file critici del sistema.
+  \item \textbf{Verifica dei moduli kernel:} abilitare meccanismi di validazione come \textbf{dm-verity}, che consente al kernel di controllare la firma e l’integrità dei moduli caricati.
+  \item \textbf{Analisi dei log:} usare sistemi di log analysis (es. \textbf{OSSEC}, \textbf{Splunk}) per identificare comportamenti sospetti nella sequenza di avvio.
+  \item \textbf{Analisi della memoria:} strumenti come \textbf{Volatility} consentono di eseguire ispezioni in memoria viva per individuare moduli o processi iniettati.
+  \item \textbf{Regole di auditd:} configurare \textbf{auditd} per monitorare l’accesso ai file critici e ai comandi di boot (es. \texttt{modprobe}, \texttt{insmod}).
+  \item \textbf{Monitoraggio in tempo reale:} utilizzare strumenti come \textbf{sysdig} o \textbf{strace} per tracciare le chiamate di sistema durante il boot e identificare anomalie.
+\end{itemize}
+
+\subparagraph{2. Prevenzione}
+\begin{itemize}
+  \item \textbf{Limitare la creazione di ramdisk in produzione:} evitare che i sistemi operativi assemblino o rigenerino initrd direttamente in ambienti live, riducendo così il rischio di inserimento di codice malevolo.
+  \item \textbf{Applicare la verifica delle firme digitali:} usare \textbf{Secure Boot} o meccanismi di firma delle immagini di initrd per assicurarsi che vengano caricati solo ramdisk autorizzati.
+  \item \textbf{Controllare l’origine delle immagini di boot:} mantenere repository firmati e monitorare la catena di aggiornamento del kernel.
+  \item \textbf{Separare la fase di build dalla fase di esecuzione:} costruire i ramdisk in ambienti controllati (build server) e distribuirli in sola lettura.
+\end{itemize}
+
+
+\subsection{Sicurezza di Rete a Livello OS}
+A livello di sistema operativo, la sicurezza di rete si basa su meccanismi di controllo dell’accesso ai servizi in ascolto.
+Storicamente, Unix ha introdotto il concetto di “super-server” (\texttt{inetd} e \texttt{xinetd}), che gestiscono l’attivazione dei servizi su richiesta, e strumenti come \texttt{tcpd} per filtrare gli accessi in base all’indirizzo IP.
+
+\paragraph{inetd e xinetd}
+Il demone \texttt{inetd} ascolta su porte specifiche e, alla ricezione di una connessione, avvia il servizio corrispondente reindirizzando i socket standard (\texttt{stdin}, \texttt{stdout}, \texttt{stderr}).
+Il suo successore, \texttt{xinetd}, aggiunge controllo per indirizzo IP, finestre temporali di accesso, limitazioni sul numero di connessioni e log dettagliati.
+Le configurazioni sono in \texttt{/etc/inetd.conf} e \texttt{/etc/xinetd.conf}.
+
+\paragraph{TCP Wrappers e Reverse DNS}
+Il meccanismo noto come \textbf{TCP Wrappers} (programma comunemente chiamato \texttt{tcpd}) è una forma storica di controllo degli accessi a livello applicazione usata in congiunzione con i demoni gestiti da \texttt{inetd}/\texttt{xinetd}.
+Il suo obiettivo è semplice: intercettare una connessione in ingresso e decidere, in base a regole amministrative, se inoltrare la richiesta al servizio oppure rifiutarla.
+
+\paragraph{File di configurazione}
+TCP Wrappers utilizza due file di configurazione principali:
+\begin{itemize}
+  \item \texttt{/etc/hosts.allow} — regole che consentono l'accesso (valutate per prime);
+  \item \texttt{/etc/hosts.deny}  — regole che negano l'accesso (valutate solo se nessuna regola in \texttt{hosts.allow} ha già concesso l'accesso).
+\end{itemize}
+La sintassi generale di una riga è:
+\begin{verbatim}
+daemon_list : client_list [ : shell_command ]
+\end{verbatim}
+Dove:
+\begin{itemize}
+  \item \texttt{daemon\_list} indica il servizio o l'insieme di servizi (es. \texttt{sshd}, \texttt{ALL});
+  \item \texttt{client\_list} indica gli host/client ammessi o negati (può essere un indirizzo IP, un network, un nome di host, un dominio con prefisso punto \texttt{.example.com}, un netgroup con \texttt{@}, ecc.);
+  \item opzionalmente si può aggiungere un comando shell che viene eseguito quando la regola corrisponde.
+\end{itemize}
+
+\paragraph{Esempi pratici}
+\begin{verbatim}
+# permetti solo localhost per tutti i demoni
+ALL: 127.0.0.1
+
+# permetti sshd dal /24 di rete interna e dai nomi sotto example.com
+sshd: 192.0.2.0/24, .example.com
+
+# se nessuna allow ha concesso l'accesso, rifiuta tutto
+ALL: ALL
+\end{verbatim}
+
+\paragraph{Ordine e logica di valutazione}
+La regola operativa è semplice ma importante:
+\begin{enumerate}
+  \item il demone TCP wrapper consulta \texttt{/etc/hosts.allow}; se trova una voce che corrisponde, l'accesso è \textbf{concesso} e la valutazione termina;
+  \item se non c'è corrispondenza, viene consultato \texttt{/etc/hosts.deny}; se trova una voce corrispondente, l'accesso è \textbf{negato};
+  \item in assenza di corrispondenze in entrambi i file l'accesso è \textbf{concesso} per default (da qui l'importanza della regola esplicita \texttt{ALL: ALL} in \texttt{hosts.deny} per un comportamento \textit{deny-by-default}).
+\end{enumerate}
+
+\paragraph{Reverse DNS Tampering: il problema}
+Molte voci in \texttt{hosts.allow} e \texttt{hosts.deny} possono essere espresse con nomi host o domini (es. \texttt{.example.com}).
+Per risolvere questi nomi, \texttt{tcpd} fa ricorso al DNS: normalmente esegue una \textbf{reverse lookup} (PTR) sull'indirizzo IP del client per ottenere un nome d'host, e poi una \textbf{forward lookup} su quel nome per verificare che torni all'indirizzo IP originale.
+Questa doppia verifica (PTR \(\to\) nome, poi nome \(\to\) A/AAAA) è pensata per evitare falsificazioni semplici.
+
+Il problema del \textit{Reverse DNS Tampering} si presenta quando un attaccante riesce a manipolare le risposte DNS inverse (PTR) — o controlla la zona PTR del proprio blocco IP — e imposta un PTR che corrisponde a un nome autorizzato.
+Se la verifica forward/reverse non viene eseguita o se il DNS sottostante è compromesso (per esempio la zona PTR non è firmata o è sotto il controllo del malintenzionato), allora un host malevolo può farsi passare per un host autorizzato usando solo la manipolazione del PTR.
+
+\paragraph{Esempio di attacco semplificato}
+\begin{verbatim}
+# l'amministratore permette .trusted.example.com su sshd
+sshd: .trusted.example.com
+
+# l'attaccante controlla la zona PTR del suo IP e imposta:
+10.2.0.192.in-addr.arpa. PTR evil.trusted.example.com.
+
+# se non viene effettuata una forward-check corretta, tcpd potrebbe accettare
+# la connessione credendo che l'IP appartenga a trusted.example.com.
+\end{verbatim}
+
+\paragraph{Contromisure pratiche}
+Per ridurre il rischio derivante dal Reverse DNS Tampering e, più in generale, dalla fiducia nelle risposte DNS:
+\begin{itemize}
+  \item \textbf{Eseguire la doppia verifica (reverse + forward):} assicurarsi che il software effettui la forward-check (nome ottenuto da PTR deve risolvere all'IP originale). TCP Wrappers storicamente lo fa; tuttavia, non è infallibile se l'attaccante controlla sia la PTR che la A record.
+  \item \textbf{Preferire ACL basate su indirizzi IP o reti note} (meno dipendenti da DNS) quando possibile: usare reti, indirizzi pubblici o range ASN, non solo nomi host.
+  \item \textbf{Usare firewall a livello kernel (iptables/nftables) o filtri a livello di rete} per bloccare connessioni indesiderate prima che raggiungano il demone applicativo.
+  \item \textbf{Impostare policy di default-deny:} adottare \texttt{ALL: ALL} in \texttt{/etc/hosts.deny} e specificare esplicitamente solo ciò che è necessario in \texttt{/etc/hosts.allow}.
+  \item \textbf{Ridurre la fiducia nel DNS non firmato:} quando possibile, utilizzare infrastrutture DNS con DNSSEC per le zone autoritative e per quelle inverse; la firma delle zone rende più difficile la manipolazione delle risposte.
+  \item \textbf{Usare meccanismi di autenticazione addizionali:} ad esempio autenticazione a chiave (SSH keys), sistemi di autenticazione centralizzata (RADIUS/LDAP) o PAM, che non si basano esclusivamente sul nome restituito dal DNS.
+  \item \textbf{Limitare le deleghe PTR:} essere cauti nel delegare la gestione delle zone inverse a terze parti; preferire la gestione diretta per quei blocchi IP sensibili.
+  \item \textbf{Log e monitoraggio:} abilitare logging dettagliato per tcpd/xinetd e correlare con i log DNS per individuare incongruenze (PTR che cambiano frequentemente, mismatch forward/reverse).
+  \item \textbf{Considerare alternative moderne:} TCP Wrappers è un meccanismo storico e presenta limiti (ad es. scarsa integrazione con IPv6 in vecchie implementazioni, gestione limitata delle policy). In molti contesti è preferibile usare strumenti di controllo accessi più moderni (firewall a livello host, SELinux/AppArmor per controllo applicativo, sistemi di autenticazione centralizzati).
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/SYS_05/so}
+    \caption{Esempio di reverne dns tampering}
+    \label{fig:so}
+\end{figure}
+
+
+
+\paragraph{Conclusione}
+La sicurezza del sistema operativo non è data da un unico meccanismo, ma dall’integrazione di più livelli di difesa: autenticazione robusta, controllo dei privilegi, politiche d’accesso rigorose e monitoraggio costante del comportamento del sistema.
+Solo un approccio multilivello, che rispetti il principio del minimo privilegio e l’integrità della catena di boot, può garantire la reale affidabilità di una piattaforma.

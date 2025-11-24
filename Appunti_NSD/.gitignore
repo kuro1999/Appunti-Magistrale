@@ -1,0 +1,55 @@
+# ==============================
+#   Progetto: Appunti_NSD
+#   Ambiente: LaTeX / Overleaf / IntelliJ
+# ==============================
+
+# === File generati da LaTeX ===
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
+*.xdv
+
+# === Directory di output ===
+out/
+build/
+dist/
+
+
+# === File temporanei o di backup ===
+*~
+*.bak
+*.tmp
+
+# === File di progetto IDE (IntelliJ, VSCode, ecc.) ===
+.idea/
+*.iml
+.vscode/
+
+# === File di sistema ===
+.DS_Store
+Thumbs.db
+
+# === Latex Workshop cache ===
+*.synctex.gz(busy)
+
+# Directory di output
+/out/
+/out/*
+/out/sezioni/
