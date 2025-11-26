@@ -1,0 +1,537 @@
+\newpage
+\section{NET\_07 - Secure Protocols and Overlay VPNs}
+
+Questa sezione analizza i protocolli crittografici utilizzati per proteggere le comunicazioni di rete,
+con particolare attenzione alle \textbf{Overlay VPN}, al funzionamento di \textbf{OpenVPN} e
+all’interazione con \textbf{NETFILTER}. Si esaminano inoltre le tecniche crittografiche applicate ai
+diversi livelli dello stack ISO/OSI e il modo in cui esse compensano l’assenza di sicurezza nativa nei
+protocolli Internet.
+
+\subsection{Recap: Protocolli di Sicurezza di Rete}
+
+I protocolli di rete come IP, TCP e UDP sono intrinsecamente insicuri. Al fine di garantire
+confidenzialità, integrità e autenticazione, vengono introdotti protocolli crittografici ai diversi livelli
+dello stack:
+
+\begin{itemize}
+    \item \textbf{Livello applicativo}: SSH per accesso remoto sicuro.
+    \item \textbf{Livello di trasporto}: TLS per protezione end-to-end applicativa.
+    \item \textbf{Livello di rete}: IPSec per proteggere comunicazioni host-to-host o gateway-to-gateway.
+\end{itemize}
+
+Essi forniscono:
+\begin{itemize}
+    \item \textit{Confidenzialità}: cifratura del traffico.
+    \item \textit{Integrità}: MAC e HMAC.
+    \item \textit{Autenticazione}: scambio di chiavi e certificati.
+\end{itemize}
+
+\subsection{Overlay VPN}
+
+Una \textbf{Overlay VPN} permette di costruire una rete privata virtuale sopra una rete pubblica
+non sicura (tipicamente Internet). La topologia della VPN è ``virtuale'' e indipendente dalla
+topologia fisica sottostante.
+
+Gli obiettivi principali sono:
+
+\begin{itemize}
+    \item creare un canale privato logico fra endpoint remoti;
+    \item garantire integrità, autenticità e confidenzialità del traffico;
+    \item nascondere ai router intermedi la struttura della rete interna.
+\end{itemize}
+
+\subsection{Topologia Overlay e Sottostante nelle VPN}
+
+La figura seguente illustra la differenza tra la
+\textbf{topologia overlay} di una VPN e la \textbf{topologia sottostante} (underlay) fornita
+da Internet.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{immagini/NET_07/overlay}
+    \caption{Differenza tra topologia Overlay VPN e Underlay fisica.}
+    \label{fig:overlay}
+\end{figure}
+
+Nella parte superiore della figura è rappresentata la \textbf{Overlay Topology}:
+i nodi della VPN (Node~1, Node~2, Node~3) sono connessi fra loro tramite indirizzi
+virtuali nella rete privata \texttt{10.0.0.0/24}. Dal punto di vista logico:
+
+\begin{itemize}
+    \item Node~1 ha indirizzo VPN \texttt{10.0.0.1/24};
+    \item Node~2 ha indirizzo VPN \texttt{10.0.0.2/24};
+    \item Node~3 ha indirizzo VPN \texttt{10.0.0.3/24}.
+\end{itemize}
+
+La VPN realizza quindi una mesh logica in cui ciascun nodo è raggiungibile tramite il tunnel,
+indipendentemente dall'effettiva posizione fisica nella rete reale.
+
+\subsubsection{Underlay: topologia reale}
+
+La parte inferiore della figura mostra la \textbf{topologia sottostante}, ovvero Internet.
+Ogni nodo si trova in una rete IP completamente diversa:
+
+\begin{itemize}
+    \item Node~1 è fisicamente nel segmento \texttt{192.168.0.3/24};
+    \item Node~2 si trova nella rete pubblica \texttt{1.2.3.4/22};
+    \item Node~3 appartiene al blocco \texttt{6.7.8.9/16}.
+\end{itemize}
+
+Sebbene tali indirizzi non siano correlati fra loro, ognuno di essi è raggiungibile tramite Internet e
+può instaurare un tunnel verso gli altri nodi della VPN.
+
+\subsubsection{Relazione Overlay–Underlay}
+
+L'Overlay poggia sul servizio di connettività IP fornito dall'Underlay:
+
+\begin{itemize}
+    \item Il routing nella VPN usa solo gli indirizzi virtuali \texttt{10.0.0.x}.
+    \item Il routing dell’underlay usa gli indirizzi IP reali pubblici/privati.
+    \item I router dell’underlay non conoscono la VPN né la sua topologia interna.
+\end{itemize}
+
+Ogni pacchetto inviato da Node~1 a Node~3 avviene secondo i seguenti passaggi:
+
+\begin{enumerate}
+    \item \textbf{Node~1 costruisce un pacchetto con destinazione 10.0.0.3}.
+          Questo pacchetto appartiene alla topologia overlay.
+    \item \textbf{Il software VPN lo incapsula} in un pacchetto IP esterno con destinazione
+          l'indirizzo fisico dell'altro nodo (es.\ \texttt{6.7.8.9}).
+    \item \textbf{Internet effettua il forwarding} basandosi esclusivamente sull'header esterno.
+    \item \textbf{Node~3 decapsula} il pacchetto restituendo l’header VPN interno.
+\end{enumerate}
+
+Questo meccanismo permette ai nodi di comunicare come se fossero nella stessa rete locale privata,
+pur non condividendo alcuna caratteristica della rete fisica sottostante.
+
+\subsubsection{Vantaggi dell’Overlay}
+
+La separazione Overlay/Underlay offre:
+
+\begin{itemize}
+    \item \textbf{Indipendenza dalla topologia fisica}: la VPN può unire nodi sparsi nel mondo.
+    \item \textbf{Indirizzamento uniforme}: la rete privata \texttt{10.0.0.0/24} è indipendente dagli IP reali.
+    \item \textbf{Sicurezza}: l'incapsulamento nel tunnel permette cifratura e autenticazione.
+    \item \textbf{Gestione semplificata}: il routing interno è controllato interamente dal software VPN.
+\end{itemize}
+
+
+
+\subsubsection{Problema 1: Creazione della Rete Privata}
+
+Per collegare nodi remoti come se fossero nella stessa LAN, è necessario l'uso del \textbf{tunneling}.
+Il tunneling consiste nell'incapsulare un pacchetto IP interno come payload di un pacchetto IP esterno.
+
+I router della rete pubblica vedono solo l’header esterno e fanno forwarding ignorando la struttura
+interna della VPN.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{immagini/NET_07/tunnel}
+    \caption{Esempio di incapsulamento e decapsulamento in una Overlay VPN: un pacchetto con
+    destinazione privata \texttt{10.0.0.2} viene incapsulato dal gateway del Site~1 in un pacchetto
+    esterno con destinazione pubblica \texttt{2.2.2.2}, attraversa Internet e viene decapsulato dal
+    gateway del Site~2, che riconsegna il pacchetto interno all'host VPN remoto.}
+    \label{fig:tunnel}
+\end{figure}
+
+\subsubsection{Incapsulamento e Decapsulamento dei Pacchetti nella Overlay VPN}
+
+La figura mostra il funzionamento del meccanismo di \textbf{tunneling} usato da una Overlay VPN.
+Due siti remoti, Site~1 e Site~2, appartengono alla stessa rete privata virtuale \texttt{10.0.0.0/24}
+pur essendo connessi tramite Internet.
+
+Il traffico generato dagli host della VPN utilizza indirizzi privati non instradabili pubblicamente
+(ad esempio \texttt{10.0.0.1} → \texttt{10.0.0.2}). Poiché tali indirizzi non possono essere inoltrati
+nativamente attraverso la rete pubblica, i gateway VPN applicano un meccanismo di incapsulamento:
+
+\begin{enumerate}
+    \item L'host \texttt{10.0.0.1} invia un pacchetto destinato a \texttt{10.0.0.2}.
+    \item Il gateway del Site~1 incapsula il pacchetto interno in un nuovo pacchetto IP esterno:
+    \begin{itemize}
+        \item \textbf{IP interno}: sorgente \texttt{10.0.0.1}, destinazione \texttt{10.0.0.2};
+        \item \textbf{IP esterno}: sorgente \texttt{1.1.1.1}, destinazione \texttt{2.2.2.2}.
+    \end{itemize}
+    \item Il pacchetto esterno attraversa Internet: i router dell’underlay vedono solo l’header esterno
+          e inoltrano il traffico verso \texttt{2.2.2.2}.
+    \item Il gateway del Site~2, una volta ricevuto il pacchetto, effettua il \textbf{decapsulamento}
+          rimuovendo l’header esterno.
+    \item Il pacchetto interno viene reinserito nella rete privata del Site~2 e consegnato all’host
+          \texttt{10.0.0.2}.
+\end{enumerate}
+
+Questo processo permette ai due siti di comportarsi come se fossero connessi alla stessa LAN privata,
+garantendo trasparenza di indirizzamento e sicurezza del trasporto grazie alla cifratura del tunnel.
+
+
+
+\subsubsection{Problema 2: Sicurezza del Tunnel}
+
+Per proteggere il contenuto del pacchetto incapsulato, è necessario applicare protocolli crittografici.
+Una Overlay VPN combina quindi:
+
+\begin{itemize}
+    \item \textit{incapsulamento} (tunneling)
+    \item \textit{crittografia} (TLS, IPSec, ecc.)
+    \item \textit{autenticazione} (certificati)
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{immagini/NET_07/secu}
+    \caption{Confronto tra cifratura \textit{Gateway-to-Gateway} e \textit{End-to-End}.
+    Nel modello GW-to-GW il traffico viene cifrato e decifrato unicamente dai gateway VPN,
+    mentre gli host interni comunicano in chiaro nella propria LAN; nel modello End-to-End
+    la cifratura è applicata direttamente dagli host, garantendo protezione completa del
+    contenuto lungo l’intero percorso.}
+    \label{fig:secu}
+\end{figure}
+
+
+\subsubsection{Approfondimento sui dispositivi TUN e TAP}
+
+OpenVPN interagisce con il sistema operativo attraverso dispositivi di rete virtuali.
+Questi dispositivi non corrispondono a interfacce fisiche, ma sono creati in software
+per permettere al processo OpenVPN di inviare e ricevere pacchetti come se fosse una
+vera scheda di rete. Esistono due tipologie principali:
+
+\paragraph{Dispositivo TUN}
+Un'interfaccia \textbf{TUN} opera a \textit{livello 3} (IP) del modello OSI.
+Caratteristiche principali:
+
+\begin{itemize}
+    \item gestisce solo pacchetti IP (IPv4/IPv6), non frame Ethernet;
+    \item non supporta ARP, broadcast o multicast Ethernet;
+    \item crea un tunnel \textit{point-to-point} tra due endpoint (tipico per VPN site-to-site e client--server);
+    \item l'applicazione (OpenVPN) riceve direttamente il pacchetto IP da incapsulare nel tunnel.
+\end{itemize}
+
+Un dispositivo \textbf{TUN} è appropriato quando si vuole creare un tunnel che trasporta
+esclusivamente traffico IP. Poiché opera a livello 3, gestisce solo pacchetti IPv4/IPv6 e non
+propaga frame Ethernet, ARP o traffico broadcast. Questo lo rende ideale per VPN point-to-point
+o site-to-site in cui è sufficiente instradare traffico IP tra reti distinte senza ricreare una LAN
+completa.
+Esempio: un’azienda collega la sede centrale (\texttt{10.0.0.0/24}) con una filiale remota
+(\texttt{10.0.1.0/24}) tramite un tunnel TUN. Il tunnel trasporta solo pacchetti IP instradati
+tra le due reti, senza estendere la LAN e senza gestire traffico broadcast o protocolli di
+livello 2.
+
+
+
+
+%%%%%%%%    TAP %%%%%%%%%%%
+\paragraph{Dispositivo TAP}
+Un'interfaccia \textbf{TAP} opera a \textit{livello 2} (Ethernet).
+Caratteristiche principali:
+
+\begin{itemize}
+    \item gestisce frame Ethernet completi (header L2 + payload);
+    \item supporta ARP, broadcast e multicast;
+    \item consente di estendere una LAN reale a distanza, creando una ``LAN virtuale'';
+    \item consente di far circolare protocolli non-IP (ad esempio NetBIOS).
+\end{itemize}
+
+
+Un dispositivo \textbf{TAP}, operando a livello 2, trasporta interi frame Ethernet e riproduce il
+comportamento di una vera interfaccia di rete. Supporta ARP, broadcast e multicast e permette
+di estendere un dominio Ethernet tra due siti remoti. È quindi indicato quando la VPN deve
+comportarsi come un’unica LAN, oppure quando occorre trasportare protocolli non-IP o servizi
+che dipendono dal livello 2.
+
+Esempio: due uffici remoti devono condividere la stessa LAN Ethernet per permettere
+l’erogazione di DHCP e il funzionamento di protocolli basati su broadcast, come ARP o
+NetBIOS. Utilizzando TAP, l’intera rete di livello 2 viene estesa attraverso il tunnel,
+come se gli host fossero collegati allo stesso switch.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{immagini/NET_07/openvpn}
+    \caption{Funzionamento di un client OpenVPN con interfaccia virtuale TUN.
+    Il traffico destinato alla rete privata virtuale \texttt{10.0.0.0/24} viene instradato
+    verso l'interfaccia \texttt{tun0}, incapsulato dal processo OpenVPN e successivamente
+    inviato attraverso l’interfaccia fisica \texttt{eth0} verso il server VPN, situato
+    all’indirizzo pubblico \texttt{2.2.2.2}.}
+    \label{fig:openvpn}
+\end{figure}
+
+\subsubsection{Flusso di instradamento e incapsulamento con interfacce TUN}
+
+La figura ~\ref{fig:openvpn} mostra il comportamento di un host configurato come client OpenVPN quando utilizza
+un'interfaccia virtuale \texttt{tun0}. L’obiettivo è instradare traffico IP privato destinato alla rete
+overlay \texttt{10.0.0.0/24} verso il server VPN remoto.
+
+\paragraph{Configurazione dell’host}
+
+Il client possiede:
+
+\begin{itemize}
+    \item un’interfaccia virtuale \texttt{tun0} con indirizzo \texttt{10.0.0.1/30};
+    \item un’interfaccia fisica \texttt{eth0} configurata in \texttt{192.168.0.100/24};
+    \item una tabella di routing che associa l’intera rete VPN \texttt{10.0.0.0/24} al next hop
+          \texttt{10.0.0.2} sull'interfaccia \texttt{tun0}.
+\end{itemize}
+
+Questa configurazione è generata automaticamente dal processo OpenVPN al momento della
+connessione con il server.
+
+\paragraph{Scelta dell’interfaccia di uscita}
+
+Quando un’applicazione locale invia un pacchetto verso un indirizzo VPN, ad esempio
+\texttt{10.0.0.2}, la tabella di routing determina che:
+
+\begin{itemize}
+    \item il pacchetto deve uscire da \texttt{tun0};
+    \item l’indirizzo sorgente sarà \texttt{10.0.0.1};
+    \item il next hop del sottotunnel è \texttt{10.0.0.2}.
+\end{itemize}
+
+Poiché \texttt{tun0} è una point-to-point interface, ogni pacchetto IP consegnato al kernel
+viene immediatamente intercettato dal processo OpenVPN.
+
+\paragraph{Incapsulamento e invio verso il server VPN}
+
+Il processo OpenVPN esegue i seguenti passi:
+
+\begin{enumerate}
+    \item legge dal dispositivo \texttt{/dev/tun0} il pacchetto IP destinato a \texttt{10.0.0.2};
+    \item incapsula tale pacchetto in un datagramma UDP o TCP, secondo la configurazione;
+    \item costruisce un nuovo header IP esterno con destinazione \texttt{2.2.2.2},
+          indirizzo pubblico del server VPN;
+    \item invia il pacchetto esterno attraverso l'interfaccia fisica \texttt{eth0}, seguendo
+          il default gateway locale \texttt{192.168.0.1}.
+\end{enumerate}
+
+Durante questo processo i router della rete sottostante (Internet) vedono soltanto il pacchetto
+esterno, mentre il pacchetto interno rimane protetto dal tunnel.
+
+\paragraph{Effetto logico}
+
+Dal punto di vista delle applicazioni locali, la presenza dell’interfaccia TUN simula una
+connessione diretta alla rete privata \texttt{10.0.0.0/24}.
+La gestione delle chiavi, la cifratura, l’incapsulamento e l’inoltro sono completamente
+trasparenti all’utente e vengono gestiti dal processo OpenVPN in user space.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{immagini/NET_07/openvpn2}
+    \caption{OpenVPN host to server with TUN virtual interfaces}
+\end{figure}
+
+
+
+\subsubsection{Handshake e Modello di Sicurezza}
+
+OpenVPN (in \emph{TLS mode}) utilizza \textbf{TLS} per proteggere il \textit{control channel},
+ossia il canale logico su cui viaggiano le informazioni di configurazione e il materiale
+cifrante.:contentReference[oaicite:0]{index=0}
+
+Il primo passo per costruire una VPN con OpenVPN è l’istituzione di una \textbf{PKI}
+(\textit{Public Key Infrastructure}) composta da:​:contentReference[oaicite:1]{index=1}
+\begin{itemize}
+    \item una coppia chiave privata + certificato X.509 per il server;
+    \item una coppia chiave privata + certificato X.509 per ciascun client;
+    \item una \textbf{Certification Authority} (CA) con propria chiave e certificato,
+          usata per firmare tutti i certificati server e client.
+\end{itemize}
+
+L’autenticazione è \textbf{mutua}:
+\begin{itemize}
+    \item il client verifica che il certificato presentato dal server sia stato firmato dalla CA
+          e che i campi del certificato (es.\ Common Name, tipo \emph{server}) siano coerenti;
+    \item il server verifica in modo analogo il certificato del client (tipo \emph{client}).:contentReference[oaicite:2]{index=2}
+\end{itemize}
+
+Una volta completato il TLS handshake:
+\begin{enumerate}
+    \item viene stabilita una sessione TLS autenticata sul \emph{control channel};
+    \item tramite TLS vengono negoziate e scambiate le \textbf{chiavi di sessione}
+          (materiale cifrante) per il \textbf{data channel};
+    \item il \textit{data channel} utilizza cifratura simmetrica (es.\ AES-GCM) e HMAC
+          per garantire confidenzialità, integrità e protezione dal replay.:contentReference[oaicite:3]{index=3}
+\end{enumerate}
+
+\paragraph{OpenVPN security model}
+
+Il modello di sicurezza basato su CA presenta alcune proprietà rilevanti:
+\begin{itemize}
+    \item \textbf{Scalabilità}: il server necessita solo del \textit{proprio} certificato/chiave
+          e del certificato della CA; non deve conoscere a priori tutti i certificati dei client.
+          Accetta solo client le cui credenziali sono firmate dalla CA.
+    \item \textbf{Isolamento della CA}: la chiave privata della CA (la più sensibile)
+          può risiedere su una macchina separata e anche offline; il server usa solo il
+          certificato della CA per verificare le firme, non la chiave privata.
+    \item \textbf{Revoca granulare}: se la chiave di un client viene compromessa, è sufficiente
+          inserire il relativo certificato nella \textbf{CRL} (Certificate Revocation List).
+          OpenVPN può consultare la CRL per rifiutare selettivamente quei certificati senza
+          rigenerare l’intera PKI.
+    \item \textbf{Autorizzazione basata sul certificato}: il server può applicare politiche
+          di accesso specifiche in base ai campi del certificato (es.\ \emph{Common Name}),
+          associando a ciascun client determinate reti raggiungibili o privilegi.
+\end{itemize}
+
+Dal punto di vista del trasporto, OpenVPN può usare sia \textbf{UDP} che \textbf{TCP}; in
+modalità UDP implementa \textbf{TLS over UDP}, ed è la scelta raccomandata quando possibile,
+per evitare il problema del “TCP over TCP”.:contentReference[oaicite:5]{index=5}
+
+\subsubsection{Routing nella VPN}
+
+La topologia logica tipica è \textbf{Hub-and-Spoke}: il server agisce da nodo centrale
+(\emph{hub}), mentre i client sono gli \emph{spoke} che stabiliscono un tunnel verso il server.
+La comunicazione client–client avviene passando attraverso il server.:contentReference[oaicite:6]{index=6}
+
+OpenVPN utilizza tre direttive fondamentali, che agiscono su piani di routing diversi:​:contentReference[oaicite:7]{index=7}
+\begin{itemize}
+    \item \verb|push "route net_addr net_mask"|: il server invia ai client, durante
+          l’handshake, una rotta da installare nella \textbf{tabella di routing reale}
+          del client (underlay). Ogni client aggiunge un entry del tipo:
+          \texttt{net\_addr/net\_mask via <peer\_tun> dev tun0}.
+    \item \verb|route net_addr net_mask|: installa una rotta nella tabella di routing del
+          \textbf{server} (underlay), indicando che una certa rete deve essere inoltrata
+          verso l’interfaccia TUN/TAP gestita da OpenVPN.
+    \item \verb|iroute net_addr net_mask|: viene usata nei file di \verb|client-config-dir|
+          specifici per client (uno per ogni CN) e influenza l’\textbf{overlay routing}
+          gestito dal processo OpenVPN. Serve a dire al server quale rete overlay è
+          raggiungibile tramite quale tunnel (es.\ \texttt{10.0.0.0/24} via \emph{client2}).
+\end{itemize}
+
+Il server decide come smistare i pacchetti tra i vari client combinando:
+\begin{itemize}
+    \item le rotte underlay (\verb|route|, \verb|push route|) installate nel kernel;
+    \item la tabella di routing overlay interna, popolata tramite \verb|iroute| e i file in
+          \verb|client-config-dir|.
+\end{itemize}
+
+
+%%%%%%%%%LABORATORIO
+% Da qui in poi iniziano esplicitamente le slide di laboratorio: "Lab 8: Overlay VPN with OpenVPN"
+\newpage
+\maketitle
+{\LARGE \textbf{Laboratorio}} \\[0.5em]
+\subsection{Lab 8: Overlay VPN con OpenVPN}
+
+In questo laboratorio si realizza una VPN overlay utilizzando OpenVPN in modalità TLS.
+L'obiettivo è costruire una topologia \textit{hub-and-spoke} in cui il server VPN funge da nodo
+centrale e i client accedono a reti remote instradate attraverso il tunnel.
+
+\subsubsection{Topologia}
+
+La figura~\ref{fig:vpn_topology} mostra la topologia logica (overlay) e quella fisica
+(underlay). La VPN utilizza lo spazio di indirizzamento virtuale
+\texttt{192.168.100.0/24}, assegnando:
+
+\begin{itemize}
+    \item \textbf{server}: \texttt{192.168.100.1};
+    \item \textbf{client1}: \texttt{192.168.100.101};
+    \item \textbf{client2}: \texttt{192.168.100.105}.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{immagini/NET_07/vpn_topology}
+    \caption{Topologia del laboratorio: overlay VPN OpenVPN
+    (\texttt{192.168.100.0/24}) e relativa topologia fisica.}
+    \label{fig:vpn_topology}
+\end{figure}
+
+L’overlay VPN permette a client e server di comunicare direttamente attraverso il tunnel,
+mentre l’underlay è costituito da più domini di rete collegati da router R1 e R2.
+
+\subsubsection{Obiettivo}
+
+Il laboratorio ha i seguenti obiettivi:
+
+\begin{itemize}
+    \item permettere la comunicazione sicura client--server attraverso la VPN;
+    \item abilitare la comunicazione client--client tramite il server (hub-and-spoke);
+    \item rendere raggiungibili, tramite la VPN:
+          \begin{itemize}
+              \item la rete dietro il server (\texttt{192.168.0.0/24});
+              \item la rete dietro client2 (\texttt{10.0.0.0/24}).
+          \end{itemize}
+    \item verificare l'instradamento overlay mediante ping e analisi delle routing table.
+\end{itemize}
+
+\subsubsection{Configurazione di rete (underlay)}
+
+Ogni host del laboratorio presenta una configurazione IP coerente con la topologia fisica.
+Gli elementi principali:
+
+\begin{itemize}
+    \item \textbf{server}: interfaccia fisica in \texttt{1.0.0.0/24}, default gateway R2;
+    \item \textbf{client1}: rete \texttt{192.168.1.0/24}, collegato a R1;
+    \item \textbf{client2}: rete \texttt{10.0.0.0/24}, collegato a R2;
+    \item \textbf{R1 e R2}: connessi tramite link \texttt{1.2.0.0/30} e \texttt{2.2.0.0/30}.
+\end{itemize}
+
+Tutti gli host devono avere connettività IP verso il server VPN (\texttt{1.0.0.2}).
+
+\subsubsection{Configurazione OpenVPN}
+
+OpenVPN utilizza tre categorie di direttive fondamentali:
+
+\begin{itemize}
+    \item \verb|server ...| e \verb|ifconfig-push| per l’assegnazione degli indirizzi VPN;
+    \item \verb|push "route ..."| per distribuire le rotte overlay ai client;
+    \item \verb|iroute ...| nei file di \texttt{ccd/} per indicare al server quali reti
+          sono raggiungibili tramite ciascun client.
+\end{itemize}
+
+\paragraph{Configurazione del server}
+
+\begin{verbatim}
+server 192.168.100.0 255.255.255.0
+push "route 192.168.0.0 255.255.255.0"
+push "route 10.0.0.0 255.255.255.0"
+route 10.0.0.0 255.255.255.0
+client-config-dir ccd
+client-to-client
+\end{verbatim}
+
+\paragraph{File ccd/client1}
+
+\begin{verbatim}
+ifconfig-push 192.168.100.101 192.168.100.102
+\end{verbatim}
+
+\paragraph{File ccd/client2}
+
+\begin{verbatim}
+ifconfig-push 192.168.100.105 192.168.100.106
+iroute 10.0.0.0 255.255.255.0
+\end{verbatim}
+
+In questo modo il server sa che la rete \texttt{10.0.0.0/24} è raggiungibile tramite il tunnel
+stabilito con \texttt{client2}.
+
+\subsubsection{Test di connettività}
+
+Per verificare il corretto funzionamento del laboratorio vengono eseguiti i seguenti test:
+
+\paragraph{1) client1 → server}
+
+Ping verso \texttt{192.168.100.1}.
+Il traffico attraversa:
+
+\begin{enumerate}
+    \item la routing table locale (destinazione rete VPN → \texttt{tun0});
+    \item il tunnel UDP verso il server;
+    \item decapsulamento e reiniezione nel network stack del server.
+\end{enumerate}
+
+\paragraph{2) client1 → client2}
+
+Il traffico passa dal server (hub), che inoltra verso il client appropriato tramite
+\verb|client-to-client|.
+
+\paragraph{3) client1 → client-A (dietro client2)}
+
+L’overlay routing utilizza:
+
+\begin{itemize}
+    \item \verb|push route 10.0.0.0/24| per far conoscere la rete ai client;
+    \item \verb|iroute 10.0.0.0/24| per dire al server che la rete è dietro client2.
+\end{itemize}
+
+Il tunnel viene utilizzato per attraversare l’underlay fino a raggiungere la rete remota.
