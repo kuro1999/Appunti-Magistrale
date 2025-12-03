@@ -1,0 +1,185 @@
+\newpage
+
+
+\section{SYS\_06 - Database security}
+
+
+\subsection{Introduzione alla sicurezza dei database}
+
+La sicurezza dei database costituisce l’insieme di meccanismi, controlli e pratiche operative finalizzate alla protezione dei dati conservati all’interno di un DBMS.
+L’obiettivo centrale è difendere il patrimonio informativo da minacce intenzionali (attacchi informatici, accessi non autorizzati, insider threats) e da eventi accidentali (errori umani, malfunzionamenti, perdita di disponibilità del sistema) \footnote{Vedi ``What is database security?'' nel PDF.}.
+
+Una \textit{security policy} definisce in modo rigoroso le misure da adottare, mentre il DBMS fornisce gli strumenti per farla rispettare.
+Poiché la superficie d'attacco si estende oltre il DBMS, risulta necessario integrare tali meccanismi con procedure sistemistiche, di rete e gestionali, così da proteggere l'intero stack che ospita i dati.
+
+\subsection{Obiettivi e ambito della sicurezza}
+
+Il documento enfatizza come il tema della sicurezza nei corsi classici di database sia spesso trattato marginalmente. Tuttavia, nei sistemi reali diventa un’area critica, che coinvolge:
+
+\begin{itemize}
+    \item l’insieme dei dati memorizzati nel DB;
+    \item il DBMS come software (comprensivo delle sue vulnerabilità);
+    \item le applicazioni che lo utilizzano;
+    \item il server fisico o virtuale in cui risiede il DBMS;
+    \item l'infrastruttura di rete utilizzata per accedere ai dati.
+\end{itemize}
+
+Un concetto chiave presentato nel PDF è il \textbf{paradosso di Anderson}: aumentando l’accessibilità del database se ne riduce la sicurezza; restringendo e irrobustendo le difese, si può compromettere l’usabilità.
+
+\subsection{Minacce comuni}
+
+Le principali minacce individuate includono \footnote{``Common threats'' nel PDF.}:
+
+\begin{itemize}
+    \item \textbf{Insider threats}, dovute a utenti legittimi che abusano dei propri privilegi.
+    \item \textbf{Errori umani}, come configurazioni errate, query mal formulate o cancellazioni involontarie.
+    \item \textbf{Vulnerabilità del DBMS}, sfruttabili da attaccanti esterni.
+    \item \textbf{Vulnerabilità applicative}, in particolare SQL injection.
+    \item \textbf{Buffer overflow} e altre categorie di exploit.
+    \item \textbf{Malware} che compromette i sistemi host.
+    \item \textbf{Attacchi ai backup}, se non adeguatamente protetti.
+    \item \textbf{DDoS}, che colpiscono disponibilità e prestazioni.
+\end{itemize}
+
+\subsection{Best Practices generali}
+
+Le best practices della sicurezza database includono \footnote{``Best practices'' nel PDF.}:
+
+\begin{itemize}
+    \item sicurezza fisica delle infrastrutture;
+    \item controllo degli accessi (PoLP);
+    \item sicurezza degli account utente e dei dispositivi;
+    \item cifratura dei dati e dei canali di comunicazione;
+    \item hardening del DBMS;
+    \item messa in sicurezza dell'applicazione e del web server;
+    \item protezione dei backup;
+    \item auditing e monitoraggio.
+\end{itemize}
+
+\subsection{Sicurezza fisica}
+
+\subsubsection{Difesa a più livelli}
+
+Le slide mostrano chiaramente come i data center applichino un modello multilivello, comprendente perimetro esterno, guardiania, accesso agli edifici, zone sicure, controllo ascensori, corridoi protetti e accesso ai rack.
+Un aspetto cruciale è la gestione dei supporti di memorizzazione: gli HDD vengono tracciati e distrutti fisicamente a fine vita, come illustrato nella ``destruction room'' di Google \footnote{``Physical security'' pp. 9--10.}.
+
+\subsection{SQL Injection}
+
+\subsubsection{Panoramica}
+
+Le SQL injection rappresentano una delle minacce più critiche ai sistemi basati su DBMS.
+Esse derivano dall’inserimento non sicuro di input dell’utente all’interno di query.
+Un attaccante può alterare la semantica della query, accedere a dati sensibili, modificare tabelle o compromettere il server.
+
+\subsubsection{Tipologie}
+
+\begin{itemize}
+    \item \textbf{First-order SQLi}: l'input dell’utente viene immediatamente inserito nella query vulnerabile.
+    \item \textbf{Second-order SQLi}: l'input pericoloso è salvato nel database e sfruttato successivamente, quando recuperato dall’applicazione.
+\end{itemize}
+
+\subsubsection{Tecniche di rilevazione}
+
+Le tecniche includono l’invio sistematico di payload quali:
+
+\begin{itemize}
+    \item apici per rompere la struttura sintattica (\verb+'+);
+    \item condizioni booleane (\verb+OR 1=1+);
+    \item payload basati su ritardi temporali;
+    \item interazioni out-of-band (OAST).
+\end{itemize}
+
+Il PDF illustra numerosi esempi pratici (bypass login, esposizione dati nascosti, estrazione tramite \texttt{UNION}) e link a laboratori PortSwigger.
+
+\subsubsection{Prepared Statements}
+
+Il documento sottolinea l’importanza dei \textit{prepared statements} come tecnica per prevenire SQLi: il DBMS precompila il piano di esecuzione della query con placeholder, separando codice e dati.
+
+\subsection{Autenticazione, autorizzazione e controllo degli accessi}
+
+\subsubsection{Autenticazione}
+
+L'autenticazione stabilisce se l’utente è realmente chi afferma di essere.
+I DBMS moderni richiedono che solo utenti autenticati possano creare connessioni.
+
+\subsubsection{Autorizzazione}
+
+L'autorizzazione assegna i privilegi che determinano quali operazioni un utente può svolgere.
+Il modello richiamato è prevalentemente \textbf{DAC}, dove il creatore della risorsa detiene diritti completi.
+
+\subsubsection{Privilegi SQL}
+
+I principali privilegi includono:
+
+\begin{itemize}
+    \item \texttt{SELECT}, \texttt{INSERT}, \texttt{UPDATE}, \texttt{DELETE};
+    \item \texttt{REFERENCES} per definire chiavi esterne;
+    \item \texttt{USAGE} su domini;
+    \item \texttt{EXECUTE} su stored procedures.
+\end{itemize}
+
+Vengono inoltre trattati i comandi \texttt{GRANT}, \texttt{REVOKE} e l’importanza dei ruoli introdotti da SQL-99.
+
+\subsubsection{Viste come meccanismo di sicurezza}
+
+Le viste consentono di esporre solo una porzione del database, implementando un controllo fine (column-level o row-level), senza che l’utente veda ciò che non è autorizzato.
+
+\subsection{RAID e affidabilità dello storage}
+
+La sicurezza non è solo confidenzialità: include disponibilità e resilienza.
+La sezione dedicata al RAID analizza livelli da 0 a 6 e RAID-10, illustrando compromessi tra throughput, concorrenza di accesso e tolleranza ai guasti.
+
+\subsubsection{Punti chiave}
+
+\begin{itemize}
+    \item RAID-0: massime prestazioni, nessuna ridondanza.
+    \item RAID-1: mirroring, ottima tolleranza ai guasti.
+    \item RAID-5: parità distribuita, buon compromesso.
+    \item RAID-6: doppia parità, resiste a due guasti.
+    \item RAID-10: ideale per RDBMS con molti accessi casuali.
+\end{itemize}
+
+\subsection{Backup e Disaster Recovery}
+
+Il PDF enfatizza che i backup devono essere soggetti a precise policy: posizione, accesso, cifratura, rotazione.
+
+\subsubsection{Disaster Recovery}
+
+Vengono presentati due indicatori fondamentali:
+
+\begin{itemize}
+    \item \textbf{RPO} (Recovery Point Objective): quantità di dati che si può perdere.
+    \item \textbf{RTO} (Recovery Time Objective): tempo necessario a ripristinare l’operatività.
+\end{itemize}
+
+È ricordata la \textbf{regola 3-2-1}: tre copie dei dati, due supporti diversi, una off-site.
+
+\subsection{Cifratura e Homomorphic Encryption}
+
+La cifratura dei dati a riposo e in transito è fondamentale.
+Il documento estende poi la discussione all’\textbf{homomorphic encryption}, che consente il calcolo su dati cifrati senza decrittarli.
+
+\subsubsection{Fully Homomorphic Encryption}
+
+Viene introdotta la distinzione tra:
+
+\begin{itemize}
+    \item \textbf{Somewhat homomorphic encryption}: supporta solo un numero limitato di operazioni prima che il rumore diventi eccessivo;
+    \item \textbf{Leveled FHE}: organizzata in livelli con bootstrapping per eliminare il rumore.
+\end{itemize}
+
+\subsection{Database Monitoring}
+
+Il monitoraggio copre tre aree:
+
+\begin{itemize}
+    \item \textbf{Performance}: tempi di risposta, uso risorse, errori.
+    \item \textbf{Security}: accessi anomali, modifiche sospette.
+    \item \textbf{Compliance}: conformità a standard quali GDPR e HIPAA.
+\end{itemize}
+
+Le slide citano l’uso di \texttt{USDT/uprobes} ed \textbf{eBPF} per osservabilità avanzata del comportamento del DBMS.
+
+\subsection{DBMS Security}
+
+Il documento conclude ricordando che il DBMS è software, e come tale può contenere vulnerabilità: è quindi necessario applicare patch e aggiornamenti in modo tempestivo.

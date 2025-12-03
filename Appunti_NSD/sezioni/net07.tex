@@ -404,8 +404,7 @@ Il server decide come smistare i pacchetti tra i vari client combinando:
 \end{itemize}
 
 
-%%%%%%%%%LABORATORIO
-% Da qui in poi iniziano esplicitamente le slide di laboratorio: "Lab 8: Overlay VPN with OpenVPN"
+%%%%%%%%%LABORATORIO%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \maketitle
 {\LARGE \textbf{Laboratorio}} \\[0.5em]
@@ -535,3 +534,544 @@ L’overlay routing utilizza:
 \end{itemize}
 
 Il tunnel viene utilizzato per attraversare l’underlay fino a raggiungere la rete remota.
+
+
+\newpage
+
+\subsection{IPSec}
+
+IPSec rappresenta un insieme di protocolli di sicurezza operanti a livello rete (L3),
+progettati per fornire servizi di confidenzialità, integrità, autenticazione e protezione
+dal replay sui pacchetti IP. Poiché agisce al livello IP, è completamente trasparente ai
+livelli superiori: ogni applicazione, host o protocollo di trasporto può beneficiare delle
+garanzie di sicurezza senza essere modificato.
+
+Inoltre, pacchetti IPSec e pacchetti IP non protetti possono coesistere sulla stessa
+interfaccia, permettendo politiche di protezione selettive basate sul traffico.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{immagini/NET_07/ipsec}
+    \caption{Struttura dell’architettura IPSec secondo la suite RFC 4300.
+    La parte superiore definisce l’architettura generale e i concetti di Security Association
+    (RFC~4301); il blocco centrale comprende i protocolli di sicurezza AH (RFC~4302) ed
+    ESP (RFC~4303), insieme ai relativi algoritmi crittografici (RFC~4305); il blocco
+    inferiore descrive la gestione automatica delle chiavi tramite il protocollo IKEv2
+    (RFC~4306) e i suoi algoritmi crittografici (RFC~4307).}
+    \label{fig:ipsec}
+\end{figure}
+
+\subsubsection{Security Associations (SA)}
+
+Il concetto fondamentale di IPSec è la \textbf{Security Association (SA)}, che definisce il
+contesto unidirezionale di sicurezza utilizzato per proteggere un flusso IP.
+Ogni SA contiene:
+
+\begin{itemize}
+    \item gli algoritmi di cifratura e di autenticazione;
+    \item il materiale crittografico (chiavi);
+    \item i parametri antireplay;
+    \item le informazioni necessarie al trattamento dei pacchetti IP associati.
+\end{itemize}
+
+Le Security Association (SA) di IPSec sono per definizione \textbf{unidirezionali}.
+Ogni SA specifica l’insieme completo dei parametri di sicurezza da applicare ai
+pacchetti in \emph{una sola direzione} del flusso IP, includendo:
+
+\begin{itemize}
+    \item l’algoritmo di cifratura e la relativa chiave di sessione;
+    \item l’algoritmo di integrità e la chiave di autenticazione;
+    \item le politiche antireplay;
+    \item gli SPI (Security Parameter Index) necessari al riconoscimento del traffico.
+\end{itemize}
+
+Poiché questi parametri non sono simmetrici e non vengono automaticamente condivisi
+tra i due peer, una SA può proteggere esclusivamente il traffico \emph{in uscita} da un nodo.
+Il traffico nella direzione opposta deve essere protetto mediante un \textbf{secondo}
+insieme indipendente di algoritmi, chiavi e SPI, e quindi necessita di una seconda SA.
+
+Ne consegue che, per stabilire una comunicazione IPSec completa tra due gateway
+(o due host), è necessario creare almeno:
+
+\begin{itemize}
+    \item una SA per il traffico $A \rightarrow B$;
+    \item una SA per il traffico $B \rightarrow A$.
+\end{itemize}
+
+Questa separazione garantisce flessibilità (scelta diversa degli algoritmi per ogni verso),
+sicurezza (rotazione indipendente delle chiavi) e un chiaro controllo sulle policy di
+protezione applicate nelle due direzioni.
+
+
+Il kernel identifica ogni SA tramite il \textbf{Security Parameter Index (SPI)}, un valore di
+32 bit usato insieme all’indirizzo IP di destinazione.
+Il materiale crittografico associato alle SA è conservato nel \textbf{Security Association
+Database (SAD)}.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{immagini/NET_07/sa}
+    \caption{Esempio di Security Association (SA) unidirezionale da R1 a R2.
+    Il router R1, situato nella sede centrale, instaura una SA verso il router R2
+    nella filiale remota utilizzando gli indirizzi pubblici
+    \texttt{200.168.1.100} e \texttt{193.68.2.23}.
+    Il traffico della rete privata \texttt{172.16.1.0/24} diretto alla rete remota
+    \texttt{172.16.2.0/24} viene protetto applicando gli algoritmi e le chiavi
+    specificati nella SA. Poiché le SA sono monodirezionali, una seconda SA
+    simmetrica da R2 a R1 è necessaria per proteggere il traffico nel verso opposto.}
+    \label{fig:sa}
+\end{figure}
+
+
+\subsubsection{Gestione delle SA}
+
+La gestione delle SA può avvenire in due modi:
+
+\textbf{1) Configurazione manuale}
+Adatta a scenari di piccole dimensioni, tipicamente few-to-few tra security gateway.
+Le SA vengono configurate staticamente e rimangono attive per tutta la vita della VPN.
+Questo approccio è funzionale ma poco sicuro in mancanza di rekeying automatico.
+
+\textbf{2) Configurazione automatica}
+Affidata a un protocollo di key exchange, oggi standardizzato in \textbf{IKEv2}.
+Questa modalità permette:
+
+\begin{itemize}
+    \item autenticazione dei peer;
+    \item negoziazione dinamica degli algoritmi di sicurezza;
+    \item generazione e aggiornamento delle chiavi;
+    \item creazione e gestione di SA aggiuntive (Child SA);
+    \item creazione “on-demand” delle SA quando serve proteggere traffico specifico.
+\end{itemize}
+\paragraph{Vantaggi della configurazione automatica (IKEv2).}
+
+L’uso di un protocollo di key management come IKEv2 introduce numerosi vantaggi rispetto
+alla configurazione manuale delle SA:
+
+\begin{itemize}
+    \item \textbf{Scalabilità}: la creazione delle SA avviene automaticamente in base al traffico;
+          la gestione di molteplici gateway e reti non richiede configurazioni manuali
+          complesse o ripetitive.
+    \item \textbf{Sicurezza superiore}: le chiavi vengono negoziate dinamicamente e
+          sostituite periodicamente tramite meccanismi di \emph{rekeying}, evitando l’uso
+          prolungato di chiavi statiche e riducendo il rischio di compromissione.
+    \item \textbf{Interoperabilità e negoziazione automatica algoritmi}: i peer negoziano
+          automaticamente algoritmi compatibili (cifratura, integrità, DH group), senza
+          necessità di accordi manuali preventivi.
+    \item \textbf{Gestione unificata}: IKEv2 crea un canale protetto (IKE SA) che permette
+          di istanziare e aggiornare molte Child SA senza downtime, facilitando la gestione
+          di tunnel multipli o di più reti interne.
+    \item \textbf{Autenticazione robusta}: supporto nativo per certificati X.509, EAP e
+          autenticazione basata su chiavi simmetriche, con verifica reciproca delle identità.
+\end{itemize}
+
+\paragraph{Svantaggi della configurazione automatica.}
+
+Nonostante i significativi benefici, la gestione automatica presenta alcuni aspetti critici:
+
+\begin{itemize}
+    \item \textbf{Maggiore complessità}: l’infrastruttura IKEv2 richiede configurazioni più
+          articolate (identità, certificati, policy IKE, algoritmi supportati) e una maggiore
+          comprensione del modello di sicurezza.
+    \item \textbf{Dipendenza da servizi esterni}: l’autenticazione tramite certificati impone
+          la presenza di una PKI, con necessità di gestire certificati, CA e CRL.
+    \item \textbf{Overhead computazionale}: la negoziazione iniziale e il rekeying
+          periodico comportano costi crittografici, soprattutto su device a bassa potenza come
+          router embedded.
+    \item \textbf{Maggiore superficie di attacco}: il servizio IKEv2 espone una porta
+          dedicata (UDP/500 e UDP/4500), che deve essere protetta da policy firewall
+          adeguate per prevenire attacchi di tipo DoS o probing.
+\end{itemize}
+
+
+\subsubsection{IPSec Protocol Suite: AH e ESP}
+
+IPSec non è un singolo protocollo, ma una \textbf{suite} costituita principalmente da due
+meccanismi:
+
+\paragraph{Authentication Header (AH)}
+Il protocollo AH garantisce \textbf{integrità} e \textbf{autenticazione} dell’intero pacchetto IP,
+includendo anche le parti immutabili dell’header IP. AH calcola un valore di integrità
+(HMAC) che copre sia l’header IP sia il payload: questo consente al destinatario di
+verificare che né l’indirizzo sorgente, né altri campi non modificabili dell’header, siano stati
+alterati durante il transito. AH, tuttavia, \textbf{non fornisce confidenzialità} perché non applica
+alcuna forma di cifratura; il contenuto del pacchetto rimane leggibile. Inoltre, non può
+proteggere campi dell’header IP che cambiano in transito (es.\ TTL), motivo per cui il suo
+utilizzo è oggi molto limitato rispetto a ESP.
+
+\paragraph{Encapsulating Security Payload (ESP)}
+ESP è il meccanismo IPSec più largamente utilizzato. Esso fornisce:
+\begin{itemize}
+    \item \textbf{confidenzialità} tramite cifratura del payload;
+    \item \textbf{integrità} opzionale tramite HMAC;
+    \item \textbf{autenticazione} opzionale dell’origine del pacchetto.
+\end{itemize}
+
+A differenza di AH, ESP protegge solo il \textbf{payload IP} e non l’header IP esterno. In
+transport mode questo implica che l’header IP originale rimane visibile ai router
+intermedi; tuttavia, ciò è accettabile perché i campi dell’header devono essere letti per
+instradare correttamente il pacchetto. In tunnel mode, invece, ESP incapsula l’intero
+pacchetto IP originale all’interno di un nuovo pacchetto: l’header del pacchetto interno
+viene completamente cifrato, mentre l’header esterno viene utilizzato esclusivamente per
+il routing tra i due gateway. Questo rende la modalità tunnel particolarmente adatta ai
+casi gateway–to–gateway, garantendo sia confidenzialità sia anonimizzazione della rete
+interna.
+
+\subsubsection{Transport Mode vs Tunnel Mode}
+
+IPSec può operare in due modalità:
+
+\paragraph{Transport mode}
+\begin{itemize}
+    \item protegge solo il payload del pacchetto IP;
+    \item mantiene intatto l’header IP originale;
+    \item usato per comunicazioni end-to-end host–host;
+    \item un gateway può usarlo solo per pacchetti destinati a sé stesso.
+\end{itemize}
+
+\paragraph{Tunnel mode}
+\begin{itemize}
+    \item incapsula l’intero pacchetto IP originale dentro un nuovo IP esterno;
+    \item è utilizzato tipicamente nelle VPN gateway-to-gateway;
+    \item permette di trasportare pacchetti da host non IPSec-aware.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{immagini/NET_07/tvt}
+    \caption{Confronto tra le modalità \textit{transport} e \textit{tunnel} di IPSec.
+    In transport mode viene protetto solo il payload del pacchetto IP originale:
+    AH autentica l’intero pacchetto eccetto i campi variabili dell’header IP, mentre
+    ESP cifra e autentica solo i dati di livello superiore. In tunnel mode, invece,
+    l’intero pacchetto IP originale viene incapsulato all’interno di un nuovo pacchetto
+    con un nuovo header IP; AH e ESP operano sul pacchetto incapsulato, garantendo
+    protezione end-to-end anche per host non IPSec-aware e abilitando scenari
+    gateway–to–gateway.}
+    \label{fig:tvt}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{immagini/NET_07/tvt2}
+    \caption{Scenario applicativo delle modalità IPSec. In \textit{transport mode}
+    la protezione viene applicata solo al payload IP e viene utilizzata per comunicazioni
+    end-to-end tra due host che supportano nativamente IPSec. In \textit{tunnel mode},
+    invece, l’intero pacchetto IP originale viene incapsulato in un nuovo pacchetto e
+    trasportato all’interno di un tunnel tra due security gateway. Ciò permette di
+    proteggere comunicazioni tra reti private anche quando gli host interni non sono
+    IPSec-aware. In alcuni casi, anche comunicazioni host--gateway possono essere
+    incapsulate in tunnel mode, a seconda della configurazione delle policy.}
+    \label{fig:tvt2}
+\end{figure}
+
+
+
+\subsubsection{Security Policies (SPD)}
+
+Il comportamento di IPSec non è applicato indiscriminatamente a tutto il traffico, ma è
+governato dalla \textbf{Security Policy Database (SPD)}.
+La SPD contiene un insieme di regole \textit{match–action} che stabiliscono, per ogni pacchetto
+in ingresso o in uscita, quale trattamento deve essere applicato in base a criteri come
+indirizzi IP sorgente/destinazione, protocolli di trasporto o numeri di porta.
+
+Ogni regola della SPD specifica una delle seguenti azioni:
+
+\begin{itemize}
+    \item \texttt{BYPASS}: il pacchetto è autorizzato a transitare senza alcuna protezione IPSec.
+          Questa azione è tipicamente usata per traffico considerato legittimo o interno.
+    \item \texttt{DISCARD}: il pacchetto viene scartato immediatamente. È una misura di
+          filtraggio di sicurezza utile per impedire comunicazioni non autorizzate.
+    \item \texttt{PROTECT}: il pacchetto deve essere protetto applicando AH o ESP.
+          In questo caso il kernel cerca nel \textbf{SAD} la Security Association da
+          utilizzare; se non esiste, IKEv2 può negoziare automaticamente una SA appropriata.
+\end{itemize}
+
+Le policy possono essere definite in modo molto flessibile tramite criteri quali:
+
+\begin{itemize}
+    \item indirizzi IP sorgente e destinazione (host o intere reti);
+    \item protocollo di livello 4 (TCP, UDP, ICMP, ecc.);
+    \item porte TCP/UDP o range di porte.
+\end{itemize}
+
+In questo modo la SPD agisce come un \textit{motore decisionale} che seleziona quali
+pacchetti devono essere protetti da IPSec e con quali meccanismi, permettendo
+un controllo fine del perimetro di sicurezza.
+
+\subsubsection{IPSec Operations}
+
+Quando un pacchetto passa attraverso IPSec, il kernel esegue:
+
+\paragraph{Pacchetto in uscita}
+\begin{enumerate}
+    \item match nella SPD per trovare una regola;
+    \item se la regola richiede protezione, consultazione del SAD;
+    \item applicazione della SA per cifrare/autenticare il pacchetto;
+    \item eventuale creazione di una nuova SA tramite IKEv2 se mancante.
+\end{enumerate}
+
+\paragraph{Pacchetto in ingresso}
+\begin{enumerate}
+    \item il kernel usa SPI + indirizzi IP per identificare la SA;
+    \item decifratura e verifica dell’integrità;
+    \item controllo nella SPD per validare il traffico.
+\end{enumerate}
+
+\subsubsection{IKEv2}
+
+IKEv2 è il protocollo responsabile della creazione, autenticazione e gestione delle
+Security Association IPSec. Opera separando nettamente il canale di controllo
+(\textit{IKE SA}) dal canale dati (\textit{Child SA}), semplificando il design e
+migliorando robustezza e sicurezza rispetto alla versione precedente (IKEv1).
+
+Il processo IKEv2 è strutturato in due scambi fondamentali:
+
+\paragraph{1) IKE\_SA\_INIT}
+In questa fase i due peer concordano:
+\begin{itemize}
+    \item gli algoritmi di cifratura, integrità e protezione del canale IKE;
+    \item i parametri per lo scambio Diffie--Hellman;
+    \item i valori nonces per garantire unicità delle chiavi.
+\end{itemize}
+L’obiettivo è stabilire una chiave condivisa preliminare su cui basare lo scambio di
+autenticazione. Al termine di questa fase non vi è ancora autenticazione: i peer
+condividono soltanto materiale crittografico iniziale.
+
+\paragraph{2) IKE\_AUTH}
+Qui avviene l’autenticazione reciproca tramite certificati, chiavi simmetriche o metodi
+EAP. Una volta autenticati, i peer:
+\begin{itemize}
+    \item finalizzano l’\textbf{IKE SA}, che protegge il canale di controllo;
+    \item creano la prima \textbf{Child SA}, che protegge il traffico dati tramite AH o ESP.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{immagini/NET_07/ikev2}
+    \caption{Fasi del protocollo IKEv2. La procedura di negoziazione inizia con
+    lo scambio \texttt{IKE\_SA\_INIT}, durante il quale i due peer concordano
+    algoritmi crittografici, scambiano i nonce e determinano i parametri Diffie--Hellman
+    necessari a stabilire una chiave condivisa. Segue lo scambio \texttt{IKE\_AUTH},
+    in cui i peer si autenticano reciprocamente e viene creata la prima coppia di SA:
+    una \textit{IKE SA} per proteggere il canale di controllo e una \textit{Child SA} per
+    proteggere il traffico dati tramite AH o ESP. In seguito, ulteriori Child SA possono
+    essere istanziate tramite scambi \texttt{CREATE\_CHILD\_SA} oppure messaggi
+    \texttt{INFORMATIONAL}, in qualsiasi ordine e direzione.}
+    \label{fig:ikev2}
+\end{figure}
+
+
+
+
+\paragraph{Child SA aggiuntive}
+Dopo la fase iniziale, i peer possono creare ulteriori Child SA tramite messaggi
+\texttt{CREATE\_CHILD\_SA}, oppure scambiarsi informazioni di servizio tramite
+messaggi \texttt{INFORMATIONAL}.
+Queste operazioni possono avvenire in qualunque ordine, in entrambe le direzioni, e in numero
+arbitrario, rendendo IKEv2 estremamente flessibile.
+
+\paragraph{Funzioni principali di IKEv2}
+\begin{itemize}
+    \item \textbf{Autenticazione dei peer}: verifica dell’identità tramite certificati X.509,
+          chiavi precondivise o EAP.
+    \item \textbf{Negoziazione degli algoritmi}: selezione dinamica di cifratura, HMAC e gruppi DH.
+    \item \textbf{Scambio sicuro delle chiavi}: utilizzo di Diffie--Hellman per derivare chiavi fresche.
+    \item \textbf{Rekeying}: aggiornamento periodico delle chiavi per mitigare attacchi di compromissione.
+    \item \textbf{Gestione multi-SA}: un’unica IKE SA può proteggere molteplici Child SA,
+          ciascuna riferita a flussi o reti diverse.
+\end{itemize}
+
+In sintesi, IKEv2 costituisce il meccanismo che permette a IPSec di operare in modo sicuro,
+scalabile e automatizzato, evitando la gestione manuale delle chiavi e garantendo protezione
+autorevole sia del piano di controllo sia del piano dati.
+
+
+
+
+%%%%%%%%%%%%%%%%%   inizio laboratorio IPSec %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\maketitle
+{\LARGE \textbf{Laboratorio}} \\[0.5em]
+\subsection{Lab 9: IPSec site-to-site VPN with strongSwan}
+
+
+In questo laboratorio viene realizzata una VPN IPSec di tipo \textit{gateway-to-gateway},
+con due siti remoti collegati tramite una infrastruttura di rete pubblica. I due gateway
+(R1 e R2) stabiliscono un tunnel IPSec in modalità \textit{tunnel mode}, attraverso cui il
+traffico delle due reti interne viene protetto e instradato in modo trasparente.
+
+\subsubsection{Topologia}
+
+La topologia fisica è mostrata nella figura~\ref{fig:ipsec-lab-topology}.
+Ogni sito possiede una rete privata e un router che funge da security gateway. R1 e R2
+sono collegati tramite una rete pubblica \texttt{1.0.0.0/30}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\linewidth]{immagini/NET_07/topologia}
+    \caption{Topologia del laboratorio IPSec: due siti remoti collegati tramite una rete
+    pubblica. I router R1 e R2 stabiliscono un tunnel ESP in modalità tunnel mode per
+    proteggere il traffico tra le reti \texttt{10.0.0.0/24} e \texttt{192.168.0.0/24}.}
+    \label{fig:topologia}
+\end{figure}
+
+Le reti interessate sono:
+
+\begin{itemize}
+    \item \textbf{Site 1}: rete privata \texttt{10.0.0.0/24} con host \texttt{client-1};
+    \item \textbf{Site 2}: rete privata \texttt{192.168.0.0/24} con host \texttt{client-2};
+    \item \textbf{Backbone pubblico}: rete \texttt{1.0.0.0/30} tra R1 e R2.
+\end{itemize}
+
+Gli indirizzi dei gateway sono:
+
+\begin{itemize}
+    \item R1: \texttt{10.0.0.1} (LAN), \texttt{1.0.0.1} (WAN);
+    \item R2: \texttt{192.168.0.1} (LAN), \texttt{1.0.0.2} (WAN).
+\end{itemize}
+
+\subsubsection{Obiettivo}
+
+L’obiettivo del laboratorio è:
+
+\begin{itemize}
+    \item proteggere il traffico tra le due reti private tramite un tunnel IPSec ESP
+          in modalità \textit{tunnel mode};
+    \item garantire la comunicazione tra \texttt{client-1} e \texttt{client-2} attraverso i due gateway;
+    \item verificare l’uso delle SA e delle policy della SPD nel kernel dei router;
+    \item mostrare l’uso di strongSwan per la creazione e il caricamento delle SA.
+\end{itemize}
+
+\subsubsection{Configurazione di rete (underlay)}
+
+Prima di attivare IPSec, ogni router deve avere una routing table coerente:
+
+\begin{itemize}
+    \item R1 deve conoscere la rete remota \texttt{192.168.0.0/24} come raggiungibile tramite R2;
+    \item R2 deve conoscere la rete remota \texttt{10.0.0.0/24} come raggiungibile tramite R1.
+\end{itemize}
+
+Su entrambi i router viene quindi impostata la rotta statica:
+
+\begin{verbatim}
+# Su R1
+ip route add 192.168.0.0/24 via 1.0.0.2
+
+# Su R2
+ip route add 10.0.0.0/24 via 1.0.0.1
+\end{verbatim}
+
+Questa configurazione permette ai router di instradare il traffico, anche se il traffico
+non è ancora protetto.
+
+\subsubsection{Concetto di protezione IPSec}
+
+La protezione del traffico tra i due siti avviene applicando una \textbf{Child SA} che utilizza
+ESP in modalità tunnel:
+
+\begin{itemize}
+    \item il pacchetto IP proveniente da \texttt{client-1} viene incapsulato da R1 in un
+          nuovo pacchetto IP con destinazione \texttt{1.0.0.2};
+    \item il payload contenente il pacchetto originale è cifrato e autenticato;
+    \item R2 decapsula il pacchetto e lo reinvia verso \texttt{client-2};
+    \item la stessa procedura vale nella direzione opposta.
+\end{itemize}
+
+È quindi necessario creare \textbf{due SA}: una per il traffico R1→R2 e una per R2→R1.
+
+\subsubsection{Configurazione IPSec con strongSwan}
+
+strongSwan utilizza due file principali: \texttt{ipsec.conf} e \texttt{ipsec.secrets}.
+
+\paragraph{Esempio di configurazione su R1}
+
+\begin{verbatim}
+conn site-to-site
+    left=1.0.0.1
+    leftsubnet=10.0.0.0/24
+    right=1.0.0.2
+    rightsubnet=192.168.0.0/24
+    authby=secret
+    keyexchange=ikev2
+    ike=aes128-sha256-modp1024
+    esp=aes128-sha256
+    auto=start
+\end{verbatim}
+
+\paragraph{Esempio su R2}
+
+\begin{verbatim}
+conn site-to-site
+    left=1.0.0.2
+    leftsubnet=192.168.0.0/24
+    right=1.0.0.1
+    rightsubnet=10.0.0.0/24
+    authby=secret
+    keyexchange=ikev2
+    ike=aes128-sha256-modp1024
+    esp=aes128-sha256
+    auto=start
+\end{verbatim}
+
+Il file \texttt{ipsec.secrets} contiene la chiave condivisa:
+
+\begin{verbatim}
+1.0.0.1 1.0.0.2 : PSK "password123"
+\end{verbatim}
+
+\paragraph{Caricamento delle configurazioni}
+
+\begin{verbatim}
+swanctl --load-creds
+swanctl --load-conns
+swanctl --initiate --child site-to-site
+\end{verbatim}
+
+Una volta avviata la Child SA, il traffico tra le due sottoreti verrà automaticamente
+incapsulato e protetto.
+
+\subsubsection{Test di connettività}
+
+I test principali sono:
+
+\paragraph{1) Ping da client-1 a client-2}
+
+Il comando:
+
+\begin{verbatim}
+ping 192.168.0.100
+\end{verbatim}
+
+deve attraversare:
+
+\begin{enumerate}
+    \item la LAN di Site 1;
+    \item il router R1, che applica ESP e invia il pacchetto cifrato a R2;
+    \item il router R2, che decapsula e inoltra nella LAN di Site 2.
+\end{enumerate}
+
+\paragraph{2) Verifica SA attive}
+
+\begin{verbatim}
+swanctl --list-sas
+\end{verbatim}
+
+Dovrebbero essere visibili:
+
+\begin{itemize}
+    \item una IKE SA tra R1 e R2;
+    \item due Child SA (una per direzione).
+\end{itemize}
+
+\paragraph{3) Verifica SPD/SAD}
+
+\begin{verbatim}
+ip xfrm state
+ip xfrm policy
+\end{verbatim}
+
+Questi comandi permettono di verificare le policy installate (SPD) e le SA attive (SAD),
+mostrando quale traffico viene effettivamente protetto.
