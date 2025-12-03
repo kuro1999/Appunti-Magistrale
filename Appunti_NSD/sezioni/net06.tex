@@ -1,5 +1,7 @@
 \newpage
 
+
+%%%% DA FINIRE %%%%%%%%%%%%%%
 \section{NET\_06 - Secure Protocols and Overlay VPNs}
 
 Dopo aver visto che i meccanismi di base dei protocolli IP non forniscono alcuna garanzia di sicurezza --- nessuna autenticazione, confidenzialità o integrità dei dati --- si rende necessario introdurre protocolli che, a diversi livelli dello stack ISO/OSI, permettano di realizzare comunicazioni sicure.  
@@ -220,41 +222,396 @@ Nel tempo, TLS ha subito diversi attacchi:
 L’elenco completo degli attacchi noti è riportato in RFC 7457.
 
 
+%%%%%%%%%%%%%%% 6 BIS       555555%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{X.509 Certificates e Public Key Infrastructure (PKI)}
+
+
+\subsection{Public Key Certificates}
+
+I certificati a chiave pubblica rappresentano il meccanismo fondamentale per associare in modo verificabile
+un’identità ad una chiave pubblica. L’idea di base è semplice: una Certification Authority (CA) firma un
+certificato che contiene la chiave pubblica di un soggetto, rendendo possibile a terzi fidarsi di tale chiave senza
+aver bisogno di contattare direttamente il soggetto stesso.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.35\linewidth]{immagini/NET_06/ca.png}
+    \caption{Illustrazione del processo di certificazione: la Certification Authority (CA) firma il certificato di Bob
+    (\texttt{CERT\_bob}), permettendo ai terzi di verificare la firma della CA, considerare autentica la chiave pubblica
+    di Bob e utilizzarla in modo sicuro. L'intera fiducia deriva dal possesso della chiave pubblica della CA.}
+\end{figure}
+
+Una volta verificato che il certificato è autentico, rimane da dimostrare che il soggetto sia davvero in possesso
+della corrispondente chiave privata. Per questo viene utilizzato un semplice protocollo di \textit{challenge–response},
+che consente di provare la proprietà della chiave senza rivelarla.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{immagini/NET_06/challenge_response.png}
+    \caption{Protocollo di challenge–response utilizzato per verificare il possesso della chiave privata:
+    Alice invia a Bob un nonce casuale; Bob lo firma con la propria chiave privata; Alice verifica la firma
+    usando la chiave pubblica contenuta nel certificato. Se la verifica ha successo, Bob è autenticato
+    come legittimo proprietario della chiave privata associata al certificato X.509.}
+\end{figure}
+
+Questo meccanismo, unito alla firma della CA, permette di stabilire un rapporto di fiducia tra identità e chiave
+pubblica, garantendo autenticazione e sicurezza nelle comunicazioni successive.
+
+\subsubsection{Public Key Infrastructure (PKI)}
+La protezione delle comunicazioni su reti insicure richiede un meccanismo affidabile per associare chiavi pubbliche all’identità dei loro proprietari.
+Questo compito è svolto dalla \textbf{Public Key Infrastructure (PKI)}, che definisce protocolli, politiche e componenti per la gestione sicura dei certificati digitali.
+
+Il fulcro della PKI è il \textbf{certificato X.509}, un documento digitale che collega in modo verificabile una chiave pubblica all’identità del soggetto che la detiene. Una volta firmato da una Certification Authority (CA) fidata, il certificato consente di stabilire comunicazioni affidabili (es. HTTPS, TLS, VPN).
+
+
+\subsubsection{Certificati X.509}
+Un certificato X.509 contiene una serie di informazioni organizzate secondo uno standard preciso:
+\begin{itemize}
+    \item \textbf{Metadata} (versione, numero seriale, validità)
+    \item \textbf{Issuer}: identità della CA che firma il certificato
+    \item \textbf{Subject}: identità del soggetto a cui appartiene la chiave pubblica
+    \item \textbf{Subject Public Key}: la chiave pubblica del soggetto
+    \item \textbf{Extensions}: attributi aggiuntivi, tipici dei certificati X.509v3
+    \item \textbf{Issuer Signature}: firma digitale della CA
+\end{itemize}
+
+Il certificato funge quindi da “passaporto digitale”, garantendo il legame tra l’identità del soggetto e la sua chiave pubblica.
+
+\subsubsection{Esempio di certificato X.509 reale}
+
+Come mostrato in Figura~\ref{fig:x509-wikipedia}, riportiamo un certificato reale rilasciato da
+\textit{Let’s Encrypt} per \texttt{*.wikipedia.org}. L’immagine evidenzia i campi fondamentali di un certificato
+X.509v3 tipicamente usato nei server HTTPS.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.95\linewidth]{immagini/NET_06/x509_wikipedia.png}
+    \caption{Certificato X.509 rilasciato da Let’s Encrypt per \texttt{*.wikipedia.org}.}
+    \label{fig:x509-wikipedia}
+\end{figure}
+
+\paragraph{Commento sintetico dei campi principali.}
+
+\begin{itemize}
+    \item \textbf{Common Name (CN): \texttt{*.wikipedia.org}}
+    Wildcard: valido per tutti i sottodomini del dominio \texttt{wikipedia.org}.
+
+    \item \textbf{Issuer: Let's Encrypt Authority X3}
+    CA intermedia che ha firmato il certificato. La CA radice è ISRG Root X1.
+
+    \item \textbf{Serial Number}
+    Identificatore univoco del certificato all’interno della CA che lo ha emesso.
+
+    \item \textbf{Version: 3}
+    Certificato X.509v3, necessario per utilizzare estensioni moderne (SAN, KeyUsage, ecc.).
+
+    \item \textbf{Signature Algorithm: SHA-256 with RSA Encryption}
+    Algoritmo utilizzato dalla CA per firmare digitalmente il certificato.
+
+    \item \textbf{Validity (Not Before / Not After)}
+    Intervallo di validità temporale. Let’s Encrypt utilizza periodi brevi (circa 90 giorni)
+    per motivi di sicurezza operativa.
+
+    \item \textbf{Public Key Info: ECDSA su curva secp256r1 (P-256)}
+    Chiave pubblica del server: moderna, efficiente e molto diffusa in HTTPS.
+
+    \item \textbf{Key Usage: Encrypt, Verify, Derive}
+    Indica gli scopi ammessi per la chiave pubblica del soggetto.
+
+    \item \textbf{Signature}
+    Firma digitale della CA, utilizzata dai client per verificare l’autenticità del certificato.
+\end{itemize}
+
+In sintesi, il certificato della Figura~\ref{fig:x509-wikipedia} mostra i campi essenziali
+che caratterizzano un certificato X.509 moderno: identità del soggetto, autorità certificante,
+validità, chiave pubblica e parametri crittografici.
+
+\subsubsection{Meccanismo di fiducia e firma della CA}
+Il certificato è considerato valido perché firmato da una CA ritenuta attendibile.
+Il processo è:
+
+\begin{enumerate}
+    \item Il soggetto genera una coppia di chiavi (pubblica/privata).
+    \item Invia alla CA una CSR contenente la chiave pubblica.
+    \item La CA verifica l’identità del richiedente.
+    \item Se la verifica ha successo, la CA firma digitalmente il certificato.
+\end{enumerate}
+
+Chi possiede la chiave pubblica della CA può verificare la firma, garantendo l’autenticità del certificato.
+
+\subsubsection{Challenge–Response}
+Verificare un certificato non basta: occorre assicurarsi che il soggetto possieda la chiave privata corrispondente.
+Questo avviene tramite un meccanismo di \textbf{challenge/response}:
+
+\begin{enumerate}
+    \item Alice invia un numero casuale (nonce) a Bob.
+    \item Bob firma il nonce con la propria chiave privata.
+    \item Alice verifica la firma usando la chiave pubblica nel certificato.
+\end{enumerate}
+
+Solo il vero proprietario della chiave privata può rispondere correttamente.
+
+\subsubsection{Certificate Signing Request (CSR)}
+Per ottenere un certificato, il richiedente deve produrre una CSR (Certificate Signing Request), tipicamente in formato \textbf{PKCS\#10}.
+Il CSR contiene:
+\begin{itemize}
+    \item i campi X.509 del soggetto;
+    \item la chiave pubblica;
+    \item eventuali estensioni richieste (KeyUsage, SAN, ecc.);
+    \item la firma digitale, generata con la chiave privata del richiedente.
+\end{itemize}
+
+La chiave privata non viene mai trasmessa.
+
+\subsubsection{Estensioni X.509v3}
+Le estensioni dei certificati X.509v3 vengono utilizzate per definire vincoli, scopi d’uso e proprietà aggiuntive. Tra le principali:
+
+\begin{itemize}
+    \item \textbf{Subject Key Identifier (SKI)}: identifica univocamente la chiave pubblica del soggetto.
+    \item \textbf{Authority Key Identifier (AKI)}: collega il certificato alla CA che lo ha firmato.
+    \item \textbf{Key Usage}: specifica cosa la chiave può fare (firma, cifratura, keyEncipherment...).
+    \item \textbf{Extended Key Usage}: scopi applicativi (es. TLS Web Server Authentication).
+    \item \textbf{Subject Alternative Name (SAN)}: identifica nomi alternativi, domini aggiuntivi, IP, email.
+    \item \textbf{Basic Constraints}: distingue certificati CA da certificati end-entity.
+\end{itemize}
+
+L’estensione \textbf{Basic Constraints} è cruciale:
+un certificato con `CA = FALSE` \textbf{non può firmare altri certificati}.
+I browser rigettano automaticamente catene illegittime.
+
+\subsubsection{Root CA e Trust Store}
+Una Root CA è una CA che si autofirma.
+Caratteristiche principali:
+
+\begin{itemize}
+    \item \textbf{Issuer = Subject} (autofirma)
+    \item SKI e AKI coincidono
+    \item È la base della catena di fiducia (\textit{trust anchor})
+\end{itemize}
+
+I certificati delle Root CA vengono distribuiti in modo sicuro nei sistemi operativi e nei browser, all’interno dei cosiddetti \textbf{trust store}, non modificabili dagli utenti non privilegiati.
+
+\subsubsection{Certificate Chain}
+Nella pratica, la firma diretta da parte della Root CA è rara.
+I certificati server sono quasi sempre firmati da una o più \textbf{Intermediate CA}.
+Una catena di certificati valida deve rispettare:
+
+\begin{itemize}
+    \item ogni certificato è firmato dalla CA immediatamente superiore;
+    \item l’ultimo certificato è una Root CA;
+    \item tutte le firme devono risultare valide;
+    \item l’estensione BasicConstraints deve essere coerente con il ruolo del certificato.
+\end{itemize}
+
+Le catene permettono di compartimentare la sicurezza: la Root CA può essere mantenuta offline e utilizzata solo raramente.
+
+\subsubsection{Sono pericolose le certificate chain?}
+
+A prima vista potrebbe sembrare che, una volta ottenuto un certificato valido, un attaccante possa
+generare una nuova coppia di chiavi e firmare certificati fasulli costruendo catene apparentemente
+legittime. Tuttavia, lo standard X.509 impedisce categoricamente questo tipo di attacco.
+
+La Figura~\ref{fig:chain-danger} mostra un esempio in cui un soggetto tenta di creare un certificato
+falso per un dominio (\texttt{goolge.com}) firmandolo con la propria chiave privata.
+Nonostante la firma sia matematicamente possibile, \textbf{il certificato risulta immediatamente
+invalido per qualsiasi client conforme allo standard}, poiché l’entità che lo ha firmato non è una CA
+legittima.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.95\linewidth]{immagini/NET_06/chain_danger.png}
+    \caption{Tentativo di generare un certificato fasullo partendo da una certificate chain valida.
+    Solo i certificati con \texttt{BasicConstraints: CA=TRUE} possono firmare altri certificati.
+    Un certificato end-entity (come \texttt{bonny.com} nella figura) non può agire come CA, e ogni
+    certificato firmato da esso viene rifiutato dai client.}
+    \label{fig:chain-danger}
+\end{figure}
+
+\paragraph{Perché l’attacco è impossibile.}
+Il motivo fondamentale è l’estensione \textbf{BasicConstraints}, introdotta in X.509v3, che impone un
+vincolo essenziale:
+
+\[
+\texttt{CA = TRUE} \quad \Rightarrow \quad \text{il certificato può firmare altri certificati}
+\]
+
+\[
+\texttt{CA = FALSE} \quad \Rightarrow \quad \text{il certificato \textbf{non} può agire come CA}
+\]
+
+Nei certificati rilasciati per i server — come \texttt{bonny.com} — \textbf{BasicConstraints è sempre impostato a CA=FALSE}.
+Qualunque certificato generato e firmato con la loro chiave privata:
+
+- non ha un Issuer valido,
+- non appartiene a una CA riconosciuta,
+- viene automaticamente scartato dai browser e dai client TLS.
+
+\paragraph{Conclusione.}
+Le certificate chain non sono pericolose:
+sono progettate per impedire che un soggetto non autorizzato possa generare certificati illegittimi.
+Il controllo dell’estensione \texttt{BasicConstraints}, insieme alla verifica della firma e del trust
+store, rende impossibile «promuovere» un certificato end-entity al ruolo di CA.
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%laboratorio
+\subsubsection{Wildcard Certificates}
+Un wildcard certificate permette di autenticare tutti i sottodomini di un dominio.
+Ad esempio:
+\[
+\texttt{CN = *.company.it}
+\]
+
+Questo è utile quando un’azienda ha molti servizi con nomi diversi all’interno dello stesso dominio.
+Va però usato con cautela: la compromissione della chiave privata comprometterebbe tutti i sottodomini.
+
+\subsubsection{Revoca dei certificati}
+Una PKI deve prevedere meccanismi per gestire certificati che non sono più affidabili
+(ad esempio chiavi private compromesse, smarrite o certificati non più utilizzati).
+Oltre al naturale \textbf{periodo di validità} (Validity Period), il meccanismo classico
+di revoca esplicita è la \textbf{Certificate Revocation List (CRL)}.
+
+\paragraph{Certificate Revocation List (CRL).}
+Una CRL è un elenco, firmato digitalmente dalla CA, che contiene i numeri di serie
+dei certificati revocati \emph{prima} della loro scadenza naturale.
+Ogni CRL include almeno:
+\begin{itemize}
+    \item l’\textbf{Issuer} (la CA che ha emesso la lista);
+    \item la \textbf{data dell’ultimo aggiornamento} e la \textbf{data del prossimo aggiornamento};
+    \item la \textbf{lista dei serial number} revocati e le relative date di revoca;
+    \item la \textbf{firma digitale} della CA, che garantisce l’integrità della lista.
+\end{itemize}
+
+Dal punto di vista del client, la procedura ideale sarebbe:
+\begin{enumerate}
+    \item scaricare la CRL pubblicata dalla CA (tipicamente via HTTP/HTTPS, URL indicato
+          nel certificato stesso tramite l’estensione \texttt{CRL Distribution Points});
+    \item verificare la firma della CRL con la chiave pubblica della CA;
+    \item controllare se il serial number del certificato che si sta validando compare nella lista.
+\end{enumerate}
+
+\paragraph{Impatto su scalabilità e prestazioni.}
+Questo approccio introduce alcuni limiti pratici:
+\begin{itemize}
+    \item \textbf{Overhead di rete}: ogni client dovrebbe scaricare periodicamente CRL potenzialmente grandi;
+    \item \textbf{Latenza}: la verifica di revoca può richiedere una richiesta HTTP addizionale verso il server CRL;
+    \item \textbf{Scalabilità}: più certificati emette una CA, più la CRL cresce, aumentando tempo di download e parsing;
+    \item \textbf{Revoca non “real-time”}: tra una pubblicazione di CRL e la successiva può passare tempo, durante il
+          quale un certificato compromesso può risultare ancora valido ai client che non hanno aggiornato la lista.
+\end{itemize}
+
+Per questi motivi, nella pratica molte applicazioni non critiche effettuano controlli di revoca in modo sporadico
+o addirittura li omettono, affidandosi principalmente alla breve durata dei certificati.
+In contesti ad alta sicurezza, invece, la gestione e la verifica delle CRL diventano un requisito essenziale,
+oppure vengono sostituite/affiancate da meccanismi più dinamici (es. protocolli online tipo OCSP).
+
+\subsubsection{Conclusioni}
+La PKI e i certificati X.509 costituiscono il fondamento dell’intero ecosistema TLS/HTTPS.
+Capire struttura, catene, estensioni e meccanismi di revoca è essenziale per comprendere come funziona la sicurezza delle comunicazioni moderne, dai browser alle VPN fino ai sistemi di autenticazione federata.
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%       laboratorio         %%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \maketitle
 {\LARGE \textbf{Laboratorio}} \\[0.5em]
 
-\subsection{Laboratorio: HTTPS con Apache2}
-Il laboratorio ha lo scopo di comprendere il funzionamento di un server HTTPS e la generazione dei certificati necessari per una comunicazione TLS.
+\subsection{Laboratorio 6: HTTPS con Apache2 e Downgrade Attack}
 
-\paragraph{1. Creazione della CA.}
-Si realizza una gerarchia di certificati composta da:
-\begin{itemize}
-  \item una \textbf{Root CA} autofirmata;
-  \item una \textbf{Intermediate CA} firmata dalla root;
-  \item un \textbf{certificato server} firmato dall’intermediate.
-\end{itemize}
-Le operazioni vengono eseguite con il tool \texttt{openssl}:
+\subsubsection{Scenario}
+L’obiettivo del laboratorio è duplice:
 \begin{enumerate}
-  \item Generazione delle chiavi RSA per la Root CA:
-  \begin{verbatim}
-  openssl genrsa -out root.key 2048
-  openssl req -new -x509 -days 1460 -key root.key -out root.crt
-  \end{verbatim}
-  \item Creazione della chiave e CSR per la Intermediate CA e firma da parte della Root CA;
-  \item Generazione della chiave e CSR del server web, firmata dalla Intermediate CA.
+  \item configurare un server HTTPS tramite Apache2 utilizzando certificati X.509 generati manualmente;
+  \item dimostrare un attacco di \textbf{HTTPS Downgrade}, in cui un attaccante in posizione di Man-in-the-Middle forza un client a utilizzare HTTP non cifrato, consentendo il furto di credenziali.
 \end{enumerate}
-Infine, si concatenano i certificati per creare la \emph{certificate chain}:
+Entrambe le attività condividono la stessa infrastruttura di rete.
+
+\subsubsection{Topologia del laboratorio}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.88\linewidth]{immagini/NET_06/attacco.png}
+  \caption{Topologia del laboratorio: la stessa LAN \texttt{10.0.0.0/24} è condivisa tra client, attaccante e gateway/server HTTPS. Il gateway funge anche da web server per il dominio \texttt{www.sito.it}, mentre l’attaccante esegue l’attacco MITM nel secondo esperimento.}
+\end{figure}
+
+\paragraph{Descrizione dei nodi.}
+\begin{itemize}
+  \item \textbf{VMclient (10.0.0.100)}:
+  agisce come client nel primo laboratorio e come vittima nel secondo.
+
+  \item \textbf{Attacker (10.0.0.200)}:
+  utilizzato solo nel secondo laboratorio; esegue ARP spoofing e ospita un sito HTTP falsificato.
+
+  \item \textbf{Default Gateway / HTTPS Server (10.0.0.1)}:
+  è il router della LAN e ospita Apache2 configurato per rispondere a \texttt{https://www.sito.it}.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Parte 1: Configurazione di un server HTTPS con Apache2}
+
+\subsubsection{Step 1 – Creazione della CA e dei certificati}
+Per poter configurare un server HTTPS è necessario disporre di una gerarchia di certificati valida.
+Nel laboratorio viene creata una piccola PKI locale, composta da:
+\begin{itemize}
+  \item una \textbf{Root CA} autofirmata, che rappresenta l’autorità di fiducia primaria;
+  \item una \textbf{Intermediate CA}, utilizzata per firmare i certificati dei server;
+  \item un \textbf{certificato di server} emesso per il dominio \texttt{www.sito.it}.
+\end{itemize}
+
+Questa struttura riproduce in piccolo il funzionamento reale di una PKI su Internet, dove la Root CA firma solo CA intermedie, mentre i certificati finali destinati ai server vengono firmati da queste ultime.
+
+\paragraph{Creazione della Root CA.}
+La Root CA rappresenta la base della fiducia. Generiamo la chiave privata e il certificato autofirmato:
+\begin{verbatim}
+openssl genrsa -out root.key 2048
+openssl req -new -x509 -days 1460 -key root.key -out root.crt
+\end{verbatim}
+
+\paragraph{Creazione dell’Intermediate CA.}
+Per evitare che la Root CA firmi direttamente certificati server (pratica sconsigliata anche nel mondo reale), si introduce un livello intermedio:
+\begin{verbatim}
+openssl genrsa -out intermediate.key 2048
+openssl req -new -key intermediate.key -out intermediate.csr
+openssl x509 -req -in intermediate.csr -out intermediate.crt \
+  -CA root.crt -CAkey root.key -CAserial serial \
+  -days 365 -extfile /etc/ssl/openssl.cnf -extensions v3_intermediate_ca
+\end{verbatim}
+Il file \texttt{openssl.cnf} specifica le estensioni X.509 necessarie per indicare che il certificato intermedio è abilitato a firmare altri certificati.
+
+\paragraph{Generazione del certificato del server.}
+Si procede quindi a creare la chiave privata e la CSR (Certificate Signing Request) per il server:
+\begin{verbatim}
+openssl genrsa -out server.key 2048
+openssl req -new -key server.key -out server.csr
+\end{verbatim}
+
+La firma viene eseguita dalla Intermediate CA:
+\begin{verbatim}
+openssl x509 -req -in server.csr -out server.crt \
+  -CA intermediate.crt -CAkey intermediate.key \
+  -CAserial serial -days 365 -extfile /etc/ssl/openssl.cnf \
+  -extensions usr_cert
+\end{verbatim}
+
+\paragraph{Creazione della certificate chain.}
+Poiché i browser devono poter risalire la catena di fiducia, si crea il file contenente Intermediate + Root:
 \begin{verbatim}
 cat intermediate.crt root.crt > chain.crt
 \end{verbatim}
 
-\paragraph{2. Configurazione di Apache2.}
-Nel file \texttt{/etc/apache2/sites-available/testssl.conf}:
+\subsubsection{Step 2 – Configurazione del Virtual Host HTTPS}
+Una volta generati i certificati, si configura Apache2. Nel file:
+\texttt{/etc/apache2/sites-available/testssl.conf}
+si definisce il VirtualHost HTTPS:
 \begin{verbatim}
 <VirtualHost _default_:443>
   DocumentRoot "/var/www/testssl"
@@ -265,18 +622,25 @@ Nel file \texttt{/etc/apache2/sites-available/testssl.conf}:
   SSLCertificateChainFile /path/chain.crt
 </VirtualHost>
 \end{verbatim}
-Si abilita il modulo SSL e il sito:
+
+Si abilitano quindi il modulo SSL e il sito:
 \begin{verbatim}
 a2enmod ssl
 a2ensite testssl
 service apache2 restart
 \end{verbatim}
 
-\paragraph{3. Accesso e verifica.}
-Visitando \texttt{https://www.sito.it}, il browser mostra un avviso poiché la CA non è riconosciuta: importando la Root CA nel browser, la connessione risulterà completamente valida.
+\subsubsection{Step 3 – Verifica del funzionamento}
+Accedendo con un browser all’indirizzo:
+\begin{center}
+\texttt{https://www.sito.it}
+\end{center}
+viene visualizzato inizialmente un avviso: il browser non riconosce la Root CA poiché non appartiene a una CA pubblica nota.
 
-\paragraph{Redirect da HTTP a HTTPS.}
-È possibile implementare il reindirizzamento automatico aggiungendo una regola di rewrite:
+Importando manualmente il certificato \texttt{root.crt} nell’archivio delle CA fidate del browser, la connessione risulta correttamente autenticata e la catena Root → Intermediate → Server viene validata.
+
+\paragraph{Redirect automatico da HTTP a HTTPS.}
+Per evitare che un utente acceda accidentalmente alla versione HTTP del sito (non cifrata), si configura un VirtualHost dedicato:
 \begin{verbatim}
 <VirtualHost _default_:80>
   ServerName www.sito.it
@@ -284,94 +648,69 @@ Visitando \texttt{https://www.sito.it}, il browser mostra un avviso poiché la C
   RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 </VirtualHost>
 \end{verbatim}
+Questo comportamento replica ciò che avviene nei siti reali, dove tutto il traffico viene immediatamente instradato verso HTTPS.
 
-\subsection{Attacchi di downgrade e contromisure}
-Un attacco comune è l’\textbf{HTTPS Downgrade Attack}, in cui l’attaccante si interpone fra client e server (Man-in-the-Middle) e forza la vittima a usare HTTP invece di HTTPS.  
-Storicamente, molti siti erano misti (HTTP per la home e HTTPS per l’autenticazione). Oggi il rischio è mitigato da meccanismi come \textbf{HSTS (HTTP Strict Transport Security)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Parte 2: HTTPS Downgrade Attack}
 
-\paragraph{HSTS.}
-Il server invia un header HTTP:
+\subsubsection{Scenario}
+Lo scopo della seconda parte del laboratorio è comprendere come, in assenza di meccanismi avanzati di protezione, un attaccante possa interferire con la comunicazione HTTPS forzando il client a utilizzare HTTP in chiaro.
+L’attacco sfrutta il fatto che molti utenti digitano un URL senza specificare \texttt{https://}, causando l'invio iniziale di una richiesta HTTP vulnerabile.
+
+Per ottenere una posizione privilegiata nella rete, l'attaccante utilizza una tecnica consolidata: l’\textbf{ARP Spoofing}.
+In questo modo il traffico della vittima passa attraverso la sua macchina, permettendo la modifica delle richieste e la sostituzione della pagina HTTPS con una copia HTTP malevola.
+
+\subsubsection{Step 1 – Mirroring del sito}
+Per realizzare una copia credibile del sito originale, l’attaccante utilizza \texttt{wget}:
+\begin{verbatim}
+wget --mirror --convert-links --html-extension --no-parent \
+     --no-check-certificate www.webank.it
+\end{verbatim}
+
+La directory ottenuta viene servita da un VirtualHost HTTP sulla porta 80, simulando il vero sito.
+
+\subsubsection{Step 2 – ARP Spoofing}
+L’attaccante inganna sia il client sia il gateway, facendo credere a ciascuno che il proprio MAC address sia quello dell'altro.
+Lo script Scapy crea continuamente entry ARP false, mantenendo il MITM attivo:
+
+\begin{verbatim}
+# Attacker → Victim (fingendosi il gateway)
+# Attacker → Gateway (fingendosi la vittima)
+while True:
+    sendp(arp_to_victim)
+    sendp(arp_to_router)
+    time.sleep(1)
+\end{verbatim}
+
+\subsubsection{Step 3 – Redirezione del traffico HTTP}
+Una volta instaurata la posizione MITM, tutto il traffico HTTP destinato al sito reale viene dirottato verso il sito fasullo tramite iptables:
+\begin{verbatim}
+iptables -t nat -A PREROUTING -p tcp --dport 80 \
+  -d <IP_reale_del_sito> -j REDIRECT
+\end{verbatim}
+
+Di conseguenza, quando la vittima effettua un accesso iniziale al sito senza specificare \texttt{https://}, riceverà la copia HTTP malevola.
+
+\subsubsection{Risultato dell’attacco}
+Il browser della vittima visualizza una versione in chiaro del sito, apparentemente legittima.
+Qualsiasi credenziale inserita in questo contesto viene trasmessa senza cifratura e può essere catturata dall’attaccante.
+
+\paragraph{Mitigazione: HSTS.}
+Il meccanismo \textbf{HTTP Strict Transport Security} è progettato per impedire esattamente questo tipo di attacco.
+Quando un sito invia l’header:
 \begin{verbatim}
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 \end{verbatim}
-Questo informa il browser che le connessioni future verso il dominio dovranno sempre usare HTTPS.  
-HSTS protegge quindi da downgrade futuri, ma non dal primo accesso in chiaro.  
-Alcuni browser integrano liste di domini pre-caricate (“HSTS preload list”) per evitare anche il rischio iniziale.
+il browser registra la policy e, per un anno intero, effettuerà sempre e solo richieste HTTPS a quel dominio, rendendo impossibile il downgrade.
 
-\subsection{Overlay VPNs e OpenVPN}
-Le \textbf{Virtual Private Networks (VPN)} permettono di creare reti private sovrapposte a reti pubbliche, come Internet, garantendo cifratura e autenticazione del traffico.  
-Le VPN si dividono in due categorie:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Conclusioni del laboratorio}
+Il laboratorio mette in evidenza due dimensioni complementari della sicurezza HTTPS:
+
 \begin{itemize}
-  \item \textbf{Intra-AS VPNs:} realizzate all’interno di un singolo dominio amministrativo (es. MPLS VPN);
-  \item \textbf{Overlay VPNs:} costruite sopra una rete pubblica non fidata, tipicamente tramite tunneling cifrato.
+  \item da un lato, la complessità e l’importanza della corretta generazione dei certificati e della configurazione del server;
+  \item dall’altro, la fragilità delle comunicazioni non protette nel primo istante e il valore di meccanismi come HSTS nel prevenire attacchi attivi.
 \end{itemize}
 
-\paragraph{Concetto di tunneling.}
-Nel tunneling, un pacchetto IP “interno” viene incapsulato come payload in un altro pacchetto IP “esterno”.  
-Il pacchetto esterno contiene gli indirizzi pubblici dei nodi del tunnel, mentre quello interno trasporta gli indirizzi della rete privata.
+Sperimentare direttamente sia la configurazione di un server HTTPS sia l’attacco MITM permette di comprendere a fondo come funzionano le difese crittografiche e quali errori di configurazione possano esporre gli utenti a rischi concreti.
 
-\subsubsection{OpenVPN}
-\textbf{OpenVPN} è una soluzione open source per la creazione di VPN a livello utente, basata su TLS e su un modello client/server.  
-Supporta due modalità operative:
-\begin{itemize}
-  \item \textbf{TUN mode:} tunnel punto-punto di livello 3 (IP);
-  \item \textbf{TAP mode:} tunnel di livello 2, utile per trasmettere frame Ethernet e traffico broadcast.
-\end{itemize}
-
-\paragraph{Architettura.}
-OpenVPN utilizza due canali:
-\begin{itemize}
-  \item un \textbf{canale di controllo}, che usa TLS per negoziare chiavi e autenticazione;
-  \item un \textbf{canale dati}, cifrato simmetricamente e incapsulato in UDP o TCP.
-\end{itemize}
-Il meccanismo di autenticazione si basa su certificati X.509 generati da una CA locale (facilmente realizzabile con \texttt{easy-rsa}).
-
-\paragraph{Configurazione di base.}
-\begin{itemize}
-  \item \textbf{Server:}
-  \begin{verbatim}
-  port 1194
-  proto udp
-  dev tun
-  ca ca.crt
-  cert server.crt
-  key server.key
-  dh dh.pem
-  server 10.8.0.0 255.255.255.0
-  \end{verbatim}
-  \item \textbf{Client:}
-  \begin{verbatim}
-  client
-  dev tun
-  proto udp
-  remote vpn.server.it 1194
-  ca ca.crt
-  cert client.crt
-  key client.key
-  \end{verbatim}
-\end{itemize}
-
-\paragraph{Routing e NAT.}
-Per permettere ai client di raggiungere la rete interna dietro il server VPN, è necessario abilitare il \texttt{IP forwarding} e applicare una regola di masquerade:
-\begin{verbatim}
-echo 1 > /proc/sys/net/ipv4/ip_forward
-iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
-\end{verbatim}
-
-\paragraph{Autenticazione e cifratura.}
-Durante l’handshake TLS, server e client si autenticano con i propri certificati e negoziano i parametri di sicurezza (algoritmi di cifratura, HMAC e DH).  
-OpenVPN può usare sia chiavi statiche (\emph{pre-shared}) che dinamiche (via TLS), ma la seconda opzione garantisce PFS e sicurezza end-to-end.
-
-\paragraph{Vantaggi.}
-\begin{itemize}
-  \item Elevata compatibilità (lavora in user space);
-  \item Supporto a NAT e firewall;
-  \item Configurazione flessibile e integrabile con iptables;
-  \item Sicurezza basata su standard TLS.
-\end{itemize}
-
-\subsection{Conclusione}
-I protocolli di sicurezza a vari livelli dello stack cooperano per garantire comunicazioni affidabili su reti non sicure.  
-SSH protegge accessi e sessioni remote, TLS assicura la riservatezza delle applicazioni Internet e IPsec offre protezione nativa per il traffico IP.  
-Le Overlay VPNs, come OpenVPN, uniscono tali principi in un contesto pratico, creando reti private virtuali su infrastrutture pubbliche.  
-Questi meccanismi costituiscono i mattoni fondamentali della \textbf{difesa di rete moderna}, integrando autenticazione, cifratura e controllo dell’integrità in ogni fase della comunicazione.
