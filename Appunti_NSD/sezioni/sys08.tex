@@ -1,0 +1,262 @@
+\section{SYS-08 FALCO}
+\subsection{Introduzione a Falco e concetti base}
+
+\subsubsection{Introduzione alla sicurezza runtime e monitoraggio in cluster}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{immagini/SYS_08/cluster.png}
+\caption{How to monitor what happens in the cluster?}
+\end{figure}
+
+La sicurezza runtime è fondamentale per monitorare e proteggere il comportamento delle applicazioni e dei sistemi operativi in esecuzione. Nelle architetture moderne, come i container o Kubernetes, il monitoraggio del runtime è necessario per identificare attività sospette e prevenire attacchi. In ambienti come i cluster Kubernetes, è cruciale monitorare il comportamento delle applicazioni senza compromettere le prestazioni. Il challenge principale è raccogliere dati in tempo reale senza modificare il comportamento delle applicazioni stesse. Soluzioni come il pattern \textit{sidecar}, che aggiungono un container di monitoraggio parallelo a ogni container applicativo, offrono visibilità limitata ma efficace sui singoli pod.
+
+Un'alternativa più profonda è il monitoraggio a livello di kernel, che consente di monitorare direttamente le chiamate di sistema (syscalls), una tecnica che non richiede modifiche ai contenuti applicativi e offre visibilità a livello di sistema operativo.
+
+\subsubsection{Syscall e monitoraggio del kernel}
+
+Le \textit{syscalls} (chiamate di sistema) sono il principale punto di interazione tra il \textit{user space} (dove girano le applicazioni) e il \textit{kernel} (che gestisce le risorse di sistema come la memoria, il file system e la rete). Le syscalls forniscono un'astrazione delle risorse hardware sottostanti e sono essenziali per il funzionamento del sistema. Esempi comuni di syscalls sono \texttt{open()}, \texttt{read()}, \texttt{write()}, e \texttt{fork()}.
+
+Monitorare le syscalls è un modo efficace per comprendere il comportamento di un sistema, poiché ogni interazione tra un'applicazione e il sistema operativo passa attraverso di esse. La gestione delle syscalls in \textit{user space} può essere complessa, soprattutto quando si cerca di tracciare il comportamento in tempo reale. Un approccio naïve, che consiste nell'esportare tutte le syscalls a livello utente, non è ottimale, soprattutto con la velocità con cui vengono emesse (circa 5 milioni di syscalls al secondo). Inoltre, la correlazione tra eventi e contenuti del container o del cluster può risultare complessa.
+
+Per ottenere informazioni precise sul contesto delle syscalls, è necessario considerare metadati aggiuntivi, come l'ID del container, il namespace o l'utente. Questo richiede l'accesso ai sottosistemi come Docker o containerd, ma la latenza delle query può ridurre la velocità dell'analisi.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{immagini/SYS_08/kernel.png}
+\caption{Kernel Interaction with User Space}
+\end{figure}
+
+
+
+\subsubsection{Falco come sistema di rilevamento}
+
+Falco è un motore di rilevamento delle minacce open-source progettato per monitorare le syscalls in tempo reale sui sistemi Linux. Si integra direttamente con il kernel per intercettare eventi relativi a operazioni di sistema, come la lettura di file sensibili, modifiche ai permessi o escalation dei privilegi.
+
+La principale forza di Falco risiede nel suo \textit{motore di regole}, che utilizza un formato YAML per definire i comportamenti sospetti da monitorare. Ad esempio, può rilevare tentativi di accesso non autorizzato a file sensibili, escalation di privilegi o attività che violano le policy di sicurezza. Inoltre, Falco è in grado di arricchire i dati delle syscalls con metadati contestuali (come l'ID del container o l'utente), permettendo una rilevazione più precisa delle minacce.
+
+Falco offre una visibilità completa a livello di sistema, monitorando tutti i processi e container in esecuzione, e fornisce un meccanismo per inviare avvisi in caso di comportamenti sospetti. Grazie all'uso di driver come il modulo del kernel o i probe eBPF, Falco può acquisire eventi con una bassa latenza e senza compromettere le performance del sistema. Inoltre, Falco è facilmente estendibile, consentendo agli utenti di personalizzare le regole e integrare i risultati con altri strumenti di sicurezza. 
+
+Con queste capacità, Falco diventa uno strumento cruciale per la sicurezza runtime, fornendo un monitoraggio proattivo e in tempo reale di eventi che potrebbero indicare attività dannose.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{immagini/SYS_08/falco_architecture.png}
+\caption{Falco Architecture}
+\end{figure}
+
+\subsection{Architettura, configurazione e gestione degli eventi in Falco}
+
+\subsubsection{Architettura di Falco}
+
+Falco è un motore di rilevamento delle minacce open-source progettato per monitorare le syscalls in tempo reale su sistemi Linux. La sua architettura si basa su due componenti principali: i driver di monitoraggio e il motore di regole. I driver sono responsabili della cattura degli eventi a livello di kernel, che vengono poi inviati al sistema utente per l'elaborazione.
+
+\paragraph{Driver di monitoraggio: Moduli kernel e probe eBPF}
+
+Falco utilizza sia moduli kernel tradizionali che probe eBPF (Extended Berkeley Packet Filter) per monitorare le syscalls. I moduli kernel offrono prestazioni migliori e una maggiore compatibilità, mentre i probe eBPF sono più moderni e ottimizzati per la sicurezza. In particolare, i probe eBPF sono ideali per applicazioni moderne, poiché forniscono un'alternativa leggera e a basso impatto alle tradizionali soluzioni basate su moduli kernel. I probe sono attaccati agli ingressi e alle uscite delle syscalls, inviando gli eventi raccolti a un buffer di memoria condivisa.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{immagini/SYS_08/drivers.png}
+\caption{Falco Architecture - Drivers}
+\end{figure}
+
+
+\paragraph{Interazione tra kernel e user space: Utilizzo di ring buffer e mappe eBPF}
+
+Quando una syscall viene attivata, il driver la intercetta e invia l'evento a un \textit{ring buffer}, che è una struttura dati a lista concatenata utilizzata per gestire grandi volumi di eventi. Ogni CPU ha il proprio ring buffer, e gli eventi vengono letti dallo spazio utente tramite il dispositivo \texttt{/dev/falco}. Inoltre, Falco utilizza le \textit{mappe eBPF} per gestire dati a bassa latenza, come messaggi di controllo.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{immagini/SYS_08/maps.png}
+\caption{User Kernel Interaction - Maps}
+\end{figure}
+
+
+\subsubsection{Configurazione di Falco su Linux e Docker}
+
+\paragraph{Installazione e configurazione su sistemi Linux}
+
+Per installare Falco su un sistema Linux, è necessario aggiungere il repository ufficiale di Falco e installare i pacchetti necessari. Un esempio di installazione su Ubuntu include i seguenti passaggi:
+\begin{itemize}
+    \item Aggiungere la chiave del repository di Falco:
+    \begin{verbatim}
+    curl -fsSL https://falco.org/repo/falcosecurity-packages.asc | \
+    sudo gpg --dearmor -o /usr/share/keyrings/falco-archive-keyring.gpg
+    \end{verbatim}
+    \item Aggiungere il repository Falco:
+    \begin{verbatim}
+    sudo bash -c 'cat << EOF > /etc/apt/sources.list.d/falcosecurity.list
+    deb [signed-by=/usr/share/keyrings/falco-archive-keyring.gpg] \
+    https://download.falco.org/packages/deb stable main
+    EOF'
+    \end{verbatim}
+    \item Installare Falco con il comando:
+    \begin{verbatim}
+    sudo apt-get install -y falco
+    \end{verbatim}
+\end{itemize}
+
+\paragraph{Installazione e configurazione su Docker}
+
+Per configurare Falco in un ambiente Docker, è possibile eseguire il seguente comando per lanciare un container Falco con privilegi sufficienti per monitorare il sistema:
+\begin{verbatim}
+sudo docker run --rm -i -t --name falco --privileged \
+-v /var/run/docker.sock:/host/var/run/docker.sock \
+-v /dev:/host/dev -v /proc:/host/proc:ro \
+-v /boot:/host/boot:ro -v /lib/modules:/host/lib/modules:ro \
+-v /usr:/host/usr:ro -v /etc:/host/etc:ro \
+falcosecurity/falco:0.39.2
+\end{verbatim}
+
+\subsubsection{Gestione degli eventi e ottimizzazione delle performance}
+
+\paragraph{Sovraccarico delle syscalls e ottimizzazioni per migliorare l'efficienza}
+
+Il monitoraggio delle syscalls a livello di sistema può generare un grande volume di eventi, con circa 5 milioni di syscalls al secondo. Per gestire efficacemente questo flusso di dati, è necessario ottimizzare le risorse di sistema, minimizzando il sovraccarico introdotto dalla raccolta degli eventi. Falco utilizza tecniche avanzate come il \textit{ring buffer} per raccogliere gli eventi in memoria, riducendo l'accesso al disco e migliorando le prestazioni.
+
+Inoltre, l'uso delle mappe eBPF consente di ridurre l'overhead nella gestione dei dati a bassa latenza, mentre la separazione delle responsabilità tra i driver e il motore di regole permette a Falco di continuare a monitorare le syscalls senza compromettere le performance del sistema.
+
+\paragraph{Filtraggio degli eventi e generazione degli alert}
+
+Una volta che gli eventi vengono raccolti, è necessario filtrarli e generarne gli alert. Le regole di Falco, scritte in YAML, permettono di definire quali comportamenti sospetti monitorare, come l'accesso non autorizzato a file sensibili o tentativi di escalation dei privilegi. Ogni regola è composta da una descrizione, una condizione e un'azione (output), ed è possibile definirle per monitorare specifici tipi di syscalls, come `open()`, `read()`, e `write()`. Le regole sono facilmente estendibili e possono essere adattate alle esigenze specifiche dell'ambiente di monitoraggio.
+
+Queste capacità di filtraggio e di rilevamento basato su regole permettono a Falco di operare in tempo reale, fornendo visibilità sugli eventi più rilevanti per la sicurezza del sistema e generando alert quando si verificano comportamenti sospetti.
+
+\subsubsection{Esempi pratici di alert personalizzati in ambienti complessi}
+
+Falco permette di creare regole personalizzate per monitorare attività sospette in tempo reale. Tuttavia, in ambienti complessi, come le infrastrutture containerizzate multi-cloud, la configurazione di Falco può richiedere un'attenzione particolare. Ad esempio, in un ambiente multi-cloud, dove le risorse sono distribuite tra diversi provider, può essere necessario configurare regole specifiche per monitorare i flussi di rete tra i vari container e le istanze distribuite. Un esempio pratico potrebbe essere la configurazione di una regola che monitora il traffico tra container in un'infrastruttura Kubernetes, attivando un alert se viene rilevata una connessione non autorizzata o sospetta tra due microservizi che normalmente non comunicano. Questo tipo di regola sarebbe utile per rilevare comportamenti anomali come il traffico di rete che potrebbe indicare un attacco di tipo lateral movement o l'esfiltrazione di dati. In questo contesto, le regole devono essere flessibili, con un'attenzione particolare ai namespace, agli ID dei container e ai percorsi di rete, per evitare falsi positivi e per essere davvero efficaci in ambienti complessi.
+
+
+
+\subsection{Scrittura e gestione delle regole di Falco}
+
+\subsubsection{Regole di Falco}
+
+Le regole di Falco sono scritte in un formato YAML semplice, che permette di definire le condizioni da soddisfare per rilevare comportamenti sospetti nel sistema. Ogni regola è composta da una descrizione, una condizione che deve essere soddisfatta, un'azione da eseguire (tipicamente un avviso) e la priorità del rilevamento.
+
+\paragraph{Scrittura di regole in formato YAML per rilevare comportamenti sospetti}
+
+Una regola di Falco si compone di:
+\begin{itemize}
+    \item \textbf{descrizione}: Una breve descrizione della regola.
+    \item \textbf{condizione}: La condizione che deve essere soddisfatta per attivare l'alert. Esempio: una determinata syscall come \texttt{open()} o \texttt{read()} deve accedere a un file sensibile come \texttt{/etc/shadow}.
+    \item \textbf{output}: La stringa che viene visualizzata quando la regola è attivata, contenente variabili che rappresentano i dettagli dell'evento.
+    \item \textbf{priorità}: La gravità dell'alert, espressa tramite uno dei livelli Syslog (ad esempio, \texttt{WARNING}, \texttt{ERROR}).
+    \item \textbf{tags}: Un'etichetta che aiuta a categorizzare le regole, ad esempio \texttt{filesystem} o \texttt{authentication}.
+\end{itemize}
+
+\paragraph{Utilizzo di operatori, macros e template per semplificare la definizione delle regole}
+
+Falco offre una serie di operatori che possono essere usati per definire condizioni più complesse. Alcuni degli operatori più comuni includono:
+\begin{itemize}
+    \item \textbf{Operatori di uguaglianza}: \texttt{=}, \texttt{!=} per confrontare valori (es. \texttt{proc.name = "bash"}).
+    \item \textbf{Operatori di confronto}: \texttt{<=}, \texttt{<}, \texttt{>=}, \texttt{>} per confrontare dimensioni o numeri (es. \texttt{fd.size > 1024}).
+    \item \textbf{Matching di stringhe}: \texttt{contains}, \texttt{startswith}, \texttt{regex} per confrontare stringhe (es. \texttt{proc.cmdline contains "-jar"}).
+    \item \textbf{Operatori di set}: \texttt{in}, \texttt{intersects} per confrontare set di valori (es. \texttt{fd.name in ("/etc/shadow", "/etc/passwd")}).
+    \item \textbf{Matching di percorsi}: \texttt{pmatch} per confrontare percorsi di file (es. \texttt{fd.name pmatch (/tmp/hello)}).
+\end{itemize}
+
+Per semplificare la definizione delle regole, Falco consente di utilizzare \textbf{macros} e \textbf{template}. Le \textbf{macros} sono componenti riutilizzabili che permettono di raggruppare condizioni comuni in un unico blocco, riducendo la ripetizione nelle regole. Ad esempio, una macro per monitorare l'accesso a file sensibili potrebbe essere definita come:
+\begin{verbatim}
+macro: sensitive_files
+  condition: fd.name in ("/etc/shadow", "/etc/passwd", "/etc/hosts")
+\end{verbatim}
+
+Le \textbf{template} permettono di semplificare l'uso di espressioni comuni, applicando un formato standard per l'output delle regole.
+
+\subsubsection{Esempi pratici di regole}
+
+Un esempio pratico di regola potrebbe essere la rilevazione di tentativi di accesso non autorizzato al file \texttt{/etc/shadow}. La regola seguente attiva un alert ogni volta che qualcuno cerca di aprire il file \texttt{/etc/shadow}:
+\begin{verbatim}
+rule: Open /etc/shadow
+  desc: Detect any attempt to read /etc/shadow
+  condition: evt.type in (open, openat, openat2) and fd.name="/etc/shadow"
+  output: "Opened /etc/shadow file (user=%user.name command=%proc.cmdline syscall=%evt.type)"
+  priority: WARNING
+  tags: [filesystem]
+\end{verbatim}
+
+Un altro esempio riguarda la rilevazione di connessioni sospette a indirizzi IP non sicuri. La regola seguente monitora tutte le connessioni in uscita verso indirizzi IP definibili come pericolosi:
+\begin{verbatim}
+list: unsafe_ips
+  items: ["8.8.8.8", "8.8.4.4"]
+rule: Outbound connection to Unsafe IP
+  desc: Detect outbound connections to IP addresses listed as unsafe
+  condition: outbound and fd.sip in (unsafe_ips)
+  output: "Suspicious connection to unsafe IP detected (command=%proc.cmdline connection=%fd.name user=%user.name)"
+  priority: WARNING
+  tags: [network, malicious]
+\end{verbatim}
+
+In entrambi gli esempi, l'output della regola include variabili come \texttt{user.name}, \texttt{proc.cmdline}, e \texttt{evt.type}, che vengono sostituite dinamicamente con i valori corrispondenti al momento in cui l'evento si verifica.
+
+Questi esempi illustrano come le regole di Falco possano essere scritte e personalizzate per monitorare e proteggere il sistema da attività sospette.
+
+
+\subsection{Sicurezza di rete, connessioni e ottimizzazioni avanzate}
+
+\subsubsection{Monitoraggio delle connessioni di rete}
+
+Falco permette di monitorare e rilevare le connessioni di rete sospette, in particolare quelle verso indirizzi IP considerati non sicuri. Il monitoraggio delle connessioni è cruciale per la prevenzione delle minacce, la rilevazione di incidenti e l'applicazione delle policy di sicurezza. Le connessioni sospette possono essere utilizzate per esfiltrare dati o stabilire comunicazioni con server di comando e controllo (C&C).
+
+Falco utilizza una lista definita dall'utente, chiamata \texttt{unsafe\_ips}, che contiene gli indirizzi IP considerati non sicuri. Questo permette di monitorare in tempo reale le connessioni verso questi indirizzi e di generare allarmi quando si verifica una connessione sospetta. La regola di monitoraggio può essere scritta come segue:
+
+\begin{verbatim}
+list: unsafe_ips
+  items: ["8.8.8.8", "8.8.4.4"]
+rule: Outbound connection to Unsafe IP
+  desc: Detect outbound connections to IP addresses listed as unsafe
+  condition: outbound and fd.sip in (unsafe_ips)
+  output: "Suspicious connection to unsafe IP detected (command=%proc.cmdline connection=%fd.name user=%user.name)"
+  priority: WARNING
+  tags: [network, malicious]
+\end{verbatim}
+
+Questo esempio di regola monitora le connessioni in uscita verso IP considerati pericolosi e genera un alert con il comando, l'indirizzo IP e il nome utente associato.
+
+\subsubsection{Ottimizzazioni avanzate di Falco}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{immagini/SYS_08/ebpf.png}
+\caption{eBPF Probe Overhead}
+\end{figure}
+Il monitoraggio delle syscalls con Falco può generare un elevato volume di eventi, il che può comportare un sovraccarico per il sistema. Per ridurre questo impatto, sono necessarie ottimizzazioni avanzate. Alcune delle tecniche principali per migliorare le performance di Falco includono:
+
+\begin{itemize}
+    \item \textbf{Uso di eBPF}: L'uso di eBPF (Extended Berkeley Packet Filter) consente di monitorare le syscalls in modo più efficiente, riducendo l'overhead rispetto ai tradizionali moduli kernel. eBPF permette di raccogliere eventi direttamente nel kernel e inviarli a un buffer di memoria, migliorando le prestazioni.
+    \item \textbf{Buffering degli eventi}: Falco utilizza un \textit{ring buffer}, una struttura dati in memoria che consente di memorizzare eventi in modo circolare. Ogni CPU ha il proprio buffer, evitando conflitti nell'accesso e migliorando la latenza. Gli eventi vengono poi letti dallo spazio utente tramite il dispositivo \texttt{/dev/falco}.
+    \item \textbf{Filtraggio in tempo reale}: Falco permette di filtrare gli eventi al momento della raccolta, riducendo la quantità di dati da elaborare e migliorando l'efficienza complessiva del sistema. Questo approccio consente a Falco di concentrarsi sugli eventi più rilevanti senza sovraccaricare la CPU.
+\end{itemize}
+
+Queste tecniche permettono di ridurre il carico di lavoro generato dal monitoraggio continuo e migliorano le performance complessive del sistema.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{immagini/SYS_08/runtime.png}
+\caption{Runtime Costs: VFS Services}
+\end{figure}
+
+
+
+\subsubsection{Integrazione con altri strumenti di sicurezza}
+
+Falco è progettato per essere facilmente integrato con altri sistemi di sicurezza, come IDS/IPS (Intrusion Detection/Prevention Systems) e strumenti di monitoraggio. Questa integrazione permette di arricchire la visibilità sulla sicurezza del sistema e coordinare le azioni difensive in tempo reale.
+
+\begin{itemize}
+    \item \textbf{Integrazione con IDS/IPS}: Quando Falco rileva un comportamento sospetto, può inviare un alert a un IDS/IPS che, a sua volta, può intraprendere azioni come bloccare la connessione sospetta. Questa integrazione consente di attivare misure di protezione immediata.
+    \item \textbf{Integrazione con Prometheus e Grafana}: Falco può esportare i suoi eventi di sicurezza in formato JSON o gRPC, che possono essere utilizzati da strumenti come Prometheus. Questi strumenti permettono di visualizzare gli alert in tempo reale su dashboard Grafana, migliorando la gestione e la risposta agli incidenti di sicurezza.
+    \item \textbf{Uso di gRPC per l'esportazione degli eventi}: La capacità di Falco di inviare eventi tramite gRPC consente di integrare il motore di rilevamento con altri sistemi di sicurezza in tempo reale, consentendo una gestione centralizzata degli allarmi.
+\end{itemize}
+
+Integrazione con questi strumenti permette a Falco di diventare una parte centrale di un ecosistema di sicurezza avanzato, estendendo le sue capacità di monitoraggio e rilevamento delle minacce a livello di sistema e di rete.
+
+\subsubsection{Visibilità sui limiti di Falco e difficoltà di configurazione}
+
+Sebbene Falco sia un potente strumento di monitoraggio e rilevamento delle minacce, ci sono alcuni limiti e difficoltà di configurazione che è importante considerare, specialmente in ambienti altamente complessi o ad alte prestazioni. Uno dei principali limiti riguarda la gestione di ambienti multi-tenant, dove più utenti o applicazioni condividono lo stesso sistema. In questi scenari, è essenziale configurare Falco per separare correttamente i dati e prevenire che un malintenzionato sfrutti la visibilità offerta da Falco per monitorare attività che non dovrebbero essere visibili. Inoltre, la gestione di ambienti con alte prestazioni, come quelli che gestiscono milioni di syscalls al secondo, può mettere a dura prova le risorse del sistema, richiedendo ottimizzazioni avanzate come l'uso di eBPF e il tuning dei buffer per ridurre l'overhead. Nonostante l'uso di tecniche avanzate, come il filtraggio in tempo reale e l'ottimizzazione tramite il ring buffer, Falco può ancora avere un impatto sulle prestazioni in ambienti molto dinamici e ad alta intensità di eventi. È quindi importante bilanciare il livello di monitoraggio desiderato con le risorse disponibili, e adattare le regole di monitoraggio in base alle necessità specifiche dell'ambiente.
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{immagini/SYS_08/architecture.png}
+\caption{Overall Architecture of Stateful Monitoring}
+\end{figure}
