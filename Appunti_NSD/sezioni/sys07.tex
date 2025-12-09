@@ -1,7 +1,7 @@
 \newpage
 
 
-%%%%%%          DA FINIRIE          %%%%%%
+%%%%%%          DA FINIRIE        fare da sicurezza e osservabilità:un modello unificiato in poi  %%%%%%
 \section{SYS\_07 - eBPF}
 
 \subsection{Motivazioni: Perché osservare ciò che accade nel cluster}
@@ -69,174 +69,341 @@ codice sorgente del kernel stesso.
 
 
 \subsection{Sicurezza e osservabilità: un modello unificato}
-Gli eBPF program possono essere agganciati a eventi di varia natura 
-(scheduler, syscall, eventi hardware, funzioni user-space, rete). Questo 
-permette di:
+
+Gli eBPF program possono essere agganciati a eventi di natura diversa
+(scheduler, system call, eventi hardware, funzioni nello user space, traffico di rete).
+In tutti questi casi, l’idea è sempre la stessa: quando il flusso di esecuzione
+raggiunge un ``hook'' (punto di aggancio), il kernel invoca il programma eBPF
+associato, che può:
+
 \begin{itemize}
-  \item generare eventi personalizzati per l’osservabilità del sistema;
-  \item aggregare metriche direttamente nel kernel senza passare per user space;
+  \item generare eventi di osservabilità (log, metriche, tracce);
+  \item aggregare metriche direttamente nel kernel, riducendo l’overhead di passaggio allo user space;
   \item individuare comportamenti anomali o sospetti;
-  \item reagire immediatamente tramite segnali, blocchi o logging avanzato.
+  \item reagire immediatamente (per esempio bloccando un’operazione, inviando un segnale,
+        oppure attivando un meccanismo di allarme).
 \end{itemize}
 
-\subsection{Tipologie di Hook eBPF}
-Gli hook si dividono in due categorie fondamentali: statici e dinamici, sia 
-nel kernel che nello user space.
+In questo modo, eBPF fornisce un modello unificato per \emph{sicurezza} e
+\emph{osservabilità}: con lo stesso meccanismo di hook si possono sia monitorare
+i sistemi in tempo reale, sia far rispettare politiche di sicurezza direttamente
+nel kernel, senza modificare il codice delle applicazioni né ricompilare il kernel.
 
-\paragraph{Tracepoints Kernel (statici).}
-Sono punti di tracciamento predefiniti inseriti dagli sviluppatori del 
-kernel mediante macro specifiche. Offrono un'API stabile attraverso le 
-versioni del kernel e non hanno impatto prestazionale se non attivi. 
-Sono ideali per monitoraggio continuo, analisi delle performance e debugging 
-affidabile.
+\subsection{Tipologie di hook eBPF}
 
-\paragraph{Kprobes (dinamici).}
-Consentono di agganciarsi dinamicamente a quasi qualunque simbolo del 
-kernel esportato. Sono estremamente flessibili, ma meno stabili dei 
-tracepoint perché legati all’implementazione interna delle funzioni 
-del kernel. Sono utili per analisi a bassa granularità e scenari di 
-debug avanzato.
+Le slide distinguono quattro famiglie principali di hook, a seconda che siano:
+statici o dinamici, e collocati nel kernel oppure nello user space:
 
-\paragraph{USDT (User Statically Defined Tracing).}
-Sono tracepoint statici definiti dagli sviluppatori all’interno 
-dell’applicazione. Permettono di osservare eventi logici, come 
-fallimenti di login, errori applicativi o operazioni rilevanti per la 
-business logic.
-
-\paragraph{Uprobes (dinamici).}
-Permettono di agganciare funzioni user-space a runtime, senza 
-modificare il codice dell’applicazione. Sono l’equivalente user-space 
-dei kprobes.
-
-\subsection{Tracepoints nel kernel}
-I tracepoint forniscono un’interfaccia stabile per analizzare eventi 
-critici del kernel. Sono localizzati in ogni sottosistema: scheduler, 
-filesystem, gestione memoria, system call, networking. Ogni tracepoint 
-espone file speciali in \texttt{/sys/kernel/debug/tracing}, attraverso cui 
-si possono:
 \begin{itemize}
-  \item abilitarli o disabilitarli;
-  \item definire filtri (ad esempio, tracciare solo specifici PID);
-  \item leggere il formato dati degli eventi generati.
+  \item \textbf{Kernel tracepoints} (statici, nel kernel): sono punti di tracciamento
+        inseriti dagli sviluppatori del kernel tramite macro \texttt{TRACE\_EVENT}.
+        Espongono un’API stabile tra versioni diverse e sono pensati per il monitoraggio
+        continuo, il debugging e l’analisi delle performance.
+
+  \item \textbf{Kprobes} (dinamici, nel kernel): permettono di agganciare dinamicamente
+        quasi qualunque simbolo esportato dal kernel. Offrono grande flessibilità,
+        ma dipendono dall’implementazione interna delle funzioni e quindi sono meno stabili
+        dei tracepoint attraverso gli aggiornamenti di versione.
+
+  \item \textbf{USDT – User Statically Defined Tracing} (statici, nello user space):
+        sono tracepoint definiti dagli sviluppatori direttamente nel codice applicativo
+        (ad esempio tramite macro come \texttt{DTRACE\_PROBE}). Consentono di esporre
+        eventi logici di alto livello, come un tentativo di login fallito o un errore
+        applicativo.
+
+  \item \textbf{Uprobes} (dinamici, nello user space): consentono di agganciare funzioni
+        di applicazioni utente a runtime, senza modificare o ricompilare il codice.
+        Sono l’equivalente user-space dei kprobes.
 \end{itemize}
 
-Un classico esempio è il tracepoint \texttt{sys\_enter\_openat}, che registra le 
-chiamate di apertura file. Agganciandosi a questo evento con eBPF è 
-possibile rilevare tentativi di apertura di file sensibili come 
-\texttt{/etc/passwd} e reagire, ad esempio inviando un segnale di terminazione 
-al processo interessato.
+In sintesi: tracepoint e USDT si appoggiano a punti di tracciamento definiti in
+fase di sviluppo; kprobe e uprobe permettono di inserire dinamicamente hook su
+funzioni esistenti, a patto di conoscerne i simboli e la posizione.
 
-\subsection{Sviluppo e caricamento di programmi eBPF con libbpf-bootstrap}
-Per sviluppare eBPF in C in modo moderno e coerente con le nuove API, si 
-utilizza il framework \textit{libbpf-bootstrap}. Questo ambiente offre uno 
-scheletro preconfigurato che integra:
+\subsection{Kernel tracepoints e debugfs}
+
+I kernel tracepoint forniscono un’interfaccia standard e stabile per osservare
+eventi critici del kernel. Ogni sottosistema (\texttt{sched}, filesystem,
+gestione della memoria, networking, system call, \dots) espone i propri tracepoint
+attraverso la gerarchia di directory in \texttt{/sys/kernel/debug/tracing/events}.
+
+Per ciascun tracepoint esistono tipicamente tre file speciali:
+
 \begin{itemize}
-  \item esempi di utilizzo di tracepoint, kprobe, uprobe e USDT;
-  \item il supporto a BTF (BPF Type Format), necessario per il CO-RE 
-    (\textit{Compile Once, Run Everywhere});
-  \item strumenti di compilazione, linking e generazione skeleton automatico.
+  \item \texttt{enable}: abilita o disabilita il tracepoint;
+  \item \texttt{filter}: consente di filtrare gli eventi (ad esempio solo per un certo PID);
+  \item \texttt{format}: descrive il layout dei dati generati dal tracepoint
+        (campi disponibili, tipi, offset, \dots).
 \end{itemize}
 
-Il toolchain include inoltre \texttt{bpftool} per l’ispezione di mappe, 
-programmi e oggetti caricati nel kernel.
+Ad esempio, per il tracepoint delle syscall \texttt{sys\_enter\_openat} è possibile:
 
-\newpage
-\subsection{Laboratorio: Tracepoint \texttt{openat}}
-In questo laboratorio si realizza una semplice forma di \textit{runtime enforcement}
-utilizzando un tracepoint del kernel e un programma eBPF. L'idea è quella di
-agganciare un programma eBPF al tracepoint \texttt{sys\_enter\_openat}, che viene
-attivato ogni volta che un processo invoca la syscall \texttt{openat()} per
-aprire un file. Intercettando questo evento direttamente nel kernel, è possibile
-ispezionare in tempo reale quale file si sta tentando di aprire e decidere se
-permettere o meno l'operazione.
-
-Il programma eBPF, caricato nel kernel tramite lo skeleton generato da
-\texttt{libbpf-bootstrap}, viene eseguito ad ogni ingresso nella syscall:
-legge in modo sicuro, con le primitive eBPF, il percorso del file passato
-come argomento alla \texttt{openat()}, e confronta la stringa ottenuta con il
-percorso sensibile \texttt{/etc/passwd}. Se il confronto ha esito positivo,
-il programma:
 \begin{itemize}
-  \item registra l'evento nel sistema di tracing del kernel, ad esempio
-        tramite \texttt{bpf\_printk()}, in modo che possa essere osservato
-        in \texttt{trace\_pipe};
-  \item invia al processo chiamante un segnale di terminazione (SIGKILL)
-        utilizzando l'helper \texttt{bpf\_send\_signal()}, impedendo
-        di fatto l’accesso al file.
+  \item elencare la directory \texttt{/sys/kernel/debug/tracing/events/syscalls} per
+        vedere tutti i tracepoint relativi alle system call;
+  \item leggere il file \texttt{format} associato a
+        \texttt{sys\_enter\_openat} per conoscere la struttura
+        \texttt{trace\_event\_raw\_sys\_enter} e i parametri disponibili;
+  \item abilitare o filtrare il tracepoint modificando i file \texttt{enable}
+        e \texttt{filter}.
 \end{itemize}
 
-Dal lato \textit{user space}, un piccolo loader scritto in C utilizza le API
-di \texttt{libbpf} per:
+Questa interfaccia, combinata con eBPF, consente di agganciare programmi
+direttamente agli eventi del kernel, con un impatto minimo sulle prestazioni
+quando i tracepoint non sono abilitati.
+
+\subsection{Sviluppo di programmi eBPF con \texttt{libbpf-bootstrap}}
+
+Per sviluppare programmi eBPF moderni in C si utilizza il framework
+\texttt{libbpf-bootstrap}, che fornisce:
+
+\begin{itemize}
+  \item una struttura di progetto già pronta, con esempi per tracepoint, kprobe,
+        uprobe e USDT;
+  \item l’integrazione con \texttt{libbpf} e \texttt{bpftool};
+  \item il supporto al formato BTF (BPF Type Format), necessario per il paradigma
+        CO-RE (\emph{Compile Once, Run Everywhere}).
+\end{itemize}
+
+L’idea di CO-RE è compilare una sola volta il programma eBPF, sfruttando le
+informazioni di tipo BTF esportate dal kernel, e lasciar fare a \texttt{libbpf}
+le piccole correzioni necessarie per adattare il bytecode a diverse versioni
+del kernel (ad esempio se cambiano gli offset di alcuni campi nelle strutture
+di sistema).
+
+Il workflow tipico è:
+
 \begin{enumerate}
-  \item aprire lo skeleton del programma eBPF e verificarne il bytecode;
-  \item caricare il programma nel kernel;
-  \item attaccare automaticamente il programma eBPF al tracepoint
-        \texttt{sys\_enter\_openat};
-  \item rimanere in esecuzione per tutta la durata dell’esperimento.
+  \item scrivere il programma eBPF in un file \texttt{.bpf.c}, con le
+        \texttt{SEC("...")} corrette per indicare il tipo di hook;
+  \item compilare con \texttt{clang} e generare l’oggetto ELF;
+  \item usare \texttt{bpftool} e \texttt{libbpf} per creare uno ``skeleton''
+        in C che espone funzioni ad-hoc per aprire, caricare e agganciare
+        il programma eBPF;
+  \item scrivere un piccolo loader in user space che utilizza questo skeleton
+        per interagire con il kernel.
 \end{enumerate}
 
-Questo laboratorio mostra in pratica come eBPF consenta non solo di
-\emph{osservare} il comportamento del sistema (monitorando tutte le aperture
-di file), ma anche di \emph{far rispettare} dinamicamente una politica di
-sicurezza direttamente nel kernel, senza modificare il codice sorgente del
-kernel stesso e con un overhead molto contenuto.
+\subsection{Laboratorio: tracepoint \texttt{sys\_enter\_openat}}
 
+Nel mini-lab sulle tracepoint si implementa una semplice forma di
+\textit{runtime enforcement} usando il tracepoint
+\texttt{sys\_enter\_openat}. L’obiettivo è impedire l’accesso al file
+\texttt{/etc/passwd}:
 
-Il loader user-space si occupa di aprire, caricare e agganciare lo skeleton 
-al tracepoint, quindi rimane in attesa indefinita, mentre l’output del 
-programma viene visualizzato tramite \texttt{trace\_pipe}.
-
-\newpage
-\subsection{User Statically Defined Tracing (USDT)}
-Le applicazioni possono definire tracepoint personalizzati, permettendo 
-analisi non invasive anche senza modificare la logica applicativa. Un 
-esempio classico è l’inserimento di un probe USDT su un’applicazione di 
-login: ogni password errata genera un evento USDT, che un programma eBPF 
-agganciato può intercettare per registrare tentativi falliti o analizzare 
-le stringhe inserite.
-
-\subsection{Kprobes e analisi dinamica del kernel}
-I kprobe permettono di osservare l’esecuzione interna del kernel in punti 
-non esposti da tracepoints. Un esempio didattico è l’aggancio alla funzione 
-\texttt{do\_unlinkat} per monitorare le operazioni di cancellazione file. 
-Monitorando questa funzione si può generare un evento ogni volta che un 
-processo rimuove un file dal filesystem.
-
-\subsection{Uprobes: analisi dinamica di applicazioni user-space}
-Gli uprobes consentono di interceptare funzioni user-space a runtime. Il 
-laboratorio prevede l'aggancio alla funzione \texttt{readline()} di Bash, per 
-tracciare i comandi digitati dagli utenti. Ogni comando viene memorizzato 
-in una mappa \texttt{BPF\_MAP\_TYPE\_PERCPU\_HASH}, evitando race condition 
-multi-core. Questo consente di creare un contatore per ciascun comando 
-eseguito nel sistema.
-
-\subsection{Progetti reali basati su eBPF}
-Numerosi progetti di livello enterprise utilizzano eBPF per sicurezza e 
-osservabilità:
 \begin{itemize}
-  \item \textbf{Cilium}: CNI per Kubernetes, networking e sicurezza L3-L7.
-  \item \textbf{Hubble}: osservabilità del networking nei cluster Cilium.
-  \item \textbf{Tetragon}: security observability e runtime enforcement.
-  \item \textbf{Symbiote, BPFDoor, Dewdrop, Bvp47}: esempi di impiego 
-        malevolo di eBPF o filtri BPF per nascondere traffico, abilitare 
-        backdoor o attivare accessi tramite pacchetti ``magici''.
+  \item ogni volta che un processo invoca la syscall \texttt{openat()}, il
+        tracepoint \texttt{sys\_enter\_openat} genera un evento;
+  \item un programma eBPF, agganciato a questo tracepoint, legge in modo sicuro
+        (con \texttt{bpf\_probe\_read\_user\_str()}) il path del file
+        che si sta tentando di aprire;
+  \item se il path corrisponde a \texttt{/etc/passwd}, il programma:
+        \begin{itemize}
+          \item registra l’evento con \texttt{bpf\_printk()}, visibile tramite
+                \texttt{trace\_pipe};
+          \item invia un segnale \texttt{SIGKILL} al processo chiamante
+                usando \texttt{bpf\_send\_signal()}, bloccando di fatto l’accesso.
+        \end{itemize}
 \end{itemize}
 
-\subsection{Abuso dei BPF filter: il caso BPFDoor}
-BPFDoor è una backdoor avanzata che utilizza filtri BPF applicati ai socket 
-per intercettare pacchetti contenenti ``magic numbers'' specifici. Grazie 
-al fatto che i filtri BPF vengono eseguiti prima dello stack TCP/IP, la 
-backdoor può attivarsi anche se un firewall blocca la comunicazione. Una 
-volta ricevuto il pacchetto corretto, il malware apre una connessione 
-inversa e fornisce una shell privilegiata all'attaccante. La complessità 
-dei filtri aumenta con le versioni e supporta combinazioni multiple di TCP, 
-UDP e ICMP.
+Il loader user space, generato a partire dallo skeleton
+\texttt{openat\_tracepoint.skel.h}, si occupa di:
+
+\begin{enumerate}
+  \item aprire lo skeleton e verificare il programma eBPF;
+  \item caricare il bytecode eBPF nel kernel;
+  \item agganciare automaticamente il programma al tracepoint
+        \texttt{sys\_enter\_openat};
+  \item restare in esecuzione, mentre l’output del programma viene visualizzato
+        in un’altra shell tramite:
+        \texttt{cat /sys/kernel/debug/tracing/trace\_pipe}.
+\end{enumerate}
+
+Il risultato è un esempio concreto di come eBPF possa sia osservare il
+comportamento del sistema (tutte le \texttt{openat()}), sia far rispettare
+una policy di sicurezza in tempo reale.
+
+\subsection{User Statically Defined Tracing (USDT)}
+
+Con USDT le applicazioni possono definire tracepoint personalizzati nello
+user space. Questo consente di esporre eventi logici di alto livello senza
+modificare successivamente il codice: strumenti come DTrace, SystemTap o
+programmi eBPF possono agganciarsi a questi eventi dall’esterno.
+
+Nel mini-lab, si considera una semplice applicazione di login
+(\texttt{login\_app.c}) che, in caso di password errata, invoca una macro
+USDT:
+
+\begin{itemize}
+  \item ad ogni inserimento di una password sbagliata viene attivato il probe
+        \texttt{failed\_login}, che trasmette la password errata come argomento;
+  \item un programma eBPF, definito con una sezione
+        \texttt{SEC("usdt/./login\_app:login\_app:failed\_login")}, riceve
+        questa stringa e la stampa nel trace pipe tramite \texttt{bpf\_printk()}.
+\end{itemize}
+
+Il flusso completo del laboratorio prevede:
+
+\begin{enumerate}
+  \item compilazione del programma USDT e installazione delle librerie
+        \texttt{systemtap-sdt-dev} per le macro \texttt{DTRACE\_PROBE};
+  \item compilazione e caricamento del programma eBPF;
+  \item esecuzione di \texttt{login\_app} e osservazione, in \texttt{trace\_pipe},
+        delle password inserite in caso di login fallito.
+\end{enumerate}
+
+Questo esempio mostra come USDT permetta di integrare osservabilità profonda
+senza dover ricorrere ad hack sul codice sorgente o a tecniche invasive.
+
+\subsection{Kprobes e analisi dinamica del kernel}
+
+I kprobes sono un meccanismo per inserire \emph{breakpoint dinamici} nel codice
+del kernel, allo scopo di ispezionare o modificare il comportamento di funzioni
+durante l’esecuzione:
+
+\begin{itemize}
+  \item è possibile attaccarsi a quasi qualunque simbolo esportato dal kernel
+        (presente in \texttt{/proc/kallsyms});
+  \item si possono definire handler di ingresso e uscita da una funzione;
+  \item un programma eBPF può essere agganciato al kprobe per leggere
+        parametri, contare eventi o, in casi specifici, modificare il flusso.
+\end{itemize}
+
+Rispetto ai tracepoint:
+
+\begin{itemize}
+  \item i kprobes sono più flessibili, perché non richiedono che il kernel
+        esponga un punto di tracciamento predefinito;
+  \item sono però meno stabili attraverso versioni diverse del kernel, perché
+        dipendono dai nomi e dall’implementazione interna delle funzioni;
+  \item possono avere un impatto maggiore sulle prestazioni se usati in modo
+        intensivo, soprattutto su percorsi critici.
+\end{itemize}
+
+Nel mini-lab si vedono due casi tipici:
+
+\begin{enumerate}
+  \item un programma eBPF agganciato a \texttt{do\_sys\_open} che incrementa un contatore
+        ogni volta che viene eseguita una \texttt{open()}, per monitorare la frequenza
+        di accesso ai file;
+  \item un kprobe su \texttt{do\_unlinkat} per tracciare le operazioni di cancellazione
+        file: creando e cancellando un file (\texttt{touch deleteme \&\& rm deleteme}),
+        si osservano gli eventi in \texttt{trace\_pipe}.
+\end{enumerate}
+
+\subsection{Uprobes: analisi dinamica di applicazioni user-space}
+
+Le uprobes sono l’equivalente nello user space dei kprobes: permettono di
+agganciarsi a funzioni di libreria o di applicazioni utente, senza modificarne
+il codice. In combinazione con eBPF si ottiene uno strumento potente per il
+monitoraggio di applicazioni in produzione.
+
+Nel mini-lab delle slide si aggancia una uretprobe alla funzione
+\texttt{readline()} di \texttt{/bin/bash}:
+
+\begin{itemize}
+  \item ogni volta che un utente inserisce un comando in una shell Bash,
+        \texttt{readline()} restituisce una stringa con il comando digitato;
+  \item la uretprobe, definita con una sezione del tipo
+        \texttt{SEC("uretprobe//bin/bash:readline")}, viene eseguita al ritorno
+        della funzione e riceve il valore di ritorno (il puntatore alla stringa);
+  \item il programma eBPF legge la stringa del comando, rimuove il newline
+        finale e la utilizza come chiave in una mappa
+        \texttt{BPF\_MAP\_TYPE\_PERCPU\_HASH}, che conta quante volte ogni comando
+        è stato eseguito.
+\end{itemize}
+
+L’uso di una mappa \emph{per-CPU} è importante perché eBPF è intrinsecamente
+multi-core: mantenere un contatore per CPU evita race condition sui valori e
+riduce la necessità di sincronizzazione.
+
+Dal lato user space, si può osservare il contenuto della mappa con:
+
+\begin{verbatim}
+sudo watch -n 1 bpftool map dump name cmd_count
+\end{verbatim}
+
+ottenendo una visione in tempo reale dei comandi più frequenti eseguiti sul
+sistema.
+
+\subsection{Progetti reali basati su eBPF}
+
+La stessa infrastruttura di hook eBPF è alla base di numerosi progetti reali:
+
+\begin{itemize}
+  \item \textbf{Cilium}: CNI (Container Network Interface) per Kubernetes,
+        utilizza eBPF per fornire networking L3--L7, bilanciamento del carico
+        e policy di sicurezza \emph{API-aware}, direttamente nel kernel.
+
+  \item \textbf{Hubble}: piattaforma di osservabilità di rete costruita sopra Cilium,
+        che offre visibilità in tempo reale sul traffico, sulle dipendenze tra
+        microservizi e sugli eventi di sicurezza.
+
+  \item \textbf{Tetragon}: componente di Cilium focalizzato sulla
+        \emph{security observability} e sul \emph{runtime enforcement}. Usa
+        eBPF per reagire a eventi significativi (esecuzione di processi,
+        system call, I/O) e applicare regole di sicurezza dinamiche.
+
+  \item \textbf{Skyfall}: agent di monitoraggio sviluppato da LinkedIn per
+        analizzare prestazioni e sicurezza dell’infrastruttura, basato su eBPF
+        per raccogliere metriche direttamente dal kernel.
+
+  \item \textbf{Falco}: motore di \emph{runtime security} che sfrutta eBPF
+        per monitorare l’interazione tra le applicazioni containerizzate e
+        il kernel, rilevando comportamenti sospetti (ad esempio, creazione
+        di processi anomali o accessi a file sensibili).
+\end{itemize}
+
+Oltre a questi, molti altri progetti e grandi aziende utilizzano eBPF per
+monitoraggio, sicurezza, performance debugging e profilazione.
+
+\subsection{Abuso dei BPF filter: BPFDoor e altri malware}
+
+La stessa potenza di eBPF e, più in generale, dei BPF filter può essere
+sfruttata in modo malevolo. Un esempio noto è \textbf{BPFDoor}, una backdoor
+attribuita al gruppo APT \emph{Red Menshen}:
+
+\begin{itemize}
+  \item il malware utilizza filtri BPF applicati a socket (tramite l’opzione
+        \texttt{SO\_ATTACH\_FILTER} di \texttt{setsockopt()}) per intercettare
+        pacchetti contenenti particolari ``magic numbers'';
+  \item poiché i filtri BPF vengono eseguiti prima dello stack TCP/IP del kernel,
+        un pacchetto ``magico'' può attivare la backdoor anche se un firewall
+        blocca la comunicazione;
+  \item al ricevimento del pacchetto corretto, BPFDoor stabilisce una connessione
+        inversa verso la macchina dell’attaccante, aprendo una shell privilegiata
+        che consente l’esecuzione di comandi sul sistema compromesso.
+\end{itemize}
+
+Nel tempo, i filtri usati da BPFDoor sono diventati più complessi, includendo
+condizioni su pacchetti TCP, UDP e ICMP e sequenze di magic number a 2 o 4 byte.
+Alcuni di questi valori sono visibili anche tramite strumenti come \texttt{ss},
+che aiutano a individuare configurazioni sospette.
+
+BPFDoor non è l’unico esempio: altri malware (come \emph{dewdrop}, \emph{Bvp47}
+e \emph{Symbiote}) sfruttano BPF per implementare tecniche di port knocking,
+canali di comunicazione nascosti o per filtrare il traffico in modo da
+\emph{nascondere} i pacchetti malevoli anche in presenza di strumenti di
+packet capture.
 
 \subsection{Conclusioni}
-eBPF rappresenta uno strumento potentissimo che fonde osservabilità e 
-sicurezza in un unico paradigma. Grazie all’aggancio efficiente a 
-eventi kernel e user-space, eBPF permette di analizzare il comportamento 
-dei sistemi in tempo reale e, allo stesso tempo, di agire proattivamente 
-per bloccare attività malevole. Le sue applicazioni spaziano dalla 
-visibilità nei cluster Kubernetes, al debugging profondo, fino alla 
-rilevazione di malware avanzati.
+
+eBPF rappresenta oggi uno degli strumenti più potenti per unire osservabilità
+profonda e sicurezza runtime in ambienti moderni, in particolare nei cluster
+Kubernetes e nei contesti cloud-native. Grazie alla possibilità di agganciare
+programmi sicuri a eventi del kernel e dello user space, è possibile:
+
+\begin{itemize}
+  \item monitorare in tempo reale il comportamento del sistema;
+  \item raccogliere metriche dettagliate con overhead contenuto;
+  \item applicare politiche di sicurezza dinamiche senza modificare applicazioni
+        o ricompilare il kernel;
+  \item riconoscere e contrastare tecniche avanzate di attacco che sfruttano
+        direttamente i BPF filter e i meccanismi di hook.
+\end{itemize}
+
+Gli esempi di laboratorio (tracepoint \texttt{openat}, USDT sul login, kprobe
+su \texttt{do\_unlinkat}, uretprobe su \texttt{readline()}) mostrano in pratica
+come sia possibile passare dal semplice monitoraggio alla vera e propria
+\emph{enforcement} di regole di sicurezza, mantenendo al tempo stesso un buon
+controllo sulle prestazioni del sistema.
