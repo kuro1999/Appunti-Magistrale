@@ -1,9 +1,10 @@
-\section{SYS-08 FALCO}
+\newpage
+\section{SYS\_08 FALCO}
 \subsection{Introduzione a Falco e concetti base}
 
 \subsubsection{Introduzione alla sicurezza runtime e monitoraggio in cluster}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{immagini/SYS_08/cluster.png}
 \caption{How to monitor what happens in the cluster?}
@@ -20,7 +21,7 @@ Le \textit{syscalls} (chiamate di sistema) sono il principale punto di interazio
 Monitorare le syscalls è un modo efficace per comprendere il comportamento di un sistema, poiché ogni interazione tra un'applicazione e il sistema operativo passa attraverso di esse. La gestione delle syscalls in \textit{user space} può essere complessa, soprattutto quando si cerca di tracciare il comportamento in tempo reale. Un approccio naïve, che consiste nell'esportare tutte le syscalls a livello utente, non è ottimale, soprattutto con la velocità con cui vengono emesse (circa 5 milioni di syscalls al secondo). Inoltre, la correlazione tra eventi e contenuti del container o del cluster può risultare complessa.
 
 Per ottenere informazioni precise sul contesto delle syscalls, è necessario considerare metadati aggiuntivi, come l'ID del container, il namespace o l'utente. Questo richiede l'accesso ai sottosistemi come Docker o containerd, ma la latenza delle query può ridurre la velocità dell'analisi.
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{immagini/SYS_08/kernel.png}
 \caption{Kernel Interaction with User Space}
@@ -38,7 +39,7 @@ Falco offre una visibilità completa a livello di sistema, monitorando tutti i p
 
 Con queste capacità, Falco diventa uno strumento cruciale per la sicurezza runtime, fornendo un monitoraggio proattivo e in tempo reale di eventi che potrebbero indicare attività dannose.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{immagini/SYS_08/falco_architecture.png}
 \caption{Falco Architecture}
@@ -54,7 +55,7 @@ Falco è un motore di rilevamento delle minacce open-source progettato per monit
 
 Falco utilizza sia moduli kernel tradizionali che probe eBPF (Extended Berkeley Packet Filter) per monitorare le syscalls. I moduli kernel offrono prestazioni migliori e una maggiore compatibilità, mentre i probe eBPF sono più moderni e ottimizzati per la sicurezza. In particolare, i probe eBPF sono ideali per applicazioni moderne, poiché forniscono un'alternativa leggera e a basso impatto alle tradizionali soluzioni basate su moduli kernel. I probe sono attaccati agli ingressi e alle uscite delle syscalls, inviando gli eventi raccolti a un buffer di memoria condivisa.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{immagini/SYS_08/drivers.png}
 \caption{Falco Architecture - Drivers}
@@ -65,7 +66,7 @@ Falco utilizza sia moduli kernel tradizionali che probe eBPF (Extended Berkeley 
 
 Quando una syscall viene attivata, il driver la intercetta e invia l'evento a un \textit{ring buffer}, che è una struttura dati a lista concatenata utilizzata per gestire grandi volumi di eventi. Ogni CPU ha il proprio ring buffer, e gli eventi vengono letti dallo spazio utente tramite il dispositivo \texttt{/dev/falco}. Inoltre, Falco utilizza le \textit{mappe eBPF} per gestire dati a bassa latenza, come messaggi di controllo.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{immagini/SYS_08/maps.png}
 \caption{User Kernel Interaction - Maps}
@@ -215,7 +216,7 @@ rule: Outbound connection to Unsafe IP
 Questo esempio di regola monitora le connessioni in uscita verso IP considerati pericolosi e genera un alert con il comando, l'indirizzo IP e il nome utente associato.
 
 \subsubsection{Ottimizzazioni avanzate di Falco}
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{immagini/SYS_08/ebpf.png}
 \caption{eBPF Probe Overhead}
@@ -230,7 +231,7 @@ Il monitoraggio delle syscalls con Falco può generare un elevato volume di even
 
 Queste tecniche permettono di ridurre il carico di lavoro generato dal monitoraggio continuo e migliorano le performance complessive del sistema.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{immagini/SYS_08/runtime.png}
 \caption{Runtime Costs: VFS Services}
@@ -255,7 +256,7 @@ Integrazione con questi strumenti permette a Falco di diventare una parte centra
 Sebbene Falco sia un potente strumento di monitoraggio e rilevamento delle minacce, ci sono alcuni limiti e difficoltà di configurazione che è importante considerare, specialmente in ambienti altamente complessi o ad alte prestazioni. Uno dei principali limiti riguarda la gestione di ambienti multi-tenant, dove più utenti o applicazioni condividono lo stesso sistema. In questi scenari, è essenziale configurare Falco per separare correttamente i dati e prevenire che un malintenzionato sfrutti la visibilità offerta da Falco per monitorare attività che non dovrebbero essere visibili. Inoltre, la gestione di ambienti con alte prestazioni, come quelli che gestiscono milioni di syscalls al secondo, può mettere a dura prova le risorse del sistema, richiedendo ottimizzazioni avanzate come l'uso di eBPF e il tuning dei buffer per ridurre l'overhead. Nonostante l'uso di tecniche avanzate, come il filtraggio in tempo reale e l'ottimizzazione tramite il ring buffer, Falco può ancora avere un impatto sulle prestazioni in ambienti molto dinamici e ad alta intensità di eventi. È quindi importante bilanciare il livello di monitoraggio desiderato con le risorse disponibili, e adattare le regole di monitoraggio in base alle necessità specifiche dell'ambiente.
 
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{immagini/SYS_08/architecture.png}
 \caption{Overall Architecture of Stateful Monitoring}

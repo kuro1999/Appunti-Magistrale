@@ -1,185 +1,601 @@
-\newpage
+\section{SYS\_09 Database Security}
 
+% ============================================================
+% 1. CONCETTI DI BASE
+% ============================================================
+\subsection{Concetti di base}
 
-\section{SYS\_06 - Database security}
+\subsubsection{Introduzione}
 
+La sicurezza dei database comprende l'insieme di tecniche, politiche e meccanismi volti a proteggere i dati gestiti da un Database Management System (DBMS). L’obiettivo è garantire riservatezza, integrità, disponibilità e tracciabilità delle operazioni, prevenendo minacce sia accidentali sia intenzionali.
+Una security policy definisce le regole da applicare; il DBMS fornisce gli strumenti necessari per farle rispettare. La sicurezza effettiva dipende anche da misure esterne al sistema software, come la protezione fisica delle infrastrutture e la configurazione della rete.
 
-\subsection{Introduzione alla sicurezza dei database}
+\subsubsection{Obiettivi e requisiti}
 
-La sicurezza dei database costituisce l’insieme di meccanismi, controlli e pratiche operative finalizzate alla protezione dei dati conservati all’interno di un DBMS.
-L’obiettivo centrale è difendere il patrimonio informativo da minacce intenzionali (attacchi informatici, accessi non autorizzati, insider threats) e da eventi accidentali (errori umani, malfunzionamenti, perdita di disponibilità del sistema) \footnote{Vedi ``What is database security?'' nel PDF.}.
-
-Una \textit{security policy} definisce in modo rigoroso le misure da adottare, mentre il DBMS fornisce gli strumenti per farla rispettare.
-Poiché la superficie d'attacco si estende oltre il DBMS, risulta necessario integrare tali meccanismi con procedure sistemistiche, di rete e gestionali, così da proteggere l'intero stack che ospita i dati.
-
-\subsection{Obiettivi e ambito della sicurezza}
-
-Il documento enfatizza come il tema della sicurezza nei corsi classici di database sia spesso trattato marginalmente. Tuttavia, nei sistemi reali diventa un’area critica, che coinvolge:
-
+La sicurezza dei database è spesso meno approfondita rispetto alla network security o all'application security. Tuttavia, una protezione efficace richiede di considerare:
 \begin{itemize}
-    \item l’insieme dei dati memorizzati nel DB;
-    \item il DBMS come software (comprensivo delle sue vulnerabilità);
-    \item le applicazioni che lo utilizzano;
-    \item il server fisico o virtuale in cui risiede il DBMS;
-    \item l'infrastruttura di rete utilizzata per accedere ai dati.
+    \item i principi generali della sicurezza informatica applicati ai dati;
+    \item le funzionalità di sicurezza integrate nel DBMS;
+    \item l’interazione tra DBMS e applicazioni che eseguono query o operazioni sui dati.
 \end{itemize}
 
-Un concetto chiave presentato nel PDF è il \textbf{paradosso di Anderson}: aumentando l’accessibilità del database se ne riduce la sicurezza; restringendo e irrobustendo le difese, si può compromettere l’usabilità.
+\subsubsection{Componenti da proteggere}
 
-\subsection{Minacce comuni}
-
-Le principali minacce individuate includono \footnote{``Common threats'' nel PDF.}:
-
+Un attaccante può indirizzare la propria azione verso:
 \begin{itemize}
-    \item \textbf{Insider threats}, dovute a utenti legittimi che abusano dei propri privilegi.
-    \item \textbf{Errori umani}, come configurazioni errate, query mal formulate o cancellazioni involontarie.
-    \item \textbf{Vulnerabilità del DBMS}, sfruttabili da attaccanti esterni.
-    \item \textbf{Vulnerabilità applicative}, in particolare SQL injection.
-    \item \textbf{Buffer overflow} e altre categorie di exploit.
-    \item \textbf{Malware} che compromette i sistemi host.
-    \item \textbf{Attacchi ai backup}, se non adeguatamente protetti.
-    \item \textbf{DDoS}, che colpiscono disponibilità e prestazioni.
+    \item i dati memorizzati nel database;
+    \item il software DBMS;
+    \item le applicazioni che inviano query al database;
+    \item il server fisico o virtuale che ospita il DBMS;
+    \item la rete che consente l’accesso al sistema.
 \end{itemize}
 
-\subsection{Best Practices generali}
+È utile ricordare l'\emph{Anderson’s paradox}: maggiore usabilità implica spesso minore sicurezza, mentre un sistema estremamente sicuro può risultare poco utilizzabile.
 
-Le best practices della sicurezza database includono \footnote{``Best practices'' nel PDF.}:
+\subsubsection{Minacce comuni}
 
+Le principali minacce includono:
 \begin{itemize}
-    \item sicurezza fisica delle infrastrutture;
-    \item controllo degli accessi (PoLP);
-    \item sicurezza degli account utente e dei dispositivi;
-    \item cifratura dei dati e dei canali di comunicazione;
-    \item hardening del DBMS;
-    \item messa in sicurezza dell'applicazione e del web server;
-    \item protezione dei backup;
-    \item auditing e monitoraggio.
+    \item attacchi interni (insider threat);
+    \item errori umani;
+    \item vulnerabilità del DBMS;
+    \item vulnerabilità applicative come SQL Injection (SQLi);
+    \item buffer overflow;
+    \item malware;
+    \item compromissione delle copie di backup;
+    \item attacchi Distributed Denial of Service (DDoS).
 \end{itemize}
 
-\subsection{Sicurezza fisica}
+\subsubsection{Best practices generali}
 
-\subsubsection{Difesa a più livelli}
+Le buone pratiche si articolano su più livelli:
+\begin{itemize}
+    \item sicurezza fisica del data center;
+    \item controllo degli accessi amministrativi e di rete secondo il Principle of Least Privilege (PoLP);
+    \item gestione sicura degli account utente e dei dispositivi;
+    \item encryption dei dati e dei canali di comunicazione;
+    \item configurazione sicura del DBMS;
+    \item protezione dalle vulnerabilità applicative, in particolare SQLi;
+    \item sicurezza dei backup;
+    \item auditing e monitoraggio continuo.
+\end{itemize}
 
-Le slide mostrano chiaramente come i data center applichino un modello multilivello, comprendente perimetro esterno, guardiania, accesso agli edifici, zone sicure, controllo ascensori, corridoi protetti e accesso ai rack.
-Un aspetto cruciale è la gestione dei supporti di memorizzazione: gli HDD vengono tracciati e distrutti fisicamente a fine vita, come illustrato nella ``destruction room'' di Google \footnote{``Physical security'' pp. 9--10.}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{immagini/SYS_09/physec}
+    \caption{I principali otto livelli di physical security adottati nei
+    moderni data center: si parte dalla \textit{perimeter security} e
+    dal \textit{perimeter guardhouse}, che delimitano l’area esterna, per proseguire con il \textit{building entry} e il \textit{personal access to secure zone}. Seguono i controlli interni come il \textit{lift access control} e il \textit{data hall secure corridor}, fino ai livelli più critici rappresentati dal \textit{data center vault} e dal \textit{rack level access}. Questi livelli cooperano
+    per fornire una difesa multilayer contro accessi non autorizzati.}
+    \label{fig:physec}
+\end{figure}
 
+\subsubsection{Sicurezza fisica}
+
+La sicurezza fisica rappresenta il primo livello di difesa. I data center moderni sono organizzati su più livelli (gates, reception, biometric access, secure corridors, rack-level locking).
+Nel cloud ogni hard disk viene tracciato tramite serial number e distrutto fisicamente al termine del ciclo di vita per evitare ogni possibile data recovery.
+
+% ============================================================
+% 2. SQL INJECTION
+% ============================================================
 \subsection{SQL Injection}
 
-\subsubsection{Panoramica}
+\subsubsection{Definizione e impatti}
 
-Le SQL injection rappresentano una delle minacce più critiche ai sistemi basati su DBMS.
-Esse derivano dall’inserimento non sicuro di input dell’utente all’interno di query.
-Un attaccante può alterare la semantica della query, accedere a dati sensibili, modificare tabelle o compromettere il server.
-
-\subsubsection{Tipologie}
-
+La SQL Injection (SQLi) è una delle vulnerabilità applicative più diffuse. Si verifica quando input non sanificato dell’utente viene inserito direttamente all’interno di una query SQL.
+Un attaccante può così manipolare la query per:
 \begin{itemize}
-    \item \textbf{First-order SQLi}: l'input dell’utente viene immediatamente inserito nella query vulnerabile.
-    \item \textbf{Second-order SQLi}: l'input pericoloso è salvato nel database e sfruttato successivamente, quando recuperato dall’applicazione.
+    \item accedere a dati non autorizzati;
+    \item modificare informazioni sensibili;
+    \item compromettere il server applicativo o il DBMS;
+    \item eseguire un attacco di tipo denial of service.
 \end{itemize}
 
-\subsubsection{Tecniche di rilevazione}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\linewidth]{immagini/SYS_09/sql}
+    \caption{Esempio di attacco SQL Injection (SQLi) basato sull’uso dell’operatore \texttt{UNION}: l’attaccante inserisce nella form un payload che estende la query originale con una \texttt{UNION SELECT} diretta alla table \texttt{users}. Il database esegue la query risultante e restituisce all’attaccante informazioni sensibili, come username e password. L’immagine illustra come una query non sanificata possa portare alla completa compromissione della riservatezza dei dati.}
+    \label{fig:sql}
+\end{figure}
 
-Le tecniche includono l’invio sistematico di payload quali:
+\subsubsection{Tipologie di SQL Injection}
 
+Si distinguono:
 \begin{itemize}
-    \item apici per rompere la struttura sintattica (\verb+'+);
-    \item condizioni booleane (\verb+OR 1=1+);
-    \item payload basati su ritardi temporali;
-    \item interazioni out-of-band (OAST).
+    \item \textbf{First-order SQLi}: l’input malevolo viene usato immediatamente nella query vulnerabile;
+    \item \textbf{Second-order SQLi}: l’input viene salvato nel database e utilizzato successivamente in una query non protetta.
 \end{itemize}
 
-Il PDF illustra numerosi esempi pratici (bypass login, esposizione dati nascosti, estrazione tramite \texttt{UNION}) e link a laboratori PortSwigger.
+\subsubsection{Rilevazione delle vulnerabilità SQL}
 
-\subsubsection{Prepared Statements}
-
-Il documento sottolinea l’importanza dei \textit{prepared statements} come tecnica per prevenire SQLi: il DBMS precompila il piano di esecuzione della query con placeholder, separando codice e dati.
-
-\subsection{Autenticazione, autorizzazione e controllo degli accessi}
-
-\subsubsection{Autenticazione}
-
-L'autenticazione stabilisce se l’utente è realmente chi afferma di essere.
-I DBMS moderni richiedono che solo utenti autenticati possano creare connessioni.
-
-\subsubsection{Autorizzazione}
-
-L'autorizzazione assegna i privilegi che determinano quali operazioni un utente può svolgere.
-Il modello richiamato è prevalentemente \textbf{DAC}, dove il creatore della risorsa detiene diritti completi.
-
-\subsubsection{Privilegi SQL}
-
-I principali privilegi includono:
-
+L’individuazione di una vulnerabilità SQLi richiede un’analisi sistematica di tutti i punti in cui l’applicazione accetta input esterni e li usa per costruire una query.
+Ogni input deve essere considerato un potenziale vettore di attacco, inclusi:
 \begin{itemize}
-    \item \texttt{SELECT}, \texttt{INSERT}, \texttt{UPDATE}, \texttt{DELETE};
-    \item \texttt{REFERENCES} per definire chiavi esterne;
-    \item \texttt{USAGE} su domini;
-    \item \texttt{EXECUTE} su stored procedures.
+    \item input dell’utente attraverso form, parametri URL o campi di ricerca;
+    \item parametri passati tramite API o servizi applicativi.
 \end{itemize}
 
-Vengono inoltre trattati i comandi \texttt{GRANT}, \texttt{REVOKE} e l’importanza dei ruoli introdotti da SQL-99.
-
-\subsubsection{Viste come meccanismo di sicurezza}
-
-Le viste consentono di esporre solo una porzione del database, implementando un controllo fine (column-level o row-level), senza che l’utente veda ciò che non è autorizzato.
-
-\subsection{RAID e affidabilità dello storage}
-
-La sicurezza non è solo confidenzialità: include disponibilità e resilienza.
-La sezione dedicata al RAID analizza livelli da 0 a 6 e RAID-10, illustrando compromessi tra throughput, concorrenza di accesso e tolleranza ai guasti.
-
-\subsubsection{Punti chiave}
-
+I test più comuni si basano sull’invio di payload costruiti per alterare la semantica della query:
 \begin{itemize}
-    \item RAID-0: massime prestazioni, nessuna ridondanza.
-    \item RAID-1: mirroring, ottima tolleranza ai guasti.
-    \item RAID-5: parità distribuita, buon compromesso.
-    \item RAID-6: doppia parità, resiste a due guasti.
-    \item RAID-10: ideale per RDBMS con molti accessi casuali.
+    \item apici singoli (\texttt{'}) per interrompere una string literal;
+    \item condizioni booleane come \texttt{OR 1=1} per forzare un risultato sempre vero;
+    \item payload che inducono ritardi temporali (time-based) per verificare l'esecuzione di codice in condizioni controllate;
+    \item payload out-of-band che tentano di indurre il server a contattare un endpoint esterno.
 \end{itemize}
 
-\subsection{Backup e Disaster Recovery}
+\subsubsection{Localizzazione delle vulnerabilità nelle query}
 
-Il PDF enfatizza che i backup devono essere soggetti a precise policy: posizione, accesso, cifratura, rotazione.
+Alcune parti delle query SQL sono particolarmente esposte alla SQL Injection perché integrano direttamente input esterni. Tra le aree più critiche si trovano:
+\begin{itemize}
+    \item la clausola \texttt{WHERE}, che decide quali tuple restituire;
+    \item la clausola \texttt{ORDER BY}, che potrebbe essere manipolata per forzare un ordinamento arbitrario o causare errori;
+    \item l’istruzione \texttt{UPDATE}, dove i valori modificati possono essere alterati tramite input malevoli;
+    \item l’istruzione \texttt{INSERT}, dove l’iniezione avviene attraverso valori inseriti senza sanitizzazione.
+\end{itemize}
+Qualsiasi porzione della query che accetti dati esterni senza validazione può generare vulnerabilità.
+
+\subsubsection{Esposizione di dati nascosti}
+
+Una delle conseguenze più comuni della SQL Injection è l’accesso non autorizzato a dati che l’applicazione non dovrebbe mostrare all’utente.
+
+Ad esempio, una query come:
+\begin{verbatim}
+SELECT * FROM products WHERE category = 'Gifts' AND released = 1
+\end{verbatim}
+mostra solo prodotti “rilasciati”.
+Se l’applicazione inserisce il valore della categoria senza sanitizzazione, l’attaccante può fornire:
+\begin{verbatim}
+Gifts'--
+\end{verbatim}
+per troncare la query, oppure:
+\begin{verbatim}
+Gifts' OR 1=1--
+\end{verbatim}
+per visualizzare tutte le tuple indipendentemente dalla categoria o dallo stato.
+
+L’attacco consente così di esporre informazioni che l’interfaccia dovrebbe nascondere, come prodotti non ancora pubblicati.
+
+\subsubsection{Login bypass}
+
+Un’attività particolarmente sensibile è l’autenticazione.
+Nelle implementazioni più ingenue, il sistema verifica username e password con una query SQL del tipo:
+\begin{verbatim}
+SELECT * FROM users
+WHERE username = 'alice' AND password = 'password123'
+\end{verbatim}
+
+Se l’username inserito dall’utente non viene sanificato, l’attaccante può utilizzare un payload come:
+\begin{verbatim}
+administrator'--
+\end{verbatim}
+
+Il commento SQL (\texttt{--}) tronca il controllo sulla password, portando la query risultante a:
+\begin{verbatim}
+SELECT * FROM users WHERE username = 'administrator'--' AND password=''
+\end{verbatim}
+In tal modo l’autenticazione viene bypassata, consentendo l’accesso all’account dell’amministratore.
+
+\subsubsection{Ottenere dati da altre table tramite UNION}
+
+Se l’applicazione restituisce al client il risultato di una query vulnerabile, un attaccante può usare l’operatore \texttt{UNION} per combinare risultati provenienti da un’altra table.
+Ad esempio, supponiamo che l’applicazione esegua:
+\begin{verbatim}
+SELECT name, description FROM products WHERE category = 'Gifts'
+\end{verbatim}
+
+Un attaccante può fornire:
+\begin{verbatim}
+' UNION SELECT username, password FROM users--
+\end{verbatim}
+
+La query risultante sarà:
+\begin{verbatim}
+SELECT name, description
+FROM products
+WHERE category = ''
+UNION SELECT username, password FROM users--
+\end{verbatim}
+
+Il database restituirà quindi sia i prodotti sia le credenziali degli utenti, compromettendo la riservatezza del sistema.
+
+\subsubsection{DBMS examination}
+
+Una volta verificata la presenza della vulnerabilità, un attaccante può tentare di identificare il tipo e la versione del Database Management System (DBMS) utilizzato, per selezionare payload più efficaci.
+
+Una tecnica comune consiste nell’utilizzare query specifiche del vendor attraverso \texttt{UNION}, come:
+\begin{itemize}
+    \item \texttt{SELECT @@version} per MySQL e SQL Server;
+    \item \texttt{SELECT * FROM v\$version} per Oracle;
+    \item \texttt{SELECT version()} per PostgreSQL.
+\end{itemize}
+
+Per enumerare le table esistenti, molti DBMS espongono la \texttt{information\_schema}, accessibile tramite:
+\begin{verbatim}
+SELECT * FROM information_schema.tables
+\end{verbatim}
+Questa fase consente a un attaccante di ottenere una mappatura completa della struttura del database, facilitando attacchi successivi.
+
+\subsubsection{Prepared statement}
+
+I prepared statement separano la struttura della query dai valori forniti dall’utente. Il DBMS compila e valida la query prima dell’inserimento dei parametri, impedendo all’input di alterare la sintassi.
+Si tratta della mitigazione più efficace contro SQLi.
+
+% ============================================================
+% 3. AUTENTICAZIONE E CONTROLLO ACCESSI
+% ============================================================
+\subsection{Autenticazione e controllo degli accessi}
+
+\subsubsection{Autenticazione e autorizzazione}
+
+L'autenticazione verifica l’identità dell’utente; l’autorizzazione stabilisce quali azioni l’utente può eseguire sul database.
+I DBMS applicano il Principle of Least Privilege, limitando i permessi al minimo necessario.
+
+\subsubsection{Access control nel linguaggio SQL}
+
+Il linguaggio SQL mette a disposizione un meccanismo nativo di access control che permette di specificare con precisione quali utenti o role possono eseguire determinate operazioni su oggetti del database.
+I privilegi possono essere associati a diversi tipi di oggetti:
+\begin{itemize}
+    \item \textbf{table}: consente di controllare chi può leggere (\texttt{SELECT}), inserire (\texttt{INSERT}), modificare (\texttt{UPDATE}) o eliminare (\texttt{DELETE}) tuple presenti all'interno di una determinata table;
+    \item \textbf{view}: permette di concedere accesso solo a una porzione logica dei dati esposti da una view, utile per mascherare colonne sensibili o filtrare tuple riservate;
+    \item \textbf{attribute}: abilita un controllo ancora più granulare all'interno di una table, consentendo ad esempio la lettura di alcune colonne ma non di altre;
+    \item \textbf{stored procedure}: permette di autorizzare l'esecuzione di procedure memorizzate che incapsulano operazioni complesse, mantenendo nascosti i dettagli delle query interne.
+\end{itemize}
+
+Questo modello di controllo degli accessi implementato da SQL è tipicamente classificato come \textbf{Discretionary Access Control (DAC)}, poiché la decisione su chi può accedere a cosa dipende dal proprietario dell’oggetto.
+In altre parole, il creatore di un oggetto del database (ad esempio una table) possiede automaticamente i privilegi su di esso e può concederli o revocarli ad altri utenti secondo necessità.
+La responsabilità del controllo degli accessi è quindi ``discrezionale'' e non imposta da una politica centralizzata o obbligatoria, come avviene invece nei modelli Mandatory Access Control.
+
+\subsubsection{Grant, revoke e role}
+
+I principali privilegi includono: \texttt{select}, \texttt{insert}, \texttt{update}, \texttt{delete}, \texttt{references}, \texttt{usage}, \texttt{execute}.
+La sintassi è:
+\begin{verbatim}
+grant <privileges> on <resource> to <users> [with grant option]
+revoke <privileges> on <resource> from <users> [restrict|cascade]
+\end{verbatim}
+I role permettono di aggregare privilegi per semplificare la gestione degli utenti.
+
+\subsubsection{View come meccanismo di sicurezza}
+
+Una view è una relazione virtuale che presenta solo una parte della table originale.
+Consente di applicare un controllo d’accesso più fine: l’utente non vede attributi o tuple escluse dalla view.
+
+% ============================================================
+% 4. AFFIDABILITÀ E PROTEZIONE DELLO STORAGE
+% ============================================================
+\subsection{Affidabilità e protezione dello storage}
+
+\subsubsection{RAID e sicurezza dello storage}
+
+I sistemi Redundant Array of Independent Disks (RAID) migliorano disponibilità e tolleranza ai guasti.
+Abbiamo:
+\begin{itemize}
+    \item RAID 0: prestazioni elevate, nessuna ridondanza;
+    \item RAID 1: mirroring;
+    \item RAID 2--6: striping con parità o codici correttivi;
+    \item RAID 10: combinazione di RAID 0 e RAID 1, ideale per DBMS con molti piccoli I/O.
+\end{itemize}
+
+\subsubsection{RAID-0}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.60\linewidth]{immagini/SYS_09/Raid0}
+    \caption{Schema di RAID-0: i dati vengono suddivisi (striped) tra più dischi senza alcuna ridondanza. Questa configurazione massimizza le prestazioni I/O ma non offre fault tolerance.}
+\end{figure}
+
+Il livello RAID-0 utilizza la tecnica dello \textit{striping}, distribuendo blocchi di dati su più dischi.
+Questo approccio consente un significativo aumento delle prestazioni, poiché più dischi possono operare in parallelo. Tuttavia, non è presente alcuna ridondanza: il fallimento di un solo disco causa la perdita completa dei dati.
+RAID-0 è quindi adatto solo a scenari in cui la velocità è prioritaria e la disponibilità non è critica.
+
+\subsubsection{RAID-1}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\linewidth]{immagini/SYS_09/Raid1}
+    \caption{Schema di RAID-1: i dati vengono duplicati in modo speculare (mirroring) su due dischi. Garantisce elevata disponibilità ma dimezza la capacità effettiva.}
+\end{figure}
+
+RAID-1 implementa il \textit{disk mirroring}: ogni dato scritto su un disco viene replicato identicamente su un secondo disco.
+I vantaggi principali sono:
+\begin{itemize}
+    \item letture molto veloci, poiché ogni disco può servire richieste indipendentemente;
+    \item eccellente fault tolerance: il sistema continua a funzionare anche se uno dei dischi fallisce.
+\end{itemize}
+Lo svantaggio principale è la bassa efficienza di storage (50\%), in quanto metà dello spazio è utilizzato per la copia. Supporta inoltre il \textit{hot swapping} dei dischi guasti.
+
+\subsubsection{RAID-2}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\linewidth]{immagini/SYS_09/Raid2}
+    \caption{Schema di RAID-2: utilizza bit-level striping e codici ECC (Hamming) per la correzione degli errori. È oggi considerato obsoleto.}
+\end{figure}
+
+RAID-2 suddivide i dati a livello di bit e utilizza codici di correzione degli errori (Error Correction Code, ECC), tipicamente codici di Hamming, memorizzati su dischi dedicati.
+I dischi operano in perfetto sincronismo, limitando pesantemente la concurrency.
+Per questi motivi e per la complessità implementativa, RAID-2 è considerato obsoleto.
+
+\subsubsection{RAID-3}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.60\linewidth]{immagini/SYS_09/Raid3}
+    \caption{Schema di RAID-3: utilizza byte-level striping con un disco dedicato alla parity. Offre throughput molto elevato, ma scarsa concurrency.}
+\end{figure}
+
+RAID-3 realizza striping a livello di byte. La parity, necessaria per il recupero dei dati in caso di guasto, è memorizzata su un disco dedicato.
+Questa configurazione consente ottimo throughput, specialmente nelle operazioni sequenziali, ma non supporta bene molte richieste simultanee, poiché i dischi devono lavorare in sincronia.
+È poco utilizzato nella pratica moderna.
+
+\subsubsection{RAID-4}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.60\linewidth]{immagini/SYS_09/Raid4}
+    \caption{Schema di RAID-4: block-level striping con parity su disco dedicato. Migliora la concurrency rispetto a RAID-3, ma il parity disk può diventare un collo di bottiglia.}
+\end{figure}
+
+RAID-4 usa striping a livello di blocco, permettendo operazioni indipendenti sui dischi diversi. Tuttavia, la presenza di un \textit{parity disk} unico rappresenta un collo di bottiglia nelle operazioni di scrittura, poiché ogni modifica richiede l’aggiornamento della parity.
+Nonostante migliori rispetto a RAID-3 nelle letture, non è ideale per carichi con molte piccole scritture simultanee.
+
+\subsubsection{RAID-5}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.60\linewidth]{immagini/SYS_09/Raid5}
+    \caption{Schema di RAID-5: parity distribuita tra i dischi. Offre un buon compromesso tra prestazioni, capacità e fault tolerance.}
+\end{figure}
+
+RAID-5 realizza block-level striping con parity distribuita uniformemente tra tutti i dischi, evitando il collo di bottiglia del parity disk centrale.
+È uno dei livelli più usati nei sistemi enterprise grazie al bilanciamento tra:
+\begin{itemize}
+    \item buone prestazioni in lettura;
+    \item scritture accettabili (sebbene non ottimali per piccole write);
+    \item fault tolerance con perdita di un singolo disco.
+\end{itemize}
+
+\subsubsection{RAID-6}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.60\linewidth]{immagini/SYS_09/Raid6}
+    \caption{Schema di RAID-6: doppia parity distribuita, che consente la sopravvivenza a due guasti simultanei dei dischi.}
+\end{figure}
+
+RAID-6 estende RAID-5 aggiungendo una seconda parity, distribuita tra tutti i dischi.
+Ciò permette al sistema di tollerare la perdita contemporanea di due dischi, rendendolo adatto a sistemi mission-critical.
+Le scritture sono più costose rispetto a RAID-5, ma la maggiore resilienza è spesso un vantaggio determinante.
+
+\subsubsection{RAID-10}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.60\linewidth]{immagini/SYS_09/Raid10}
+    \caption{Schema di RAID-10: combinazione di mirroring (RAID-1) e striping (RAID-0). Ideale per carichi di lavoro con molte piccole operazioni I/O.}
+\end{figure}
+
+RAID-10 combina striping e mirroring: ogni coppia di dischi è in mirroring e il sistema effettua striping tra le coppie.
+Questo livello è considerato lo standard per database ad alte prestazioni perché offre:
+\begin{itemize}
+    \item ottima fault tolerance (può sopportare più guasti, se non nella stessa coppia);
+    \item eccellenti prestazioni, soprattutto per molte small random I/O;
+    \item tempi di ricostruzione (rebuild) molto più rapidi rispetto a RAID-5/6.
+\end{itemize}
+È però costoso in termini di capacità, richiedendo almeno 4 dischi e riducendo lo spazio effettivo al 50\%.
+
+\subsubsection{Backups}
+
+I sistemi DBMS devono offrire funzionalità di backup per garantire la possibilità di ripristino in caso di guasti, errori umani o attacchi.
+Una strategia di backup efficace deve definire:
+\begin{itemize}
+    \item \textbf{dove} i backup vengono memorizzati (on-site, off-site, cloud);
+    \item \textbf{chi} ha accesso ai backup, che rappresentano copie complete e quindi altamente sensibili;
+    \item \textbf{ogni quanto} i backup vengono eseguiti;
+    \item come vengono protetti (encryption, access control).
+\end{itemize}
+Deve inoltre essere previsto un processo di restore testato periodicamente, affinché il ripristino sia realmente garantito in caso di emergenza.
 
 \subsubsection{Disaster Recovery}
 
-Vengono presentati due indicatori fondamentali:
-
+Il Disaster Recovery prevede la replica dei sistemi e dei dati su un sito alternativo.
+Le metriche fondamentali sono:
 \begin{itemize}
-    \item \textbf{RPO} (Recovery Point Objective): quantità di dati che si può perdere.
-    \item \textbf{RTO} (Recovery Time Objective): tempo necessario a ripristinare l’operatività.
+    \item \textbf{Recovery Point Objective (RPO)}: quantità massima di dati perdibili;
+    \item \textbf{Recovery Time Objective (RTO)}: tempo necessario per il ripristino completo.
 \end{itemize}
 
-È ricordata la \textbf{regola 3-2-1}: tre copie dei dati, due supporti diversi, una off-site.
+% ============================================================
+% 5. CIFRATURA E TECNICHE AVANZATE
+% ============================================================
+\subsection{Cifratura e tecniche avanzate}
 
-\subsection{Cifratura e Homomorphic Encryption}
+\subsubsection{Encryption dei dati}
 
-La cifratura dei dati a riposo e in transito è fondamentale.
-Il documento estende poi la discussione all’\textbf{homomorphic encryption}, che consente il calcolo su dati cifrati senza decrittarli.
+I database generalmente memorizzano i dati in chiaro. L'encryption protegge contro attacchi allo storage ma introduce overhead.
+Anche il canale di comunicazione deve essere cifrato.
+Per scenari “zero trust” è utile la Homomorphic Encryption (HE), che consente di eseguire operazioni direttamente su dati cifrati.
 
-\subsubsection{Fully Homomorphic Encryption}
+\subsubsection{Homomorphic Encryption: concetti generali}
 
-Viene introdotta la distinzione tra:
-
+La Homomorphic Encryption (HE) è una famiglia di tecniche crittografiche che consente di eseguire operazioni direttamente sui dati cifrati, senza doverli prima decifrare.
+Questo significa che un server non fidato può eseguire calcoli per conto di un client senza mai apprendere il contenuto dei dati.
+La HE mette a disposizione quattro funzioni fondamentali:
 \begin{itemize}
-    \item \textbf{Somewhat homomorphic encryption}: supporta solo un numero limitato di operazioni prima che il rumore diventi eccessivo;
-    \item \textbf{Leveled FHE}: organizzata in livelli con bootstrapping per eliminare il rumore.
+    \item \textbf{KeyGen}: genera una coppia di chiavi composta da una \textit{public key} e una \textit{secret key};
+    \item \textbf{Encrypt}: cifra un messaggio $m$, ottenendo un \textit{ciphertext};
+    \item \textbf{Evaluate}: applica una funzione ai ciphertext producendo un nuovo ciphertext contenente il risultato cifrato;
+    \item \textbf{Decrypt}: recupera il risultato in chiaro tramite la secret key.
 \end{itemize}
 
-\subsection{Database Monitoring}
-
-Il monitoraggio copre tre aree:
-
+La caratteristica principale della Homomorphic Encryption è che:
+\[
+Decrypt(sk,\, Evaluate(pk, f, c_1,\dots,c_t)) = f(m_1,\dots,m_t)
+\]
+ovvero decrypting after computing è equivalente a computing after decrypting.
+Questa è la \textbf{correttezza omomorfica}.
+Tuttavia, ogni ciphertext contiene del \textit{noise}, un rumore che cresce a ogni operazione omomorfica.
+Se il noise supera una certa soglia, il ciphertext diventa indecifrabile anche con la secret key.
+Le slide distinguono due famiglie principali di schemi omomorfici:
 \begin{itemize}
-    \item \textbf{Performance}: tempi di risposta, uso risorse, errori.
-    \item \textbf{Security}: accessi anomali, modifiche sospette.
-    \item \textbf{Compliance}: conformità a standard quali GDPR e HIPAA.
+    \item \textbf{Somewhat Homomorphic Encryption (SHE)}: supporta un numero limitato di operazioni prima che il noise diventi troppo alto;
+    \item \textbf{Leveled Fully Homomorphic Encryption (Leveled FHE)}: supporta funzioni più profonde grazie a tecniche per ridurre periodicamente il rumore.
 \end{itemize}
 
-Le slide citano l’uso di \texttt{USDT/uprobes} ed \textbf{eBPF} per osservabilità avanzata del comportamento del DBMS.
+\subsubsection{Correct Homomorphic Encryption}
 
-\subsection{DBMS Security}
+Uno schema di Homomorphic Encryption è corretto per una funzione $f$ se vale la relazione:
+\[
+Decrypt(sk,\, Evaluate(pk, f, C)) = f(m_1,\dots,m_t)
+\]
+La sola condizione formale non è sufficiente: ad esempio, una Evaluate implementata come funzione identità triviale soddisferebbe matematicamente la definizione, ma non sarebbe significativa dal punto di vista computazionale.
+La Evaluate deve realmente produrre il ciphertext della funzione $f$ applicata ai messaggi.
 
-Il documento conclude ricordando che il DBMS è software, e come tale può contenere vulnerabilità: è quindi necessario applicare patch e aggiornamenti in modo tempestivo.
+\subsubsection{Somewhat Homomorphic Cryptography}
+
+Le slide presentano un esempio di \textit{Somewhat Homomorphic Encryption} (SHE), uno schema semplice che supporta somma e moltiplicazione su valori interi, con un numero limitato di operazioni.
+Lo schema utilizza tre parametri:
+\begin{itemize}
+    \item $\eta$: numero di bit della secret key;
+    \item $\gamma$: numero di bit degli interi usati nella public key;
+    \item $\rho$: ampiezza del noise.
+\end{itemize}
+
+\paragraph{Schema}
+
+\begin{itemize}
+    \item La \textbf{secret key} $sk$ è un intero dispari scelto nell'intervallo:
+    \[
+    sk \in [2^{\eta - 1},\; 2^\eta)
+    \]
+    \item La \textbf{public key} $pk$ è definita come:
+    \[
+    pk = p q, \quad q \in [0,\; 2^\gamma/p)
+    \]
+    \item L’operazione di \textbf{Encrypt} produce:
+    \[
+    c \leftarrow m + p q + 2 r, \qquad r \in (-2^\rho,\, 2^\rho)
+    \]
+    Il termine $2r$ è il noise.
+    \item La \textbf{Decrypt} utilizza:
+    \[
+    m_f \leftarrow (c_f \bmod p)\bmod 2
+    \]
+    \item La \textbf{Evaluate} applica una funzione ai ciphertext, generando un nuovo ciphertext.
+\end{itemize}
+
+\paragraph{Crescita del rumore}
+
+Le operazioni omomorfiche generano noise aggiuntivo.
+\[
+c_1 + c_2 = (m_1 + m_2) + p(q_1 + q_2) + 2(r_1 + r_2)
+\]
+(il rumore cresce linearmente nell’addizione)
+\[
+c_1 c_2 = m_1 m_2 + p(q_1 c_2 + q_2 c_1 - pq_1 q_2) + 2(2 r_1 r_2 + r_1 m_2 + r_2 m_1)
+\]
+(il rumore cresce in modo quadratico nella moltiplicazione).
+Per funzioni con profondità elevata, il noise supera la soglia ammissibile e la decryption fallisce: è questa la limitazione fondamentale degli schemi SHE.
+
+\subsubsection{Leveled Fully Homomorphic Cryptography}
+
+Ogni schema Somewhat Homomorphic può essere trasformato in uno schema Fully Homomorphic tramite la tecnica del \textbf{bootstrapping}.
+In uno schema Leveled FHE:
+\begin{itemize}
+    \item vengono generate sequenze di public key $\langle pk_1,\, \dots,\, pk_\ell \rangle$ e secret key $\langle sk_1,\, \dots,\, sk_\ell \rangle$;
+    \item ciascuna secret key è cifrata omomorficamente con la key successiva:
+    \[
+    \bar{sk_i} = Encrypt(pk_{i+1}, sk_i)
+    \]
+    \item la Evaluate esegue:
+    \[
+    c_{i+1} = Evaluate(pk_{i+1}, Decrypt, \bar{sk_i}, c_i)
+    \]
+\end{itemize}
+Ogni “livello” del circuito esegue una decryption omomorfica che elimina il rumore e produce un ciphertext “pulito”.
+Il noise viene dunque rimosso e ricreato controllatamente a ogni livello, abilitando un numero elevato di operazioni.
+
+\subsubsection{Private Set Intersection (PSI)}
+
+La Private Set Intersection (PSI) è una tecnica crittografica che permette a due parti di individuare gli elementi comuni tra i rispettivi insiemi, senza però rivelare alcuna informazione sugli elementi non condivisi.
+Nella variante presentata nelle slide viene utilizzata la Homomorphic Encryption (HE), che consente di eseguire il protocollo senza che il sender apprenda alcun dato del receiver e viceversa.
+
+Consideriamo due partecipanti:
+\begin{itemize}
+    \item il \textbf{receiver}, che possiede un insieme $S$ di $N_s$ elementi;
+    \item il \textbf{sender}, che possiede un insieme $S'$ della stessa dimensione.
+\end{itemize}
+Entrambi gli insiemi sono composti da bitstring di lunghezza $\sigma$, e i valori $N_s$, $N_s'$ e $\sigma$ sono pubblici.
+L’obiettivo del receiver è determinare l’intersezione:
+\[
+I = S \cap S'
+\]
+senza che il sender apprenda alcuna informazione aggiuntiva.
+
+\paragraph{Protocollo Homomorphic PSI}
+
+\textbf{1. Setup} — sender e receiver concordano su uno schema Fully Homomorphic Encryption (FHE). Il receiver esegue \textit{KeyGen} ottenendo $(pk, sk)$; la secret key resta privata, la public key è inviata al sender.
+
+\textbf{2. Element encryption} — il receiver cifra ciascun elemento $s \in S$:
+\[
+c_i = Encrypt(pk,\, s)
+\]
+e invia i ciphertext $(c_1, \dots, c_{N_s})$ al sender.
+
+\textbf{3. Intersection computation} — per ogni $c_i$, il sender:
+\begin{enumerate}
+    \item genera un valore casuale non nullo $r_i$;
+    \item calcola omomorficamente:
+    \[
+    d_i = r_i \prod_{s' \in S'} (c_i - s')
+    \]
+\end{enumerate}
+Se $s \in S'$ almeno un termine si annulla e $d_i$ è encryption di $0$; altrimenti il risultato è un valore pseudo-random.
+I ciphertext $(d_1,\dots,d_{N_s})$ sono restituiti al receiver.
+
+\textbf{4. Response extraction} — il receiver decifra:
+\[
+m_i = Decrypt(sk, d_i)
+\]
+e ricava:
+\[
+I = \{ s_i \in S \,|\, Decrypt(sk, d_i) = 0 \}
+\]
+Gli elementi fuori dall’intersezione sono mappati a valori indistinguibili da random, preservando la privacy di entrambe le parti.
+
+% ============================================================
+% 6. OPERATIVITÀ SICURA DEL DBMS
+% ============================================================
+\subsection{Operatività sicura del DBMS}
+
+\subsubsection{Database Monitoring}
+
+Il monitoring del database è una componente fondamentale della sicurezza operativa: consente di rilevare comportamenti anomali, prevenire incidenti e dimostrare la conformità a requisiti normativi.
+Un sistema di monitoring ben progettato osserva in modo continuo ciò che accade nel Database Management System (DBMS) e nelle applicazioni che lo utilizzano, registrando eventi significativi e producendo alert quando vengono violate determinate regole.
+
+Tra le attività principali di database monitoring rientrano:
+\begin{itemize}
+    \item \textbf{analisi dei tempi di risposta}: misurare la latency delle query e delle transaction per identificare colli di bottiglia, degradazioni di performance o attività sospette;
+    \item \textbf{rilevamento di accessi anomali}: individuare login da indirizzi IP inusuali, tentativi di autenticazione falliti ripetuti, accessi fuori orario o da geografie inattese;
+    \item \textbf{identificazione di query sospette}: rilevare pattern tipici di attacco, come query che leggono un numero di record inatteso, tentativi di accesso a table sensibili o uso anomalo di operatori come \texttt{UNION}, \texttt{SELECT *}, subquery nidificate;
+    \item \textbf{verifica di compliance}: controllare che le policy di accesso e retention siano allineate a normative come il General Data Protection Regulation (GDPR).
+\end{itemize}
+
+Per realizzare monitoring approfondito con overhead contenuto si possono utilizzare tecniche di \textit{kernel tracing}, come l'Extended Berkeley Packet Filter (eBPF), che permette di intercettare system call e eventi del kernel senza modificare il codice del DBMS.
+Combinando eBPF con metriche applicative e log strutturati è possibile costruire dashboard e sistemi di alerting che aiutano sia i DBA sia i security analyst a reagire rapidamente a problemi di performance o a possibili incidenti di sicurezza.
+
+\subsubsection{Aggiornamenti del DBMS}
+
+Il software del Database Management System è complesso e, come ogni componente software, può contenere bug e vulnerabilità di sicurezza.
+I vendor rilasciano regolarmente patch e nuove release che correggono problemi funzionali, migliorano le prestazioni e chiudono vulnerabilità note.
+
+Dal punto di vista della sicurezza è essenziale:
+\begin{itemize}
+    \item mantenere il DBMS aggiornato alle versioni supportate dal produttore;
+    \item applicare con regolarità le security patch, seguendo una procedura controllata di test e rilascio;
+    \item monitorare i bollettini di sicurezza (security advisory) relativi al DBMS e ai componenti correlati;
+    \item pianificare finestre di manutenzione per eseguire gli aggiornamenti con un impatto minimo sui servizi.
+\end{itemize}
+
+Trascurare gli aggiornamenti espone il database ad attacchi che sfruttano vulnerabilità già documentate e spesso facilmente automatizzabili.
+Una politica di patch management strutturata è quindi una parte integrante della strategia complessiva di database security.
