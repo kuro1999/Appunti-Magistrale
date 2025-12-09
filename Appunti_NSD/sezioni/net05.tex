@@ -501,14 +501,14 @@ eBPF è un framework (pensato in origine per Linux) che consente di scrivere pic
 In pratica consente di estendere funzionalità del sistema operativo \emph{a runtime}, senza patch del kernel, interagendo tramite interfacce stabili: \textbf{helper} (API kernel) e \textbf{mappe} condivise kernel/user per configurazione e stato. Riduce anche i costi di contesto grazie all’accesso diretto alle risorse del kernel.
 % ----------------------------------------------------
 \subsubsection{Hook eBPF (punti di aggancio)}
-I programmi eBPF sono \emph{event–driven}: vengono eseguiti quando il kernel (o un'applicazione) attraversa un punto di aggancio (\emph{hook}) e consegna un evento al programma. Il codice viene caricato come bytecode e validato dal verifier; l’esecuzione avviene in sandbox nel kernel, con eventuale compilazione JIT. Le interazioni runtime e la conservazione di stato avvengono tramite \emph{mappe} condivise tra kernel e user space. :contentReference[oaicite:0]{index=0}
+I programmi eBPF sono \emph{event–driven}: vengono eseguiti quando il kernel (o un'applicazione) attraversa un punto di aggancio (\emph{hook}) e consegna un evento al programma. Il codice viene caricato come bytecode e validato dal verifier; l’esecuzione avviene in sandbox nel kernel, con eventuale compilazione JIT. Le interazioni runtime e la conservazione di stato avvengono tramite \emph{mappe} condivise tra kernel e user space.
 \begin{figure}[H]
   \centering
   \includegraphics[width=.7\linewidth]{immagini/NET_05/hooks.png}
 \end{figure}
 \subsubsection{Focus sui percorsi di rete}
 \paragraph{XDP}
-Tra i vari hook, quello di maggiore interesse per il networking a bassa latenza è \textbf{XDP}, posizionato molto in basso nel percorso di ricezione (nel driver della network interface card). Questo consente di intervenire precocemente sul pacchetto, riducendo al minimo la dipendenza dagli altri sottomoduli dello stack: si ottengono prestazioni elevate al prezzo di una flessibilità inferiore rispetto ad hook più “alti”. Programmi eBPF per XDP si scrivono in C ristretto, si compilano con LLVM e si caricano nel kernel (syscall \texttt{bpf}); il bytecode è verificato e poi JIT-traslato nell’ISA nativa. :contentReference[oaicite:1]{index=1}
+Tra i vari hook, quello di maggiore interesse per il networking a bassa latenza è \textbf{XDP}, posizionato molto in basso nel percorso di ricezione (nel driver della network interface card). Questo consente di intervenire precocemente sul pacchetto, riducendo al minimo la dipendenza dagli altri sottomoduli dello stack: si ottengono prestazioni elevate al prezzo di una flessibilità inferiore rispetto ad hook più “alti”. Programmi eBPF per XDP si scrivono in C ristretto, si compilano con LLVM e si caricano nel kernel (syscall \texttt{bpf}); il bytecode è verificato e poi JIT-traslato nell’ISA nativa.
 \paragraph{JIT}
 JIT sta per Just-In-Time compilation. È una tecnica in cui il codice non viene eseguito interpretandolo riga per riga, né compilato “una volta per tutte” prima di girare (AOT), ma compilato in codice macchina al volo, poco prima dell’esecuzione—o alla prima esecuzione.
 

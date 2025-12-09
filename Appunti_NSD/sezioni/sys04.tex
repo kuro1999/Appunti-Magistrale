@@ -185,11 +185,11 @@ Un accesso a una pagina che dovrebbe generare un \emph{terminal fault} (entry no
 
 \paragraph{Schema operativo (dalle slide)}
 \begin{enumerate}
-  \item \textbf{Preparazione PTE/EPT}. Creare una voce per l’indirizzo d’interesse e marcarla \emph{invalida} (bit \emph{present}/\emph{reserved} a~0) così da generare un \emph{terminal fault}. \textit{Nota:} il kernel di norma non consente tali manipolazioni; però un attaccante con un \emph{guest OS} dentro una \textbf{VM} può modificare le proprie \textbf{PT} — \emph{Page Tables}. :contentReference[oaicite:3]{index=3}
+  \item \textbf{Preparazione PTE/EPT}. Creare una voce per l’indirizzo d’interesse e marcarla \emph{invalida} (bit \emph{present}/\emph{reserved} a~0) così da generare un \emph{terminal fault}. \textit{Nota:} il kernel di norma non consente tali manipolazioni; però un attaccante con un \emph{guest OS} dentro una \textbf{VM} può modificare le proprie \textbf{PT} — \emph{Page Tables}.
   \item \textbf{Trigger transiente}. Causare l’accesso che, pur faultando a livello architetturale, porta temporaneamente il dato in \textbf{L1}.
-  \item \textbf{Encode/Leak}. Usare un gadget di encodifica basato su cache (stile Meltdown) e misurare il canale per ricostruire il contenuto protetto. :contentReference[oaicite:4]{index=4}
+  \item \textbf{Encode/Leak}. Usare un gadget di encodifica basato su cache (stile Meltdown) e misurare il canale per ricostruire il contenuto protetto.
 \end{enumerate}
-Nel caso \textbf{VMM}, manipolando le \textbf{PT} del guest si può arrivare a \emph{osservare} memoria dell’host o di altri guest co–locati, sfruttando la finestra transiente e la condivisione delle strutture di traduzione. :contentReference[oaicite:5]{index=5}
+Nel caso \textbf{VMM}, manipolando le \textbf{PT} del guest si può arrivare a \emph{osservare} memoria dell’host o di altri guest co–locati, sfruttando la finestra transiente e la condivisione delle strutture di traduzione.
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/vm.png}
@@ -254,9 +254,9 @@ Le transizioni tra modalità si gestiscono tramite macro come \texttt{SWITCH\_TO
 \end{figure}
 
 \subsubsection{Retpoline: Protezione contro gli Attacchi di Branch Target Injection e Retpoline Thunks}
-Il \textbf{Retpoline} è una tecnica software progettata per prevenire gli attacchi di \emph{branch target injection}, tipici di Spectre, che sfruttano la predizione dei salti indiretti per manipolare l'esecuzione del codice. Il Retpoline impedisce che la CPU predica i salti indiretti, isolando queste istruzioni dall'esecuzione speculativa e forzando un salto controllato. Questo evita che gli attaccanti manipolino il flusso di esecuzione attraverso la speculazione e l'iniezione di indirizzi di salto non autorizzati. :contentReference[oaicite:0]{index=0}
+Il \textbf{Retpoline} è una tecnica software progettata per prevenire gli attacchi di \emph{branch target injection}, tipici di Spectre, che sfruttano la predizione dei salti indiretti per manipolare l'esecuzione del codice. Il Retpoline impedisce che la CPU predica i salti indiretti, isolando queste istruzioni dall'esecuzione speculativa e forzando un salto controllato. Questo evita che gli attaccanti manipolino il flusso di esecuzione attraverso la speculazione e l'iniezione di indirizzi di salto non autorizzati.
 
-I \textbf{Retpoline Thunks} sono funzioni che rimandano l'esecuzione di un calcolo fino a quando non è effettivamente necessario, evitando che il processore risolva speculativamente il target di salto. Questo previene la speculazione su indirizzi di ritorno e protegge il flusso di controllo dagli attacchi basati sulla predizione dei salti indiretti. :contentReference[oaicite:1]{index=1}
+I \textbf{Retpoline Thunks} sono funzioni che rimandano l'esecuzione di un calcolo fino a quando non è effettivamente necessario, evitando che il processore risolva speculativamente il target di salto. Questo previene la speculazione su indirizzi di ritorno e protegge il flusso di controllo dagli attacchi basati sulla predizione dei salti indiretti.
 
 \begin{figure}[H]
 \centering
@@ -271,7 +271,7 @@ Le vulnerabilità legate alla \emph{branch prediction} possono essere mitigate m
   \item \textbf{STIBP} (Single Thread Indirect Branch Prediction) impedisce la condivisione della predizione dei salti indiretti tra i thread che girano sullo stesso core, limitando le possibilità per un attaccante di sfruttare la predizione dei salti indiretti tra thread diversi.
   \item \textbf{IBPB} (Indirect Branch Predictor Barrier) crea una barriera tra il software che viene eseguito prima e dopo l’impostazione della barriera. Questo impedisce al software che viene eseguito prima della barriera di influenzare la predizione del ramo per il software che viene eseguito dopo.
 \end{itemize}
-Queste tecniche contribuiscono a ridurre il rischio di attacchi come Spectre, migliorando la sicurezza dei processori moderni contro gli attacchi di predizione dei salti indiretti. :contentReference[oaicite:5]{index=5}
+Queste tecniche contribuiscono a ridurre il rischio di attacchi come Spectre, migliorando la sicurezza dei processori moderni contro gli attacchi di predizione dei salti indiretti.
 
 
 \subsection{RowHammer: Attacco alla Memoria e le sue Mitigazioni}
