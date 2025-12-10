@@ -1,17 +1,16 @@
 \newpage
 
-
 %%%%%%          DA FINIRIE        fare da sicurezza e osservabilità:un modello unificiato in poi  %%%%%%
 \section{SYS\_07 - eBPF}
 
 \subsection{Motivazioni: Perché osservare ciò che accade nel cluster}
-In un sistema moderno basato su container e orchestratori come Kubernetes, 
-gli amministratori hanno la necessità di osservare in modo capillare cosa 
-accade nel cluster. Le applicazioni risiedono nello spazio utente, mentre 
-le operazioni critiche --- gestione dei file, chiamate di rete, accesso alla 
-memoria --- transitano tutte attraverso il kernel. Questo rende il kernel 
-il punto ideale per ottenere visibilità completa sul comportamento del 
-sistema e per intercettare attività sospette, anche quando avvengono al 
+In un sistema moderno basato su container e orchestratori come Kubernetes,
+gli amministratori hanno la necessità di osservare in modo capillare cosa
+accade nel cluster. Le applicazioni risiedono nello spazio utente, mentre
+le operazioni critiche --- gestione dei file, chiamate di rete, accesso alla
+memoria --- transitano tutte attraverso il kernel. Questo rende il kernel
+il punto ideale per ottenere visibilità completa sul comportamento del
+sistema e per intercettare attività sospette, anche quando avvengono al
 di sotto dei servizi visibili all'utente.
 
 \begin{figure}[H]
@@ -20,7 +19,6 @@ di sotto dei servizi visibili all'utente.
     \caption{Struttura di un cluster Kubernetes: ogni node ospita più pod, ciascuno composto da uno o più container.}
     \label{fig:kub}
 \end{figure}
-
 
 \subsection{Il ruolo del kernel e la necessità di strumenti avanzati}
 Il kernel rappresenta il livello intermedio fondamentale tra le applicazioni e l’hardware fisico del sistema.
@@ -38,7 +36,6 @@ Tradizionalmente, ottenere visibilità a questo livello richiedeva strumenti com
 di soluzioni più sicure, flessibili ed efficienti ha portato all’evoluzione di tecnologie come eBPF,
 che consentono di monitorare ed estendere il kernel senza comprometterne la stabilità o le prestazioni.
 
-
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\linewidth]{immagini/SYS_07/kernel}
@@ -46,29 +43,30 @@ che consentono di monitorare ed estendere il kernel senza comprometterne la stab
     \label{fig:kernel}
 \end{figure}
 
-
 \subsection{eBPF: Hooks nel kernel e nello user space}
-eBPF risolve queste limitazioni consentendo di inserire ``hook'' in punti 
-strategici del kernel e, opzionalmente, anche in applicazioni user-space. 
-Quando il flusso di esecuzione raggiunge uno di questi hook, il kernel 
-invoca un programma eBPF, che può analizzare lo stato corrente, raccogliere 
-metriche, verificare condizioni di sicurezza e reagire, il tutto con overhead 
+eBPF risolve queste limitazioni consentendo di inserire ``hook'' in punti
+strategici del kernel e, opzionalmente, anche in applicazioni user-space.
+Quando il flusso di esecuzione raggiunge uno di questi hook, il kernel
+invoca un programma eBPF, che può analizzare lo stato corrente, raccogliere
+metriche, verificare condizioni di sicurezza e reagire, il tutto con overhead
 trascurabile.
 
-Gli hook sono quindi un meccanismo sicuro per estendere funzionalità del 
-kernel o potenziare la capacità di osservazione senza modificare il 
+Gli hook sono quindi un meccanismo sicuro per estendere funzionalità del
+kernel o potenziare la capacità di osservazione senza modificare il
 codice sorgente del kernel stesso.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\linewidth]{immagini/SYS_07/hook}
     \caption{Schema di un cluster Kubernetes composto da più nodi; ogni node ospita più pod, e ciascun pod contiene uno o più container che eseguono le applicazioni.}
-
     \label{fig:hook}
 \end{figure}
 
+% --- BLOCCO: HOOK E PRIMITIVE DI TRACING ---
 
-\subsection{Sicurezza e osservabilità: un modello unificato}
+\subsection{Hook eBPF e primitive di tracing}
+
+\subsubsection{Sicurezza e osservabilità: un modello unificato}
 
 Gli eBPF program possono essere agganciati a eventi di natura diversa
 (scheduler, system call, eventi hardware, funzioni nello user space, traffico di rete).
@@ -89,7 +87,7 @@ In questo modo, eBPF fornisce un modello unificato per \emph{sicurezza} e
 i sistemi in tempo reale, sia far rispettare politiche di sicurezza direttamente
 nel kernel, senza modificare il codice delle applicazioni né ricompilare il kernel.
 
-\subsection{Tipologie di hook eBPF}
+\subsubsection{Tipologie di hook eBPF}
 
 Le slide distinguono quattro famiglie principali di hook, a seconda che siano:
 statici o dinamici, e collocati nel kernel oppure nello user space:
@@ -120,7 +118,7 @@ In sintesi: tracepoint e USDT si appoggiano a punti di tracciamento definiti in
 fase di sviluppo; kprobe e uprobe permettono di inserire dinamicamente hook su
 funzioni esistenti, a patto di conoscerne i simboli e la posizione.
 
-\subsection{Kernel tracepoints e debugfs}
+\subsubsection{Kernel tracepoints e debugfs}
 
 I kernel tracepoint forniscono un’interfaccia standard e stabile per osservare
 eventi critici del kernel. Ogni sottosistema (\texttt{sched}, filesystem,
@@ -142,7 +140,7 @@ Ad esempio, per il tracepoint delle syscall \texttt{sys\_enter\_openat} è possi
   \item elencare la directory \texttt{/sys/kernel/debug/tracing/events/syscalls} per
         vedere tutti i tracepoint relativi alle system call;
   \item leggere il file \texttt{format} associato a
-        \texttt{sys\_enter\_openat} per conoscere la struttura
+        \texttt{sys\_enter\_openat} per conoscere la struttura\\
         \texttt{trace\_event\_raw\_sys\_enter} e i parametri disponibili;
   \item abilitare o filtrare il tracepoint modificando i file \texttt{enable}
         e \texttt{filter}.
@@ -152,7 +150,7 @@ Questa interfaccia, combinata con eBPF, consente di agganciare programmi
 direttamente agli eventi del kernel, con un impatto minimo sulle prestazioni
 quando i tracepoint non sono abilitati.
 
-\subsection{Sviluppo di programmi eBPF con \texttt{libbpf-bootstrap}}
+\subsubsection{Sviluppo di programmi eBPF con \texttt{libbpf-bootstrap}}
 
 Per sviluppare programmi eBPF moderni in C si utilizza il framework
 \texttt{libbpf-bootstrap}, che fornisce:
@@ -184,7 +182,13 @@ Il workflow tipico è:
         per interagire con il kernel.
 \end{enumerate}
 
-\subsection{Laboratorio: tracepoint \texttt{sys\_enter\_openat}}
+\newpage
+
+% --- BLOCCO: LABORATORI E ESEMPI PRATICI ---
+
+\subsection{Laboratori ed esempi pratici}
+
+\subsubsection{Laboratorio: tracepoint \texttt{sys\_enter\_openat}}
 
 Nel mini-lab sulle tracepoint si implementa una semplice forma di
 \textit{runtime enforcement} usando il tracepoint
@@ -194,7 +198,7 @@ Nel mini-lab sulle tracepoint si implementa una semplice forma di
 \begin{itemize}
   \item ogni volta che un processo invoca la syscall \texttt{openat()}, il
         tracepoint \texttt{sys\_enter\_openat} genera un evento;
-  \item un programma eBPF, agganciato a questo tracepoint, legge in modo sicuro
+  \item un programma eBPF, agganciato a questo tracepoint, legge in modo sicuro\\
         (con \texttt{bpf\_probe\_read\_user\_str()}) il path del file
         che si sta tentando di aprire;
   \item se il path corrisponde a \texttt{/etc/passwd}, il programma:
@@ -207,6 +211,7 @@ Nel mini-lab sulle tracepoint si implementa una semplice forma di
 \end{itemize}
 
 Il loader user space, generato a partire dallo skeleton
+
 \texttt{openat\_tracepoint.skel.h}, si occupa di:
 
 \begin{enumerate}
@@ -223,7 +228,9 @@ Il risultato è un esempio concreto di come eBPF possa sia osservare il
 comportamento del sistema (tutte le \texttt{openat()}), sia far rispettare
 una policy di sicurezza in tempo reale.
 
-\subsection{User Statically Defined Tracing (USDT)}
+\newpage
+
+\subsubsection{User Statically Defined Tracing (USDT)}
 
 Con USDT le applicazioni possono definire tracepoint personalizzati nello
 user space. Questo consente di esporre eventi logici di alto livello senza
@@ -255,7 +262,7 @@ Il flusso completo del laboratorio prevede:
 Questo esempio mostra come USDT permetta di integrare osservabilità profonda
 senza dover ricorrere ad hack sul codice sorgente o a tecniche invasive.
 
-\subsection{Kprobes e analisi dinamica del kernel}
+\subsubsection{Kprobes e analisi dinamica del kernel}
 
 I kprobes sono un meccanismo per inserire \emph{breakpoint dinamici} nel codice
 del kernel, allo scopo di ispezionare o modificare il comportamento di funzioni
@@ -291,7 +298,14 @@ Nel mini-lab si vedono due casi tipici:
         si osservano gli eventi in \texttt{trace\_pipe}.
 \end{enumerate}
 
-\subsection{Uprobes: analisi dinamica di applicazioni user-space}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\linewidth]{immagini/SYS_07/kprobe}
+    \caption{Schema concettuale di una funzione del kernel (ad esempio \texttt{openat()} o \texttt{clone()}): un \textit{kprobe} viene agganciato al punto di ingresso per osservare gli argomenti della funzione, mentre un \textit{kretprobe} viene eseguito al punto di uscita per analizzare i valori di ritorno.}
+    \label{fig:kprobe}
+\end{figure}
+
+\subsubsection{Uprobes: analisi dinamica di applicazioni user-space}
 
 Le uprobes sono l’equivalente nello user space dei kprobes: permettono di
 agganciarsi a funzioni di libreria o di applicazioni utente, senza modificarne
@@ -326,7 +340,11 @@ sudo watch -n 1 bpftool map dump name cmd_count
 ottenendo una visione in tempo reale dei comandi più frequenti eseguiti sul
 sistema.
 
-\subsection{Progetti reali basati su eBPF}
+% --- BLOCCO: MONDO REALE E ABUSI ---
+
+\subsection{eBPF nel mondo reale}
+
+\subsubsection{Progetti reali basati su eBPF}
 
 La stessa infrastruttura di hook eBPF è alla base di numerosi progetti reali:
 
@@ -357,7 +375,7 @@ La stessa infrastruttura di hook eBPF è alla base di numerosi progetti reali:
 Oltre a questi, molti altri progetti e grandi aziende utilizzano eBPF per
 monitoraggio, sicurezza, performance debugging e profilazione.
 
-\subsection{Abuso dei BPF filter: BPFDoor e altri malware}
+\subsubsection{Abuso dei BPF filter: BPFDoor e altri malware}
 
 La stessa potenza di eBPF e, più in generale, dei BPF filter può essere
 sfruttata in modo malevolo. Un esempio noto è \textbf{BPFDoor}, una backdoor
@@ -386,6 +404,13 @@ canali di comunicazione nascosti o per filtrare il traffico in modo da
 \emph{nascondere} i pacchetti malevoli anche in presenza di strumenti di
 packet capture.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/SYS_07/bpfdoor}
+    \caption{Meccanismo di attivazione della backdoor BPFDoor: l’attaccante invia un “magic packet” che supera i controlli di rete grazie a un filtro BPF applicato al socket. Il server compromesso, una volta attivato, stabilisce una connessione inversa verso l’attaccante, il quale può quindi impartire comandi in modo remoto e stealth.}
+    \label{fig:bpfdoor}
+\end{figure}
+
 \subsection{Conclusioni}
 
 eBPF rappresenta oggi uno degli strumenti più potenti per unire osservabilità
@@ -402,8 +427,3 @@ programmi sicuri a eventi del kernel e dello user space, è possibile:
         direttamente i BPF filter e i meccanismi di hook.
 \end{itemize}
 
-Gli esempi di laboratorio (tracepoint \texttt{openat}, USDT sul login, kprobe
-su \texttt{do\_unlinkat}, uretprobe su \texttt{readline()}) mostrano in pratica
-come sia possibile passare dal semplice monitoraggio alla vera e propria
-\emph{enforcement} di regole di sicurezza, mantenendo al tempo stesso un buon
-controllo sulle prestazioni del sistema.

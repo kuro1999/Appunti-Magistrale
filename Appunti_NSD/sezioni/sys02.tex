@@ -77,7 +77,7 @@ Per migliorare l’accuratezza, i processori moderni impiegano predittori che te
 \begin{figure}[H]
     \centering
     \includegraphics[width=.5\linewidth]{immagini/SYS_02/pht.png}
-    \caption{Pattern History Table}
+    \caption{Pattern History Table (PHT) utilizzata da un predittore correlato (two-level): il contenuto del Global History Register (sequenza degli ultimi salti presi/non presi) viene usato come indice per selezionare il contatore di predizione associato a quello specifico pattern di branch history.}
     \label{fig:pht}
 \end{figure}
   \item \textbf{Hybrid o Tournament predictor:} combina più predittori (ad esempio uno locale e uno globale) e sceglie dinamicamente quale usare in base alla precisione recente.  
@@ -303,7 +303,7 @@ I protocolli di coerenza possono essere implementati in due principali modalità
   \begin{figure}[H]
       \centering
       \includegraphics[width=.65\linewidth]{immagini/SYS_02/snooping}
-      \caption{Snooping cache system model}
+      \caption{Modello di sistema cache con protocollo di \textit{snooping}: ogni core dispone di una cache privata con relativo controller, mentre la coerenza viene mantenuta monitorando (snoop) il traffico sull’interconnessione condivisa. La LLC e il memory controller completano la gerarchia comunicando con la memoria principale.}
       \label{fig: snooping}
   \end{figure}
 

@@ -79,7 +79,7 @@ L’obiettivo è limitare i danni derivanti da errori o comportamenti malevoli, 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.65\linewidth]{immagini/SYS_05/accessi}
-\caption{Accesso Control Fundamentals}
+\caption{Componenti fondamentali del controllo degli accessi: il soggetto che effettua la richiesta, l’azione richiesta e l’oggetto su cui l’operazione deve essere applicata.}
 \label{fig:accessi}
 \end{figure}
 
@@ -169,7 +169,7 @@ Alcune delle capabilities più comuni sono definite nel file sorgente del kernel
 \texttt{CAP\_NET\_BIND\_SERVICE} & Permette di bindare porte TCP/UDP inferiori a 1024. \\
 \texttt{CAP\_SYS\_NICE} & Consente di modificare la priorità dei processi. \\
 \texttt{CAP\_SYS\_TIME} & Permette di impostare l’orologio di sistema. \\
-\texttt{CAP\_SYS\_ADMIN} & È la capability più ampia, spesso considerata “il nuovo root”, poiché copre molte operazioni amministrative. \\
+\texttt{CAP\_SYS\_ADMIN} & Copre molte operazioni amministrative. \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -247,7 +247,8 @@ Il Reference Monitor agisce come un "guardiano centrale" che controlla tutte le 
 \begin{figure}[H]
 \centering
 \includegraphics[width=.8\linewidth]{immagini/SYS_05/rmonitor}
-\caption{Reference Monitor Model}
+\caption{Modello del Reference Monitor: tutte le system call dei processi passano attraverso gli hook del sistema operativo, che inoltrano le richieste al Reference Monitor. Il modulo di autorizzazione consulta il Policy Store (stati di protezione, labeling e transizione) per decidere se consentire o negare ogni operazione.}
+
 \label{fig:rmonitor}
 \end{figure}
 
@@ -387,7 +388,7 @@ Ogni processo appartiene a un dominio definito dalla sequenza di eseguibili attr
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\linewidth]{immagini/SYS_05/domainacl}
-    \caption{Domain ACL in Tomoyo Linux}
+    \caption{Esempio di Domain ACL in Tomoyo Linux: la sequenza di eseguibili attraversati definisce il dominio di sicurezza del processo, e le ACL specificano i permessi concessi per ciascun dominio lungo il percorso di esecuzione.}
     \label{fig:domainacl}
 \end{figure}
 
@@ -494,7 +495,8 @@ Un attacco in questa fase può compromettere tutto il sistema prima dell’appli
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\linewidth]{immagini/SYS_05/boot}
-    \caption{How your computer boots}
+    \caption{Sequenza semplificata del processo di boot: dal bootloader al kernel, all’initramfs e infine ai servizi di sistema. Sono evidenziati i punti in cui vengono applicate firme digitali e controlli MAC, insieme al punto debole rappresentato dall’attacco “Horse Pills” sul ramdisk.}
+
     \label{fig:boot}
 \end{figure}
 
@@ -544,7 +546,7 @@ In sostanza, l’attacco “Horse Pills” è una forma di \textbf{rootkit pre-b
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.5\linewidth]{immagini/SYS_05/horse}
+    \includegraphics[width=.3\linewidth]{immagini/SYS_05/horse}
     \caption{Horse Pills: compromissione del ramdisk durante la fase di boot.}
     \label{fig:horse}
 \end{figure}

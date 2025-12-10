@@ -116,6 +116,8 @@ Meltdown sfrutta il fatto che \textbf{il controllo di privilegio} sugli accessi 
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/meltdown.png}
+\caption{Schema operativo dell’attacco Meltdown: dopo il flush della cache, un accesso speculativo a memoria kernel carica transientemente un valore segreto, che viene usato come indice per accedere a \texttt{probe\_array}. Le linee cache così selettivamente caricate vengono poi identificate tramite misure di tempo (\textit{Flush+Reload}), rivelando il byte illegittimamente letto.}
+
 \end{figure}
 
 \paragraph{Perché è possibile}
@@ -131,6 +133,7 @@ gli effetti micro–architetturali (es.\ cache) restano osservabili via side–c
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/fool.png}
+\caption{Illustrazione del meccanismo di branch prediction sfruttato da Spectre: l’attaccante allena il predittore inducendo la CPU a scegliere sistematicamente il ramo “true”, anche quando la condizione \texttt{<in bounds>} sarebbe falsa. L’esecuzione speculativa prosegue nel ramo errato lasciando effetti micro-architetturali osservabili tramite side-channel.}
 \end{figure}
 
 \paragraph{Dove si colpisce e perché funziona}
@@ -159,6 +162,8 @@ accessi che \emph{encodano} il dato in cache. Questo è concettualmente vicino a
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/spectre.png}
+\caption{Attacco Spectre basato su salti indiretti: l’attaccante avvelena il Branch Target Buffer (BTB) inducendo il predittore a deviare il salto verso uno \textit{spectre gadget} presente nello spazio di esecuzione della vittima. Il gadget viene eseguito speculativamente e accede a memoria in modo tale da codificare il dato nella cache, pur essendo il codice della vittima logicamente corretto.}
+
 \end{figure}
 \newpage
 \paragraph{Esempio di gadget dalle slide (Windows 10)}
@@ -179,7 +184,9 @@ Durante la traduzione degli indirizzi virtuali in indirizzi fisici, i processori
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/checks.png}
+\caption{Meccanismo del L1 Terminal Fault (L1TF): durante la page-table walk, un indirizzo non valido produce un fault architetturale, ma la CPU speculativamente utilizza comunque l’indirizzo fisico transitorio presente in L1D. Questo consente all’attaccante di bypassare le verifiche di validità delle pagine (PT, EPT, SGX) e accedere speculativamente a dati sensibili prima che il fault venga gestito.}
 \end{figure}
+
 \paragraph{Perché funziona}
 Un accesso a una pagina che dovrebbe generare un \emph{terminal fault} (entry non presente o con bit riservati) può avanzare speculativamente abbastanza da lasciare effetti micro–architetturali nella L1. Poiché la ricerca in L1 procede mentre proseguono i controlli di privilegio/validità, l’indirizzo fisico speculativo può pilotare un’operazione di \emph{encode} nel canale (es.\ accessi a una \emph{probe array}); a fine finestra, il dato si ricostruisce misurando i tempi (hit/miss). In questo modo L1TF \textbf{aggira} i tre livelli di controllo: SO (PT walk), VMM/hypervisor (EPT walk) e SGX.
 
@@ -193,6 +200,8 @@ Nel caso \textbf{VMM}, manipolando le \textbf{PT} del guest si può arrivare a \
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/vm.png}
+\caption{Scenario di attacco in ambiente cloud con Hyper-Threading: due VM appartenenti a tenant diversi condividono lo stesso core fisico ma su thread logici distinti. L’attaccante sfrutta la condivisione delle cache di livello L1/L2 per osservare effetti micro-architetturali lasciati dalla vittima e recuperare informazioni sensibili tramite side-channel.}
+
 \end{figure}
 
 
@@ -225,6 +234,8 @@ L'allestimento di un canale laterale genera sempre un certo rumore nella gerarch
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/detection.png}
+\caption{Esempio di monitoraggio tramite performance counters: l’analisi temporale dei contatori hardware evidenzia pattern anomali associati all’esecuzione speculativa o a side-channel micro-architetturali, utili per rilevare attività sospette o attivare mitigazioni selettive.}
+
 \end{figure}
 
 \paragraph{Meltdown Mitigation: Kernel Page Table Isolation}
@@ -233,6 +244,8 @@ Una delle principali mitigazioni per Meltdown è l'implementazione della \textbf
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/isolation.png}
+\caption{Effetto della KPTI (Kernel Page-Table Isolation): quando la CPU è in user mode, le pagine del kernel vengono completamente rimosse dallo spazio di indirizzamento per impedire attacchi come Meltdown; al passaggio in kernel mode, la mappatura completa del kernel viene ripristinata.}
+
 \end{figure}
 
 
@@ -251,6 +264,8 @@ Le transizioni tra modalità si gestiscono tramite macro come \texttt{SWITCH\_TO
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/cr3.png}
+\caption{Aggiornamento del registro CR3 durante il passaggio tra user mode e kernel mode: la CPU seleziona la Page Global Directory (PGD) appropriata, garantendo la separazione tra lo spazio di indirizzamento utente e quello del kernel, come richiesto dalle mitigazioni KPTI.}
+
 \end{figure}
 
 \subsubsection{Retpoline: Protezione contro gli Attacchi di Branch Target Injection e Retpoline Thunks}
@@ -261,6 +276,8 @@ I \textbf{Retpoline Thunks} sono funzioni che rimandano l'esecuzione di un calco
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/thunks.png}
+\caption{Esempio di implementazione del meccanismo \textit{retpoline}: la chiamata indiretta viene sostituita da una sequenza che forza la speculazione a rimanere intrappolata in un loop innocuo (\textit{capture\_spec}), mentre il controllo reale viene recuperato tramite il return. In questo modo si impedisce alla CPU di speculare verso bersagli controllabili dall’attaccante.}
+
 \end{figure}
 
 \subsubsection{Prevent Branch Poisoning: IBRS, STIBP, IBPB}
@@ -280,6 +297,7 @@ Il \textbf{RowHammer} è una vulnerabilità fisica che riguarda la memoria DRAM 
 \begin{figure}[H]
 \centering
 \includegraphics[width=.5\linewidth]{immagini/SYS_04/rowhammer.png}
+\caption{Struttura semplificata di un banco DRAM: la selezione della riga avviene tramite il segnale RAS, mentre la selezione della colonna è controllata dal segnale CAS. I dati vengono letti o scritti nella cella indirizzata attraverso le linee di bit, con il segnale R/W che determina la direzione dell’operazione.}
 \end{figure}
 
 Meccanismo dell'attacco RowHammer
