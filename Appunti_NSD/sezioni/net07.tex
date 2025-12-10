@@ -325,10 +325,10 @@ trasparenti all’utente e vengono gestiti dal processo OpenVPN in user space.
 
 OpenVPN (in \emph{TLS mode}) utilizza \textbf{TLS} per proteggere il \textit{control channel},
 ossia il canale logico su cui viaggiano le informazioni di configurazione e il materiale
-cifrante.:contentReference[oaicite:0]{index=0}
+cifrante.
 
 Il primo passo per costruire una VPN con OpenVPN è l’istituzione di una \textbf{PKI}
-(\textit{Public Key Infrastructure}) composta da:​:contentReference[oaicite:1]{index=1}
+(\textit{Public Key Infrastructure}) composta da:
 \begin{itemize}
     \item una coppia chiave privata + certificato X.509 per il server;
     \item una coppia chiave privata + certificato X.509 per ciascun client;
@@ -340,7 +340,7 @@ L’autenticazione è \textbf{mutua}:
 \begin{itemize}
     \item il client verifica che il certificato presentato dal server sia stato firmato dalla CA
           e che i campi del certificato (es.\ Common Name, tipo \emph{server}) siano coerenti;
-    \item il server verifica in modo analogo il certificato del client (tipo \emph{client}).:contentReference[oaicite:2]{index=2}
+    \item il server verifica in modo analogo il certificato del client (tipo \emph{client}).
 \end{itemize}
 
 Una volta completato il TLS handshake:
@@ -349,7 +349,7 @@ Una volta completato il TLS handshake:
     \item tramite TLS vengono negoziate e scambiate le \textbf{chiavi di sessione}
           (materiale cifrante) per il \textbf{data channel};
     \item il \textit{data channel} utilizza cifratura simmetrica (es.\ AES-GCM) e HMAC
-          per garantire confidenzialità, integrità e protezione dal replay.:contentReference[oaicite:3]{index=3}
+          per garantire confidenzialità, integrità e protezione dal replay.
 \end{enumerate}
 
 \paragraph{OpenVPN security model}
@@ -373,15 +373,15 @@ Il modello di sicurezza basato su CA presenta alcune proprietà rilevanti:
 
 Dal punto di vista del trasporto, OpenVPN può usare sia \textbf{UDP} che \textbf{TCP}; in
 modalità UDP implementa \textbf{TLS over UDP}, ed è la scelta raccomandata quando possibile,
-per evitare il problema del “TCP over TCP”.:contentReference[oaicite:5]{index=5}
+per evitare il problema del “TCP over TCP”.
 
 \subsubsection{Routing nella VPN}
 
 La topologia logica tipica è \textbf{Hub-and-Spoke}: il server agisce da nodo centrale
 (\emph{hub}), mentre i client sono gli \emph{spoke} che stabiliscono un tunnel verso il server.
-La comunicazione client–client avviene passando attraverso il server.:contentReference[oaicite:6]{index=6}
+La comunicazione client–client avviene passando attraverso il server.
 
-OpenVPN utilizza tre direttive fondamentali, che agiscono su piani di routing diversi:​:contentReference[oaicite:7]{index=7}
+OpenVPN utilizza tre direttive fondamentali, che agiscono su piani di routing diversi:
 \begin{itemize}
     \item \verb|push "route net_addr net_mask"|: il server invia ai client, durante
           l’handshake, una rotta da installare nella \textbf{tabella di routing reale}
