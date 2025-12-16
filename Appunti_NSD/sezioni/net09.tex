@@ -353,11 +353,11 @@ Quando disponibili, le ROA RPKI possono essere usate per derivare (o augmentare)
 (\emph{customer cone}), rendendo più praticabile lo \emph{strict filtering} e permettendo anche una cross-check rispetto a liste costruite con IRR o dati contrattuali.
 \subsection{RPKI e BGP Origin Validation (BGP-OV)}
 
-\subsubsection{Perché serve RPKI: limiti di IRR e necessità di attestazioni robuste}
+\subsubsection{Perché serve RPKI}
 Storicamente, molte informazioni ``dichiarative'' su allocazioni e politiche di routing sono state pubblicate nei \emph{Internet Routing Registries} (IRR) sotto forma di \emph{route objects}. Gli operatori interrogano IRR (anche tramite database aggregati come RADb) per costruire filtri sui prefissi e verificare associazioni del tipo ``quale AS può originare quale prefisso''.
 Tuttavia, i dati IRR presentano limiti strutturali: non esiste una garanzia uniforme di \emph{completezza}, \emph{correttezza}, \emph{freschezza} e \emph{consistenza} delle informazioni. In altre parole, anche se gli IRR sono utili operativamente, la qualità dei dati varia e non sempre sono affidabili come base unica per la sicurezza del routing.
 
-RPKI (\emph{Resource Public Key Infrastructure}) nasce per colmare questo gap: è un approccio standardizzato che fornisce registri crittograficamente protetti delle risorse Internet (prefissi e ASN) e delle autorizzazioni di routing. L’idea chiave è spostare la fiducia da dichiarazioni ``testuali'' (IRR) a \emph{attestazioni firmate} in una PKI dedicata alle risorse di numerazione, così da rendere verificabile in modo robusto l’autorizzazione a originare prefissi.
+RPKI (\emph{Resource Public Key Infrastructure}) è un sistema che fornisce una protezione contro gli attacchi di hijacking e misrouting. In RPKI, ogni prefisso IP e ASN è certificato in modo crittografico, consentendo ai router di verificare che un AS sia autorizzato a originare un determinato prefisso. L'adozione di RPKI tramite la creazione di **ROA** (Route Origin Authorization) permette di rafforzare la sicurezza del routing Internet, riducendo i rischi legati all'invio di prefissi errati o non autorizzati.
 
 \begin{figure}[H]
 \centering
