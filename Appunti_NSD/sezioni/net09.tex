@@ -479,6 +479,16 @@ In altre parole, la validazione dell’origine non vincola in modo crittografico
 
 L’impatto può aumentare ulteriormente se l’attaccante combina la forgia dell’origine con una forma di de-aggregazione controllata: se una ROA consente un \texttt{maxlength} maggiore della lunghezza del prefisso ``principale'', l’attaccante può annunciare un prefisso \emph{più specifico} (contenuto nel prefisso legittimo) senza superare il \texttt{maxlength}. In tal modo, sfruttando il \emph{longest prefix match} nel forwarding IP, l’attacco può catturare traffico in modo più efficace e meno evidente.
 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\linewidth]{immagini/NET_09/forged}
+    \caption{Esempio di \emph{BGP hijacking}: un Autonomous System malevolo (AS6) annuncia falsamente il prefisso \texttt{129.119.0.0/16}, inducendo altri AS a selezionare un percorso non legittimo e dirottando il traffico destinato all’AS originario.}
+
+    \label{fig:forged}
+\end{figure}
+
+
 \subsubsection{BGPsec / Path Validation: firme lungo il path e verifica crittografica}
 Per coprire le lacune di BGP-OV (manipolazioni del prefisso e/o dell’\texttt{AS\_PATH}), è stato proposto un meccanismo di \emph{BGP Path Validation} (BGP-PV), standardizzato nel framework \emph{BGPsec}.
 L’idea di fondo è trasformare l’\texttt{AS\_PATH} da informazione ``dichiarativa'' a informazione \emph{crittograficamente vincolata}.
