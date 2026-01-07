@@ -1,0 +1,315 @@
+\section{DNS Security}
+
+\subsection{Introduzione alla sicurezza del DNS}
+Il Domain Name System (DNS) è un protocollo fondamentale per il funzionamento di Internet, ma è stato progettato in un'epoca in cui la sicurezza non era una priorità.
+Il DNS classico non fornisce meccanismi di:
+\begin{itemize}
+    \item autenticazione delle risposte;
+    \item verifica dell'integrità dei dati;
+    \item confidenzialità delle query.
+\end{itemize}
+
+Queste assenze rendono il DNS vulnerabile a numerosi attacchi, in particolare attacchi che mirano a compromettere l'integrità delle risoluzioni dei nomi.
+
+\subsection{DNS namespace}
+
+\subsubsection{Concetto di namespace e struttura gerarchica}
+Il \textbf{DNS namespace} è lo spazio dei nomi gestito dal DNS, organizzato come una gerarchia ad albero (tree) in cui ogni nodo rappresenta un \textbf{domain name} e i rami rappresentano relazioni padre--figlio tra etichette (\emph{labels}). Il nome completo (\emph{Fully Qualified Domain Name}, FQDN) si ottiene concatenando le labels separate da punti e termina convenzionalmente con un punto che rappresenta la \textbf{root} (ad es. \texttt{www.example.com.}).  
+La gerarchia è fondamentale perché abilita la \textbf{delega amministrativa}: porzioni dell’albero (zone) possono essere gestite da entità diverse, mantenendo consistenza e scalabilità globale.
+
+\subsubsection{Livelli principali: root, TLD, second-level e sottodomini}
+La radice (\textbf{root}) è il livello superiore del namespace e delega ai \textbf{Top Level Domain (TLD)} (es. \texttt{.com}, \texttt{.edu}, \texttt{.gov}). Sotto un TLD si trovano i \textbf{second-level domains} (es. \texttt{example.com}), che possono a loro volta contenere \textbf{sottodomini} (es. \texttt{mail.example.com}, \texttt{www.example.com}).  
+È importante notare che, nel DNS, la distinzione tra “dominio”, “sottodominio” e “host” è principalmente \textbf{logica e amministrativa}: qualunque nodo dell’albero può avere record DNS associati (A/AAAA, MX, NS, \dots), e un nome non “è” un host di per sé; diventa un host quando viene associato, ad esempio, a un indirizzo IP tramite record A/AAAA.
+
+\subsubsection{Zone e delega}
+Una \textbf{zona DNS} è una porzione contigua del namespace amministrata in modo unitario da uno o più \textbf{nameserver autoritativi}. La delega tra una zona padre e una zona figlia avviene tipicamente tramite:
+\begin{itemize}
+    \item record \textbf{NS} nella zona padre (che indicano i nameserver della zona delegata);
+    \item eventuali record \textbf{glue} (tipicamente A/AAAA) nella \emph{Additional section}, necessari quando il nameserver delegato appartiene a un nome che ricade nella stessa zona delegata.
+\end{itemize}
+La nozione di zona è essenziale per comprendere sia la risoluzione DNS (che segue le deleghe) sia le vulnerabilità/mitigazioni (es. cache poisoning e DNSSEC), poiché molte verifiche e politiche di accettazione delle risposte dipendono dalla struttura di delega.
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{immagini/NET_11/dns_namespace.png}
+    \caption{Struttura gerarchica del namespace DNS: dalla root ai Top Level Domain (TLD), ai domini di secondo livello, ai sottodomini e agli host finali.}
+    \label{fig:dns_namespace}
+\end{figure}
+
+\subsection{Richiamo sul funzionamento del DNS}
+
+\subsubsection{Modello client--server}
+Il DNS segue un modello client--server in cui il processo di risoluzione dei nomi è distribuito tra più attori con ruoli distinti. Il client, generalmente rappresentato dallo \emph{stub resolver} integrato nel sistema operativo o nell'applicazione, ha il solo compito di generare richieste DNS e inoltrarle a un resolver ricorsivo configurato localmente.
+
+Il \emph{recursive resolver} agisce per conto del client e si occupa dell'intero processo di risoluzione, interagendo con i server DNS esterni e gestendo il caching delle risposte. I \emph{nameserver autoritativi} rappresentano invece la fonte definitiva delle informazioni per una determinata zona DNS e rispondono alle query fornendo i record ufficiali.
+
+Lo stub resolver si fida completamente del resolver ricorsivo, delegandogli ogni aspetto della risoluzione e accettando senza ulteriori verifiche le risposte ricevute.
+
+\subsubsection{Risoluzione ricorsiva}
+Quando un resolver ricorsivo non dispone dell'informazione richiesta nella propria cache, avvia un processo di risoluzione che coinvolge progressivamente i diversi livelli della gerarchia DNS. Inizialmente interroga un root nameserver per ottenere un riferimento ai server del Top Level Domain (TLD) corrispondente; successivamente contatta un nameserver del TLD per individuare il nameserver autoritativo della zona; infine interroga quest'ultimo per ottenere il record richiesto.
+
+Le risposte DNS possono includere diverse sezioni con ruoli distinti. La \emph{Answer section} contiene i record che rispondono direttamente alla query; la \emph{Authority section} fornisce informazioni sui nameserver autoritativi della zona; la \emph{Additional section} può includere record ausiliari, come i record \emph{glue}, necessari a completare il processo di risoluzione senza ulteriori query.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{immagini/NET_11/resolution}
+    \caption{Sequenza di risoluzione DNS: il client invia una \emph{query ricorsiva} al DNS resolver, che a sua volta esegue \emph{query iterative} verso root server, TLD server e nameserver autoritativo fino a ottenere il record richiesto. La risposta viene poi restituita al client e può essere memorizzata in cache dal resolver secondo il TTL.}
+    \label{fig:resolution}
+\end{figure}
+
+
+
+\subsubsection{Caching}
+Il DNS fa uso estensivo del caching per ridurre la latenza delle risoluzioni e il carico sui nameserver autoritativi. Il caching è implementato principalmente nei resolver ricorsivi, ma può essere presente anche a livello di stub resolver.
+
+I resolver possono memorizzare in cache diversi tipi di informazioni:
+\begin{itemize}
+    \item record \textbf{A} e \textbf{AAAA}, che associano nomi di dominio a indirizzi IP;
+    \item record \textbf{NS}, che descrivono la delega tra zone e consentono di saltare livelli della gerarchia nelle risoluzioni successive;
+    \item \textbf{record negativi}, che indicano l'inesistenza di un nome (NXDOMAIN) o di un tipo di record, secondo quanto specificato in RFC~2308.
+\end{itemize}
+
+Ogni entry di cache è associata a un \textbf{TTL (Time To Live)}, definito dal nameserver autoritativo, che limita il tempo massimo per cui l'informazione può essere riutilizzata senza effettuare nuove query esterne. Alla scadenza del TTL, il resolver deve necessariamente richiedere nuovamente l'informazione.
+
+Il caching ha un impatto diretto sulla sicurezza del DNS: se un resolver accetta una risposta falsa e la memorizza in cache, l'effetto dell'attacco persiste per tutta la durata del TTL, influenzando tutte le risoluzioni successive per quel dominio.
+
+\subsection{DNS Spoofing e Cache Poisoning}
+
+\subsubsection{Definizione}
+Con il termine \textbf{DNS spoofing} (o \textbf{cache poisoning}) si indica un attacco volto a inserire informazioni DNS false nella cache di un resolver.
+
+L'effetto dell'attacco è persistente per tutta la durata del TTL del record avvelenato.
+
+\subsubsection{Impatto dell'attacco}
+Un attacco di cache poisoning può causare:
+\begin{itemize}
+    \item redirezione verso siti malevoli;
+    \item furto di credenziali (phishing);
+    \item distribuzione di malware;
+    \item intercettazione del traffico.
+\end{itemize}
+
+L'attacco è particolarmente pericoloso perché colpisce il resolver, e quindi tutti i client che lo utilizzano.
+
+\subsubsection{Perché il DNS spoofing non è banale}
+Un resolver accetta solo risposte che soddisfano precisi vincoli:
+\begin{itemize}
+    \item il \textbf{Query ID} deve coincidere con quello della query pendente;
+    \item la risposta deve arrivare sulla stessa \textbf{porta UDP sorgente};
+    \item la sezione \textbf{Question} deve essere identica;
+    \item i record devono rispettare i vincoli di pertinenza (bailiwick).
+\end{itemize}
+
+Risposte che non corrispondono a query pendenti vengono ignorate.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{immagini/NET_11/queryid.png}
+    \caption{Scenario di DNS spoofing: l'attaccante tenta di inviare una risposta falsa al resolver vittima, cercando di indovinare Query ID e porta sorgente UDP mentre la query verso il nameserver autoritativo è pendente.}
+    \label{fig:queryid}
+\end{figure}
+
+\subsubsection{First good answer wins}
+Il DNS segue il principio secondo cui:
+\begin{quote}
+    la prima risposta valida ricevuta per una query pendente viene accettata.
+\end{quote}
+
+Una volta accettata una risposta:
+\begin{itemize}
+    \item la query non è più pendente;
+    \item eventuali risposte successive vengono scartate.
+\end{itemize}
+
+\subsection{Attacco di cache poisoning classico}
+
+\subsubsection{Scenario di attacco}
+Si consideri un attaccante che voglia avvelenare la cache di un resolver ricorsivo sfruttando una query DNS pendente:
+\begin{enumerate}
+    \item un client (o l’attaccante stesso) induce il resolver a risolvere un nome di dominio non presente in cache;
+    \item il resolver invia una query verso il nameserver autoritativo della zona;
+    \item durante la finestra temporale in cui la query è pendente, l’attaccante invia un \emph{flood} di risposte DNS forgiate;
+    \item ciascuna risposta forged tenta di indovinare i parametri di accettazione della risposta (in particolare Query ID e porta sorgente UDP);
+    \item se una risposta forged valida arriva prima della risposta legittima, il resolver la accetta secondo il principio \emph{first good answer wins};
+    \item il record falso viene inserito in cache e rimane valido fino alla scadenza del TTL.
+\end{enumerate}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{immagini/NET_11/cache_poisoning.png}
+    \caption{Attacco di cache poisoning: durante una query DNS pendente, l'attaccante invia un flood di risposte forged tentando di indovinare il Query ID; una risposta con parametri corretti viene accettata dal resolver e inserita in cache.}
+    \label{fig:cache_poisoning}
+\end{figure}
+
+
+\subsubsection{Condizioni necessarie}
+Per il successo dell'attacco devono valere:
+\begin{itemize}
+    \item il record non deve essere già in cache;
+    \item l'attaccante deve indovinare Query ID e porta sorgente;
+    \item la risposta forged deve arrivare prima di quella reale.
+\end{itemize}
+
+\subsubsection{Limiti dell'attacco classico}
+L'attacco classico è difficile perché:
+\begin{itemize}
+    \item lo spazio del Query ID è di 16 bit;
+    \item le porte UDP introducono ulteriore entropia;
+    \item la finestra temporale è ridotta.
+\end{itemize}
+
+
+
+\subsection{Vulnerability 2: uso improprio del DNS come vettore di attacco}
+
+\subsubsection{Descrizione generale}
+Oltre agli attacchi di cache poisoning, il DNS può essere abusato come vettore per attacchi che sfruttano la sua diffusione capillare e il fatto che il traffico DNS è generalmente consentito attraverso firewall e sistemi di filtraggio. In questo contesto, il protocollo viene utilizzato non per compromettere l’integrità delle risoluzioni, ma per colpire la disponibilità dei sistemi o per instaurare canali di comunicazione malevoli.
+
+Due esempi rilevanti di questo uso improprio sono gli attacchi di \emph{DNS amplification/reflection} e il \emph{DNS tunneling}.
+
+\subsubsection{DNS amplification e reflection}
+Negli attacchi di DNS amplification e reflection, il protocollo DNS viene sfruttato come strumento per generare traffico massivo verso una vittima, con l’obiettivo di causarne la saturazione. Il meccanismo si basa sull’uso di UDP, che non prevede autenticazione dell’indirizzo IP sorgente, e sulla possibilità di ottenere risposte DNS significativamente più grandi rispetto alle query inviate.
+
+L’attaccante invia query DNS con indirizzo IP sorgente falsificato, impostato uguale a quello della vittima. I server DNS interrogati rispondono quindi direttamente alla vittima, che riceve un volume di traffico amplificato rispetto allo sforzo sostenuto dall’attaccante. Questo tipo di attacco è particolarmente efficace perché sfrutta server legittimi come amplificatori inconsapevoli e rende più complessa l’identificazione della sorgente reale del traffico.
+
+L’adozione di DNSSEC può, in alcuni casi, accentuare il fenomeno di amplificazione, poiché le risposte firmate includono ulteriori record e hanno dimensioni maggiori.
+
+\subsubsection{DNS tunneling}
+Un ulteriore abuso del DNS consiste nell’utilizzarlo come canale di comunicazione nascosto, tecnica nota come \emph{DNS tunneling}. In questo scenario, il DNS non viene impiegato per generare traffico voluminoso, ma per trasportare dati e comandi in modo furtivo, spesso nel contesto di botnet o malware avanzati.
+
+Il malware incapsula informazioni all’interno delle query DNS, ad esempio codificando dati nelle etichette del nome di dominio, e riceve risposte che contengono comandi o payload nei record DNS. Poiché il traffico DNS è normalmente consentito e percepito come legittimo, questo canale permette di attraversare firewall e sistemi di monitoraggio senza destare sospetti immediati.
+
+DNS tunneling non compromette direttamente l’integrità del sistema DNS, ma ne sfrutta la fiducia e l’onnipresenza per realizzare comunicazioni di comando e controllo o per l’esfiltrazione di dati.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{immagini/NET_11/dnsar}
+    \caption{Esempio di DNS tunneling utilizzato per il comando e controllo (C\&C) di una botnet, in cui dati e comandi vengono incapsulati in query e risposte DNS sfruttando la natura generalmente consentita del traffico DNS.}
+    \label{fig:dnsar}
+\end{figure}
+
+\subsection{Vulnerability 3: DNS hijacking}
+
+\subsubsection{Descrizione}
+Il DNS hijacking consiste nel dirottamento delle risoluzioni DNS verso server controllati da un attaccante, senza che sia necessario avvelenare la cache di un resolver ricorsivo. A differenza del cache poisoning, questo tipo di attacco agisce tipicamente a livello di configurazione o infrastruttura, sfruttando punti deboli nel percorso che intercorre tra il client e il servizio DNS utilizzato.
+
+Il dirottamento può avvenire, ad esempio, tramite la compromissione di router o dispositivi di rete che distribuiscono configurazioni DNS errate, tramite attacchi man-in-the-middle su reti non protette, oppure attraverso l’accesso non autorizzato agli account di gestione dei domini presso i registrar. In tutti questi casi, l’utente continua a utilizzare il DNS in modo apparentemente corretto, ma le risoluzioni vengono manipolate a monte.
+
+DNSSEC non è sufficiente a prevenire il DNS hijacking se il resolver utilizzato dal client non effettua la validazione delle firme o se l’attacco avviene prima della fase di validazione.
+
+\subsection{Vulnerability 4: DNS privacy leakage}
+
+\subsubsection{Descrizione}
+Nel DNS tradizionale, le query e le risposte vengono trasmesse in chiaro sulla rete. Questo rende il traffico DNS facilmente osservabile da soggetti che hanno accesso al canale di comunicazione, come provider di connettività, amministratori di rete o attaccanti passivi.
+
+L’analisi del traffico DNS consente di inferire informazioni sensibili sulle attività degli utenti, come i siti visitati, i servizi utilizzati e, in alcuni casi, le abitudini di navigazione. Questo tipo di vulnerabilità non richiede attacchi attivi né compromissioni dei server DNS, ma deriva direttamente dal modello di funzionamento del protocollo.
+
+DNSSEC non affronta il problema della privacy, poiché si limita a garantire l’integrità e l’autenticità dei dati, lasciando le query completamente leggibili. La mitigazione di questa vulnerabilità richiede l’adozione di protocolli specifici per la cifratura del traffico DNS, come DNS over TLS o DNS over HTTPS.
+
+
+%%%%%%%%%%%%%%%%%%da cambiare%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Vulnerability 5: Zone enumeration}
+
+\subsubsection{Descrizione}
+La \emph{zone enumeration} è una tecnica che consente a un attaccante di ottenere informazioni sulla struttura interna di una zona DNS e, in alcuni casi, di ricostruire l’elenco completo dei nomi di dominio presenti. Nel DNS tradizionale, questo risultato può essere ottenuto sfruttando trasferimenti di zona mal configurati oppure attraverso interrogazioni sistematiche e tecniche di brute force.
+
+Con l’introduzione di DNSSEC, il problema non scompare ma assume una forma differente. I record NSEC, utilizzati per fornire una negazione autenticata dell’esistenza di un nome, collegano logicamente i domini presenti all’interno di una zona. Un attaccante può sfruttare queste informazioni per ricostruire progressivamente il namespace della zona stessa. Il meccanismo NSEC3 attenua il problema introducendo l’hashing dei nomi, ma non lo elimina completamente e comporta un aumento della complessità computazionale e gestionale.
+
+\subsection{DNSSEC: motivazioni e obiettivi}
+
+Il DNS tradizionale non fornisce garanzie sull’autenticità delle risposte ricevute. Un resolver non ha modo di verificare se i dati provengano effettivamente dal nameserver autoritativo corretto né se siano stati modificati durante il transito. Questa assenza di autenticazione e integrità rende possibili attacchi come DNS spoofing e cache poisoning, in cui un attaccante può introdurre informazioni false nella cache del resolver.
+
+DNSSEC (\emph{Domain Name System Security Extensions}) è stato progettato per affrontare precisamente questo problema, introducendo meccanismi crittografici che permettono di verificare l’origine e l’integrità dei dati DNS. L’obiettivo di DNSSEC non è rendere il DNS confidenziale o anonimo, ma garantire che le informazioni ottenute siano autentiche e non alterate. In particolare, DNSSEC consente di verificare (i) l’autenticità dell’origine dei dati DNS, (ii) l’integrità dei record, e (iii) la negazione autenticata dell’esistenza di nomi o record.
+
+DNSSEC non protegge invece la confidenzialità delle query (che restano osservabili), né previene attacchi di tipo Denial of Service.
+
+\subsection{Principio di funzionamento di DNSSEC}
+
+DNSSEC introduce la crittografia a chiave pubblica nel DNS attraverso la firma digitale dei record. Nel DNS, le informazioni sono organizzate in \emph{Resource Record} (RR), ossia record strutturati (A, AAAA, NS, MX, \dots) che associano un nome a un valore. DNSSEC non firma singoli record in modo isolato, ma firma insiemi coerenti di record chiamati \emph{RRset} (\emph{Resource Record Set}), cioè l’insieme dei record con stesso nome, tipo e classe.
+
+Ogni zona DNS firmata possiede una o più coppie di chiavi crittografiche: la chiave privata è usata per generare firme, mentre la chiave pubblica è pubblicata nel DNS e consente ai resolver di verificare tali firme. In questo modello, la sicurezza non dipende dalla fiducia nel percorso di rete o nel resolver, ma dalla verifica crittografica dei dati e dalla ricostruzione di una catena di fiducia fino a una chiave considerata affidabile a priori.
+
+\subsection{Nuovi Resource Record introdotti da DNSSEC}
+
+\subsubsection{DNSKEY (DNS Public Key)}
+Il record DNSKEY (\emph{DNS Public Key}) pubblica la chiave pubblica associata a una zona DNS. Questa chiave è utilizzata dal resolver per verificare le firme digitali applicate agli RRset della zona. In una zona firmata, la disponibilità dei record DNSKEY è essenziale perché rappresenta il punto di riferimento per la validazione crittografica dei dati.
+
+\subsubsection{ZSK e KSK}
+DNSSEC separa tipicamente le funzioni di firma in due ruoli. La \emph{Zone Signing Key} (ZSK) è la chiave usata per firmare gli RRset della zona (cioè i dati “operativi” della zona). La \emph{Key Signing Key} (KSK) è invece usata per firmare l’insieme dei record DNSKEY della zona, ossia per attestare quali chiavi pubbliche devono essere considerate valide per quella zona. Questa separazione rende più gestibile il cambio periodico delle chiavi (\emph{key rollover}), riducendo l’impatto operativo di alcune rotazioni.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{immagini/NET_11/zsk.png}
+    \caption{Verifica DNSSEC di un RRset (es. record AAAA): il resolver controlla la firma RRSIG utilizzando la chiave pubblica ZSK pubblicata nel record DNSKEY, ottenendo un RRset verificato.}
+    \label{fig:zsk}
+\end{figure}
+
+\subsubsection{RRSIG (Resource Record Signature)}
+Il record RRSIG (\emph{Resource Record Signature}) contiene la firma digitale di un RRset. In altri termini, RRSIG lega crittograficamente il contenuto dell’RRset a una specifica chiave (tipicamente la ZSK), includendo anche informazioni utili alla validazione come l’algoritmo utilizzato e un intervallo temporale di validità della firma. Un resolver considera affidabile un RRset solo se la verifica della firma RRSIG va a buon fine.
+
+\subsubsection{DS (Delegation Signer)}
+Il record DS (\emph{Delegation Signer}) è l’elemento fondamentale che consente di estendere la fiducia crittografica da una zona DNS alla zona da essa delegata. Il suo ruolo è quello di collegare in modo verificabile la zona padre alla zona figlia, evitando che un attaccante possa introdurre chiavi pubbliche arbitrarie nella zona delegata.
+
+Il record DS è pubblicato nella zona padre e contiene un’impronta crittografica (hash) della \emph{Key Signing Key} (KSK) della zona figlia. Quando un resolver riceve i record DNSKEY della zona figlia, utilizza il DS presente nella zona padre per verificare che la KSK pubblicata dalla zona delegata sia effettivamente quella autorizzata. In questo modo, il resolver può stabilire se le chiavi della zona figlia sono autentiche prima di utilizzarle per verificare le firme sui record della zona.
+
+Senza il record DS, una zona figlia potrebbe pubblicare autonomamente qualsiasi chiave DNSKEY, rendendo impossibile per il resolver distinguere una configurazione legittima da una compromessa. Il DS impedisce quindi attacchi di sostituzione delle chiavi e garantisce la continuità della catena di fiducia lungo la gerarchia DNS, dalla root fino alla zona finale interrogata.
+
+\subsubsection{NSEC e NSEC3 (Next Secure)}
+I record NSEC (\emph{Next Secure}) e NSEC3 sono utilizzati per fornire una negazione autenticata dell’esistenza. Quando un nome (o un tipo di record) non esiste, la zona può dimostrarlo crittograficamente restituendo record che attestano l’assenza senza lasciare spazio a risposte NXDOMAIN falsificate. NSEC realizza tale prova tramite un ordinamento dei nomi nella zona, mentre NSEC3 utilizza l’hashing dei nomi per ridurre la possibilità di enumerare facilmente l’intero contenuto della zona, pur senza eliminare completamente il rischio.
+
+\subsection{Catena di fiducia (Chain of Trust)}
+
+\subsubsection{Trust anchor}
+La validazione DNSSEC si basa sul concetto di \emph{trust anchor}, ovvero una chiave pubblica considerata affidabile a priori. Nel DNS globale, il trust anchor è tipicamente la KSK della root zone, nota ai resolver che effettuano validazione DNSSEC. A partire da questa chiave, il resolver può verificare in modo incrementale le deleghe verso TLD e zone sottostanti.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.65\linewidth]{immagini/NET_11/chain.png}
+    \caption{Catena di fiducia DNSSEC: partendo dalla root zone, la cui chiave pubblica è nota come trust anchor, ogni zona padre autentica la zona figlia tramite il record DS che contiene l’hash della sua KSK, permettendo al resolver di verificare progressivamente l’autenticità dei dati DNS fino alla zona finale.}
+
+    \label{fig:chain}
+\end{figure}
+
+
+\subsubsection{Processo di validazione}
+Quando un resolver riceve una risposta DNS firmata, verifica innanzitutto la firma RRSIG dell’RRset utilizzando la chiave pubblica appropriata pubblicata nei record DNSKEY della zona. Successivamente controlla che tali DNSKEY siano a loro volta autenticati tramite la delega: in particolare, verifica la corrispondenza tra la KSK della zona e il record DS pubblicato nella zona padre. Ripetendo questo controllo risalendo la gerarchia DNS fino alla root, il resolver ricostruisce una catena di fiducia completa; solo in tal caso la risposta viene accettata come autentica.
+
+\subsubsection{Stati di validazione}
+L’esito della validazione porta tipicamente a tre stati. Una risposta è \emph{secure} se firma e catena di fiducia risultano valide; è \emph{insecure} se la zona non è firmata ma la delega è coerente e non indica l’uso di DNSSEC; è \emph{bogus} se la validazione fallisce (ad esempio firma non verificabile o catena di fiducia interrotta). Le risposte classificate come bogus vengono scartate dal resolver.
+
+\subsection{DNSSEC e mitigazione degli attacchi}
+
+DNSSEC è particolarmente efficace nel contrastare gli attacchi di cache poisoning. Anche se un attaccante riesce a inviare una risposta DNS falsa prima di quella legittima, il resolver rifiuterà la risposta se la firma non è valida. In questo modo, il principio del \emph{first good answer wins} non è più sufficiente per compromettere la cache di un resolver.
+
+\subsection{Limiti di DNSSEC}
+
+DNSSEC non fornisce confidenzialità delle query DNS, che continuano a essere trasmesse in chiaro. Inoltre, non protegge da attacchi di tipo Denial of Service. Al contrario, l’aumento delle dimensioni delle risposte e il costo computazionale della validazione possono accentuare l’impatto di attacchi di reflection e amplification.
+
+\subsection{Aspetti operativi e deployment}
+
+L’adozione di DNSSEC introduce complessità operative significative. Le risposte DNS diventano più grandi, rendendo necessario l’uso di EDNS(0) e, in alcuni casi, del protocollo TCP. Inoltre, la gestione delle chiavi e le operazioni di key rollover, in particolare per la KSK, richiedono grande attenzione per evitare interruzioni del servizio.
+
+Nonostante questi limiti, DNSSEC rappresenta un passo fondamentale per migliorare l’affidabilità del DNS e costituisce la base per ulteriori meccanismi di sicurezza e protezione della privacy.
+
+\subsubsection{Significato operativo degli stati di validazione}
+
+Gli stati \emph{secure}, \emph{insecure} e \emph{bogus} non sono semplici etichette astratte, ma determinano il comportamento concreto del resolver DNSSEC-validating.
+
+Una risposta classificata come \emph{secure} indica che il resolver è riuscito a verificare correttamente la firma degli RRset e a ricostruire una catena di fiducia completa e valida fino al trust anchor. In questo caso, i dati DNS vengono accettati come autentici e restituiti al client.
+
+Una risposta \emph{insecure} si verifica quando la zona richiesta non utilizza DNSSEC, ma la delega è coerente e non indica l’uso di firme. In questo scenario, il resolver accetta comunque la risposta, poiché l’assenza di DNSSEC è considerata legittima. Questo meccanismo consente la coesistenza di zone firmate e non firmate nel DNS globale.
+
+Una risposta \emph{bogus} indica invece un fallimento della validazione DNSSEC. Ciò può avvenire, ad esempio, in presenza di firme non verificabili, record DS incoerenti o catene di fiducia interrotte. In questo caso, il resolver considera i dati non affidabili e scarta la risposta, tipicamente restituendo un errore al client invece di dati potenzialmente falsificati.
+
+\subsubsection{Islands of security}
+Nel DNS globale è possibile che alcune zone siano firmate con DNSSEC ma non collegate crittograficamente alla root tramite record DS validi. Tali zone sono dette \emph{isole di sicurezza} (\emph{islands of security}). Anche se i dati all’interno della zona sono firmati, l’assenza di una catena di fiducia fino a un trust anchor impedisce al resolver di validarli come \emph{secure}.
+
+Di conseguenza, una zona firmata ma non correttamente delegata viene trattata come \emph{insecure}, non come \emph{secure}. Questo comportamento evita falsi negativi, ma implica che la sicurezza fornita da DNSSEC dipende dalla corretta configurazione dell’intera catena di delega.
+
+%%%%%%%     MANCA DA SLIDE 93 IN POI e rivedere    %%%%%%%%%%%%%

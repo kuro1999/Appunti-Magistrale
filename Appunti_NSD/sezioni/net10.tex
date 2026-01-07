@@ -1,4 +1,6 @@
-\section{NET\_10 --- VXLAN and Ethernet VPNs}
+
+\newpage
+\section{NET\_10 - VXLAN and Ethernet VPNs}
 
 
 \subsection{Datacenter Networks}
@@ -132,7 +134,6 @@ In un esempio tipico, se un leaf collega 4 server a 10,Gbps (40,Gbps complessivi
 La fabric leaf-spine è pensata per il traffico interno; l’accesso a Internet o a reti esterne viene spesso demandato a \emph{special leaves} (talvolta dette border/exit leaves) che concentrano le policy e gli uplink WAN/Internet. In pratica se ne impiegano almeno due per fault tolerance, evitando che la connettività esterna dipenda da un singolo dispositivo.
 
 
-Riferimenti (slide + appunti) usati per il contenuto sopra: definizione dei tier ToR/EoR/Core e ruolo del core anche verso Internet ; limitazioni del basic tree (oversubscription, fault tolerance, costo dei tier alti) ; obiettivi delle reti DC e adozione di Clos/leaf-spine ; scalabilità e fault tolerance in leaf-spine (spine/leaf) ; LAG/MLAG, latenza (diametro), bisection bandwidth/oversubscription ed exit leaves
 
 \subsubsection{Three-tier Clos: Fat Tree topology}
 
@@ -298,7 +299,7 @@ Dal punto di vista prestazionale/implementativo, la collocazione è rilevante:
   \item \textbf{VTEP su server/NIC}: non tutte le NIC supportano accelerazione hardware VXLAN; in assenza di offload, eseguire encap/decap in software può essere pesante. In pratica, l’hypervisor ospita spesso un \emph{virtual switch} che gestisce la virtualizzazione di rete e può terminare i tunnel a livello host. :contentReference[oaicite:7]{index=7}
 \end{itemize}
 
-\subsubsection{Why VXLAN and not e.g.\ MPLS?}
+\subsubsection{Perchè VXLAN e non e.g.\ MPLS?}
 Un confronto “di principio” con MPLS chiarisce perché VXLAN è tipicamente preferito nei data center cloud. MPLS nasce con l’obiettivo di \textbf{velocizzare il forwarding} nel core tramite \emph{label switching}, non come meccanismo generale di \textbf{network virtualization}. Esistono tecnologie come \emph{VPLS} che estendono reti L2 usando il dataplane MPLS, ma non rappresentano un overlay IP “generico” nello stesso senso: MPLS rimane una rete \emph{switched} basata su label e, nella pratica, non è la scelta più comune per i data center moderni.
 
 VXLAN, invece, è progettato esplicitamente per \textbf{incapsulare frame L2 su un underlay L3} (IP/UDP), quindi abilita la virtualizzazione a livello 2 “sopra qualunque rete IP”, mantenendo la fabric semplice e sfruttando nativamente routing e multipath. Per le esigenze cloud (multi-tenancy, isolamento, e soprattutto \textbf{mobilità delle VM}), VXLAN risulta quindi più aderente ai requisiti operativi del data center.
@@ -405,6 +406,7 @@ Il formato mostrato nelle slide include campi analoghi a quelli già visti, con 
   \item opzionalmente \textbf{MAC address length} e \textbf{MAC address}.
 \end{itemize}
 
+\newpage
 {\LARGE \textbf{Laboratorio}} \\[0.5em]
 \subsection{Laboratorio: VXLAN + EVPN con MP-BGP su fabric leaf-spine (L2VPN + estensione L3VNI)}
 
