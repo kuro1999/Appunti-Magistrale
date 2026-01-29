@@ -188,7 +188,7 @@ DNS tunneling non compromette direttamente l’integrità del sistema DNS, ma ne
 
 \begin{figure}[H]
     \centering
-    \includegraphics{immagini/NET_11/dnsar}
+    \includegraphics[width=.9\linewidth]{immagini/NET_11/dnsar}
     \caption{Esempio di DNS tunneling utilizzato per il comando e controllo (C\&C) di una botnet, in cui dati e comandi vengono incapsulati in query e risposte DNS sfruttando la natura generalmente consentita del traffico DNS.}
     \label{fig:dnsar}
 \end{figure}
@@ -313,3 +313,127 @@ Nel DNS globale è possibile che alcune zone siano firmate con DNSSEC ma non col
 Di conseguenza, una zona firmata ma non correttamente delegata viene trattata come \emph{insecure}, non come \emph{secure}. Questo comportamento evita falsi negativi, ma implica che la sicurezza fornita da DNSSEC dipende dalla corretta configurazione dell’intera catena di delega.
 
 %%%%%%%     MANCA DA SLIDE 93 IN POI e rivedere    %%%%%%%%%%%%%
+
+
+
+
+\subsection{DNSSEC White Lies e mitigazione della Zone Enumeration}
+\subsubsection{Perché NSEC/NSEC3 “perdono informazione”}
+DNSSEC deve poter fornire anche una \textbf{negazione autenticata dell’esistenza}: se un nome non esiste, il resolver deve poterlo verificare crittograficamente e non fidarsi di un semplice \texttt{NXDOMAIN} non firmato. Il meccanismo classico \textbf{NSEC} (\emph{Next Secure}) risolve il problema costruendo una “catena” ordinata di nomi: per dimostrare che un nome non esiste, si restituisce un record NSEC che copre l’intervallo lessicografico in cui quel nome cadrebbe, e tale NSEC è firmato (quindi autenticabile). Tuttavia, proprio perché gli NSEC elencano “il prossimo nome esistente”, un attaccante può seguire la catena e \textbf{camminare la zona} (\emph{zone walking}), ricostruendo l’elenco dei nomi presenti. :contentReference[oaicite:12]{index=12}
+
+\textbf{NSEC3} attenua il problema sostituendo i nomi in chiaro con i loro \emph{hash} (saltati), producendo “gap” nel dominio degli hash. Questo rende più difficile ricostruire i nomi, ma non elimina la fuga di informazione: con un \textbf{dictionary attack} si possono provare candidate label e verificare se i relativi hash compaiono nella zona (specialmente per nomi corti o prevedibili). In altre parole: con NSEC3 un sottodominio è “privato” solo quanto è difficile indovinarlo. :contentReference[oaicite:13]{index=13}
+
+\subsubsection{Idea delle \emph{DNSSEC white lies}}
+Le slide introducono una tecnica descritta in RFC~4470/4471, detta \textbf{DNSSEC white lies}, che mira a mitigare la zone enumeration con NSEC senza rinunciare alla negazione autenticata. L’idea è \textbf{rilassare} il vincolo “il next name deve essere davvero il successivo nome esistente” e permettere al server autoritativo di rispondere con NSEC “plausibili” che:
+\begin{itemize}
+    \item continuano a dimostrare correttamente la non-esistenza del \emph{QNAME} richiesto;
+    \item \textbf{non rivelano} qual è il vero nome successivo presente nella zona (quindi rendono meno efficace il walking).
+\end{itemize}
+In pratica, quando serve provare la non-esistenza, il server può \textbf{generare al volo} un NSEC ad hoc con un owner name immediatamente prima del QNAME (lessicograficamente) e un next name immediatamente dopo, scegliendo valori che cadono tra i nomi realmente esistenti. Il resolver può validare la firma (quindi la prova), ma un attaccante non ottiene un “puntatore affidabile” al prossimo nome reale della zona. :contentReference[oaicite:14]{index=14}
+
+\subsubsection{Conseguenze operative e rischi di sicurezza}
+Le white lies richiedono tipicamente \textbf{firma on-demand} degli NSEC prodotti dinamicamente. Questo introduce tre criticità principali:
+\begin{enumerate}
+    \item \textbf{Esposizione delle chiavi private}: se i nameserver autoritativi devono firmare in tempo reale, devono avere accesso alle chiavi private. Tenerle su server Internet-facing aumenta la superficie di rischio (furto/compromissione). :contentReference[oaicite:15]{index=15}
+    \item \textbf{Costo computazionale e DoS}: la generazione di firme è più costosa della semplice risposta DNS. Se un attaccante forza molti miss (nomi inesistenti), può indurre lavoro crittografico elevato e causare denial of service. :contentReference[oaicite:16]{index=16}
+    \item \textbf{Prevedibilità e attacchi crittanalitici}: se le funzioni/strategie con cui vengono scelti i nomi “fittizi” (epsilon functions) sono prevedibili, si apre la possibilità di attacchi più sofisticati (nelle slide si cita il rischio di scenari tipo chosen-plaintext rispetto ai dati firmati). :contentReference[oaicite:17]{index=17}
+\end{enumerate}
+
+\subsection{DNSSEC e minaccia Reflection/Amplification}
+\subsubsection{Perché DNSSEC amplifica}
+DNS (e DNSSEC) usa tipicamente \textbf{UDP}: ciò rende possibile lo \emph{spoofing} dell’indirizzo sorgente e quindi attacchi di \textbf{reflection}. DNSSEC tende inoltre a produrre risposte più grandi, perché a ogni RRset possono essere associati:
+\begin{itemize}
+    \item la firma \textbf{RRSIG};
+    \item talvolta anche le \textbf{DNSKEY} necessarie alla verifica (o comunque dati addizionali utili alla validazione).
+\end{itemize}
+Ne deriva che richieste piccole possono generare risposte molto più grandi: questa è la base dell’\textbf{amplification}. Un attaccante invia query DNSSEC con IP sorgente falsificato (quello della vittima) verso nameserver aperti: la vittima riceve un volume di traffico amplificato e riflesso, potenzialmente sufficiente a saturare la sua connettività o le sue risorse. :contentReference[oaicite:18]{index=18}
+
+\subsubsection{Ordini di grandezza dell’amplificazione}
+Le slide riportano esempi quantitativi indicativi:
+\begin{itemize}
+    \item una risposta \emph{unsigned} da root per un TLD inesistente può essere dell’ordine di \(\sim 100\) byte, mentre la risposta \emph{signed} può salire a \(\sim 650\) byte, cioè un fattore \(\sim 6.5\times\); :contentReference[oaicite:19]{index=19}
+    \item per domini inesistenti in un TLD con NSEC3 e chiavi RSA 1024 bit, si arriva a fattori di amplificazione \(\sim 10\times\); :contentReference[oaicite:20]{index=20}
+    \item alcune query possono amplificare ancora di più; un caso classico (storicamente abusato) è la query \texttt{ANY}, che può far restituire molte informazioni in una singola risposta. :contentReference[oaicite:21]{index=21}
+\end{itemize}
+
+\subsection{ECDSA in DNSSEC: motivazioni e benefici}
+\subsubsection{Perché ECDSA può “sbloccare” l’adozione}
+Le slide discutono l’uso di \textbf{ECDSA} (\emph{Elliptic Curve Digital Signature Algorithm}) in DNSSEC (ad es. algoritmo 13 e varianti), sottolineando due barriere storiche all’adozione su larga scala:
+\begin{enumerate}
+    \item \textbf{Zone enumeration}: mitigabile con white lies e quindi con firma on-demand.
+    \item \textbf{DDoS amplification}: riducibile abbassando la dimensione delle risposte.
+\end{enumerate}
+ECDSA aiuta su entrambi i fronti:
+\begin{itemize}
+    \item ha \textbf{firma più veloce} (quindi rende più fattibile la firma al volo necessaria per white lies a scala operativa);
+    \item usa \textbf{chiavi e firme più piccole} di RSA a parità di livello di sicurezza, riducendo la dimensione delle risposte e quindi l’amplification. :contentReference[oaicite:22]{index=22}
+\end{itemize}
+
+\subsubsection{ECDSA vs RSA: dimensioni e impatto sulle risposte}
+Per un livello di sicurezza tipico (ad es. 128-bit), ECDSA può usare chiavi da 256 bit, mentre RSA richiede tipicamente chiavi molto più grandi (nell’ordine di migliaia di bit). Questo si riflette direttamente nel payload DNSSEC: firme e DNSKEY più grandi aumentano la dimensione delle risposte, rendendo più appetibile la riflessione come vettore DDoS. :contentReference[oaicite:23]{index=23}
+
+Le slide riportano un confronto “realistico” su risposte negative:
+\begin{itemize}
+    \item per un dominio dietro infrastrutture che usano ECDSA e white lies, una risposta DNSSEC tipica può essere dell’ordine di poche centinaia di byte;
+    \item senza tali tecniche (e con implementazioni RSA diffuse), la risposta può superare il kilobyte.
+\end{itemize}
+Il punto non è il numero preciso, ma la conseguenza: riducendo la dimensione media, l’infrastruttura DNSSEC diventa un target meno conveniente per l’amplification. :contentReference[oaicite:24]{index=24}
+
+\subsection{Scope e stato di adozione di DNSSEC}
+DNSSEC fornisce integrità e autenticità, ma la sua efficacia dipende da due abilitazioni complementari:
+\begin{itemize}
+    \item \textbf{lato pubblicazione} (zone/registrar/registry): la zona deve essere firmata e la delega deve essere certificata tramite DS verso il parent;
+    \item \textbf{lato risoluzione} (network operator / ISP / resolver): i resolver devono effettuare \emph{DNSSEC validation} per classificare le risposte come secure/insecure/bogus.
+\end{itemize}
+Le slide evidenziano che l’adozione è significativa a livello di TLD, ma la validazione lato resolver non è universalmente attiva; inoltre esistono ancora casi di deployment non corretto o incompleto (catena non chiusa, errori di configurazione). :contentReference[oaicite:25]{index=25}
+
+\subsection{Perché DNSSEC non basta: DNS over TLS (DoT) e DNS over HTTPS (DoH)}
+\subsubsection{Limite strutturale: niente confidenzialità}
+DNSSEC non cifra le comunicazioni: una query DNS tradizionale resta osservabile in transito. Per questo servono standard separati per la \textbf{privacy} del canale:
+\begin{itemize}
+    \item \textbf{DoT} (DNS over TLS), definito in RFC~7858, incapsula DNS in TLS e fornisce confidenzialità, integrità e autenticazione del server, riducendo eavesdropping e tampering on-path. :contentReference[oaicite:26]{index=26}
+    \item \textbf{DoH} (DNS over HTTPS), definito in RFC~8484, trasporta query/risposte DNS come scambi HTTP(S), quindi beneficia di TLS e dell’ecosistema web (proxy, caching, ecc.). :contentReference[oaicite:27]{index=27}
+\end{itemize}
+
+\subsubsection{DoT: aspetti di protocollo}
+Un server DoT ascolta tipicamente su TCP porta 853. Il client stabilisce una connessione TCP, esegue l’handshake TLS e poi scambia messaggi DNS dentro la sessione TLS. Per efficienza, è raccomandato il riuso della connessione e il \emph{pipelining} di più query nella stessa sessione, così da ammortizzare i costi di setup TCP/TLS. :contentReference[oaicite:28]{index=28}
+
+\subsubsection{DoH: mapping su HTTP}
+DoH mappa ogni query DNS in una richiesta HTTP (GET o POST). Con GET, la query è codificata in Base64URL nel parametro \texttt{dns}; con POST, la query è nel body e il \texttt{Content-Type} indica il media type (\texttt{application/dns-message}). Questo rende DoH “simile” a traffico web normale, con implicazioni importanti a livello di controllo di rete. :contentReference[oaicite:29]{index=29}
+
+\subsubsection{DoT vs DoH: trade-off tra controllo di rete e privacy}
+Dal punto di vista della sicurezza di rete “enterprise”, DoT è spesso considerato più gestibile: essendo su una porta dedicata e distinguibile, è più semplice monitorare o bloccare policy-wise. DoH, invece, si confonde con HTTPS generico: bloccarlo senza bloccare il resto del web è difficile. Dal punto di vista della privacy dell’utente, questa mimetizzazione può essere un vantaggio (meno visibilità per intermediari), ma riduce la capacità difensiva di alcuni ambienti amministrati. :contentReference[oaicite:30]{index=30}
+
+\subsection{Lab: abilitazione DNSSEC con BIND (procedura e significato)}
+\subsubsection{Obiettivo e prerequisiti}
+Nel laboratorio l’obiettivo è firmare una zona (es. \texttt{angelotulumello.xyz}) e pubblicarla con BIND, completando poi la catena di fiducia caricando presso il registrar il record DS generato. In assenza di DS nel parent, la zona rimane una \emph{island of security}: firmata localmente ma non validabile come \emph{secure} da resolver esterni. :contentReference[oaicite:31]{index=31}
+
+\subsubsection{Configurazione base della zona}
+Si parte dal file di zona “classico” (SOA, NS, A, MX, CNAME, \dots) e dalla configurazione BIND per servire la zona come \texttt{master}. È importante notare che la firma DNSSEC si applica agli \emph{RRset}: quindi ogni insieme di record omogenei verrà corredato da un RRSIG. :contentReference[oaicite:32]{index=32}
+
+\subsubsection{Generazione delle chiavi: ZSK e KSK}
+La procedura distingue:
+\begin{itemize}
+    \item \textbf{ZSK} (\emph{Zone Signing Key}): firma gli RRset “operativi” della zona.
+    \item \textbf{KSK} (\emph{Key Signing Key}): firma l’RRset \texttt{DNSKEY}, cioè autentica l’insieme delle chiavi pubbliche della zona.
+\end{itemize}
+Con \texttt{dnssec-keygen} si generano le coppie e si ottengono file \texttt{.key} (record DNSKEY da includere in zona) e \texttt{.private} (materiale sensibile per firmare). I flag del DNSKEY distinguono tipicamente ZSK (256) e KSK (257). :contentReference[oaicite:33]{index=33}
+
+\subsubsection{Inclusione delle DNSKEY nella zona}
+Si includono i file \texttt{.key} nel file di zona (direttiva \texttt{\$INCLUDE}). Così i resolver potranno recuperare le chiavi pubbliche necessarie alla verifica delle firme. :contentReference[oaicite:34]{index=34}
+
+\subsubsection{Firma della zona e output prodotti}
+Con \texttt{dnssec-signzone} si genera il file di zona firmato (tipicamente \texttt{db.<zona>.signed}), che contiene:
+\begin{itemize}
+    \item i record originali;
+    \item i record \textbf{RRSIG} per ciascun RRset;
+    \item (se configurato) record NSEC/NSEC3 e firme associate per negazione autenticata.
+\end{itemize}
+In parallelo, viene generato un file \texttt{dsset-<zona>} che contiene uno o più record \textbf{DS} (\emph{Delegation Signer}). Il DS è l’impronta (digest) della DNSKEY KSK e serve al parent per collegare crittograficamente la delega verso la child zone. :contentReference[oaicite:35]{index=35}
+
+\subsubsection{Pubblicazione con BIND e completamento della catena}
+BIND viene configurato per servire come file di zona quello \texttt{.signed} e si riavvia il servizio. A questo punto la zona è firmata, ma non necessariamente validabile globalmente: per renderla \emph{secure} ai resolver esterni bisogna pubblicare il DS nel parent (\texttt{.xyz}) tramite il registrar. Solo dopo questo passo la catena risulta completa:
+\[
+. \rightarrow .xyz \rightarrow \texttt{angelotulumello.xyz}.
+\]
+In caso contrario, la validazione esterna segnalerà l’assenza di certificazione della delega (catena interrotta). :contentReference[oaicite:36]{index=36}
