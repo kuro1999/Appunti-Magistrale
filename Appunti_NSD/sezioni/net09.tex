@@ -1,18 +1,13 @@
-\section{NET\_09 --- BGP Security}
+\section{NET\_09 - BGP Security}
 
 \subsection{Introduzione e contesto}
 
 \subsubsection{Perché BGP security è ancora un problema rilevante}
-Il \emph{Border Gateway Protocol} (BGP) è il protocollo cardine per l’instradamento \emph{inter-dominio}: consente agli \emph{Autonomous System} (AS) di scambiarsi informazioni di raggiungibilità e di applicare politiche (\emph{policy}) di routing su scala Internet. Proprio perché BGP governa la connettività globale, un singolo annuncio errato o malevolo può avere conseguenze ampie e rapide: deviazione del traffico, perdita di connettività verso prefissi legittimi, degradazione delle prestazioni e impatti diretti su servizi critici.
+Il \emph{Border Gateway Protocol} (BGP) è il protocollo cardine per l’instradamento \emph{inter-dominio}: consente agli \emph{Autonomous System} (AS) di scambiarsi informazioni di raggiungibilità e di applicare \emph{policy} di routing su scala Internet. Proprio perché governa la connettività globale, un singolo annuncio errato o malevolo può propagarsi rapidamente e generare impatti ampi: deviazione del traffico, perdita di connettività verso prefissi legittimi, detour e degradazione delle prestazioni.
 
-La ragione strutturale della fragilità è che il modello originario di BGP nasce in un contesto di fiducia tra operatori: il protocollo non integra, di default, meccanismi forti per verificare l’autorità di un AS a originare un prefisso, né per garantire l’integrità del cammino (\emph{AS\_PATH}) annunciato. In pratica, la correttezza del routing dipende in larga parte da configurazioni coerenti, accordi tra operatori e buone pratiche operative. Ne segue che:
-\begin{itemize}
-    \item \textbf{misconfigurazioni} (accidentali) possono propagarsi come se fossero annunci legittimi;
-    \item \textbf{attacchi intenzionali} possono sfruttare la mancanza di validazioni robuste per dirottare o interrompere flussi di traffico;
-    \item la componente di \textbf{policy} (filtri, preferenze, manipolazioni di attributi) amplia la superficie d’errore e rende non banale il debugging.
-\end{itemize}
+La fragilità strutturale deriva dal modello originario di fiducia tra operatori: BGP non integra, di default, meccanismi forti per verificare l’autorità di un AS a originare un prefisso, né per garantire l’integrità del cammino dichiarato tramite \texttt{AS\_PATH}. Di conseguenza, la robustezza del routing dipende in larga parte da configurazioni coerenti, accordi tra reti e buone pratiche operative (filtri, policy di import/export e monitoraggio). Misconfigurazioni e comportamenti malevoli sfruttano lo stesso punto debole: annunci non corretti possono essere accettati e propagati come se fossero legittimi.
 
-Inoltre, BGP si appoggia a una sessione affidabile su TCP (porta 179): l’interruzione della sessione o l’instabilità del control plane può causare ritiri massivi di rotte e riconvergenze frequenti, con effetti assimilabili a un denial-of-service a livello di routing.
+Un ulteriore elemento è che BGP si appoggia a una sessione affidabile su TCP (porta 179): l’interruzione della sessione o l’instabilità del control plane può causare ritiri massivi di rotte e riconvergenze, con effetti percepibili in termini di disponibilità.
 
 \begin{figure}[H]
 \centering
@@ -21,55 +16,22 @@ Inoltre, BGP si appoggia a una sessione affidabile su TCP (porta 179): l’inter
 \label{fig:bgp-prefix-hijack-example}
 \end{figure}
 
-
 \subsubsection{Panoramica delle minacce: control plane vs data plane}
-Per analizzare in modo ordinato la sicurezza, è utile distinguere tra minacce al \emph{control plane} (informazioni di routing e stabilità) e minacce al \emph{data plane} (trasporto effettivo dei pacchetti). In aggiunta, si considera il \emph{control channel} come componente critica del control plane: BGP scambia aggiornamenti su una sessione TCP e la sua interruzione può avere effetti immediati sulla connettività.
+Per organizzare l’analisi, è utile distinguere tra minacce al \emph{control plane} (informazioni di routing e stabilità) e minacce al \emph{data plane} (trasporto effettivo dei pacchetti). In questo quadro, il \emph{control channel} (la sessione BGP su TCP) è una componente critica: se la sessione cade, l’effetto operativo è immediato perché i peer ritirano le rotte apprese e la rete deve riconvergere.
 
-\paragraph{Minacce al control plane.}
-Riguardano la correttezza e la stabilità delle informazioni BGP (UPDATE, attributi e propagazione). Le principali classi includono:
-\begin{itemize}
-    \item \textbf{Prefix hijacking}: un AS annuncia un prefisso che non è autorizzato a originare, causando misrouting o blackholing.
-    \item \textbf{Sub-prefix hijacking}: annuncio di un prefisso più specifico per sfruttare il \emph{longest prefix match} (dettagli nella sezione dedicata).
-    \item \textbf{Route leaks}: propagazione di rotte oltre lo scope previsto dalle relazioni di peering/transit, con detour, congestione e instabilità.
-    \item \textbf{Manipolazioni di attributi}: alterazioni di attributi (p.es.\ \texttt{AS\_PATH}) per influenzare selezione e propagazione, inducendo percorsi subottimali o controllati.
-    \item \textbf{Instabilità del routing}: fenomeni come \emph{route flapping} aumentano il carico del control plane, peggiorano la convergenza e possono degradare la disponibilità.
-\end{itemize}
+Le minacce al \emph{control plane} includono fenomeni come \emph{prefix hijacking} (e la variante più impattante \emph{sub-prefix hijacking}), \emph{route leaks} (propagazioni oltre lo scope previsto dalle relazioni di peering/transit) e manipolazioni di attributi che influenzano la selezione del best path. Anche l’instabilità del routing (ad esempio \emph{route flapping}) può degradare la convergenza e aumentare il carico di controllo.
 
-\paragraph{Minacce al control channel (sessione BGP su TCP).}
-Poiché BGP opera sopra TCP/179, attacchi mirati alla sessione (spoofing, reset, session disruption) possono far cadere il peering e innescare ritiri massivi (\emph{withdraw}) e riconvergenze. Queste minacce non ``creano'' da sole hijack e leak, ma impattano direttamente la robustezza operativa del control plane e motivano contromisure dedicate (autenticazione TCP, GTSM/TTL).
+Le minacce al \emph{data plane} riguardano invece il traffico: attacchi volumetrici (DDoS), reflection/amplification e, più in generale, abusi che sfruttano la connettività. Nella pratica i due piani si combinano spesso: un hijack può facilitare deviazione o intercettazione del traffico, mentre un DDoS può essere amplificato o reso più difficile da mitigare da scelte di routing e peering.
 
-\paragraph{Minacce al data plane.}
-Riguardano il trasporto effettivo dei pacchetti e l’uso della connettività: un servizio può essere reso indisponibile tramite attacchi volumetrici (DDoS), reflection/amplification e traffico malevolo. In molti scenari reali, control plane e data plane si combinano: un hijack può facilitare intercettazione o redirezione del traffico, mentre un DDoS può essere amplificato o reso più difficile da mitigare da scelte di routing e peering.
+\subsubsection{Riferimenti e best practice (idea generale)}
+Nel materiale, le difese vengono presentate come un insieme di misure complementari. Una prima linea è l’hardening della sessione (protezione del canale TCP) per ridurre spoofing e interruzioni del peering. Una seconda linea è l’igiene operativa del routing: filtri e policy di import/export coerenti con il tipo di relazione (customer, provider, peer) per limitare errori e leak. Infine, una misura strutturale è la validazione dell’origine con RPKI e BGP Origin Validation, che rafforza la verifica di chi è autorizzato a originare un prefisso. In sintesi, l’approccio moderno è stratificato: controlli leggeri e operativi, più validazioni robuste quando disponibili, affiancati da monitoraggio e risposta agli incidenti.
 
-
-\subsubsection{Riferimenti e best practice (linee guida e report)}
-Nel materiale di riferimento, le raccomandazioni per la sicurezza di BGP si basano principalmente su:
-(i) linee guida tecniche (ad es.\ NIST SP 800-189, che introduce indicazioni operative per il \emph{Resilient Interdomain Traffic Exchange}),
-(ii) report di \emph{best practice} per operatori (ad es.\ guida NSA 2018 su hardening e igiene di routing),
-e (iii) specifiche IETF (\emph{RFC}) che standardizzano meccanismi e procedure.
-
-Dal punto di vista operativo, le best practice si organizzano in tre livelli complementari:
-
-\paragraph{1) Hardening della sessione BGP (protezione del canale di controllo).}
-Obiettivo: ridurre il rischio di spoofing e di interruzione della sessione (es.\ reset), tramite autenticazione del trasporto e/o vincoli di prossimità (GTSM/TTL).
-
-\paragraph{2) Igiene di routing e filtering coerente con le relazioni di peering.}
-Obiettivo: accettare e propagare solo annunci coerenti con quanto atteso da quel peer (prefix filtering inbound/outbound, limiti di specificità, filtri su prefissi non allocati/special-purpose, policy differenziate per customer/provider/peer).
-
-\paragraph{3) Validazione crittografica e attestazioni di autorizzazione.}
-Obiettivo: verificare l’autorizzazione ad originare un prefisso (RPKI + \emph{BGP Origin Validation}), applicando policy locali (tag/prefer/drop) soprattutto sugli annunci \emph{Invalid}.
-
-In sintesi, la postura moderna combina misure \emph{incrementali} (hardening e filtri) con misure \emph{strutturali} (RPKI/OV), affiancate da monitoraggio e procedure di incident response (rilevazione rapida di hijack/leak e mitigazione).
 \subsection{Vulnerabilità legate a IP/TCP e protezione della sessione BGP}
 
 \subsubsection{Peer spoofing e attacchi di reset (TCP RST) / session disruption}
-Poiché BGP opera sopra TCP (porta 179), la sicurezza della sessione tra peer è un requisito operativo fondamentale.
-Un avversario può tentare di \emph{spoofare} messaggi (facendoli apparire provenienti dal peer legittimo), ad esempio dopo aver ricostruito gli indirizzi coinvolti tramite strumenti diagnostici come \emph{traceroute}.
+Poiché BGP opera sopra TCP (porta 179), la sicurezza della sessione tra peer è un requisito operativo fondamentale. Un avversario che conosca gli endpoint della sessione può tentare di \emph{spoofare} segmenti TCP facendoli apparire provenienti dal peer legittimo. Un caso tipico è l’iniezione di segmenti \texttt{RST}: se accettati, la sessione BGP viene abbattuta.
 
-Un caso rilevante è l’iniezione di segmenti \texttt{RST}: se accettati, la sessione BGP viene abbattuta.
-L’effetto è immediato: i peer ritirano le rotte precedentemente apprese (\emph{withdraw}) e la connettività può risultare degradata fino al completamento della riconvergenza (da minuti fino a tempi più lunghi, a seconda dello scenario).
-
-Per questo motivo, il materiale enfatizza contromisure pratiche e ampiamente adottate: autenticazione del trasporto (TCP-MD5/TCP-AO) e vincoli di prossimità come GTSM/TTL.
+L’effetto è immediato: le rotte apprese vengono ritirate (\emph{withdraw}) e la connettività può degradare fino alla riconvergenza. Non è un attacco che “inventa” nuove rotte come un hijack, ma impatta direttamente la disponibilità e la stabilità del control plane, ed è per questo che vengono adottate contromisure dedicate sul canale di controllo.
 
 \begin{figure}[H]
 \centering
@@ -79,285 +41,49 @@ Per questo motivo, il materiale enfatizza contromisure pratiche e ampiamente ado
 \end{figure}
 
 \subsubsection{Autenticazione a livello trasporto: TCP MD5 (legacy) e TCP-AO}
-Una contromisura diretta contro spoofing e reset consiste nell’autenticare i segmenti TCP della sessione BGP tramite un \emph{Message Authentication Code} (MAC) calcolato con una chiave simmetrica condivisa tra i peer. L’obiettivo è impedire a un avversario di iniettare segmenti validi senza conoscere la chiave (in particolare segmenti \texttt{RST} o \texttt{ACK} malevoli).
+Una contromisura diretta consiste nell’autenticare i segmenti TCP della sessione BGP tramite un MAC calcolato con una chiave simmetrica condivisa tra peer. L’obiettivo è impedire a un avversario di iniettare segmenti validi senza conoscere la chiave, inclusi \texttt{RST} e \texttt{ACK} malevoli. La \emph{TCP MD5 option} è stata storicamente molto usata per BGP: è efficace come autenticazione, ma oggi è considerata una soluzione legacy, soprattutto per limiti operativi nella gestione e rotazione delle chiavi.
 
-\paragraph{TCP MD5 Signature Option (legacy).}
-La \emph{TCP MD5 option} è stata storicamente usata per BGP: aggiunge un digest calcolato con una chiave condivisa. Pur essendo efficace come autenticazione, oggi è considerata una soluzione legacy, soprattutto per limiti operativi (gestione e rotazione delle chiavi su molti peer) e per motivi di modernizzazione crittografica.
-
-\paragraph{TCP Authentication Option (TCP-AO).}
-\emph{TCP-AO} è l’evoluzione moderna: generalizza l’autenticazione TCP, supporta algoritmi più robusti e introduce meccanismi utili al \emph{key rollover} su connessioni long-lived. Il limite principale resta operativo: in assenza di una negoziazione standardizzata della chiave, la configurazione richiede comunque procedure di gestione coerenti tra operatori.
-
-In sintesi, TCP-MD5/TCP-AO forniscono \emph{autenticazione} del canale di controllo (non necessariamente cifratura): riducono drasticamente la superficie di spoofing e session disruption.
+\emph{TCP-AO} rappresenta l’evoluzione moderna: supporta algoritmi più robusti e include meccanismi più adatti alla gestione del \emph{key rollover} su connessioni long-lived. Il limite resta principalmente operativo: la chiave deve essere gestita e configurata in modo coerente tra operatori. In ogni caso, TCP-MD5/TCP-AO forniscono autenticazione del canale (non necessariamente cifratura) e riducono in modo significativo la superficie di spoofing/reset.
 
 \subsubsection{Generalized TTL Security Mechanism (GTSM / ``TTL hack'')}
-Un’alternativa (o un complemento) all’autenticazione TCP è la \emph{TTL hack}, standardizzata come \emph{Generalized TTL Security Mechanism} (GTSM). Il principio sfrutta la semantica del campo TTL IP: ogni hop decrementa il TTL, quindi pacchetti provenienti da lontano arrivano con TTL più basso.
+Il \emph{TTL hack} (GTSM) sfrutta la semantica del campo TTL: ogni hop lo decrementa, quindi pacchetti provenienti da lontano arrivano con TTL più basso. In eBGP i peer sono tipicamente adiacenti: si imposta il TTL in uscita a 255 e si accettano solo pacchetti che arrivano con TTL coerente con una distanza massima attesa (ad esempio 255 per adiacenti, 254 se si ammette un hop intermedio). In questo modo, un attaccante remoto difficilmente può far arrivare pacchetti con TTL sufficientemente alto, anche conoscendo IP e porta del peer.
 
-Nel caso di eBGP, i peer sono tipicamente \emph{adiacenti} (un hop, spesso su link dedicato o su una rete di peering). GTSM imposta il TTL dei pacchetti in uscita a 255 e fa sì che il ricevente accetti solo pacchetti che arrivano con TTL coerente con una distanza massima attesa (ad esempio 255 per peer adiacenti; 254 se si ammette 1 hop intermedio; ecc.). In questo modo, un attaccante remoto (molti hop di distanza) difficilmente riesce a far arrivare pacchetti con TTL sufficientemente alto, anche se conoscesse IP/porta del peer.
+\subsubsection{Route flapping e Route Flap Damping (RFD)}
+Una vulnerabilità importante, anche non intenzionale, è il \emph{route flapping}: una rotta viene ritirata e poi riannunciata ripetutamente. Ogni flap produce aggiornamenti e ritiri che possono propagarsi e costringere i router a ricalcoli frequenti. Se l’instabilità è elevata, il carico sul control plane aumenta e la convergenza peggiora, fino a instabilità percepibili dagli utenti (perdita di pacchetti, rallentamenti, interruzioni).
 
-Per iBGP la situazione è più variabile: i peer non sono necessariamente adiacenti, ma in molti AS l’infrastruttura interna (ad es.\ backbone) mantiene comunque un numero di hop limitato e, se noto, può essere sfruttato per impostare soglie di accettazione analoghe. Operativamente, i peer concordano un valore/una soglia e i pacchetti che non rispettano il vincolo vengono scartati, riducendo la probabilità di spoofing e di reset da sorgenti non “vicine”.
+Il \emph{Route Flap Damping} (RFD) tenta di contenere il problema assegnando penalità agli eventi di flap, con decadimento nel tempo e soglie che portano alla soppressione temporanea di rotte instabili. Operativamente, va configurato con cautela: parametri troppo aggressivi possono causare soppressioni indesiderate e peggiorare la reachability, e in alcuni scenari l’instabilità può essere indotta per ottenere un effetto di DoS indiretto.
 
-\subsubsection{Route flapping e impatti su convergenza e disponibilità}
-Oltre agli attacchi “diretti” contro la sessione, una vulnerabilità importante (anche in forma accidentale) è la \emph{route flapping}. Con questo termine si indica un cambiamento ripetitivo delle rotte BGP: una rotta viene ritirata (\emph{withdrawn}) e poi nuovamente annunciata (\emph{re-advertised}), anche più volte al minuto.
+\subsubsection{IPsec per BGP: razionale e limiti pratici}
+Proteggere la sessione BGP con IPsec è concettualmente possibile (autenticazione e, se desiderato, cifratura a livello rete), ma nella pratica è poco adottato sul peering inter-dominio. Le motivazioni principali sono operative: gestione e manutenzione delle Security Association, rekeying su sessioni long-lived, complessità di negoziazione e impatto di scalabilità in scenari con molti peer. Per questo, si preferiscono contromisure più leggere e ampiamente supportate (TCP-AO/MD5 legacy e GTSM), concentrando gli sforzi soprattutto sulle minacce del control plane (hijacking/leaks).
 
-Il problema nasce dal fatto che ogni flap induce aggiornamenti e ritiri che possono propagarsi attraverso la rete di AS. Se i flap avvengono ad alta frequenza, i router devono ricalcolare e aggiornare ripetutamente tabelle e stati, incrementando il carico del control plane. In casi estremi (ad esempio decine di flap al secondo) il router può sovraccaricarsi e impedire la convergenza verso rotte valide, con effetti percepibili dagli utenti finali: rallentamenti, instabilità, fino a perdita di pacchetti. Di fatto, il route flapping può tradursi in un denial-of-service del routing, intenzionale o accidentale.
-
-\subsubsection{Route Flap Damping (RFD): benefici, rischi e considerazioni operative}
-La contromisura classica al route flapping è il \emph{Route Flap Damping} (RFD), cioè un meccanismo che riduce l’impatto dei flap sopprimendo temporaneamente gli annunci instabili.
-
-L’idea algoritmica è la seguente:
-\begin{itemize}
-    \item a ogni evento di flap associato a una rotta (o a un peer) viene assegnata una \emph{penalty};
-    \item la penalty totale \emph{decresce} nel tempo con decadimento esponenziale;
-    \item se, a causa di flap frequenti, la penalty supera una \emph{suppression threshold}, la rotta (o gli annunci del peer su quella rotta) viene \emph{soppressa} per un certo periodo;
-    \item se non si osservano ulteriori flap, la penalty scende sotto una \emph{reuse threshold} e la rotta può essere reinserita/riutilizzata.
-\end{itemize}
-
-RFD può ridurre il rumore di aggiornamenti e proteggere il control plane in presenza di link intermittenti. Tuttavia, presenta due criticità operative:
-\begin{itemize}
-    \item \textbf{rischio di falsi positivi}: rotte legittime ma instabili possono essere soppresse per tempi significativi, peggiorando la reachability;
-    \item \textbf{abuso/DoS indiretto}: un avversario può indurre instabilità controllata per spingere oltre soglia la penalità e prolungare la soppressione.
-\end{itemize}
-
-Dal punto di vista operativo, RFD va abilitato con cautela: la motivazione storica (contenere sovraccarichi su apparati meno potenti) è oggi meno pressante su router moderni, mentre parametri troppo aggressivi possono peggiorare la reachability. Per questo è consigliato un tuning accurato (soglie e decadimento) e un monitoraggio degli effetti, così da ridurre sia soppressioni ingiustificate sia possibili abusi basati su instabilità indotta.
-
-\subsubsection{IPsec per BGP: razionale, limiti e (scarsa) adozione pratica}
-Un’idea naturale per proteggere la sessione BGP è usare IPsec come canale sicuro tra peer, ottenendo autenticazione (e, se desiderato, cifratura) a livello rete. La possibilità è stata discussa anche in documenti IETF di natura operativa (ad esempio RFC sulla sicurezza/operazioni BGP), ma nella pratica l’adozione di IPsec per proteggere peering BGP è molto limitata.
-
-Le ragioni principali sono operative e di scalabilità:
-\begin{itemize}
-    \item \textbf{gestione delle chiavi e delle Security Association}: in scenari con molti peer, la distribuzione e manutenzione di SA (spesso statiche) diventa onerosa;
-    \item \textbf{rekeying e complessità IKE}: aggiornare periodicamente le chiavi e mantenere stabilità su sessioni long-lived introduce complessità e potenziali failure modes;
-    \item \textbf{resilienza a DoS}: alcune modalità/protocolli di negoziazione (storicamente IKEv1) hanno vulnerabilità note rispetto a DoS;
-    \item \textbf{costo computazionale}: operazioni di crittografia e (soprattutto) gestione PKI/operazioni a chiave pubblica possono incidere su apparati e processi operativi.
-\end{itemize}
-
-In sintesi, sebbene IPsec sia tecnicamente applicabile alla protezione della sessione, nella realtà di reti inter-dominio si preferiscono contromisure più leggere e ampiamente supportate (TCP-AO/MD5 legacy, GTSM/TTL hack) e, soprattutto, ci si concentra sulle minacce oggi più concrete del control plane (hijacking/leaks) con meccanismi dedicati.
 \subsection{Minacce al BGP control plane: hijacking e misrouting}
 
-\subsubsection{Prefix hijacking: definizione e meccanismi}
-Nel contesto di BGP, si parla di \emph{prefix hijacking} quando un Autonomous System (AS) origina (per errore o in modo malevolo) un prefisso IP per il quale \emph{non} è autorizzato dal legittimo owner. Se invece l’AS che origina il prefisso è autorizzato dal proprietario del prefisso, l’annuncio è considerato \emph{legittimo}. In assenza di un meccanismo nativo e universalmente applicato di validazione dell’origine, un annuncio non autorizzato può essere accettato e propagato da altri AS, entrando nelle loro tabelle di routing.
+\subsubsection{Prefix hijacking e sub-prefix hijacking}
+Si parla di \emph{prefix hijacking} quando un AS origina (per errore o in modo malevolo) un prefisso per cui non è autorizzato. In assenza di un controllo nativo e universalmente applicato sull’origine, l’annuncio può essere accettato e propagato, entrando nelle tabelle di routing di altri AS. A parità di prefisso, la selezione del best path dipende dalle policy locali e spesso anche da elementi come la “vicinanza” topologica o la lunghezza dell’\texttt{AS\_PATH}, quindi una parte di Internet può installare la rotta verso l’AS sbagliato, causando \emph{misrouting}.
 
-Il meccanismo pratico dell’hijack sfrutta il fatto che più AS possono annunciare (o ri-annunciare) lo stesso prefisso: a parità di prefisso, la selezione del \emph{best path} dipende dalla decision process locale (policy) e spesso anche da elementi come la “vicinanza” topologica o la lunghezza dell’AS\_PATH. Ne segue che una parte di Internet può considerare più conveniente (o più “corta”) la rotta verso l’AS malevolo e installarla in tabella; il risultato è \emph{misrouting}, cioè traffico destinato al prefisso legittimo che viene instradato verso l’AS sbagliato.
+La variante più impattante è il \emph{sub-prefix hijacking}: l’attaccante annuncia un prefisso più specifico contenuto in quello legittimo. Il motivo è nel forwarding IP: la regola del \emph{longest prefix match} privilegia la rotta più specifica, per cui un /28 può catturare traffico anche se il legittimo owner continua ad annunciare un /24.
 
-\subsubsection{Sub-prefix hijacking e regola del \emph{longest prefix match}}
-Una variante particolarmente impattante è il \emph{sub-prefix hijacking}. Qui l’attaccante non si limita ad annunciare lo stesso prefisso del legittimo owner, ma annuncia un prefisso \emph{più specifico} (più lungo) contenuto in quello legittimo (ad es.\ annuncio di un /28 ``dentro'' un /24).
+\subsubsection{Conseguenze operative e casi reali}
+Gli effetti vanno dal blackholing (DoS) a detour e degradazione prestazionale. In scenari più insidiosi, il traffico può transitare nella rete dell’attaccante, abilitando osservazione o intercettazione con reinoltro per ridurre la detection. Il materiale include anche esempi e incidenti reali che mostrano come hijack e leak non siano eventi rari e possano coinvolgere servizi ad alto traffico.
 
-Il motivo per cui questa tecnica è “peggiore” è legato al forwarding IP: la scelta della rotta nel data plane avviene secondo la regola del \emph{longest prefix match} (LPM), cioè viene preferita la rotta con prefisso più specifico tra quelle che matchano l’indirizzo di destinazione. Di conseguenza, anche se il legittimo owner continua ad annunciare un /24, l’annuncio malevolo di un /28 tende a catturare il traffico per gli indirizzi compresi in quel /28, perché il forwarding privilegia la rotta più specifica indipendentemente dal fatto che il cammino BGP sia “migliore” o “peggiore”.
-
-\subsubsection{Announcement di indirizzi non allocati e \emph{prefix squatting}}
-Oltre all’hijacking di prefissi allocati e in uso, esistono attacchi (o abusi) basati sull’annuncio di spazio \emph{non allocato} o \emph{riservato} (ad es.\ blocchi non destinati al routing globale), che può passare inosservato se gli operatori non applicano filtri adeguati. Un caso correlato è l’annuncio di spazio \emph{allocato ma non utilizzato} dal legittimo owner.
-
-Quando un AS origina falsamente spazio \emph{allocato ma attualmente inutilizzato}, si parla di \emph{prefix squatting}. Dal punto di vista operativo, questo abuso può essere sfruttato per ``ottenere'' connettività su indirizzi che non dovrebbero essere visibili globalmente, o per finalità opportunistiche (ad es.\ mascherare attività malevole dietro prefissi che non sono normalmente osservati in traffico legittimo).
-
-\subsubsection{Conseguenze: DoS, eavesdropping, detour, imposter server, degrado prestazioni}
-Gli effetti di hijacking/misrouting non si limitano alla selezione di una rotta errata: possono impattare direttamente disponibilità,
-confidenzialità e sicurezza applicativa. In particolare:
-\begin{itemize}
-    \item \textbf{Denial-of-Service (DoS):} il traffico viene blackholato o inoltrato in modo non funzionale.
-    \item \textbf{Eavesdropping / MITM a livello routing:} il traffico transita nell’AS dell’attaccante, che può osservarlo e poi reinoltrarlo per ridurre la detection.
-    \item \textbf{Detour e degrado prestazionale:} percorsi più lunghi o congestionati aumentano latenza e riducono throughput.
-    \item \textbf{Misdirection verso imposter servers:} redirezione verso servizi falsi (furto credenziali, malware) e \textbf{abuso di IP reputation} (spam e campagne malevole).
-\end{itemize}
-
-\subsubsection{Incidenti reali e casi di studio (timeline di eventi noti)}
-Il materiale riporta una timeline (non esaustiva) di incidenti che evidenziano impatti reali di hijack/leak:
-\begin{itemize}
-    \item \textbf{Dicembre 2017:} hijack di \emph{80} prefissi ad alto traffico (Google, Apple, Facebook, Microsoft, TwitchTV, Riot Games) da parte di un AS russo (AS39523); sospetta esposizione di credenziali e dati utente.
-    \item \textbf{Aprile 2018:} hijack di circa \emph{1300} indirizzi IP riconducibili ad AWS; traffico instradato tramite terze reti, con frode legata a criptovalute (MyEtherWallet).
-    \item \textbf{Novembre 2018:} sospetto hijack di \emph{180} prefissi con impatti su servizi Google (incluso DoS a GSuite e Search) e possibile esposizione di traffico.
-    \item \textbf{Maggio 2019:} abuso di due prefissi del Taiwan Network Information Center per finalità pubblicitarie; durata di pochi minuti ma con dati pubblici esposti.
-    \item \textbf{Giugno 2019:} leak accidentale di oltre \emph{70\,000} rotte da un data center svizzero verso China Telecom, poi ri-annunciate; impatti severi su reti europee (lentezza e DoS), per oltre due ore.
-    \item \textbf{1 Aprile 2020:} hijack massivo di oltre \emph{8800} prefissi con disservizi globali; caso spesso citato come esempio di filtering insufficiente.
-    \item \textbf{2022:} caso divulgato come “Twitter BGP hijack” (approfondimento nel materiale).
-    \item \textbf{Giugno 2024:} incidente relativo a \texttt{1.1.1.1} (Cloudflare), discusso come caso di studio recente.
-\end{itemize}
-\subsection{Manipolazione dei messaggi BGP UPDATE}
-
-\subsubsection{AS\_PATH manipulation (es. accorciamento del path per influenzare le preferenze)}
-I messaggi \texttt{BGP UPDATE} trasportano, oltre ai prefissi annunciati (NLRI), una sequenza di numeri di AS che descrive il cammino inter-dominio (\texttt{AS\_PATH}). Tale informazione è centrale per due motivi: (i) abilita la \emph{loop detection} (un AS rifiuta un update se il proprio ASN compare nel path) e (ii) viene spesso impiegata per applicare politiche di routing coerenti con accordi di peering e relazioni commerciali tra reti.
-
-Un avversario che riceve un UPDATE può tentare una \emph{AS\_PATH modification} illegittima: invece di propagare il messaggio com’è stato ricevuto, rimuove alcuni AS ``precedenti'' dal path, facendo apparire il percorso più corto. In molte implementazioni e policy operative, a parità di altre condizioni, un cammino con AS\_PATH più breve risulta più appetibile; di conseguenza, AS a monte possono essere indotti a credere che la rotta verso il prefisso pubblicizzato ``passi'' in modo più conveniente attraverso l’AS avversario.
-
-Gli effetti pratici sono doppi:
-\begin{itemize}
-    \item \textbf{attrazione del traffico (traffic attraction):} parte del traffico destinato al prefisso può essere dirottata verso l’AS avversario, senza che quest’ultimo debba necessariamente falsificare l’origine del prefisso;
-    \item \textbf{vantaggio economico o informativo:} l’AS avversario può ottenere benefici economici (ad es.\ aumentando il traffico che attraversa la propria rete e quindi la ``dipendenza'' dei clienti) oppure abilitare forme di intercettazione (\emph{eavesdropping}) se riesce a re-instradare successivamente il traffico verso la destinazione legittima.
-\end{itemize}
-
-\noindent\textbf{Nota operativa.} Nella gestione ordinaria di BGP esistono anche manipolazioni ``legittime'' del path (ad es.\ \emph{AS path prepend} per rendere una rotta meno preferibile). La differenza è che tali tecniche sono applicate dall’AS che annuncia e riflettono policy dichiarate; nell’attacco, invece, la modifica è \emph{non autorizzata} e mira a ingannare i criteri di selezione degli AS a monte.
-
-\subsubsection{Prefix modification (annuncio di prefissi più specifici) e attacchi noti}
-Un avversario che riceve un UPDATE per un prefisso $P$ può inoltrarlo sostituendo $P$ con un prefisso pi\`u specifico $P' \subseteq P$. L’efficacia dell’attacco deriva dalla regola del \emph{longest prefix match} (gi\`a discussa nella sezione sul \emph{sub-prefix hijacking}): a parit\`a di condizioni, il data plane privilegia il prefisso pi\`u specifico.
-
-Un esempio noto \`e l’attacco di \emph{Kapela--Pilosov}: il prefisso viene reso pi\`u specifico ma l’\texttt{AS\_PATH} non viene alterato. Di conseguenza l’annuncio risulta spesso plausibile e viene ampiamente accettato, salvo tipicamente dagli AS gi\`a presenti nel cammino (per via della loop detection standard).
-
-In termini di impatto, l’avversario pu\`o forzare gran parte del traffico per $P'$ a transitare nella propria rete e, in scenari \emph{stealth}, inoltrarlo poi verso la destinazione legittima riducendo la probabilit\`a di detection.
-
-\subsubsection{Effetti su policy, business relationship e instradamento inter-dominio}
-Le manipolazioni degli UPDATE sono pericolose perché sfruttano direttamente il fatto che BGP è un protocollo \emph{policy-based}. In particolare:
-\begin{itemize}
-    \item \textbf{violazione di accordi e relazioni di peering:} il routing inter-dominio è regolato da policy che riflettono relazioni customer/provider/peer; alterare \texttt{AS\_PATH} può far apparire leciti cammini che non rispettano i vincoli attesi, influenzando scelte di instradamento e flussi economici.
-    \item \textbf{alterazione della best path selection:} se l’AS\_PATH (o il prefisso) viene manipolato, gli AS a monte possono selezionare una rotta ``migliore'' solo in apparenza, perché il processo decisionale si basa su attributi e preferenze locali. Ne risultano detour indesiderati, congestione e degradazione delle prestazioni.
-    \item \textbf{effetti a cascata nella propagazione:} poiché la rotta selezionata viene tipicamente propagata ai vicini (secondo le export policy), una manipolazione efficace può diffondersi rapidamente, amplificando la porzione di Internet che instrada verso l’avversario.
-\end{itemize}
-
-Infine, è importante collegare queste minacce alla pipeline operativa di BGP: gli UPDATE entrano in un \emph{input policy engine} (filtri su prefissi/attributi e possibile \emph{attribute manipulation}), vengono valutati nel processo di decisione del best path e solo successivamente propagati secondo policy di uscita. In tale catena, una modifica dell’UPDATE (AS\_PATH o prefisso) può aggirare assunzioni implicite della configurazione, soprattutto quando mancano meccanismi di validazione robusta e controlli sistematici in ingresso.
-\subsection{Route leaks e modello di peering}
-
-\subsubsection{Relazioni di peering e transit (P2C, C2P, p2p; upstream/downstream)}
-Le policy BGP riflettono relazioni \emph{tecnico-commerciali} tra AS. Le tre relazioni fondamentali sono:
-\begin{itemize}
-    \item \textbf{Provider--Customer (P2C):} il provider offre \emph{transit} al customer. Tipicamente esporta al customer la full table (o una default route); il customer esporta i propri prefissi e quelli del proprio downstream.
-    \item \textbf{Customer--Provider (C2P):} vista dal lato customer: acquisto di transit e annuncio verso l’upstream dei prefissi di cui è responsabile.
-    \item \textbf{Peer--Peer (p2p):} scambio di prefissi/traffico senza relazione di pagamento per il traffico scambiato; in genere si annunciano prefissi propri e dei customer (non la full table).
-\end{itemize}
-
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.78\textwidth]{immagini/NET_09/fig_peering_relationships_overview.png}
-\caption{Vista d’insieme delle relazioni di peering dal punto di vista di un AS: \emph{upstream} (transit provider), \emph{lateral/private peers}, \emph{public peers} tramite IXP e \emph{downstream} (customer).}
-\label{fig:peering-relationships-overview}
-\end{figure}
-
-
-
-Terminologia operativa: \textbf{upstream} = provider da cui si compra connettività; \textbf{downstream} = customer a cui si fornisce transit.
-È inoltre utile il concetto di \textbf{customer cone}: insieme di AS raggiungibili seguendo solo link P2C; i \emph{customer cone prefixes} sono l’unione dei prefissi originati dall’AS e da tutti i suoi customer (diretti e indiretti).
-
-\subsubsection{Public vs private peering; ruolo degli IXP (LAN di livello 2)}
-Il peering può avvenire su collegamenti \textbf{privati} oppure tramite un \textbf{IXP} (Internet Exchange Point).
-
-\paragraph{Public peering (IXP).}
-Un IXP è, concettualmente, una \emph{LAN di livello 2}: diversi ISP/AS collegano il proprio router di bordo a una stessa infrastruttura Ethernet comune e instaurano sessioni eBGP (dirette o tramite route server dell'IXP). Il vantaggio principale è infrastrutturale: non è necessario realizzare un collegamento fisico dedicato per ogni coppia di peer, perché l'interconnessione avviene sulla LAN dell'IXP. In generale, nell'IXP si scambiano prefissi e traffico tra partecipanti, ma la rete dell'IXP non dovrebbe essere usata come ``transit'' verso terzi (si usa per raggiungere gli altri membri e realizzare peering).
-
-\paragraph{Private (bilateral) peering.}
-Due AS stabiliscono un link dedicato punto-punto. Questa scelta è tipica quando il volume di traffico tra le due reti è elevato e risulta conveniente evitare il passaggio su infrastrutture condivise. Anche qui, per prassi, non si scambia la full table: si annunciano i prefissi propri e quelli dei customer, coerentemente con la relazione p2p.
-
-\subsubsection{Definizione di route leak e scenari tipici di propagazione ``oltre lo scope''}
-Un \emph{route leak} è la \textbf{propagazione di annunci di routing oltre lo scope previsto} dalle policy e dagli accordi tra AS. Non è necessariamente un attacco intenzionale: spesso deriva da misconfigurazioni o errori operativi; tuttavia, l'effetto sul routing globale può essere significativo.
-
-Il punto chiave è che le policy di import/export impongono vincoli su \emph{quali rotte} un AS può annunciare a un certo peer:
-\begin{itemize}
-    \item le rotte ricevute da un \textbf{customer} possono essere esportate verso qualunque tipo di peer (customer, provider, peer laterali), perché sono ``rotte che portano traffico'' e rappresentano valore.
-    \item le rotte ricevute da un \textbf{lateral peer} o da un \textbf{transit provider} dovrebbero essere esportate \textbf{solo ai customer} (non a un altro peer laterale o a un altro provider), altrimenti si viola il modello economico e si crea transito non autorizzato.
-\end{itemize}
-
-Uno scenario classico di leak è quando un \textbf{customer/stub} inoltra impropriamente a un upstream rotte apprese da un altro upstream (o da un peer), diventando di fatto un punto di transito tra due AS di transito. Questo è precisamente il tipo di propagazione ``oltre scope'': un AS che, per definizione di relazione, \emph{non dovrebbe} trasportare/propagare routing information tra due provider, finisce per farlo.
-
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\textwidth]{immagini/NET_09/fig_route_leak_basic.png}
-\caption{Esempio di \emph{route leak}: un AS (tipicamente stub/customer) propaga impropriamente rotte apprese da un transit verso un altro transit/peer, violando lo \emph{scope} delle policy e introducendo cammini anomali.}
-\label{fig:route-leak-basic}
-\end{figure}
-
-
-
-
-\subsubsection{Esempi di route leaks e impatti operativi}
-Un caso tipico di \emph{route leak} si verifica quando un AS esporta verso un upstream/peer laterale rotte apprese da un altro upstream/peer,
-invece di limitarne l’export ai soli customer: l’AS diventa, di fatto, transito non autorizzato e introduce cammini non previsti.
-Poiché molte reti preferiscono (per policy) rotte provenienti da customer rispetto a quelle da provider/peer, il leak può anche risultare \emph{attraente}
-e dirottare traffico su percorsi non desiderati.
-
-Le conseguenze operative includono:
-\begin{itemize}
-    \item \textbf{detour} e aumento di latenza/congestione;
-    \item \textbf{sovraccarico} dell’AS offending (collo di bottiglia) con degrado prestazionale o DoS;
-    \item \textbf{instabilità del control plane} (propagazione massiva di update/withdraw e riconvergenze).
-\end{itemize}
 \subsection{Difese operative: Prefix (Route) Filtering}
 
-\subsubsection{Principi: inbound/outbound filtering e policy ``strict'' vs ``loose''}
-Il \emph{prefix filtering} (o \emph{route filtering}) è una delle difese operative più basilari contro disruption accidentali o malevole del routing BGP. L’idea è semplice: in una relazione di peering esiste un insieme di prefissi \emph{attesi}; tali prefissi vengono accettati, mentre annunci non attesi (incluse categorie note di prefissi anomali) vengono rigettati. Il filtering va applicato in modo \textbf{bidirezionale}:
-\begin{itemize}
-    \item \textbf{inbound filtering}: protegge il router/AS da annunci in ingresso non coerenti con la relazione;
-    \item \textbf{outbound filtering}: evita di propagare verso l’esterno annunci errati (misconfigurazioni) e riduce il rischio di diventare sorgente di leak/hijack.
-\end{itemize}
-Operativamente, i route filter si esprimono spesso con sintassi simili alle ACL (p.es.\ tramite route-map/prefix-list), e la loro efficacia dipende dalla correttezza della \emph{policy} associata al tipo di peer.
+\subsubsection{Principi: inbound/outbound filtering e approcci ``strict'' vs ``loose''}
+Il \emph{prefix filtering} è una difesa operativa di base: in una relazione di peering esiste un insieme di annunci attesi, coerenti con quella relazione, e annunci non attesi che vanno rigettati. Per ridurre sia il rischio di essere colpiti sia quello di diventare sorgente di incidenti, i filtri vanno applicati in modo bidirezionale: in ingresso (inbound) per proteggere la propria rete da annunci anomali, e in uscita (outbound) per evitare di propagare errori o leak.
 
-Si distinguono due approcci:
-\begin{itemize}
-    \item \textbf{Strict filtering}: si accetta \emph{solo} ciò che ci si aspetta di ricevere da quel peer (liste di prefissi ``allow-list'' per-peer). È l’approccio più robusto, ma richiede informazioni aggiornate e manutenzione.
-    \item \textbf{Loose filtering}: quando non è possibile mantenere allow-list precise, si applicano filtri ``di igiene'' che eliminano almeno le categorie sicuramente anomale (bogon, privati, loopback, prefissi troppo specifici, ecc.). È meno forte dello strict, ma resta utile per ridurre incidenti e abusi.
-\end{itemize}
+Si distinguono due impostazioni: lo \emph{strict filtering} (accetto solo ciò che è previsto per quel peer, tipicamente con allow-list per-peer) e il \emph{loose filtering} (quando non è possibile mantenere liste precise, si applicano filtri di igiene per eliminare categorie sicuramente anomale). Dal punto di vista operativo, lo strict è più robusto ma richiede manutenzione, mentre il loose resta utile per ridurre incidenti e abusi.
 
-\subsubsection{Classi di filtri consigliate}
-Nel materiale, le categorie principali di filtri suggerite per eBGP includono:
-\begin{enumerate}
-    \item \textbf{Unallocated prefixes};
-    \item \textbf{Special-purpose prefixes};
-    \item \textbf{Prefixes owned/originated by the AS} (``prefissi propri'');
-    \item \textbf{Prefixes that exceed a specificity limit};
-    \item \textbf{Default route};
-    \item \textbf{IXP LAN prefixes}.
-\end{enumerate}
-Queste classi coprono sia anomalie strutturali (spazio non allocato o riservato), sia pattern tipici di attacco (sub-prefix hijack), sia casi particolari legati al peering (default route, reachability dell’IXP).
+\subsubsection{Classi di filtri e punti chiave}
+Il materiale raggruppa filtri tipici in classi: rigetto di prefissi non allocati o special-purpose, rigetto (o trattamento conservativo) di annunci dei propri prefissi ricevuti dall’esterno, limiti di specificità per ridurre la superficie del sub-prefix hijack, gestione prudente della default route e considerazioni specifiche per IXP LAN prefixes.
 
-\subsubsection{Unallocated e special-purpose prefixes (bogon filtering)}
-\paragraph{Unallocated prefixes.}
-Un prefisso \emph{unallocated} è spazio non ancora allocato dagli enti di assegnazione (IANA $\rightarrow$ RIR). Riceverlo in eBGP è, nella maggior parte dei casi, un’anomalia e va rigettato. Per IPv4, quasi tutto lo spazio è allocato; per IPv6, la dimensione enorme dello spazio implica che una quota significativa sia ancora non allocata: filtrare ``solo allocati'' è quindi concettualmente corretto, ma richiede \textbf{aggiornamenti regolari} delle liste. In assenza di un processo di aggiornamento affidabile, configurare filtri basati su liste di allocazione può introdurre falsi positivi.
+Il \emph{specificity limit} è una regola semplice ma efficace: in IPv4 è comune filtrare prefissi più specifici di /24 e in IPv6 più specifici di /48, salvo eccezioni concordate (ad esempio Flowspec in contesti di mitigazione DDoS). La default route, invece, è tipicamente filtrata in eBGP perché un annuncio improprio può attrarre grandi volumi di traffico; può essere accettata solo se prevista dall’accordo (es.\ customer stub che richiede solo default).
 
-\paragraph{Special-purpose prefixes.}
-IANA mantiene registri di indirizzi/prefissi \emph{special-purpose} (ad esempio riservati, non globalmente instradabili, destinati a funzioni specifiche). Un criterio operativo è rigettare in eBGP i prefissi che risultano non validi per il routing nel ``global Internet''.
+Negli IXP, dove si opera su una LAN di livello 2 condivisa, la reachability dell’IXP LAN prefix è utile anche per aspetti pratici come PMTUD in presenza di uRPF: per questo si accetta il LAN prefix annunciato dall’IXP e si evita che circolino più-specifici anomali di quel prefisso.
 
-\subsubsection{Prefissi ``owned'' (anomalia: ricevere annunci del proprio spazio)}
-Un AS origina uno o più prefissi; in condizioni normali, il traffico destinato a tali prefissi dovrebbe restare ``locale'' e non dovrebbe essere necessario apprenderli dall’esterno. Per questo motivo, una raccomandazione comune è:
-\begin{itemize}
-    \item \textbf{rigettare} (in inbound) annunci dei propri prefissi ricevuti da eBGP peer (provider, customer, lateral peer), specialmente se i prefissi sono \emph{single-homed}.
-\end{itemize}
-Esiste però una considerazione operativa: se non si è certi che un prefisso sia davvero single-homed (ad esempio perché esistono ridondanze o multi-homing), si può scegliere di \textbf{accettare} temporaneamente l’annuncio esterno assegnandogli \textbf{local preference inferiore}, in modo da preservare la resilienza senza rendere preferibile una rotta potenzialmente anomala.
-
-\subsubsection{Specificity limit (es. /24 IPv4, /48 IPv6) e casi d’eccezione (es. Flowspec)}
-Un principio fondamentale è porre un limite di \emph{specificità} (massima lunghezza del prefisso) accettabile per-peer. Molte pratiche operative citano come riferimento:
-\begin{itemize}
-    \item IPv4: non accettare annunci più specifici di \texttt{/24};
-    \item IPv6: non accettare annunci più specifici di \texttt{/48}.
-\end{itemize}
-Il razionale è difensivo: il \emph{sub-prefix hijack} si realizza proprio annunciando prefissi più lunghi (più specifici) del legittimo owner; imporre un limite riduce la superficie d’attacco. La soglia, tuttavia, non è universale: viene decisa dall’operatore e concordata con i peer.
-
-\paragraph{Eccezioni (Flowspec).}
-In contesti di mitigazione DDoS tra AS adiacenti, l’uso di BGP Flowspec può richiedere l’accettazione di prefissi più specifici (ad es.\ fino a \texttt{/32} IPv4). In tal caso l’eccezione deve essere \textbf{esplicita e limitata}: i prefissi più specifici ammessi devono essere contenuti entro prefissi pre-accordati e applicati solo ai casi previsti.
-
-\paragraph{Filtri su prefissi troppo ``corti''.}
-Alcuni operatori applicano anche filtri su annunci \emph{less-specific} eccessivi (prefissi molto aggregati), rigettando ad esempio prefissi più corti di determinate soglie, per ridurre anomalie e difetti di configurazione.
-
-\subsubsection{Default route: quando accettarla e quando rigettarla}
-La \emph{default route} è \texttt{0.0.0.0/0} per IPv4 e \texttt{::/0} per IPv6. In generale, \textbf{è raccomandato filtrarla} (rigettarla in eBGP), perché un annuncio improprio di default può attrarre grandi volumi di traffico e causare misrouting o blackholing.
-
-Esistono però scenari legittimi in relazioni customer--provider: un customer \emph{stub/leaf} può richiedere al provider la sola default route invece della full routing table, per semplificare gestione e ridurre consumo di risorse. In questi casi la default route può essere accettata \emph{solo} se esiste uno \textbf{specifico accordo di peering} che lo prevede.
-
-\subsubsection{IXP LAN prefixes e implicazioni (reachability, PMTUD, uRPF)}
-Negli Internet Exchange Point (IXP), i router dei membri tipicamente condividono una LAN di livello 2 e hanno bisogno di raggiungere il \textbf{prefisso IP della LAN dell’IXP} (IXP LAN prefix) per instaurare/gestire il peering.
-
-Una raccomandazione operativa è che:
-\begin{itemize}
-    \item l’IXP annunci (tramite route server) il proprio LAN prefix (o un prefisso equivalente/non più specifico) a tutti i membri;
-    \item ciascun membro accetti tale prefisso e rigetti annunci \textbf{più specifici} del LAN prefix provenienti da altri eBGP peer.
-\end{itemize}
-Questo non serve solo per ``ordine'' nel routing: garantire reachability al LAN prefix facilita anche il corretto funzionamento del \emph{Path MTU Discovery (PMTUD)} tra membri, persino in presenza di \emph{unicast Reverse Path Forwarding (uRPF)}, perché i messaggi ICMP ``packet too big'' possono usare come sorgente indirizzi appartenenti al LAN prefix dell’IXP.
-
-\subsubsection{Raccomandazioni per tipo di peer (customer/leaf/provider/lateral peer)}
-Le regole di inbound/outbound filtering dipendono dal \textbf{tipo di relazione} con il peer (customer, transit provider, lateral peer, leaf customer). Il punto di partenza è che ogni relazione impone un insieme diverso di prefissi ``attesi'':
-\begin{itemize}
-    \item \textbf{Leaf customer:} spesso richiede solo la default route dal provider. In tal caso dovrebbe accettare \emph{solo} la default route e nient’altro. Se invece richiede la full table, applica in inbound almeno i filtri: unallocated, special-purpose, own prefixes, specificity limit, default route (gestita secondo accordi).
-    \item \textbf{Customer (non leaf):} in outbound verso provider/peer laterali dovrebbe annunciare prefissi propri e (se applicabile) quelli del proprio customer cone; in inbound dal provider può ricevere full table o default secondo accordi, mantenendo comunque i filtri di igiene e i limiti di specificità.
-    \item \textbf{Lateral peer (p2p):} tipicamente ci si scambia prefissi propri e dei rispettivi customer; si evita di accettare/propagare rotte che trasformerebbero il p2p in transito non autorizzato. Di conseguenza, filtri strict (allow-list basate su ``own + customer cone'') sono particolarmente desiderabili.
-    \item \textbf{Transit provider (upstream):} l’AS non dovrebbe accettare dall’upstream annunci che violano policy note (bogon, special-purpose, default non concordata, prefissi eccessivamente specifici), e dovrebbe mantenere controlli stringenti per evitare che errori del provider impattino la propria rete.
-\end{itemize}
-
-\paragraph{Nota sul supporto di RPKI.}
-Quando disponibili, le ROA RPKI possono essere usate per derivare (o augmentare) liste di prefissi attesi per le interfacce verso customer
-(\emph{customer cone}), rendendo più praticabile lo \emph{strict filtering} e permettendo anche una cross-check rispetto a liste costruite con IRR o dati contrattuali.
 \subsection{RPKI e BGP Origin Validation (BGP-OV)}
 
-\subsubsection{Perché serve RPKI}
-Storicamente, molte informazioni ``dichiarative'' su allocazioni e politiche di routing sono state pubblicate nei \emph{Internet Routing Registries} (IRR) sotto forma di \emph{route objects}. Gli operatori interrogano IRR (anche tramite database aggregati come RADb) per costruire filtri sui prefissi e verificare associazioni del tipo ``quale AS può originare quale prefisso''.
-Tuttavia, i dati IRR presentano limiti strutturali: non esiste una garanzia uniforme di \emph{completezza}, \emph{correttezza}, \emph{freschezza} e \emph{consistenza} delle informazioni. In altre parole, anche se gli IRR sono utili operativamente, la qualità dei dati varia e non sempre sono affidabili come base unica per la sicurezza del routing.
-
-RPKI (\emph{Resource Public Key Infrastructure}) è un sistema che fornisce una protezione contro gli attacchi di hijacking e misrouting. In RPKI, ogni prefisso IP e ASN è certificato in modo crittografico, consentendo ai router di verificare che un AS sia autorizzato a originare un determinato prefisso. L'adozione di RPKI tramite la creazione di **ROA** (Route Origin Authorization) permette di rafforzare la sicurezza del routing Internet, riducendo i rischi legati all'invio di prefissi errati o non autorizzati.
+\subsubsection{Perché serve RPKI e cosa contiene una ROA}
+Storicamente, gli operatori hanno usato anche IRR per costruire filtri, ma la qualità dei dati può variare. RPKI introduce una base crittografica: tramite una \emph{ROA} si pubblica un binding tra prefisso e \emph{origin AS} autorizzato. Un elemento importante è il \texttt{maxlength}: specifica fino a che lunghezza sono ammessi i più-specifici del prefisso, distinguendo de-aggregazioni legittime da annunci sospetti.
 
 \begin{figure}[H]
 \centering
@@ -366,14 +92,6 @@ RPKI (\emph{Resource Public Key Infrastructure}) è un sistema che fornisce una 
 \label{fig:rpki-allocation-chain}
 \end{figure}
 
-\subsubsection{Catena di certificazione e trust anchor (RIR) per risorse (prefissi/ASN)}
-La catena di certificazione di RPKI riflette l’allocazione gerarchica delle risorse:
-\begin{itemize}
-    \item IANA alloca risorse ai \emph{Regional Internet Registries} (RIR).
-    \item I RIR sub-allocano a ISP ed enterprise (in alcune regioni anche tramite \emph{Local Internet Registry}, LIR).
-    \item Gli ISP possono sub-allocare ulteriormente a clienti/altre organizzazioni.
-\end{itemize}
-
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{immagini/NET_09/img.png}
@@ -381,36 +99,8 @@ La catena di certificazione di RPKI riflette l’allocazione gerarchica delle ri
 \label{fig:rpki-roa-process}
 \end{figure}
 
-
-
-In RPKI, ciascun RIR mantiene un proprio \emph{trust anchor}, cioè una root CA indipendente per la regione di competenza (in pratica, esistono pi\`u root distinte, una per ogni RIR). I certificati sono certificati X.509 con estensioni specifiche per descrivere insiemi di risorse di numerazione (prefissi e ASN): la catena consente di verificare crittograficamente che un soggetto possieda/gestisca un certo insieme di risorse e che possa emettere attestazioni di routing relative a tali risorse.
-
-\subsubsection{Modelli di gestione: hosted vs delegated}
-I RIR offrono tipicamente due modelli operativi per la gestione delle chiavi e delle operazioni RPKI:
-\begin{itemize}
-    \item \textbf{Hosted:} il RIR mantiene e gestisce le chiavi e svolge le operazioni RPKI sui propri sistemi (pubblicazione, gestione oggetti firmati, ecc.). \`E pi\`u semplice per il resource holder, ma riduce il controllo diretto sulle chiavi.
-    \item \textbf{Delegated:} il resource holder (ISP o enterprise) riceve un certificato CA dal RIR, gestisce una propria CA RPKI e svolge in autonomia le operazioni (ad es.\ firmare ROA, emettere certificati subordinati per i clienti). Questo modello offre maggiore controllo, ma richiede competenze e infrastruttura dedicate.
-\end{itemize}
-
-\subsubsection{ROA: contenuto, ruolo del \texttt{maxlength} e implicazioni}
-Una \emph{Route Origin Authorization} (ROA) \`e un oggetto firmato (tipicamente con una chiave associata a un certificato di tipo \emph{End Entity}, EE) che realizza un binding crittograficamente verificabile tra:
-\begin{itemize}
-    \item uno o pi\`u \textbf{prefissi} IP;
-    \item un singolo \textbf{origin AS} autorizzato a originare tali prefissi;
-    \item (opzionale) un parametro \texttt{maxlength} per ciascun prefisso.
-\end{itemize}
-
-Il campo \texttt{maxlength} \`e cruciale per il controllo sui pi\`u specifici: se per un prefisso $P$ viene specificato \texttt{maxlength} $= L$, allora sono permessi anche annunci di prefissi pi\`u specifici $P'$ contenuti in $P$, purch\'e la lunghezza di $P'$ non superi $L$. In assenza di \texttt{maxlength}, il valore implicito coincide con la lunghezza del prefisso stesso (quindi non autorizza pi\`u specifici).
-Questo meccanismo rende esplicito ci\`o che \`e legittimo in termini di de-aggregazione (necessaria, ad esempio, per traffic engineering o multihoming) e ci\`o che invece potrebbe essere sospetto (sub-prefix hijacking oltre il massimo autorizzato).
-
-\subsubsection{Distribuzione dei dati RPKI: repository, caching e propagazione ai router}
-Le ROA e, pi\`u in generale, i dati RPKI non vengono trasportati dentro BGP. Di conseguenza, l’architettura operativa separa:
-\begin{itemize}
-    \item \textbf{Repository RPKI:} punti di pubblicazione da cui i \emph{relying parties} (RP) recuperano gli oggetti RPKI.
-    \item \textbf{RPKI validators / cache servers:} entit\`a che scaricano gli oggetti dai repository, validano l’intera catena e producono una vista locale consistente.
-    \item \textbf{Router BGP:} consumano i risultati della validazione (non validano tipicamente la PKI in prima persona, per ragioni di scalabilit\`a).
-\end{itemize}
-
+\subsubsection{Distribuzione dei dati: validator/cache e RTR}
+Le ROA non vengono trasportate dentro BGP. Operativamente, i validator scaricano e validano i repository RPKI e producono una vista consistente, poi resa disponibile ai router tramite un meccanismo dedicato (cache server e protocollo RTR). In questo modo i router consumano una lista già validata di tuple \{prefisso, \texttt{maxlength}, origin AS\} e possono fare un controllo locale efficiente durante il processing degli UPDATE.
 
 \begin{figure}[H]
 \centering
@@ -419,88 +109,30 @@ Le ROA e, pi\`u in generale, i dati RPKI non vengono trasportati dentro BGP. Di 
 \label{fig:rpki-retrieval-cache-rtr}
 \end{figure}
 
-
-
-Operativamente, gli RP possono accedere ai repository tramite \texttt{rsync} oppure tramite RRDP (\emph{Repository Delta Protocol}), che consente aggiornamenti incrementali. Il risultato della validazione viene poi reso disponibile ai router tramite un \emph{cache server} (gestito dall’AS) e un protocollo dedicato \emph{RPKI-to-Router} (RTR). In questo modo, i router ricevono una lista \emph{gi\`a validata} di tuple del tipo:
-\[
-(\text{prefix}, \texttt{maxlength}, \text{origin AS})
-\]
-riducendo il problema ad un controllo locale veloce (lookup) durante il processing degli UPDATE BGP.
-
-\subsubsection{Uso dei risultati di BGP-OV nelle policy locali (tag-only / prefer-valid / drop-invalid)}
-Una volta che il router dispone della lista validata di tuple derivate da ROA, pu\`o applicare il processo di \emph{BGP Origin Validation} (BGP-OV) per assegnare a ciascuna rotta annunciata uno stato di validazione:
-\begin{itemize}
-    \item \textbf{Valid:} la coppia (prefisso annunciato, origin AS) \`e corroborata da una ROA e la lunghezza del prefisso annunciato non eccede \texttt{maxlength}.
-    \item \textbf{Invalid:} esiste una ROA che copre il prefisso, ma l’origin AS non corrisponde oppure la lunghezza del prefisso annunciato supera \texttt{maxlength}.
-    \item \textbf{NotFound:} nessuna ROA copre (in modo uguale o per inclusione) il prefisso annunciato.
-\end{itemize}
+\subsubsection{Esiti di validazione e uso nelle policy locali}
+Con la BGP Origin Validation, ogni rotta viene classificata come \texttt{Valid}, \texttt{Invalid} o \texttt{NotFound}. Il punto chiave è che l’uso di questi risultati è una scelta locale dell’operatore: si può partire da una modalità di sola marcatura (tag-only), introdurre preferenze per le rotte valide (prefer-valid), fino allo scarto delle rotte invalide (drop-invalid). In deployment parziale è normale osservare molte rotte \texttt{NotFound}: per questo, nella pratica si combina RPKI con altre fonti (IRR e dati contrattuali) per ottenere filtri robusti senza compromettere la reachability.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.90\textwidth]{immagini/NET_09/fig_origin_validation_algorithm.png}
-\caption{Schema dell’algoritmo di \emph{BGP Origin Validation} (RFC 6811): costruzione dell’insieme di VRP applicabili e classificazione della rotta in \texttt{Valid}, \texttt{Invalid} o \texttt{NotFound}.}
+\caption{Schema dell’algoritmo di \emph{BGP Origin Validation}: costruzione dell’insieme di VRP applicabili e classificazione della rotta in \texttt{Valid}, \texttt{Invalid} o \texttt{NotFound}.}
 \label{fig:bgp-origin-validation-algorithm}
-\end{figure}
-
-
-
-Come utilizzare questi risultati \`e una \textbf{scelta strettamente locale} dell’operatore e si integra nelle policy di selezione del best path. Scelte tipiche sono:
-\begin{itemize}
-    \item \textbf{Tag-only:} il risultato viene solo marcato/loggato a fini diagnostici e di monitoraggio, senza influire sulla selezione della rotta.
-    \item \textbf{Prefer-valid:} si assegna una preferenza (ad es.\ tramite \emph{local preference}) alle rotte \emph{Valid}; in genere questo agisce come criterio di tie-break tra rotte dello stesso prefisso.
-    \item \textbf{Drop-invalid:} le rotte \emph{Invalid} vengono ignorate (scartate dal decision process), riducendo la superficie di hijack/sub-hijack quando le ROA sono presenti.
-\end{itemize}
-
-\subsubsection{Deployment incrementale e integrazione di più fonti (ROA, IRR, contratti)}
-Nella pratica, RPKI e BGP-OV sono spesso adottati in modo \emph{incrementale}: non tutti i prefissi hanno ROA pubblicate e non tutti gli AS applicano le stesse policy. In questo scenario ``parziale'', buttare via tutto ci\`o che risulta \texttt{NotFound} non \`e generalmente realistico, perch\'e genererebbe falsi positivi e perdita di connettivit\`a per prefissi legittimi non ancora coperti.
-
-Per questo, una strategia operativa consigliata nel materiale \`e costruire l’insieme delle coppie ammissibili \{\emph{prefisso, origin ASN}\} unendo pi\`u fonti:
-\begin{itemize}
-    \item \textbf{ROA} (RPKI): fonte pi\`u robusta quando presente;
-    \item \textbf{IRR:} utile come supporto, ma da trattare con cautela per i limiti di affidabilit\`a;
-    \item \textbf{Contratti/customer data:} informazioni amministrative interne (ad es.\ quali prefissi un customer \`e autorizzato a originare) particolarmente utili per filtri strict sulle interfacce customer.
-\end{itemize}
-
-In sintesi, l’adozione efficace di RPKI/BGP-OV combina: (i) validazione crittografica quando disponibile, (ii) policy locali graduate (monitoring $\rightarrow$ preferenza $\rightarrow$ scarto degli invalidi), e (iii) integrazione con pratiche operative pre-esistenti (IRR e contratti) per mantenere robustezza senza sacrificare la reachability durante la transizione.
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.70\textwidth]{immagini/NET_09/fig_rpki_adoption_2024.png}
-\caption{Esempio di stato di adozione RPKI/ROV: in deployment parziale, una quota significativa di rotte risulta \texttt{NotFound}, motivando policy graduali (tag-only/prefer-valid) prima di scelte più aggressive.}
-\label{fig:rpki-adoption-2024}
 \end{figure}
 
 \subsection{Limiti dell’origin validation e protezione dell’AS\_PATH}
 
 \subsubsection{Forged-origin hijacks: perché la sola origin validation non basta}
-La \emph{BGP Origin Validation} (BGP-OV), basata su ROA/RPKI, consente di verificare se la coppia \emph{(prefisso, origin AS)} dichiarata in un annuncio è autorizzata. Questa misura è fondamentale, ma non garantisce la correttezza complessiva dell’annuncio BGP: in particolare, non impedisce che un attaccante manipoli l’informazione di cammino (\texttt{AS\_PATH}) o che costruisca annunci ``plausibili'' dal punto di vista dell’origine, pur continuando a dirottare il traffico.
-
-Un caso emblematico è il \emph{forged-origin hijack}. L’attaccante, pur non essendo autorizzato a originare un certo prefisso, può \emph{forgiare l’origin AS} inserendo nell’\texttt{AS\_PATH} un ASN che \emph{risulta autorizzato} da una ROA per quel prefisso. Poiché BGP-OV guarda solo alla corrispondenza tra prefisso annunciato e origin AS, l’annuncio può risultare \emph{Valid} anche se, in realtà, il traffico viene attratto verso l’attaccante (che è il next-hop reale dell’UPDATE).
-In altre parole, la validazione dell’origine non vincola in modo crittografico la \emph{veridicità} del cammino né la coerenza tra cammino dichiarato e cammino effettivo.
-
-L’impatto può aumentare ulteriormente se l’attaccante combina la forgia dell’origine con una forma di de-aggregazione controllata: se una ROA consente un \texttt{maxlength} maggiore della lunghezza del prefisso ``principale'', l’attaccante può annunciare un prefisso \emph{più specifico} (contenuto nel prefisso legittimo) senza superare il \texttt{maxlength}. In tal modo, sfruttando il \emph{longest prefix match} nel forwarding IP, l’attacco può catturare traffico in modo più efficace e meno evidente.
-
+La origin validation verifica il binding \emph{prefisso--origin AS}, ma non garantisce che il cammino dichiarato sia autentico. Un avversario può costruire annunci che risultano ``plausibili'' dal punto di vista dell’origine, inserendo nel path un ASN autorizzato da una ROA per quel prefisso. In questi casi, l’annuncio può risultare \texttt{Valid} pur inducendo traffico verso l’attaccante (che resta il next-hop reale dell’UPDATE). L’efficacia aumenta se l’attaccante combina la forgia dell’origine con un prefisso più specifico ammesso dal \texttt{maxlength}, sfruttando il longest prefix match nel data plane.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\linewidth]{immagini/NET_09/forged}
-    \caption{Esempio di \emph{BGP hijacking}: un Autonomous System malevolo (AS6) annuncia falsamente il prefisso \texttt{129.119.0.0/16}, inducendo altri AS a selezionare un percorso non legittimo e dirottando il traffico destinato all’AS originario.}
-
+    \caption{Esempio di \emph{BGP hijacking}: un Autonomous System malevolo annuncia falsamente un prefisso inducendo altri AS a selezionare un percorso non legittimo e dirottando il traffico destinato all’AS originario.}
     \label{fig:forged}
 \end{figure}
 
-
-\subsubsection{BGPsec / Path Validation: firme lungo il path e verifica crittografica}
-Per coprire le lacune di BGP-OV (manipolazioni del prefisso e/o dell’\texttt{AS\_PATH}), è stato proposto un meccanismo di \emph{BGP Path Validation} (BGP-PV), standardizzato nel framework \emph{BGPsec}.
-L’idea di fondo è trasformare l’\texttt{AS\_PATH} da informazione ``dichiarativa'' a informazione \emph{crittograficamente vincolata}.
-
-Il funzionamento (ad alto livello) è il seguente:
-\begin{itemize}
-    \item ogni AS che partecipa a BGPsec possiede un certificato RPKI associato al proprio ASN;
-    \item ogni router BGPsec utilizza una coppia di chiavi e un certificato per \emph{firmare} gli UPDATE che propaga;
-    \item quando un UPDATE attraversa un AS, l’AS aggiunge il proprio contributo al cammino e produce una firma che vincola l’UPDATE (prefisso e attributi rilevanti) e la sequenza di AS attraversati;
-    \item la firma include anche l’identità del \emph{next AS} a cui l’UPDATE è destinato (vincolando così la propagazione lungo hop specifici);
-    \item l’UPDATE trasporta identificatori (ad es.\ \emph{Subject Key Identifier}, SKI) per permettere ai router riceventi di recuperare e selezionare le chiavi pubbliche corrette per verificare la catena di firme.
-\end{itemize}
+\subsubsection{BGPsec / Path Validation: idea generale}
+Per coprire il limite sull’\texttt{AS\_PATH}, BGPsec introduce firme lungo il cammino: ogni AS firma l’UPDATE che propaga, vincolando le informazioni rilevanti e la sequenza di AS attraversati. In questo modo, rimozioni o inserimenti non autorizzati di hop (ad esempio per accorciare fraudolentemente il path) diventano rilevabili perché romperebbero la verifica delle firme.
 
 \begin{figure}[H]
 \centering
@@ -509,122 +141,29 @@ Il funzionamento (ad alto livello) è il seguente:
 \label{fig:bgpsec-path-validation}
 \end{figure}
 
-
-Con questo schema, modifiche non autorizzate del cammino (rimozione/inserimento di AS, ``accorciamenti'' fraudolenti) e modifiche del prefisso diventano rilevabili perché romperebbero la verificabilità delle firme. In sintesi, BGPsec mira a garantire \textbf{integrità} e \textbf{autenticità} del controllo-plane BGP lungo il percorso inter-dominio, superando il limite concettuale di una validazione basata solo sull’origine.
-
-\subsubsection{Interazione tra soluzioni (origin validation, path validation) e trade-off}
-In pratica, \emph{origin validation} e \emph{path validation} non sono alternative, ma misure con costi/benefici diversi e spesso complementari:
-\begin{itemize}
-    \item \textbf{BGP-OV (RPKI/ROA)} è relativamente leggero da applicare: richiede l’accesso a dati RPKI validati (via validator/cache) e l’integrazione del risultato (Valid/Invalid/NotFound) nelle policy locali. È efficace contro molti hijack ``semplici'', ma non impedisce forged-origin e non protegge l’integrità dell’\texttt{AS\_PATH}.
-    \item \textbf{BGPsec (Path Validation)} offre una protezione più forte contro manomissioni del cammino e del prefisso, ma introduce complessità e overhead:
-    \begin{itemize}
-        \item richiede che gli AS (e i router lungo il percorso) supportino BGPsec e gestiscano certificati/chiavi per la firma;
-        \item aggiunge costi computazionali (firma/verifica) e overhead di protocollo (attributi e firme aggiuntive), con potenziale impatto su convergenza e scalabilità;
-        \item in \emph{deployment parziale}, la validazione completa è possibile solo su tratti di percorso in cui tutti gli AS partecipano: altrove si ricade su controlli più deboli (ad es.\ BGP-OV e filtri operativi).
-    \end{itemize}
-\end{itemize}
-
-Un approccio realistico è quindi incrementale e ``a strati'':
-\begin{enumerate}
-    \item adottare BGP-OV in modo ampio (almeno \emph{drop-invalid} o, in fasi iniziali, \emph{tag-only/prefer-valid});
-    \item introdurre BGPsec dove l’ecosistema e i vincoli operativi lo rendono sostenibile;
-    \item mantenere comunque le difese operative (prefix filtering, controlli per-peer, mitigazioni dei leak), perché nemmeno la path validation risolve da sola tutte le violazioni di policy (ad es.\ route leaks) e perché la sicurezza del routing resta un problema socio-tecnico oltre che crittografico.
-\end{enumerate}
-
-In conclusione, la sola origin validation è \emph{necessaria ma non sufficiente}: migliora sensibilmente la robustezza del routing, ma la protezione completa contro misrouting intenzionale richiede anche meccanismi che vincolino crittograficamente il cammino (BGPsec) e un insieme coerente di pratiche operative.
 \subsection{Mitigazione dei route leaks: best practice e approcci ``crypto''}
 
 \subsubsection{Prevenzione intra-AS: tagging ingress-to-egress con BGP large communities}
-Una strategia \emph{ampiamente adottata dagli operatori} per prevenire i route leaks \emph{all’interno del proprio AS} consiste nel \textbf{marcare} (\emph{tagging}) gli UPDATE BGP dal punto di ingresso (\emph{ingress}) fino al punto di uscita (\emph{egress}) usando una \textbf{BGP large community}.
-L’idea operativa è separare nettamente due aspetti:
-\begin{itemize}
-    \item \textbf{classificare} l’origine dell’informazione di routing quando entra nell’AS;
-    \item \textbf{applicare} a valle (in egress) una export policy che impedisca propagazioni ``oltre scope''.
-\end{itemize}
+Una best practice molto diffusa per ridurre i route leaks all’interno del proprio AS è marcare gli UPDATE in ingresso con un tag (tipicamente una \emph{BGP large community}) che indica da quale tipo di relazione la rotta è stata appresa (customer, peer laterale, transit provider, originata localmente). Il tag viene poi usato in uscita per applicare export policy robuste e semplici: rotte apprese da customer possono essere esportate più liberamente, mentre rotte apprese da peer o provider devono essere esportate solo verso customer. L’idea è rendere difficile una propagazione “oltre scope” anche in presenza di configurazioni complesse.
 
-In pratica, al momento della ricezione di una rotta in eBGP, il router di bordo assegna un tag che indica \emph{da quale tipo di peer} la rotta è stata appresa:
-\begin{itemize}
-    \item rotta ricevuta da \textbf{customer};
-    \item rotta ricevuta da \textbf{lateral peer} (p2p);
-    \item rotta ricevuta da \textbf{transit provider} (upstream);
-    \item rotta \textbf{originata internamente} dall’AS (locally originated).
-\end{itemize}
-Tale marcatura viene poi trasportata \emph{solo all’interno dell’AS} (ad esempio su iBGP) e \textbf{non deve propagare in eBGP}: questo evita che il tag diventi un vincolo esterno o venga interpretato da reti terze, mantenendo la soluzione come meccanismo di igiene interna.
+\subsubsection{Mitigazione inter-AS: detection e contenimento}
+Quando un leak esce comunque dall’AS che lo origina, l’obiettivo diventa identificarlo e contenerlo dopo l’inizio della propagazione. In questo modello, il peer AS (o AS successivi lungo il path) dovrebbe poter riconoscere che un annuncio è incoerente con le relazioni attese e trattarlo in modo conservativo, impedendo ulteriore propagazione e riducendo l’impatto globale.
 
-Il vantaggio è che l’export policy in uscita diventa molto più semplice e robusta: invece di ricostruire in egress la storia della rotta, il router guarda il tag e applica regole coerenti con il modello economico/di peering. La regola fondamentale è:
-\begin{itemize}
-    \item \textbf{rotte apprese da customer} possono essere esportate verso \emph{qualsiasi} tipo di peer (customer, lateral peer, transit provider);
-    \item \textbf{rotte apprese da lateral peer o transit provider} possono essere esportate \emph{solo verso i customer} (mai verso un altro peer laterale o un altro provider).
-\end{itemize}
-Questo schema impedisce il caso classico di route leak in cui un AS (spesso customer/stub) diventa, di fatto, un punto di transito tra provider o tra peer, violando gli accordi e creando path anomali.
+\subsubsection{ASPA: certificare relazioni provider/customer e (parziale) validazione del path}
+ASPA estende l’uso di RPKI oltre la validazione dell’origine, certificando relazioni provider/customer. Per ogni AS si pubblica un oggetto firmato che elenca i provider autorizzati; l’informazione può essere usata per verificare se un AS\_PATH è coerente con relazioni attese e, quindi, per individuare pattern tipici di route leak.
 
-\subsubsection{Mitigazione inter-AS: detection e contenimento dopo l’inizio della propagazione}
-Le soluzioni intra-AS riducono sensibilmente la probabilità che un leak \emph{esca} dalla rete che lo origina; tuttavia, nella realtà operativa possono verificarsi misconfigurazioni che superano le difese interne (o reti che non applicano tali pratiche). Per questo motivo si introducono meccanismi \textbf{inter-AS}, pensati per funzionare \emph{attraverso hop eBGP}.
+\subsubsection{Limiti di ASPA e complementarità con BGPsec}
+ASPA impone vincoli sulle relazioni tra AS adiacenti nel path, ma non fornisce integrità completa dell’\texttt{AS\_PATH}. In alcuni casi selezionati, un avversario può modificare il path (ad esempio accorciandolo) in modo da mantenere una sequenza ancora coerente con le relazioni attestabili, rendendo l’anomalia più difficile da rilevare. Per questo, ASPA è da considerare complementare a BGPsec: ASPA migliora la detection dei leak in modo pragmatico, mentre BGPsec rafforza l’integrità crittografica del cammino.
 
-L’obiettivo dell’approccio inter-AS cambia prospettiva: non si assume che il leak sia prevenuto, ma si mira a \textbf{rilevare} e \textbf{bloccare/mitigare} un leak \emph{dopo} che ha iniziato a propagarsi. In tale modello:
-\begin{itemize}
-    \item se una rotta leakata esce da un AS, \textbf{il peer AS} (o qualunque AS successivo lungo l’AS\_PATH) dovrebbe avere la capacità di \emph{identificarla} come anomala;
-    \item la mitigazione consiste nel \emph{contenimento} (ad es.\ rifiuto dell’annuncio, de-preferenza, blackholing selettivo), così da impedire ulteriore propagazione e ridurre l’impatto globale.
-\end{itemize}
-Dal punto di vista della resilienza dell’infrastruttura Internet, una difesa completa richiede idealmente \emph{entrambi} gli strati: prevenzione intra-AS (igiene interna) e rilevazione/mitigazione inter-AS (robustezza “di sistema” quando la prevenzione fallisce).
-
-\subsubsection{ASPA: certificare relazioni provider/customer e validazione dell’AS\_PATH}
-Un’evoluzione ``crypto'' per la mitigazione dei route leaks è l’uso di \textbf{RPKI} non solo per validare l’origine dei prefissi (ROA), ma anche per certificare le \textbf{relazioni tra AS} in termini di \emph{provider authorization}. Questa proposta è nota come \textbf{ASPA} (\emph{Autonomous System Provider Authorization}) ed è oggetto di standardizzazione in ambito IETF.
-
-\paragraph{Idea di base.}
-Per ciascun AS si pubblica, tramite un oggetto firmato RPKI, una lista di \textbf{provider autorizzati}. L’informazione è quindi \emph{crittograficamente verificabile} e può essere usata dai router (o dai sistemi di validazione) per controllare se l’\texttt{AS\_PATH} è coerente con le relazioni attese. In particolare, un BGP speaker che riceve un annuncio può verificare che le coppie di AS adiacenti nel path rappresentino relazioni ``ammissibili'' (ad esempio \emph{provider $\rightarrow$ customer} coerenti) e, così facendo, individuare pattern tipici di route leak.
-Un punto rilevante è che tale validazione aiuta anche contro alcune forme di \emph{forged-origin hijack}, perché introduce vincoli aggiuntivi sul cammino dichiarato.
-
-\paragraph{Contenuto dell’oggetto ASPA.}
-Un ASPA contiene essenzialmente:
-\begin{itemize}
-    \item un identificatore dell’AS ``cliente'' (\texttt{customerASID}, talvolta indicato come CAS);
-    \item un insieme di AS provider autorizzati (\texttt{providers}, talvolta indicato come SPAS);
-\end{itemize}
-ed è codificato come \textbf{oggetto firmato RPKI}. In sintesi: ``\emph{per questo customer AS, questi sono i provider ammessi}''.
-
-\paragraph{Verifica (intuizione).}
-Dato un AS\_PATH $\{AS[N], AS[N-1], \dots, AS[1]\}$, l’idea è controllare, per ciascuna coppia adiacente, se il secondo AS è un provider autorizzato del primo (a seconda della direzione con cui si interpreta il cammino). L’esito elementare della verifica su una coppia può essere:
-\begin{itemize}
-    \item \textbf{Provider} (relazione attestata);
-    \item \textbf{Not Provider} (relazione contraddetta) $\Rightarrow$ indicatore forte di anomalia;
-    \item \textbf{No Attestation} (assenza di attestazione) $\Rightarrow$ incertezza tipica di un deployment parziale.
-\end{itemize}
-A livello di policy, l’operatore può decidere come trattare l’esito \emph{unknown} (assenza attestazione): in contesti reali, durante fasi iniziali di adozione, un eccesso di rigidità rischia falsi positivi.
-
-\subsubsection{Attacchi e limiti di ASPA; complementarità con BGPsec}
-ASPA migliora la capacità di \emph{rilevare} route leaks, ma non fornisce da sola integrità completa del path. In particolare, il materiale evidenzia un limite importante: \textbf{ASPA può risultare vulnerabile a modifiche malevole dell’AS\_PATH}. In alcuni casi selezionati, un AS avversario può \emph{accorciare} l’AS\_PATH (rimuovendo AS intermedi) in modo tale che la validazione ASPA continui a risultare coerente: l’attacco diventa quindi \emph{difficile da rilevare} con il solo controllo delle relazioni provider/customer.
-
-Questo punto chiarisce la natura del trade-off:
-\begin{itemize}
-    \item ASPA impone vincoli ``relazionali'' sul path (valley-free / coerenza provider-customer), ma non autentica crittograficamente la \emph{sequenza completa} di AS attraversati.
-    \item BGPsec, invece, mira a garantire l’integrità del path tramite firme lungo il cammino, rendendo molto più difficile (o impossibile) rimuovere/inserire hop senza invalidare le firme.
-\end{itemize}
-Per tale motivo, la raccomandazione operativa è di considerare \textbf{ASPA e BGPsec come soluzioni complementari}: ASPA affronta in modo mirato route leaks e alcune classi di misrouting legate alle relazioni tra AS; BGPsec rafforza la protezione contro manipolazioni del path, riducendo la fattibilità di attacchi basati su \emph{path shortening} che possono eludere ASPA.
-
-In sintesi, nel panorama attuale (adozione non uniforme e vincoli operativi), un approccio realistico è stratificato:
-\begin{enumerate}
-    \item \textbf{best practice intra-AS} (tagging e policy in egress) per ridurre la probabilità di leak alla sorgente;
-    \item \textbf{meccanismi inter-AS} per detection/containment quando la propagazione è già iniziata;
-    \item \textbf{ASPA} come passo ``crypto'' pragmatico basato su RPKI per vincolare relazioni provider/customer;
-    \item \textbf{BGPsec} (quando sostenibile) per fornire integrità crittografica del cammino e rafforzare ASPA.
-\end{enumerate}
-
-
-        {\LARGE \textbf{Laboratorio}} \\[0.5em]
+\newpage
+{\LARGE \textbf{Laboratorio}} \\[0.5em]
 \subsection{Laboratorio: BGP Security con Kathara, FRR e RPKI (sub-prefix hijack + mitigazione)}
 
 \paragraph{Obiettivo.}
-In questo laboratorio si dimostra un attacco di \textbf{sub-prefix hijacking} in uno scenario BGP emulato e si verifica la mitigazione tramite \textbf{RPKI + BGP Origin Validation (BGP-OV)}. In particolare, si osserva come una policy \emph{drop-invalid} impedisca l’installazione e la propagazione dell’annuncio malevolo.
+Il laboratorio mostra un attacco di \textbf{sub-prefix hijacking} in una topologia emulata e verifica la mitigazione tramite \textbf{RPKI + BGP Origin Validation}. L’idea è osservare che, senza validazione, il più-specifico dell’attaccante viene preferito per longest prefix match, mentre con una policy \emph{drop-invalid} l’annuncio malevolo non viene installato né propagato.
 
 \paragraph{Strumenti.}
-\begin{itemize}
-    \item \textbf{Kathara}: emulazione della topologia (router/host in container).
-    \item \textbf{FRRouting (FRR)}: configurazione BGP e applicazione delle policy.
-    \item \textbf{Krill}: CA/Publication server RPKI per pubblicare ROA.
-    \item \textbf{Validator/Cache} (es.\ Routinator o equivalente): validazione RPKI e distribuzione ai router (RTR).
-\end{itemize}
-
+Kathara per l’emulazione, FRRouting per la configurazione BGP, Krill per pubblicare ROA e un validator/cache (es.\ Routinator) per fornire ai router i dati validati tramite RTR.
 
 \begin{figure}[H]
 \centering
@@ -632,155 +171,5 @@ In questo laboratorio si dimostra un attacco di \textbf{sub-prefix hijacking} in
 \caption{Scenario di laboratorio: prefisso legittimo, attaccante e sorgente del traffico con transito intermedio.}
 \end{figure}
 
-\paragraph{Scenario (alto livello).}
-\begin{itemize}
-    \item \textbf{Customer 3 (legittimo)} origina \texttt{150.0.0.0/24} (AS150 nel materiale).
-    \item \textbf{Customer 2 (attaccante)} annuncia un sotto-prefisso (es.\ \texttt{150.0.0.0/28}, AS201 nel materiale) per attrarre traffico.
-    \item \textbf{Customer 1} genera traffico verso un indirizzo nel prefisso vittima (es.\ \texttt{150.0.0.4}).
-\end{itemize}
-
-\paragraph{Topologia di rete.}
-
-
-\subsubsection{Avvio dell’emulazione e controlli preliminari}
-
-\paragraph{Step 0: avvio e accesso ai nodi.}
-Avviare la topologia con Kathara e aprire una shell sui nodi di interesse (Customer 1/2/3 e router di transito). Verificare la connettività di base sui link adiacenti (ping tra interfacce direttamente connesse).
-
-\paragraph{Step 1: verifica che FRR sia operativo.}
-Su ciascun router FRR verificare l’accesso a \texttt{vtysh} e lo stato dei demoni (BGP attivo).
-\begin{verbatim}
-vtysh
-show running-config
-\end{verbatim}
-
-\subsubsection{Fase 1: baseline (senza RPKI)}
-
-\paragraph{Step 2: verifica delle sessioni BGP.}
-Su router rilevanti (almeno quelli di transito e i bordi customer) verificare che le sessioni siano \emph{Established}.
-\begin{verbatim}
-show ip bgp summary
-\end{verbatim}
-
-\paragraph{Step 3: verifica propagazione del prefisso legittimo \texttt{150.0.0.0/24}.}
-Controllare che il prefisso originato da Customer 3 compaia nelle BGP table lungo la topologia.
-\begin{verbatim}
-show ip bgp 150.0.0.0/24
-show ip bgp
-\end{verbatim}
-Opzionale: verificare l’installazione nella routing table.
-\begin{verbatim}
-show ip route 150.0.0.0/24
-show ip route 150.0.0.4
-\end{verbatim}
-
-\paragraph{Step 4: verifica data plane (cammino legittimo).}
-Da Customer 1 eseguire un traceroute verso un indirizzo nel prefisso vittima e annotare il percorso.
-\begin{verbatim}
-traceroute 150.0.0.4
-\end{verbatim}
-
-\subsubsection{Fase 2: attacco (sub-prefix hijack, senza RPKI)}
-
-\paragraph{Step 5: attivazione dell’annuncio malevolo su Customer 2.}
-Configurare Customer 2 per annunciare un sotto-prefisso (es.\ \texttt{150.0.0.0/28}). In BGP, l’annuncio via \texttt{network} richiede che il prefisso sia presente nella RIB (ad es.\ tramite una route statica o un’interfaccia/loopback coerente).
-\begin{verbatim}
-configure terminal
-! (ESEMPIO) assicurarsi che 150.0.0.0/28 sia in RIB:
-ip route 150.0.0.0/28 Null0
-router bgp <ASN_CUSTOMER2>
- network 150.0.0.0/28
-end
-write memory
-\end{verbatim}
-\noindent\textbf{Nota:} sostituire \texttt{<ASN\_CUSTOMER2>} con l’ASN effettivo del nodo e adattare la modalità di inserimento in RIB al template del lab.
-
-\paragraph{Step 6: verifica propagazione del sotto-prefisso.}
-Verificare che \texttt{150.0.0.0/28} sia visibile sui router di transito e su Customer 1.
-\begin{verbatim}
-show ip bgp 150.0.0.0/28
-show ip bgp
-\end{verbatim}
-
-\paragraph{Step 7: verifica della rotta selezionata per \texttt{150.0.0.4}.}
-Poiché \texttt{150.0.0.4} ricade nel range del sotto-prefisso, ci si aspetta che la rotta installata punti verso l’attaccante.
-\begin{verbatim}
-show ip route 150.0.0.4
-\end{verbatim}
-
-\paragraph{Step 8: conferma data plane (attacco riuscito).}
-Ripetere il traceroute da Customer 1 e verificare che il percorso attraversi Customer 2 (o comunque cambi in modo coerente con l’hijack).
-\begin{verbatim}
-traceroute 150.0.0.4
-\end{verbatim}
-
-\subsubsection{Fase 3: mitigazione (RPKI + BGP Origin Validation)}
-
-\paragraph{Step 9: pubblicazione ROA con Krill.}
-Su Krill creare/pubblicare una ROA per \texttt{150.0.0.0/24}:
-\begin{itemize}
-    \item \textbf{origin ASN}: ASN di Customer 3 (legittimo);
-    \item \textbf{\texttt{maxlength}}: impostare \texttt{24} per rendere il sotto-prefisso \textbf{Invalid}.
-\end{itemize}
-L’obiettivo è che l’annuncio \texttt{150.0.0.0/28} (originato da Customer 2) contraddica la ROA e risulti \texttt{Invalid}.
-
-\paragraph{Step 10: avvio/aggiornamento del validator e servizio RTR.}
-Avviare il validator in modo che recuperi i dati dal repository e renda disponibili ai router le tuple \{prefisso, \texttt{maxlength}, origin AS\} via RTR. Verificare che la VRP relativa a \texttt{150.0.0.0/24} sia presente (comando dipendente dal validator).
-\begin{verbatim}
-# (ESEMPIO) controlli lato validator:
-routinator vrps
-\end{verbatim}
-
-\paragraph{Step 11: configurazione FRR per consumare RPKI (RTR).}
-Configurare i router FRR (tipicamente quelli di transito che applicano policy in ingresso) per collegarsi al cache server RTR. La sintassi esatta dipende dalla versione di FRR e dal template del lab; l’obiettivo è:
-\begin{itemize}
-    \item attivare la sessione RTR verso il validator;
-    \item abilitare la classificazione \texttt{Valid}/\texttt{Invalid}/\texttt{NotFound}.
-\end{itemize}
-
-\paragraph{Step 12: policy \emph{drop-invalid} su ingress eBGP.}
-Applicare una route-map (o policy equivalente) che scarti le rotte \texttt{Invalid} ricevute dai peer eBGP rilevanti.
-\begin{verbatim}
-configure terminal
-route-map RPKI-IN deny 10
- match rpki invalid
-route-map RPKI-IN permit 20
-!
-router bgp <ASN_ROUTER>
- neighbor <PEER_IP> route-map RPKI-IN in
-end
-write memory
-\end{verbatim}
-\noindent\textbf{Nota:} adattare \texttt{<ASN\_ROUTER>} e \texttt{<PEER\_IP>} ai router/peer di transito. Se il template prevede un punto unico di enforcement, applicare la policy su quel/i router.
-
-\subsubsection{Replica dell’attacco con RPKI attivo}
-
-\paragraph{Step 13: ripetizione annuncio e verifica stato.}
-Mantenendo attivo l’annuncio malevolo su Customer 2, verificare sui router di enforcement che \texttt{150.0.0.0/28} risulti \texttt{Invalid} e venga scartato (quindi non installato né propagato).
-\begin{verbatim}
-show ip bgp 150.0.0.0/28
-show ip route 150.0.0.4
-\end{verbatim}
-
-\paragraph{Step 14: conferma data plane (attacco mitigato).}
-Ripetere il traceroute da Customer 1: il percorso deve tornare (o restare) coerente con il raggiungimento di Customer 3, senza attraversare l’attaccante.
-\begin{verbatim}
-traceroute 150.0.0.4
-\end{verbatim}
-
-\paragraph{Output attesi (riassunto).}
-\begin{itemize}
-    \item \textbf{Baseline:} \texttt{150.0.0.0/24} visibile e selezionato; traceroute verso \texttt{150.0.0.4} raggiunge Customer 3.
-    \item \textbf{Attacco senza RPKI:} \texttt{150.0.0.0/28} visibile e selezionato per host nel range; traceroute attraversa Customer 2.
-    \item \textbf{RPKI + drop-invalid:} \texttt{150.0.0.0/28} classificato \texttt{Invalid} e scartato; la rotta per \texttt{150.0.0.4} torna a usare \texttt{/24}; traceroute non passa dall’attaccante.
-\end{itemize}
-
-\paragraph{Conclusioni.}
-Il laboratorio evidenzia che un sub-prefix hijack può avere effetto immediato sul data plane in assenza di controlli, mentre RPKI/BGP-OV consente di identificare annunci non coerenti con le ROA e, con policy \emph{drop-invalid}, di impedirne l’installazione e la propagazione. La scelta di \texttt{maxlength} nella ROA è determinante per bloccare de-aggregazioni malevole del prefisso.
-
-\paragraph{Dettagli aggiuntivi (consigli operativi).}
-\begin{itemize}
-    \item \textbf{Raccogliere evidenze control plane e data plane:} salvare output di \texttt{show ip bgp} e \texttt{traceroute} prima/dopo.
-    \item \textbf{Policy graduali:} in scenari reali spesso si parte da \emph{tag-only} o \emph{prefer-valid}; nel lab \emph{drop-invalid} rende l’effetto più evidente.
-    \item \textbf{Adozione parziale:} le rotte \texttt{NotFound} sono comuni quando la copertura ROA non è completa; nel lab l’obiettivo è isolare l’effetto su \texttt{Invalid}.
-\end{itemize}
+\paragraph{Sequenza sperimentale.}
+Si esegue prima lo scenario \textbf{senza RPKI}: si verifica il path legittimo da Customer 1 verso la rete di Customer 3, poi Customer 2 annuncia un prefisso più specifico e si osserva che il path cambia e il traffico viene attratto verso l’attaccante. Successivamente si abilita \textbf{RPKI}: si pubblica una ROA per il prefisso legittimo con \texttt{maxlength} impostato in modo da rendere \textbf{Invalid} il più-specifico dell’attaccante, si collega FRR al validator RTR e si applica una policy \emph{drop-invalid}. Ripetendo l’attacco, l’annuncio malevolo non risulta più efficace e il percorso verso la destinazione torna coerente con l’owner legittimo.
