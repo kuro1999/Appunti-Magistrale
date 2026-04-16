@@ -1,0 +1,39 @@
+\documentclass[12pt,a4paper]{report}
+
+% --- Pacchetti Fondamentali ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref} % Per i link cliccabili
+\usepackage{enumitem} % Per liste personalizzate
+\usepackage{booktabs} % Per tabelle professionali
+\usepackage{xcolor}   % Per i colori
+\usepackage[most]{tcolorbox} % Per i box "Nota del Prof"
+
+% --- Configurazione Box "Nota del Prof" ---
+\newtcolorbox{notaprof}{
+  colback=blue!5!white,
+  colframe=blue!75!black,
+  title=\textbf{📌 Nota del Prof},
+  fonttitle=\bfseries,
+  arc=2mm,
+  breakable % Permette al box di dividersi tra più pagine
+}
+
+% --- Info Documento ---
+\title{Appunti di Ingegneria del Software}
+\author{Appunti basati sulle lezioni di Davide Falessi}
+\date{A.A. 2023/2024}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+% --- Inclusione Lezioni ---
+% Ogni volta che crei una nuova lezione, aggiungi un \include{nomefile}
+\include{Falessi/Metriche_Misurazioni}
+
+\end{document}
