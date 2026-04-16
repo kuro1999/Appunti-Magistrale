@@ -1,0 +1,66 @@
+\chapter{Teoria della Misurazione e Scale di Misura}
+
+\section{Introduzione alla Misurazione del Software}
+La misurazione nel software engineering non è un fine, ma uno strumento di supporto alle decisioni. Come citato dai riferimenti storici (Lord Kelvin, Tom DeMarco), l'assenza di misurazione impedisce il controllo e, di conseguenza, il miglioramento dei processi e dei prodotti.
+
+\subsection{Definizioni Formali}
+Secondo i modelli standard, è necessario distinguere tre concetti fondamentali:
+\begin{itemize}[label=\textbullet]
+    \item \textbf{Misura (Measure):} Rappresentazione numerica o categoriale di un attributo specifico (es. 5000 LOC, 30 mesi-uomo).
+    \item \textbf{Metrica (Metric):} Il sistema di misurazione e la scala quantitativa utilizzata. Definisce le regole di assegnazione dei valori (es. Complessità Ciclomatica, Densità dei Difetti).
+    \item \textbf{Misurazione (Measurement):} L'atto pratico di determinare la misura attraverso l'applicazione della metrica su un'entità specifica.
+\end{itemize}
+
+\subsection{Proprietà di una Metrica di Qualità}
+Per essere considerata valida, una metrica deve soddisfare i seguenti criteri:
+\begin{description}
+    \item[Rilevanza:] Deve misurare un attributo significativo per il dominio applicativo.
+    \item[Oggettività:] Il risultato deve basarsi su dati verificabili e indipendenti dal valutatore.
+    \item[Affidabilità e Consistenza:] La metrica deve produrre risultati costanti in condizioni identiche e deve essere allineata agli obiettivi del progetto.
+    \item[Usabilità:] Il calcolo e l'interpretazione non devono richiedere uno sforzo eccessivo in termini di risorse.
+\end{description}
+
+\begin{notaprof}
+Il docente sottolinea che la pertinenza di una metrica è strettamente legata al contesto di business. Un errore critico in un sistema assicurativo potrebbe riguardare l'accuratezza dei calcoli (oracolo), mentre per una piattaforma come Google, la priorità assoluta risiede nella disponibilità del servizio (uptime), dove anche poche ore di downtime globale risultano inaccettabili.
+\end{notaprof}
+
+\section{Tassonomia delle Scale di Misura}
+La scelta della scala determina quali operazioni statistiche siano applicabili ai dati raccolti.
+
+\subsection{Scala Nominale e Ordinale}
+\begin{itemize}
+    \item \textbf{Nominale:} Utilizzata per categorizzare elementi senza un ordine intrinseco (es. tipi di bug: logica, UI, performance). Operazioni ammesse: \textit{Moda, frequenza}.
+    \item \textbf{Ordinale:} Prevede un ordine di rango, ma la distanza tra i valori non è definita (es. priorità: Critical, High, Medium, Low). Operazioni ammesse: \textit{Mediana}.
+\end{itemize}
+
+\begin{notaprof}
+Si osserva come le scale ordinali, pur limitando le analisi statistiche alla mediana, offrano spesso una maggiore oggettività rispetto a scale numeriche forzate. Valutare la severità di un bug su una scala 0-100 introduce un'alta soggettività (differenza tra 65 e 70), mentre una distinzione qualitativa (Blocker vs Non-Blocker) risulta più robusta.
+\end{notaprof}
+
+\subsection{Scale Numeriche (Intervallo e Rapporto)}
+In queste scale, la magnitudine della differenza tra i valori ha significato fisico.
+\begin{itemize}
+    \item \textbf{Intervallo:} Non possiede uno zero assoluto (es. date).
+    \item \textbf{Rapporto (Ratio):} Possiede uno zero assoluto che indica l'assenza dell'attributo (es. LOC, tempo, sforzo).
+\end{itemize}
+\textbf{Statistiche ammesse:} Media, Varianza, Deviazione Standard.
+
+\section{Modelli di Qualità: Lo Standard ISO/IEC 25010}
+Lo standard ISO 25010 definisce \textit{cosa} intendiamo per qualità attraverso una gerarchia di caratteristiche:
+\begin{enumerate}
+    \item \textbf{Functional Suitability:} Completezza e correttezza funzionale.
+    \item \textbf{Performance Efficiency:} Comportamento temporale e utilizzo delle risorse.
+    \item \textbf{Security:} Riservatezza, integrità, non ripudio e autenticità.
+    \item \textbf{Maintainability:} Modularità, riusabilità, analizzabilità e testabilità.
+\end{enumerate}
+
+\begin{notaprof}
+È opportuno distinguere il modello (la tassonomia ISO) dalla metrica (come lo misuro). Il successo nell'applicazione di questi standard dipende dalla reale intenzione dell'organizzazione di migliorare i processi; l'uso delle metriche al solo scopo di ottenere certificazioni formali, senza un miglioramento sostanziale, svilisce l'intero sistema ingegneristico.
+\end{notaprof}
+
+\section{Introduzione alle Metriche Object-Oriented}
+Le metriche OO (come la suite di Chidamber e Kemerer) fungono da indicatori di rischio. Non devono essere utilizzate per definire soglie assolute di "correttezza", ma per identificare anomalie (\textit{outliers}) o trend preoccupanti nel tempo.
+
+\begin{notaprof}
+Il docente suggerisce un approccio manageriale basato sulle distribuzioni: è più efficace concentrare le attività di refactoring o revisione sul 10\% delle classi che presentano i valori di complessità più elevati, piuttosto che cercare di ottimizzare l'intero sistema in modo uniforme.
+\end{notaprof}
