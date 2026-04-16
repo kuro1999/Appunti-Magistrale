@@ -1,15 +1,125 @@
-%! Author = leonardo
-%! Date = 16/04/26
+\chapter{GQM+S, Stima dei Costi e Planning Poker}
 
-% Preamble
-\documentclass[11pt]{article}
+\section{GQM+Strategies (Goal-Question-Metric + Strategies)}
+L'approccio GQM+Strategies (GQM+S) è una metodologia che combina il metodo classico GQM con l'identificazione delle migliori strategie per raggiungere gli obiettivi. Questo approccio collega a cascata gli obiettivi aziendali alla misurazione:
+\begin{center}
+    Business Goals $\rightarrow$ Software Goals $\rightarrow$ Questions $\rightarrow$ Measures $\rightarrow$ Strategies / Targets.
+\end{center}
 
-% Packages
-\usepackage{amsmath}
+\begin{notaprof}
+Il CQM originale è stato co-creato dal Professor Cantone. L'estensione "+ Strategies" serve ad associare l'azione tecnica al risultato voluto. Tutto parte dal Business: ogni feature o refactoring viene fatto in primis per raggiungere obiettivi aziendali.
+\end{notaprof}
 
-% Document
-\begin{document}
+\subsection{Il Reference Process (I 6 Step del GQM+S)}
+Il processo si sviluppa in sei step principali per permettere il miglioramento continuo:
+\begin{enumerate}[start=0]
+    \item \textbf{Initialize:} Impegno (Commitment), Staffing e Responsabilità.
+    \item \textbf{Characterize:} Definire lo scope dell'applicazione e caratterizzare il contesto ambientale.
+    \item \textbf{Set Goals:} Analisi dello status quo, prioritizzazione degli obiettivi e costruzione della griglia goals-strategies.
+    \item \textbf{Choose Process:} Pianificare l'implementazione delle strategie e organizzare la raccolta/analisi dei dati.
+    \item \textbf{Execute Model:} Esecuzione delle strategie, raccolta dati e feedback.
+    \item \textbf{Analyze Results:} Analisi dei dati, revisione delle strategie e analisi costi/benefici.
+    \item \textbf{Package and Improve:} Adattamento dei goal e registrazione delle "lessons learned".
+\end{enumerate}
 
+\begin{notaprof}
+L'ultimo step di "packaging" si basa sul concetto di \textit{Experience Factory}: lo scopo è impacchettare l'esperienza in una knowledge base per riutilizzarla in futuro.
+\end{notaprof}
 
+\begin{notaslide}
+\textbf{Esempi di utilizzo tipici:}
+\begin{itemize}
+    \item \textbf{Miglioramento del processo:} Ridurre lead time o rework (Metriche: cycle time, difetti sfuggiti).
+    \item \textbf{Project management:} Migliorare prevedibilità (Metriche: milestone burndown, throughput).
+    \item \textbf{Supporto decisionale:} Valutare l'adozione di nuove tecnologie (Metriche: esiti progetto pilota).
+\end{itemize}
+\end{notaslide}
 
-\end{document}
+\section{Introduzione alla Stima dei Costi}
+La stima si basa su tre domande fondamentali: quanto sforzo (\textit{effort}) è richiesto, quanto tempo di calendario è necessario e qual è il costo totale dell'attività.
+
+\begin{notaprof}
+Bisogna distinguere l'effort (lavoro puramente impiegato) dal tempo di calendario: un'attività può richiedere poco sforzo ma molto tempo se le risorse non sono subito disponibili.
+\end{notaprof}
+
+\subsection{Componenti del Costo ed Overheads}
+Il costo include Hardware/Software, viaggi, formazione e l'Effort, che è il fattore dominante (salari e costi sociali). Gli \textbf{Overheads} includono:
+\begin{itemize}
+    \item Costi degli edifici (riscaldamento, luce).
+    \item Costi di rete e comunicazione.
+    \item Strutture condivise come mensa o biblioteca.
+\end{itemize}
+
+\begin{notaprof}
+Il salario dello sviluppatore a volte non copre neanche il 50\% del costo totale per un'azienda a causa degli overhead. Inoltre, il software ha un costo marginale di replicazione quasi nullo: vendere a un secondo cliente non costa nulla di più in termini di produzione.
+\end{notaprof}
+
+\subsection{Il Ruolo del Linguaggio di Programmazione}
+\begin{notaslide}
+Il linguaggio impatta drasticamente su tempi e costi. Ad esempio, l'Assembly richiede molto più tempo per coding (8 settimane per 5000 linee) e testing (10 settimane) rispetto a un linguaggio ad alto livello per lo stesso sistema.
+\end{notaslide}
+
+\section{Tecniche di Stima}
+\begin{notaesame}
+All'esame non vengono chieste le tecniche a memoria, ma i vantaggi, gli svantaggi e quando usare l'una rispetto all'altra.
+\end{notaesame}
+
+\begin{itemize}
+    \item \textbf{Algorithmic cost modelling:} Approccio basato su formule e dati storici, generalmente basato sulla dimensione del software (es. COCOMO).
+    \item \textbf{Expert judgement:} Uno o più esperti usano la loro esperienza per predire i costi.
+    \begin{itemize}
+        \item \textit{Vantaggi:} Metodo relativamente economico; accurato se gli esperti hanno esperienza diretta in sistemi simili.
+        \item \textit{Svantaggi:} Molto inaccurato se mancano veri esperti nel dominio.
+    \end{itemize}
+    \item \textbf{Estimation by analogy:} Il costo è calcolato comparando il progetto con uno simile nello stesso dominio.
+    \begin{itemize}
+        \item \textit{Vantaggi:} Accurato se sono disponibili dati di progetti passati.
+        \item \textit{Svantaggi:} Impossibile se non si è mai affrontato un progetto comparabile; richiede un database di costi sistematicamente aggiornato.
+    \end{itemize}
+    \item \textbf{Parkinson's Law:} Il progetto costa qualunque risorsa sia disponibile. Il lavoro si espande per riempire il tempo disponibile.
+    \begin{itemize}
+        \item \textit{Vantaggi:} Non si va mai oltre il budget (\textit{no overspend}).
+        \item \textit{Svantaggi:} Il sistema rimane solitamente incompleto (\textit{unfinished}).
+    \end{itemize}
+    \item \textbf{Pricing to win:} Il costo è pari a quanto il cliente può spendere.
+    \begin{itemize}
+        \item \textit{Vantaggi:} Permette di vincere il contratto.
+        \item \textit{Svantaggi:} Bassa probabilità che il cliente ottenga ciò che vuole; i costi non riflettono il lavoro reale richiesto.
+    \end{itemize}
+\end{itemize}
+
+\section{Planning Poker}
+Il Planning Poker è una tecnica Agile per la stima del consenso, basata sulle carte di James Grenning.
+
+\subsection{Dinamiche e Regole del Gioco}
+Ogni partecipante riceve un mazzo di carte con una sequenza numerica, solitamente di \textbf{Fibonacci} (1, 2, 3, 5, 8, 13, 21, ecc.).
+\begin{itemize}
+    \item \textbf{La Sfida:} Il moderatore presenta una \textit{user story} e il team può fare domande al Product Owner.
+    \item \textbf{Voto Segreto:} Ogni membro seleziona privatamente una carta che rappresenta la "grandezza" (\textit{size}) del task, considerando tempo, rischio e complessità.
+    \item \textbf{Svelamento e Dibattito:} Le carte vengono mostrate insieme. Se non c'è consenso, chi ha dato i valori estremi spiega le proprie ragioni. Il gruppo discute e si vota di nuovo finché non si raggiunge un accordo.
+\end{itemize}
+
+\begin{notaesame}
+\textbf{Perché i "buchi" di Fibonacci?} Servono a forzare la granularità corretta. All'aumentare della grandezza aumenta l'incertezza: la sequenza ci spinge a scegliere tra valori distanti (es. 13 o 21), riflettendo la reale imprecisione della stima per task grandi.
+\end{notaesame}
+
+\begin{notaprof}
+In caso di mancato consenso, si sceglie la stima superiore per tutelarsi dalla naturale indole ottimista dell'uomo, che tende a sottostimare i tempi ignorando gli imprevisti.
+\end{notaprof}
+
+\subsection{Vantaggi e Consigli Pratici (Tips)}
+Il Planning Poker favorisce la collaborazione e fa emergere i problemi tecnici in anticipo attraverso il dibattito.
+
+\begin{itemize}
+    \item \textbf{Chi vota:} Solo chi farà materialmente il lavoro. I manager non votano per non influenzare le stime al ribasso.
+    \item \textbf{Pareggi:} Se il team è diviso tra due taglie consecutive (es. 5 e 8), si sceglie la maggiore e si procede.
+\end{itemize}
+
+\begin{notaslide}
+\textbf{Suggerimenti per l'efficienza:}
+\begin{itemize}
+    \item Usare un timer per limitare le discussioni a circa un minuto.
+    \item Includere una carta "I need a break" per segnalare la stanchezza.
+    \item Mantenere una \textbf{Baseline} consistente tra le varie iterazioni.
+\end{itemize}
+\end{notaslide}

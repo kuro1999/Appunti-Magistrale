@@ -1,66 +1,66 @@
 \chapter{Teoria della Misurazione e Scale di Misura}
 
 \section{Introduzione alla Misurazione del Software}
-La misurazione nel software engineering non è un fine, ma uno strumento di supporto alle decisioni. Come citato dai riferimenti storici (Lord Kelvin, Tom DeMarco), l'assenza di misurazione impedisce il controllo e, di conseguenza, il miglioramento dei processi e dei prodotti.
+La misurazione nel software engineering non è un fine, ma uno strumento decisionale di supporto. Come ricordano Lord Kelvin e Tom DeMarco, l'assenza di misurazione impedisce il controllo e, di conseguenza, il miglioramento dei processi e dei prodotti[cite: 330, 341].
 
 \subsection{Definizioni Formali}
 Secondo i modelli standard, è necessario distinguere tre concetti fondamentali:
 \begin{itemize}[label=\textbullet]
-    \item \textbf{Misura (Measure):} Rappresentazione numerica o categoriale di un attributo specifico (es. 5000 LOC, 30 mesi-uomo).
-    \item \textbf{Metrica (Metric):} Il sistema di misurazione e la scala quantitativa utilizzata. Definisce le regole di assegnazione dei valori (es. Complessità Ciclomatica, Densità dei Difetti).
-    \item \textbf{Misurazione (Measurement):} L'atto pratico di determinare la misura attraverso l'applicazione della metrica su un'entità specifica.
+    \item \textbf{Misura (Measure):} Rappresentazione numerica di una caratteristica o di un attributo di un prodotto o processo software (es. 5000 LOC, 30 mesi-uomo)[cite: 363, 364, 365, 368].
+    \item \textbf{Metrica (Metric):} La scala o il sistema di misurazione utilizzato per quantificare una misura[cite: 352]. Definisce le regole di assegnazione dei valori (es. Complessità Ciclomatica, Densità dei Difetti)[cite: 353, 354].
+    \item \textbf{Misurazione (Measurement):} Il processo pratico di assegnazione dei numeri alle misure utilizzando una metrica[cite: 357].
 \end{itemize}
 
 \subsection{Proprietà di una Metrica di Qualità}
 Per essere considerata valida, una metrica deve soddisfare i seguenti criteri:
 \begin{description}
-    \item[Rilevanza:] Deve misurare un attributo significativo per il dominio applicativo.
-    \item[Oggettività:] Il risultato deve basarsi su dati verificabili e indipendenti dal valutatore.
-    \item[Affidabilità e Consistenza:] La metrica deve produrre risultati costanti in condizioni identiche e deve essere allineata agli obiettivi del progetto.
-    \item[Usabilità:] Il calcolo e l'interpretazione non devono richiedere uno sforzo eccessivo in termini di risorse.
+    \item[Rilevanza:] Deve misurare un attributo significativo e importante del prodotto o processo software[cite: 380].
+    \item[Oggettività:] Il risultato deve basarsi su dati verificabili e riproducibili, non su opinioni o stime soggettive[cite: 381, 382].
+    \item[Affidabilità e Consistenza:] La metrica deve produrre risultati costanti in condizioni diverse e deve essere coerente con gli obiettivi del progetto[cite: 383, 384].
+    \item[Usabilità:] Il calcolo e l'interpretazione devono essere facili, intuitivi e non richiedere sforzi o risorse eccessive[cite: 385, 386].
 \end{description}
 
 \begin{notaprof}
-Il docente sottolinea che la pertinenza di una metrica è strettamente legata al contesto di business. Un errore critico in un sistema assicurativo potrebbe riguardare l'accuratezza dei calcoli (oracolo), mentre per una piattaforma come Google, la priorità assoluta risiede nella disponibilità del servizio (uptime), dove anche poche ore di downtime globale risultano inaccettabili.
+La pertinenza di una metrica è strettamente legata al contesto di business. Un errore critico in un sistema assicurativo potrebbe riguardare l'accuratezza dei calcoli (oracolo) con conseguenze disastrose, mentre per un motore di ricerca come Google la priorità assoluta risiede nella disponibilità del servizio (uptime), dove anche poche ore di downtime globale risultano inaccettabili.
 \end{notaprof}
 
 \section{Tassonomia delle Scale di Misura}
-La scelta della scala determina quali operazioni statistiche siano applicabili ai dati raccolti.
+La scelta della scala utilizzata dipende dalla natura dei dati misurati e determina quali operazioni statistiche siano matematicamente applicabili[cite: 407, 459, 477].
 
 \subsection{Scala Nominale e Ordinale}
 \begin{itemize}
-    \item \textbf{Nominale:} Utilizzata per categorizzare elementi senza un ordine intrinseco (es. tipi di bug: logica, UI, performance). Operazioni ammesse: \textit{Moda, frequenza}.
-    \item \textbf{Ordinale:} Prevede un ordine di rango, ma la distanza tra i valori non è definita (es. priorità: Critical, High, Medium, Low). Operazioni ammesse: \textit{Mediana}.
+    \item \textbf{Nominale:} Utilizzata per assegnare valori a etichette o categorie senza un ordine intrinseco o magnitudine (es. tipi di difetti: logica, UI, performance, sicurezza)[cite: 417, 418, 419]. Operazioni ammesse: Moda, frequenza[cite: 459].
+    \item \textbf{Ordinale:} Prevede un ordine di rango per le categorie, ma la distanza o magnitudine tra i valori non è definita né significativa (es. priorità dei difetti: Critical, High, Medium, Low)[cite: 422, 423, 424]. Operazioni ammesse: Mediana[cite: 459].
 \end{itemize}
 
 \begin{notaprof}
-Si osserva come le scale ordinali, pur limitando le analisi statistiche alla mediana, offrano spesso una maggiore oggettività rispetto a scale numeriche forzate. Valutare la severità di un bug su una scala 0-100 introduce un'alta soggettività (differenza tra 65 e 70), mentre una distinzione qualitativa (Blocker vs Non-Blocker) risulta più robusta.
+Le scale ordinali, pur limitando le analisi statistiche alla mediana, offrono spesso una maggiore oggettività rispetto a scale numeriche forzate. Valutare la severità di un bug su una scala 0-100 introduce un'alta soggettività (es. la differenza tra 65 e 70 è arbitraria), mentre una distinzione qualitativa (Blocker vs Non-Blocker) risulta più robusta, netta e oggettiva.
 \end{notaprof}
 
 \subsection{Scale Numeriche (Intervallo e Rapporto)}
-In queste scale, la magnitudine della differenza tra i valori ha significato fisico.
+In queste scale i valori sono assegnati in ordine di rango e la magnitudine della differenza tra i punti ha un significato reale e misurabile[cite: 427, 433].
 \begin{itemize}
-    \item \textbf{Intervallo:} Non possiede uno zero assoluto (es. date).
-    \item \textbf{Rapporto (Ratio):} Possiede uno zero assoluto che indica l'assenza dell'attributo (es. LOC, tempo, sforzo).
+    \item \textbf{Intervallo:} La magnitudine delle differenze è significativa, ma non possiede uno zero assoluto reale[cite: 427, 428].
+    \item \textbf{Rapporto (Ratio):} È il tipo di scala più sofisticato, in cui la magnitudine delle differenze è calcolabile e possiede uno zero assoluto reale (es. LOC, sforzo, tempo)[cite: 433, 434, 435].
 \end{itemize}
-\textbf{Statistiche ammesse:} Media, Varianza, Deviazione Standard.
+\textbf{Statistiche ammesse per entrambe:} Media, Deviazione Standard, Varianza, Range (per la scala di Rapporto sono ammessi anche coefficiente di variazione e media geometrica)[cite: 459].
 
 \section{Modelli di Qualità: Lo Standard ISO/IEC 25010}
-Lo standard ISO 25010 definisce \textit{cosa} intendiamo per qualità attraverso una gerarchia di caratteristiche:
+Lo standard ISO 25010 definisce una tassonomia dettagliata degli attributi di qualità (qualità del prodotto e qualità in uso)[cite: 33]. Le caratteristiche principali individuate dallo standard sono:
 \begin{enumerate}
-    \item \textbf{Functional Suitability:} Completezza e correttezza funzionale.
-    \item \textbf{Performance Efficiency:} Comportamento temporale e utilizzo delle risorse.
-    \item \textbf{Security:} Riservatezza, integrità, non ripudio e autenticità.
-    \item \textbf{Maintainability:} Modularità, riusabilità, analizzabilità e testabilità.
+    \item \textbf{Functional Suitability (Adeguatezza funzionale):} Completezza, correttezza e adeguatezza funzionale[cite: 39, 40, 41, 42].
+    \item \textbf{Performance Efficiency (Efficienza delle prestazioni):} Comportamento temporale, utilizzo delle risorse e capacità strutturale[cite: 43, 44, 45, 46].
+    \item \textbf{Security (Sicurezza):} Riservatezza, integrità, non ripudio, responsabilità e autenticità[cite: 47, 48, 49, 50, 51, 52].
+    \item \textbf{Maintainability (Manutenibilità):} Modularità, riusabilità, analizzabilità, modificabilità e testabilità[cite: 53, 54, 55, 56, 57, 58].
 \end{enumerate}
 
 \begin{notaprof}
-È opportuno distinguere il modello (la tassonomia ISO) dalla metrica (come lo misuro). Il successo nell'applicazione di questi standard dipende dalla reale intenzione dell'organizzazione di migliorare i processi; l'uso delle metriche al solo scopo di ottenere certificazioni formali, senza un miglioramento sostanziale, svilisce l'intero sistema ingegneristico.
+È cruciale distinguere sempre il modello di qualità dalle metriche: il modello (come l'ISO 25010) definisce \textit{cosa} significa la qualità fornendone una tassonomia, mentre le metriche definiscono \textit{come} quantificarla operativamente[cite: 30]. L'adozione di questi standard fallisce sistematicamente se manca la "buona fede" aziendale; l'uso delle metriche al solo scopo di ottenere certificazioni formali di facciata, senza mirare a un miglioramento sostanziale del prodotto, svilisce l'utilità dell'intero sistema di valutazione ingegneristico.
 \end{notaprof}
 
 \section{Introduzione alle Metriche Object-Oriented}
-Le metriche OO (come la suite di Chidamber e Kemerer) fungono da indicatori di rischio. Non devono essere utilizzate per definire soglie assolute di "correttezza", ma per identificare anomalie (\textit{outliers}) o trend preoccupanti nel tempo.
+Le metriche object-oriented vengono impiegate per misurare la qualità dei sistemi software ad oggetti e identificare tempestivamente difetti di progettazione o futuri problemi di manutenibilità[cite: 68, 69]. Vanno sempre interpretate come indicatori di rischio e valutate in modo comparativo (rispetto a una baseline o a un trend) e non in senso assoluto[cite: 73].
 
 \begin{notaprof}
-Il docente suggerisce un approccio manageriale basato sulle distribuzioni: è più efficace concentrare le attività di refactoring o revisione sul 10\% delle classi che presentano i valori di complessità più elevati, piuttosto che cercare di ottimizzare l'intero sistema in modo uniforme.
+In ambito manageriale, è molto più efficace adottare un approccio pratico basato sulle distribuzioni piuttosto che sulle medie globali. Risulta strategicamente più utile concentrare le attività di analisi, refactoring e test mirati esclusivamente sul 10\% delle classi che presentano i valori peggiori di complessità (\textit{outliers}), piuttosto che tentare di ottimizzare e riscrivere l'intero sistema in modo uniforme.
 \end{notaprof}

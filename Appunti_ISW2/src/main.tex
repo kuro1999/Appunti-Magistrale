@@ -22,6 +22,26 @@
   breakable % Permette al box di dividersi tra più pagine
 }
 
+% --- Box "Solo nelle slide" ---
+\newtcolorbox{notaslide}{
+  colback=gray!5!white,
+  colframe=gray!50!black,
+  title=\textbf{📘 Solo nelle slide (non spiegato a voce)},
+  fonttitle=\bfseries,
+  arc=2mm,
+  breakable
+}
+
+% --- Box "Esame" ---
+\newtcolorbox{notaesame}{
+  colback=red!5!white,
+  colframe=red!75!black,
+  title=\textbf{🚨 IMPORTANTE PER L'ESAME},
+  fonttitle=\bfseries,
+  arc=2mm,
+  breakable
+}
+
 % --- Info Documento ---
 \title{Appunti di Ingegneria del Software}
 \author{Appunti basati sulle lezioni di Davide Falessi}
@@ -35,5 +55,6 @@
 % --- Inclusione Lezioni ---
 % Ogni volta che crei una nuova lezione, aggiungi un \include{nomefile}
 \include{Falessi/Metriche_Misurazioni}
-
+\include{Falessi/GQM_PP}
+\include{Falessi/Software_arch}
 \end{document}

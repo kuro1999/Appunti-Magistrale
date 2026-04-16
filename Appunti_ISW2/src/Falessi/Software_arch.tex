@@ -1,15 +1,99 @@
-%! Author = leonardo
-%! Date = 16/04/26
+\chapter{Introduzione all'Architettura Software}
 
-% Preamble
-\documentclass[11pt]{article}
+\section{Cos'è un'Architettura Software}
+\begin{notaesame}
+L'architettura software è uno dei pilastri dell'ingegneria del software e rappresenta una delle domande più frequenti in sede d'esame.
+\end{notaesame}
 
-% Packages
-\usepackage{amsmath}
+Secondo lo standard \textbf{IEEE 1471}, l'architettura è definita come:
+\begin{quote}
+    ``L'organizzazione fondamentale di un sistema, incarnata nei suoi componenti, nelle loro relazioni reciproche e con l'ambiente, e i principi che ne governano la progettazione e l'evoluzione.''
+\end{quote}
 
-% Document
-\begin{document}
+L'intento principale, come sostenuto da Kruchten, è fornire un \textbf{controllo intellettuale} su sistemi di enorme complessità, permettendo agli stakeholder di comprendere la struttura senza annegare nei dettagli implementativi.
 
+\subsection{Architetture Intended vs Unintended}
+Ogni sistema possiede intrinsecamente un'architettura, che può essere classificata in due modi:
+\begin{itemize}
+    \item \textbf{Intended (Pianificata):} Esplicita e documentata prima della scrittura del codice. Segue l'approccio del \textit{Forward Engineering}.
+    \item \textbf{Unintended (Accidentale):} Implicita e spontanea. Emerge quando si scrive codice senza un piano; in questo caso, l'architettura deve essere ricostruita a posteriori (\textit{Reverse Engineering}).
+\end{itemize}
 
+\begin{notaprof}
+Immaginate di costruire una casa: nell'approccio \textit{intended} disegnate prima la piantina. Nell'approccio \textit{unintended} costruite le stanze a casaccio e solo alla fine vi accorgete di che forma ha la casa. Ricordate però il Manifesto Agile: l'architettura ha valore solo se serve a produrre codice migliore, non deve essere burocrazia inutile.
+\end{notaprof}
 
-\end{document}
+\section{Il Modello 4+1 di Kruchten}
+Per gestire la complessità, Kruchten propone di decomporre l'architettura in diverse \textbf{viste} basate sul principio della \textit{separation of concerns}.
+
+\begin{itemize}
+    \item \textbf{Logical View:} Supporta i requisiti funzionali, ovvero ciò che il sistema deve fare per l'utente finale.
+    \item \textbf{Development View:} Si concentra sull'organizzazione dei moduli e dei package nel codice sorgente.
+    \begin{notaprof}Un esempio tipico è lo \textbf{stack di Android}, che mostra come il sistema sia stratificato dal Kernel Linux fino alle applicazioni.\end{notaprof}
+    \item \textbf{Dynamic View:} Analizza il comportamento a runtime, i processi e le interazioni tra oggetti. Viene solitamente modellata con i \textit{Sequence Diagram}.
+\end{itemize}
+
+\begin{notaslide}
+\textbf{Completamento del modello:}
+\begin{itemize}
+    \item \textbf{Deployment View:} Si occupa della mappatura fisica del software sui nodi hardware e della distribuzione geografica dei server.
+    \item \textbf{Scenarios (il ``+1''):} Casi d'uso o sequenze di azioni che fanno da collante tra le altre quattro viste, verificandone la coerenza.
+\end{itemize}
+\end{notaslide}
+
+\begin{notaprof}
+Pensate a una casa: potete guardare la pianta elettrica, quella idraulica o quella strutturale. Sono tutte viste diverse dello stesso edificio, necessarie a stakeholder diversi (elettricista, idraulico, ingegnere).
+\end{notaprof}
+
+\section{Progettazione e Decision-Making}
+Il design architetturale si basa su tre fattori: \textbf{Riuso} (di pattern o componenti), \textbf{Metodo} (tecniche sistematiche) e \textbf{Intuizione} (l'esperienza dell'architetto).
+
+\subsection{L'importanza dei Requisiti Non Funzionali}
+\begin{notaprof}
+L'architettura è dettata principalmente dai \textbf{Requisiti Non Funzionali} (attributi di qualità come sicurezza, velocità, scalabilità). Questi requisiti sono strutturali: non si può ``aggiungere la sicurezza'' alla fine del progetto. È come una casa: se volete che sia antisismica, deve nascere così. Non potete renderla antisismica una volta costruita senza abbatterla.
+\end{notaprof}
+
+\subsection{Trade-offs e il ruolo dell'Architetto}
+L'architetto deve bilanciare forze contrastanti provenienti da stakeholder diversi. Le decisioni sono spesso sub-ottimali e prese ``al buio'' (quando i requisiti sono ancora vaghi).
+\begin{notaslide}
+Questo dilemma è rappresentato graficamente dalla scelta tra carne ``Cotta'' o ``Cruda'': ogni scelta comporta un vantaggio per uno stakeholder e uno svantaggio per un altro.
+\end{notaslide}
+
+\section{Documentazione: Viste e Punti di Vista}
+\begin{notaesame}
+Questa è una distinzione fondamentale. Molti studenti confondono i due termini: ricordateli bene per l'esame.
+\end{notaesame}
+
+\begin{itemize}
+    \item \textbf{Architectural View (Vista):} È la rappresentazione del sistema da una certa prospettiva. È composta da uno o più \textit{modelli} (o diagrammi).
+    \item \textbf{Architectural Viewpoint (Punto di Vista):} È l'insieme di regole, convenzioni e linguaggi usati per costruire la vista.
+\end{itemize}
+
+\begin{notaprof}
+Esempio dello stadio: il \textit{Viewpoint} è il concetto teorico di ``guardare dalla tribuna stampa'' (regole e angolazione). La \textit{View} è la foto specifica che scattate in quello stadio particolare applicando quel punto di vista. In questo corso, Modello e Diagramma sono considerati sinonimi.
+\end{notaprof}
+
+\section{Software Product Lines (SPL)}
+Una SPL è una famiglia di prodotti che condividono un set comune di funzionalità (\textbf{Core Assets}). Si basa sul \textit{Systematic Reuse}.
+
+\begin{itemize}
+    \item \textbf{Scoping:} Decidere cosa includere nella piattaforma comune. Se lo scope è troppo largo si sprecano soldi; se è troppo stretto si perde l'opportunità di riuso.
+    \item \textbf{Vantaggi:} Riduzione drastica dei tempi e dei costi di sviluppo per i prodotti successivi al primo.
+\end{itemize}
+
+\begin{notaprof}
+Pensate alle auto: la Mercedes usa lo stesso tasto per il finestrino su tutti i modelli. La BMW usa lo stesso motore fisico per vari modelli, limitandone la potenza via software. Nel software il riuso è vitale, ma genera conflitti di budget: il Team A spesso non vuole pagare il costo extra per rendere un modulo riutilizzabile anche dal Team B.
+\end{notaprof}
+
+\section{Stili Architetturali}
+Lo \textbf{Stile Architetturale} è un pattern astratto; l'\textbf{Architettura} è la sua applicazione pratica.
+
+\begin{enumerate}
+    \item \textbf{Client/Server:} Il server gestisce dati e sicurezza, i client richiedono servizi. Disaccoppiamento parziale (il server non conosce i client).
+    \item \textbf{Peer-to-Peer:} Ogni nodo è sia client che server. \begin{notaprof}Come BitTorrent: chi scarica deve anche caricare, evitando colli di bottiglia.\end{notaprof}
+    \item \textbf{Pipes and Filters:} Stream di dati trasformati in sequenza. \begin{notaprof}Usato in sistemi critici come l'avionica. Performance altissime, riuso quasi nullo.\end{notaprof}
+    \item \textbf{Shared Data:} Comunicazione tramite un database centrale.
+    \begin{notaslide}
+    Si divide in \textbf{Repository} (l'agente chiede i dati) e \textbf{Blackboard} (il sistema notifica gli agenti quando i dati cambiano).
+    \end{notaslide}
+\end{enumerate}
