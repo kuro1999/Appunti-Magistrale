@@ -207,7 +207,7 @@ Queste regole evitano la circolazione indefinita degli annunci dentro l’AS, ma
 
 Gli \emph{attributi BGP} fanno parte dei messaggi UPDATE e descrivono le caratteristiche di ciascun prefisso (informazioni di path, preferenza di rotta, next hop, dati di aggregazione, ecc.).
 
-Le slide classificano gli attributi in quattro categorie principali:
+Si classificano gli attributi in quattro categorie principali:
 \begin{itemize}
     \item \textbf{Well-known mandatory}: devono essere sempre presenti in ogni annuncio BGP e devono essere riconosciuti da ogni implementazione;
     \item \textbf{Well-known discretionary}: sono riconosciuti universalmente, ma la loro presenza in un annuncio è opzionale;
@@ -219,7 +219,7 @@ Non tutte le implementazioni supportano lo stesso insieme di attributi, ma le cl
 
 \paragraph{Attributi chiave: DESTINATION, AS\_PATH, NEXT\_HOP}
 
-Tre attributi sono indicati nelle slide come \emph{obbligatori} (well-known mandatory) per ogni rotta BGP:
+Tre attributi sono indicati come \emph{obbligatori} (well-known mandatory) per ogni rotta BGP:
 \begin{itemize}
     \item \textbf{DESTINATION} (destination network): identifica il prefisso di rete annunciato;
     \item \textbf{AS\_PATH}: contiene la sequenza di Autonomous Systems attraversati per raggiungere il prefisso;
@@ -232,7 +232,7 @@ Questi tre attributi costituiscono il nucleo minimo di informazione per descrive
 
 \paragraph{Ordine generale di decisione (Weight, Local Pref, AS\_PATH, MED, ecc.)}
 
-BGP seleziona un solo \emph{best path} per ogni destinazione. Una volta scelto, il percorso viene inserito nella BGP routing table e può essere propagato ai neighbor. L’AS\_PATH è solo uno dei criteri: le slide riportano una sequenza di decisione (dipendente in parte dall’implementazione) riassunta dal mnemonico “\emph{We Love Oranges AS Oranges Mean Pure Refreshment}”:
+BGP seleziona un solo \emph{best path} per ogni destinazione. Una volta scelto, il percorso viene inserito nella BGP routing table e può essere propagato ai neighbor. L’AS\_PATH è solo uno dei criteri: si riporta una sequenza di decisione (dipendente in parte dall’implementazione) riassunta dal mnemonico “\emph{We Love Oranges AS Oranges Mean Pure Refreshment}”:
 \begin{enumerate}
     \item \textbf{Weight} (W): valore locale, specifico del router (tipicamente proprietario del vendor); si preferisce il percorso con weight più alto;
     \item \textbf{LOCAL\_PREF} (L): preferenza locale distribuita all’interno dell’AS; si preferisce il valore più alto;
@@ -254,7 +254,7 @@ Un punto sottolineato nella sequenza di selezione è la preferenza per i percors
 
 \paragraph{Politiche in ingresso e in uscita (filtri e riscritture)}
 
-Le slide evidenziano che gli attributi BGP possono essere \emph{manipolati} (modificati, aggiunti o rimossi) sia:
+Gli attributi BGP possono essere \emph{manipolati} (modificati, aggiunti o rimossi) sia:
 \begin{itemize}
     \item in \textbf{ingresso}, subito dopo la ricezione di UPDATE BGP, prima che il router esegua la selezione del best path;
     \item in \textbf{uscita}, prima di inviare UPDATE ai neighbor.
@@ -270,7 +270,7 @@ Sebbene la lunghezza di AS\_PATH sia una metrica importante, gli attributi BGP p
 
 \paragraph{Allungamento artificiale dell’AS\_PATH}
 
-Un meccanismo classico di \emph{traffic engineering} mostrato nelle slide è l’\emph{AS-PATH prepend}. L’idea è modificare gli UPDATE in uscita verso alcuni peer inserendo nel campo AS\_PATH ripetizioni del proprio AS Number (o numeri “dummy”), così da \emph{allungare artificialmente} il percorso. Dal punto di vista dei peer che ricevono la rotta, il path appare più lungo e quindi meno appetibile rispetto ad alternative con AS\_PATH più corto.
+Un meccanismo classico di \emph{traffic engineering} è l’\emph{AS-PATH prepend}. L’idea è modificare gli UPDATE in uscita verso alcuni peer inserendo nel campo AS\_PATH ripetizioni del proprio AS Number (o numeri “dummy”), così da \emph{allungare artificialmente} il percorso. Dal punto di vista dei peer che ricevono la rotta, il path appare più lungo e quindi meno appetibile rispetto ad alternative con AS\_PATH più corto.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{immagini/NET_08/image_aspath_prepend.png}
@@ -296,7 +296,7 @@ Una community BGP è un numero a 32 bit, rappresentabile come intero unico (0--4
 
 \paragraph{Well-known communities: NO\_EXPORT, NO\_ADVERTISE, INTERNET, LOCAL-AS}
 
-Le slide elencano alcune \emph{well-known standard communities}, che hanno significato condiviso:
+Di seguito alcune \emph{well-known standard communities}, che hanno significato condiviso:
 \begin{itemize}
     \item \textbf{NO\_EXPORT}: la rotta non deve essere annunciata a peer esterni alla confederazione (o all’AS, se non sono usate confederazioni);
     \item \textbf{NO\_ADVERTISE}: la rotta non deve essere annunciata a \emph{nessun} peer BGP;
@@ -313,7 +313,7 @@ Queste community permettono di controllare rapidamente la visibilità delle rott
 
 \paragraph{Community personalizzate per politiche di routing e VPN}
 
-Oltre alle well-known communities, le organizzazioni possono definire \emph{community personalizzate}. Le slide sottolineano che:
+Oltre alle well-known communities, le organizzazioni possono definire \emph{community personalizzate}.
 \begin{itemize}
     \item non esiste un unico schema globale: il significato delle community private è specifico a ciascun AS;
     \item non è necessario registrarle pubblicamente;
@@ -389,7 +389,7 @@ Durante la configurazione o la modifica di BGP, i cambiamenti potrebbero non rif
 \begin{center}
     \texttt{clear ip bgp *}
 \end{center}
-Questo comando interrompe e ristabilisce tutte le sessioni BGP del router, causando il ritiro temporaneo delle rotte e la successiva riconvergenza. In ambiente di produzione è fortemente raccomandato usare questo comando con estrema cautela, poiché può provocare disservizi estesi, come mostrato anche da casi reali di outage citati nelle slide.
+Questo comando interrompe e ristabilisce tutte le sessioni BGP del router, causando il ritiro temporaneo delle rotte e la successiva riconvergenza. In ambiente di produzione è fortemente raccomandato usare questo comando con estrema cautela, poiché può provocare disservizi estesi.
 
 \paragraph{Verifica con \texttt{show ip bgp} e \texttt{show ip bgp neighbors}}
 

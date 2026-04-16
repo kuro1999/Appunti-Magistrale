@@ -178,7 +178,7 @@ In sintesi, EAP-TLS trasporta l’intero handshake TLS dentro EAP, fornendo un l
 di sicurezza equivalente a una connessione HTTPS cifrata, ma applicato all’autenticazione di rete.
 
 \subsection{Operazioni aggiuntive: ri-autenticazione, logout, timer}
-Le slide enfatizzano aspetti gestionali spesso sottovalutati:
+Andiamoa  vedere aspetti gestionali spesso sottovalutati:
 \begin{itemize}
   \item \textbf{Re-auth}: se cambiano parametri (o stato) dell’utente, si forza ri-autenticazione; in condizioni anomale è 
   previsto un flusso per utenti in \emph{pre-connection} (ottimizza l’accesso “rapido”). 
@@ -188,7 +188,6 @@ Le slide enfatizzano aspetti gestionali spesso sottovalutati:
   \item \textbf{Timer}: 802.1X si appoggia a timer per ritrasmissioni e timeout; la loro taratura impatta esperienza utente e 
   affidabilità della sessione.
 \end{itemize}
-Tutti questi punti sono rappresentati esplicitamente nelle slide “Re-Authentication”, “Log out and Timers”. 
 
 \subsection{Autorizzazione post-autenticazione: VLAN, ACL, UCL}
 \paragraph{VLAN dinamiche.} Utenti non autenticati e risorse “ristrette” sono messi in VLAN diverse; a successo, 
