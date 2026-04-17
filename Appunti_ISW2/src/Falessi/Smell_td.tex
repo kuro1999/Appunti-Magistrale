@@ -1,0 +1,83 @@
+Ecco il codice LaTeX per la \textbf{Lezione 4}, strutturato per essere inserito nel tuo file principale tramite \include{lezione4}. Ho mantenuto lo stile dei box personalizzati e inserito le citazioni basate sui documenti forniti.
+
+Snippet di codice
+
+\chapter{Debito Tecnico e Code Smells}
+
+\section{Il Debito Tecnico (Technical Debt)}
+Il Debito Tecnico (TD) rappresenta l'applicazione di concetti finanziari al dominio dell'ingegneria del software, aggiungendo criteri di tempo ed economia al classico concetto di manutenibilità.
+
+\begin{notaesame}
+Il debito tecnico si scompone in due concetti finanziari fondamentali che lo distinguono dalla semplice manutenibilità:
+\begin{itemize}
+    \item \textbf{Capitale (Principal):} Il costo (effort) necessario per eliminare il debito, ovvero il tempo speso per il refactoring.
+    \item \textbf{Interessi (Interest):} La penalità futura pagata se il debito non viene eliminato, che si traduce in rallentamento dello sviluppo o maggiore probabilità di bug.
+\end{itemize}
+\end{notaesame}
+
+\subsection{Cause e Conseguenze}
+Il debito emerge tipicamente per ottimizzazioni a breve termine che creano handicap a lungo termine. Le cause includono la \textbf{crescita organica} (aumento naturale della complessità) e \textbf{scelte opportunistiche} (trade-off per rispettare le scadenze)j.
+
+\begin{notaprof}
+Spesso si creano trade-off tra qualità interna e "Time to Market". Seguendo il principio Agile "Working code over comprehensive documentation", gli sviluppatori possono trascurare la modularizzazione o i commenti pur di consegnare software funzionante e farsi pagare .
+\end{notaprof}
+
+\begin{notaesame}
+Il debito tecnico impatta sempre la release successiva: se il codice non è manutenibile oggi, lo sviluppo futuro sarà più lento e prono ai difetti.
+\end{notaesame}
+
+\begin{notaslide}
+Gli analizzatori statici (come SonarQube) faticano a calcolare gli "Interessi" (il costo futuro), rendendoli attualmente una metrica poco chiara.
+\end{notaslide}
+
+\subsection{Strategie di Gestione}
+\begin{notaprof}
+Il debito tecnico "scade": se un modulo di scarso valore non verrà mai più modificato, non produrrà interessi. È un errore fare refactoring su codice che non verrà più toccato.
+\end{notaprof}
+
+Le strategie di gestione includono:
+\begin{itemize}
+    \item \textbf{Monitoraggio e Refactoring:} Uso di strumenti come SonarCloud per tracciare il trend delle violazioni.
+    \item \textbf{Quality Gate:} Una regola che blocca automaticamente i commit contenenti nuove violazioni.
+\end{itemize}
+
+\begin{notaprof}
+Metafora della barca bucata: la prima cosa da fare non è svuotare l'acqua (vecchio debito), ma tappare il buco (usare il quality gate per non farne entrare di nuovo).
+\end{notaprof}
+
+\section{Introduzione ai Code Smells}
+Occorre distinguere tra tre concetti:
+\begin{itemize}
+    \item \textbf{Quality Rule:} Principio ingegneristico validato (es. commenti, bassa complessità).
+    \item \textbf{Violation o Code Smell:} Porzione di codice non conforme a una regola di qualità.
+    \item \textbf{Defect (Bug):} Problema che impatta la qualità esterna (es. crash).
+\end{itemize}
+
+\begin{notaesame}
+I Code Smells \textbf{non sono bug}. Non causano malfunzionamenti immediati ma rendono la manutenzione difficile. Agiscono come un "campo minato", aumentando la probabilità che uno sviluppatore introduca difetti reali.
+\end{notaesame}
+
+\section{Catalogo dei "Worst Smells"}
+I "Worst Smells" sono violazioni che non portano alcun vantaggio in nessuna circostanza, a differenza di alcuni smell "classici" (come God Class o Code Clones) che possono nascere da trade-off temporali.
+
+\subsection{Esempi di Worst Smells}
+\begin{itemize}
+    \item \textbf{Modificatori non ordinati:} Crea confusione visiva inutile.
+    \item \textbf{Object.finalize() sovrascritto:} In Java, forzare la distruzione manuale è spesso deleterio.
+    \item \textbf{Codice commentato:} Sporca la codebase; spesso sono rimasugli di prototipi.
+    \item \textbf{Mancanza del "break" in uno Switch:} Causa comportamenti imprevisti proseguendo nei case successivi.
+    \item \textbf{Concatenazione di Stringhe con '+' in un ciclo:} Degrada gravemente le performance; il refactoring corretto prevede l'uso di \texttt{StringBuilder}.
+    \item \textbf{Pessimo Naming:} Esempi includono attributi chiamati A, B o C.
+\end{itemize}
+
+\begin{notaprof}
+Chiamare un metodo \texttt{ThisIsAGreatMethod1} non fa risparmiare tempo significativo: non siamo in Formula 1 dove si risparmiano millisecondi.
+\end{notaprof}
+
+\begin{notaslide}
+L'analisi su 27 progetti Apache ha rivelato che i Worst Smells non sono meno frequenti né più severi degli altri, ma non avendo ragioni di esistere, vanno bloccati sempre tramite Quality Gates.
+\end{notaslide}
+
+
+
+

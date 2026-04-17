@@ -9,3 +9,4 @@ out/*.bbl
 out/*.blg
 out/*.run.xml
 out/*.bcf
+!out/Falessi/main.pdf
