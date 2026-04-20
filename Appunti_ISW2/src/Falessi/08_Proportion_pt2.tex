@@ -1,0 +1,325 @@
+\chapter{Defect Labeling, Evaluation and Metrics}
+
+\section{RQ3: Accuratezza nel labeling delle classi}
+
+\subsection{Differenza rispetto a RQ2}
+
+Mentre in RQ2 l'obiettivo era valutare l'accuratezza nell'individuare l'intervallo temporale generale, cioè le \textbf{Affected Versions (AV)}, in RQ3 si valuta un livello più granulare per fornire il dataset più accurato possibile per la defect prediction.
+
+\subsection{Unità di analisi}
+
+L'unità di misura non è più la singola versione, ma la coppia \textbf{classe-versione}, per esempio \emph{F1.java nella release 1}.
+
+\subsection{Design}
+
+Le variabili indipendenti rimangono i metodi di labeling, cioè \textbf{SZZ}, \textbf{Proportion} e \textbf{Simple}. Per la variabile dipendente, una specifica classe in una specifica versione viene etichettata come difettosa se è stata toccata dal \textbf{fix commit} di almeno un difetto in quella versione.
+
+\subsection{Risultati}
+
+I risultati mostrano che:
+\begin{itemize}
+    \item come in RQ2, i metodi \textbf{Proportion} hanno \textbf{Precision} e accuratezza composita, cioè \textbf{F1}, \textbf{MCC} e \textbf{Kappa}, superiori a tutti i metodi SZZ;
+    \item \texttt{SZZ\_U} detiene la \textbf{Recall} più alta;
+    \item \texttt{SZZ\_B+} ha la Precision e l'accuratezza composita più alta all'interno della famiglia SZZ;
+    \item a differenza di RQ2, in questa ricerca il metodo \textbf{Proportion\_MovingWindow} domina in assoluto tutti gli altri metodi sulle metriche composite.
+\end{itemize}
+
+\subsection{Confronto tra metodi}
+
+\begin{notaslide}
+Tutti i metodi risultano più accurati nel fare il labeling delle classi rispetto al labeling delle AV. Si osserva un incremento mediano, su metodi e dataset, del \(13\%\) in Precision, \(5\%\) in Recall, \(16\%\) in F1, \(27\%\) in MCC e \(39\%\) in Kappa. La spiegazione è che una classe può essere affetta da molteplici difetti simultaneamente; quindi, se l'algoritmo manca un difetto, può comunque etichettare correttamente la classe come difettosa grazie alla presenza di un secondo difetto.
+\end{notaslide}
+
+\begin{notaprof}
+La Recall di SZZ è più alta perché SZZ va molto più indietro nel tempo rispetto a Proportion, trovando più classi positive, ma generando inevitabilmente anche moltissimi falsi positivi.
+\end{notaprof}
+
+\section{RQ4: Identificazione delle feature importanti}
+
+\subsection{Razionale}
+
+Comprendere le metriche, cioè le \textbf{feature}, più importanti è vitale per gli sviluppatori, perché consente di evitare condizioni che favoriscono l'introduzione di difetti, come classi troppo grandi o con troppo \emph{churn}. Questa ricerca è duplice: verifica
+\begin{enumerate}
+    \item quali feature vengono selezionate dal classificatore;
+    \item se queste feature sono altamente correlate con la variabile predetta, cioè la difettosità.
+\end{enumerate}
+
+\subsection{Feature selection}
+
+Viene utilizzato un approccio chiamato \textbf{Exhaustive Search Feature Selection}, tramite Weka e \texttt{CfsSubsetEval}. Questo approccio cerca, tra feature come \textbf{LOC}, \textbf{Churn}, \textbf{Age}, \textbf{ChangeSetSize} e altre, quelle con alta capacità predittiva individuale e bassa inter-correlazione, così da ridurre la ridondanza.
+
+\subsection{Correlation analysis}
+
+Si confrontano i risultati del dataset generato dai vari metodi con i risultati del dataset \textbf{Actual}, calcolando la \textbf{correlazione di Spearman}.
+
+\subsection{Standard Mean Relative Error}
+
+Per valutare l'errore si usa la formula:
+\[
+\frac{|\text{Predicted} - \text{Actual}|}{\text{Actual}}
+\]
+
+\subsection{Risultati}
+
+I risultati mostrano che:
+\begin{itemize}
+    \item i metodi \textbf{Proportion} hanno un'accuratezza superiore a tutti i metodi SZZ in \textbf{tutte e cinque le metriche};
+    \item i metodi Proportion registrano una mediana perfetta, pari al \(100\%\), sia in \textbf{Precision} sia in \textbf{Recall}.
+\end{itemize}
+
+\begin{notaslide}
+L'errore commesso dai metodi Proportion in questa task è circa il \(25\%\) dell'errore commesso dai metodi SZZ. Inoltre, a differenza di RQ2 e RQ3, per la feature selection persino il banale metodo \textbf{Simple} è più accurato di SZZ, commettendo circa la metà dell'errore di SZZ. Vi è meno dell'1\% di miglioramento usando le varianti \texttt{SZZ\_X+}.
+\end{notaslide}
+
+\section{Figure, tabelle e workflow del paper}
+
+\begin{notaslide}
+Le figure, le tabelle e i workflow descritti in questa sezione sono ricavati dalle slide e dal paper, ma non sono stati spiegati a voce in modo esteso.
+\end{notaslide}
+
+\subsection{Diagramma del defect lifecycle (Fig. 1.1)}
+
+Mostra la linea temporale lineare di un bug:
+\[
+Introduction\ Version\ (IV) \rightarrow Ticket\ Creation\ (OV) \rightarrow Fix\ Commit \rightarrow Fixed\ Version\ (FV)
+\]
+Le \textbf{AV} si trovano nell'intervallo \([IV, OV]\).
+
+\subsection{Workflow del predicted AV (Fig. 3.1)}
+
+Il workflow mostra come i \textbf{Bug ID} uniscano le informazioni di Git, da cui si ricava il \textbf{Bug Fix}, e di Jira, da cui si ottengono \textbf{Ticket Creation} e \textbf{Releases}. Il \textbf{Method}, ad esempio Proportion, calcola la \textbf{Predicted AV} e la confronta con l'\textbf{Actual AV} per ricavare \textbf{TP}, \textbf{FP}, \textbf{TN} e \textbf{FN}.
+
+\subsection{Workflow del class labeling (Fig. 3.2)}
+
+Questo workflow prende i file toccati dal \textbf{fix} e li unisce alle AV predette, indicando per ogni release se il singolo file fosse difettoso oppure no.
+
+\subsection{Workflow della creazione dei complete datasets (Fig. 3.3)}
+
+Qui viene aggiunta la fase di \textbf{Metric Collection} al class labeling. Si ottengono così le tabelle finali contenenti informazioni come \textbf{Release}, \textbf{File}, \textbf{LOC} e altre metriche software.
+
+\subsection{Feature selection e correlation analysis (Fig. 3.4 e Fig. 3.5)}
+
+I dataset, sia quelli predetti sia quelli actual, vengono sottoposti allo step di \textbf{Exhaustive Search Feature Selection} oppure al calcolo della \textbf{correlazione di Spearman}, per poi unire i risultati nel calcolo del \textbf{Relative Error}.
+
+\subsection{Interpretazione di grafici, boxplot e tabelle comparative}
+
+La \textbf{Fig. 4.4} e la \textbf{Tabella 4.1} mostrano che la deviazione standard di \(P\) è molto compatta, circa \(5\) tra progetti diversi e minore di \(2\) all'interno dello stesso progetto, a differenza della grande varianza di \(IV\), \(OV\) e \(FV\), che supera \(38\). I boxplot di accuratezza mostrano invece che i metodi SZZ hanno valori molto bassi e schiacciati per \textbf{MCC} e \textbf{Kappa}, mentre i metodi Proportion risultano più stabili e più alti.
+
+\section{Evaluation of Machine Learning Models}
+
+\subsection{Training, testing e tuning}
+
+Queste sono le fasi critiche per valutare ciò che è stato appreso dal modello. Il \textbf{training set} serve a creare il modello, mentre il \textbf{testing set} serve a valutarlo su istanze indipendenti.
+
+\subsection{Perché l'errore sul training set non basta}
+
+L'errore misurato sul training set non è un buon indicatore delle performance su dati futuri, perché il modello viene valutato sugli stessi dati con cui è stato costruito.
+
+\subsection{Training set vs test set}
+
+\begin{notaprof}
+Tutti i dati a nostra disposizione, cioè la tabella, sono di tipo \emph{supervised}, quindi conosciamo già l'esito corretto. Per simulare la realtà, nascondiamo i risultati di una parte dei dati, il testing set, per interrogare il modello addestrato sul training set e confrontare poi \emph{actual} e \emph{predicted}.
+\end{notaprof}
+
+\subsection{Dati rappresentativi}
+
+Si assume che sia il set di training sia quello di testing siano campioni rappresentativi del problema sottostante. Se il modello deve predire i clienti della città B, allora è sensato testarlo su dati della città B, non della città A.
+
+\subsection{Problema dei dati limitati}
+
+Idealmente entrambi i set dovrebbero essere molto grandi, così da garantire sia addestramento efficace sia stime di errore affidabili. In pratica, però, i dati etichettati sono spesso limitati, e da qui nasce la necessità di tecniche di validazione più sofisticate.
+
+\begin{notaprof}
+È fondamentale ricordare l'assioma di base: la validazione ha senso solo perché assumiamo che \textbf{il futuro sia simile al passato}. Misuriamo il passato per stimare le performance su dati futuri che non abbiamo ancora.
+\end{notaprof}
+
+\section{Tecniche di validazione non temporali}
+
+Queste tecniche si usano quando l'ordine temporale dei dati non è rilevante oppure quando le istanze sono considerate indipendenti.
+
+\subsection{Holdout}
+
+Il metodo \textbf{holdout} divide il dataset originario, per esempio in \(2/3\) training e \(1/3\) testing. Il suo svantaggio principale è che il campione potrebbe non essere rappresentativo oppure potrebbe contenere classi assenti nel test.
+
+\begin{notaprof}
+Se una classe rara finisce tutta nel test set, il modello non l'ha mai vista in training e fallirà nel riconoscerla.
+\end{notaprof}
+
+\subsection{Stratification}
+
+La \textbf{stratification} è una variante dell'holdout che assicura che in ogni subset vi sia approssimativamente la stessa proporzione della classe di interesse.
+
+\subsection{Repeated holdout}
+
+Il \textbf{repeated holdout} ripete l'holdout con campionamenti diversi, così da mitigare il problema della non rappresentatività. Gli errori vengono mediati tra le varie esecuzioni. Il limite è che i test set si sovrappongono.
+
+\begin{notaprof}
+Se prima ci mettevo 5 ore, con 5 run ce ne metto 25.
+\end{notaprof}
+
+\subsection{K-fold cross-validation}
+
+La \textbf{k-fold cross-validation} evita la sovrapposizione dei test set. Divide i dati in \(K\) subset uguali; per \(K\) volte, un subset fa da test e i restanti da training.
+
+\begin{notaprof}
+L'analogia è quella della pizza: si taglia in 6 spicchi. Se ne toglie uno per testare e si usano gli altri 5 per il training. Poi si rimette lo spicchio, se ne toglie un altro e si ripete per 6 volte. Così ogni dato finisce nel testing set esattamente una volta.
+\end{notaprof}
+
+\subsection{Stratified k-fold cross-validation e repeated stratified cross-validation}
+
+L'uso standard è il \textbf{10 times 10-fold stratified}. Questa tecnica garantisce stime molto accurate e bassa varianza, ma richiede \(100\) run per classificatore.
+
+\subsection{Leave-one-out cross-validation}
+
+La \textbf{leave-one-out cross-validation} è il caso estremo in cui \(K\) è uguale al numero totale di istanze, cioè \(n\). I vantaggi sono il massimo utilizzo dei dati e l'assenza di sottocampionamento casuale. Gli svantaggi sono che la stratificazione è impossibile, dato che il test set contiene una sola istanza, e che il costo computazionale è estremamente elevato.
+
+\subsection{Bootstrap}
+
+Il \textbf{bootstrap} usa un campionamento \emph{with replacement}, cioè con reinserimento.
+
+\begin{notaprof}
+Questo metodo mischia troppo le cose. Io personalmente lo sconsiglio. Estraendo a caso con reinserimento, alcuni dati peseranno moltissimo nel training set e altri non verranno mai visti se non nel test, creando un campione falsato. Non va mai usato nel nostro contesto.
+\end{notaprof}
+
+\section{Tecniche di validazione temporali}
+
+Queste tecniche si usano quando i dati sono \textbf{time-sensitive}, cioè quando l'ordine temporale è un fattore critico.
+
+\subsection{Time-series validation}
+
+La caratteristica di base è preservare l'ordine temporale dei dati, impedendo che il test set contenga dati antecedenti al training set.
+
+\subsection{Ordered holdout}
+
+L'\textbf{ordered holdout} è simile all'holdout, ma lo split, per esempio \(80\%-20\%\), rispetta rigorosamente la cronologia: la parte iniziale va nel training set e la parte finale nel test set.
+
+\subsection{Walk-forward}
+
+Il \textbf{walk-forward} è la tecnica più usata. Il dataset viene diviso in parti cronologiche, per esempio le release. A ogni iterazione, tutti i dati disponibili prima della parte da predire formano il training set.
+
+\begin{notaprof}
+Se devo predire la Release 4, il mio training set sarà l'unione delle release 1, 2 e 3.
+\end{notaprof}
+
+\subsection{Importanza dell'ordine temporale}
+
+\begin{notaprof}
+Usare dati futuri viola il principio del realismo del machine learning e genera \emph{Garbage In, Garbage Out}. L'approccio di labeling chiamato \textbf{Total}, che usa tutto lo storico dei bug, passati e futuri, dà un vantaggio illusorio al modello, perché in uno scenario reale non possiedi le informazioni dei ticket che verranno aperti tra due anni.
+\end{notaprof}
+
+\section{Performance metrics}
+
+\subsection{Binary classifier}
+
+Un \textbf{binary classifier} è un modello che produce un output con due etichette, ad esempio \emph{Yes/No}, \emph{1/0}, \emph{Positive/Negative}, \emph{Buggy/Non Buggy}.
+
+\subsection{Confusion matrix e metriche base}
+
+\begin{itemize}
+    \item \textbf{TP (True Positive)}: predetto positivo, attualmente positivo;
+    \item \textbf{FP (False Positive)}: predetto positivo, attualmente negativo;
+    \item \textbf{TN (True Negative)}: predetto negativo, attualmente negativo;
+    \item \textbf{FN (False Negative)}: predetto negativo, attualmente positivo.
+\end{itemize}
+
+\begin{notaprof}
+Un False Positive significa sprecare tempo, cioè effort, a testare una classe che in realtà è sana.
+\end{notaprof}
+
+\begin{notaprof}
+Un False Negative è un errore disastroso: non testo una classe bacata e il bug finisce dritto in produzione in mano all'utente.
+\end{notaprof}
+
+\subsection{Precision}
+
+La \textbf{Precision} è:
+\[
+\frac{TP}{TP+FP}
+\]
+
+\begin{notaprof}
+È la favola di ``al lupo al lupo''. Se dici sempre che c'è un bug, la tua precisione crolla perché produci tantissimi falsi positivi, cioè fai scattare l'allarme a vuoto.
+\end{notaprof}
+
+\subsection{Recall}
+
+La \textbf{Recall} è:
+\[
+\frac{TP}{TP+FN}
+\]
+e misura quanti dei positivi reali sei stato in grado di classificare correttamente.
+
+\subsection{Accuracy}
+
+L'\textbf{Accuracy} è:
+\[
+\frac{TP+TN}{TP+TN+FP+FN}
+\]
+
+\subsection{Kappa}
+
+Il \textbf{Kappa} misura quanto il classificatore sia più accurato rispetto a un classificatore \textbf{Dummy}, cioè casuale o maggioritario. Varia da \(-1\) a \(1\), dove \(1\) indica perfezione, \(0\) indica una performance equivalente al caso e valori negativi indicano performance peggiori del caso.
+
+\begin{notaprof}
+Un valore di Kappa maggiore di \(0.4\) potrebbe validare la teoria dell'ingegneria del software nei vostri progetti, indicando che esiste davvero una correlazione tra metriche e difetti.
+\end{notaprof}
+
+\subsection{Dipendenza dal contesto applicativo}
+
+\begin{notaslide}
+Una Recall alta può essere facilissima da ottenere se il dataset è composto al \(99\%\) da istanze positive. Per questo motivo le metriche devono sempre essere interpretate congiuntamente e nel contesto corretto.
+\end{notaslide}
+
+\section{ROC curves e AUC}
+
+\subsection{Threshold dependence}
+
+Precision, Recall e F1 dipendono fortemente dalla soglia, cioè dal \textbf{threshold}, usato per trasformare la probabilità in una decisione positiva o negativa.
+
+\subsection{ROC curve}
+
+La \textbf{ROC curve} si ottiene plottando il \textbf{True Positive Rate (TPR)} sull'asse \(Y\) contro il \textbf{False Positive Rate (FPR)} sull'asse \(X\), al variare di tutte le possibili soglie.
+
+\subsection{AUC}
+
+L'\textbf{AUC}, cioè l'area sotto la curva ROC, misura la probabilità che un'istanza positiva scelta a caso venga classificata con probabilità maggiore rispetto a un'istanza negativa scelta a caso.
+
+\begin{notaesame}
+Il professore evidenzia un limite critico dell'AUC: calcolando l'area su tutte le soglie, da 0 a 1, si finisce per mediare anche valori di soglia totalmente irrilevanti per il contesto applicativo. Se il dominio aziendale preferisce i falsi positivi ai falsi negativi, interessano solo certe soglie basse. Mediare anche soglie irrealistiche annacqua il significato reale della metrica.
+\end{notaesame}
+
+\section{Collegamento tra i due PDF}
+
+I due argomenti, cioè \textbf{labeling dei difetti} e \textbf{evaluation dei modelli di Machine Learning}, sono strettamente sequenziali.
+
+\subsection{Come il labeling influenza la qualità del dataset e del modello}
+
+Prima di valutare un modello tramite tecniche come la cross-validation, occorre costruire un \textbf{training set} etichettato con una ground truth affidabile. Se per l'etichettatura si usano metodi inaccurati come SZZ, si introducono nel dataset alti livelli di \textbf{False Positive} e \textbf{False Negative}.
+
+\begin{notaprof}
+L'approccio SZZ va troppo indietro nel tempo, sporcando le release vecchie. Quando validiamo il modello, il classificatore imparerà pattern errati, secondo il principio \emph{Garbage In, Garbage Out}, e fallirà irrimediabilmente la predizione sul test set.
+\end{notaprof}
+
+\subsection{Realismo temporale e defect prediction}
+
+Usare \textbf{Proportion Increment}, che si basa sui difetti passati, o usare \textbf{Walk-Forward}, che addestra solo sulle release precedenti, risponde allo stesso principio etico e matematico: il modello non può barare leggendo il futuro.
+
+\subsection{Scegliere bene metriche e validazione}
+
+Se l'obiettivo aziendale è individuare la classe responsabile dei difetti in produzione per risparmiare risorse, un metodo Proportion garantisce una feature selection più accurata, permettendo al modello di individuare le reali cause del problema, da valutare poi con metriche robuste e coerenti con il contesto, come F1 e Kappa.
+
+\section{Conclusioni finali}
+
+I risultati del paper Proportion e i concetti sulle metriche di valutazione convergono verso una conclusione metodologica comune: il Machine Learning applicato all'Ingegneria del Software richiede \textbf{rigore} sia nella costruzione del dataset sia nella valutazione del modello.
+
+\subsection{Risultati del paper Proportion e limiti dell'approccio Jira-based}
+
+I risultati su circa \textbf{125.000 difetti} dimostrano che affidarsi esclusivamente ai dati inseriti dagli sviluppatori in Jira è impossibile nel \textbf{51\%} dei casi, a causa di AV mancanti o incoerenti.
+
+\subsection{Confronto Proportion vs SZZ}
+
+Su circa \textbf{6 milioni di classi}, sfruttare la stabilità proporzionale del ciclo di vita dei difetti produce risultati mediamente e significativamente più accurati in \textbf{Precision}, \textbf{Kappa}, \textbf{F1} e \textbf{MCC} rispetto a SZZ. SZZ resta più alto in Recall, ma questo dipende dal fatto che etichetta come positive molte più classi, pagando però un forte prezzo in Precision.
+
+\subsection{Conclusioni su validazione e metriche}
+
+Nessuna singola metrica è autosufficiente. Per valutare se un modello sia pronto a supportare decisioni reali sulle release, è vitale interpretare più metriche insieme, prestare attenzione alle soglie, e usare tecniche di validazione temporali rigorose, come il \textbf{walk-forward}, quando il dataset è legato alla storia evolutiva del software.

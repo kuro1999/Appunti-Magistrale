@@ -1,0 +1,392 @@
+\chapter{Machine Learning e Software Analytics per la Software Engineering}
+
+\section{Definizione di Machine Learning, ruolo di statistica e informatica}
+
+Il \textbf{Machine Learning (ML)} è lo studio degli algoritmi che migliorano le proprie performance in un determinato \textbf{task} attraverso l'\textbf{esperienza}. L'obiettivo è ottimizzare un criterio di performance utilizzando dati di esempio o esperienze passate.
+
+Questa disciplina unisce due campi fondamentali:
+\begin{itemize}
+    \item \textbf{Statistica}: necessaria per trarre inferenze a partire da un campione di dati.
+    \item \textbf{Informatica}: necessaria per fornire algoritmi efficienti in grado di risolvere il problema di ottimizzazione, oltre a rappresentare e valutare il modello per l'inferenza.
+\end{itemize}
+
+\begin{notaprof}
+È fondamentale comprendere che ogni misurazione e ogni modello di ML, sebbene si basi su dati raccolti nel passato, ha come unico scopo quello di \textbf{prendere decisioni sul futuro}. L'intero sistema si fonda su un assioma filosofico implicito ma cruciale: assumiamo che il futuro sia simile al passato. Senza questa assunzione di base, l'uso dei dati storici per addestrare un modello sarebbe completamente inutile.
+\end{notaprof}
+
+\section{Esempi d'uso: associazioni, classificazione, regressione}
+
+Il Machine Learning viene applicato a diverse tipologie di problemi.
+
+\subsection{Apprendimento di associazioni}
+
+L'\textbf{apprendimento di associazioni} calcola la probabilità che un evento si verifichi in concomitanza di un altro. Un esempio tipico è la \textbf{basket analysis}, in cui si stima la probabilità che chi compra un certo prodotto acquisti anche un altro prodotto.
+
+\subsection{Classificazione}
+
+La \textbf{classificazione} serve a dividere i dati in categorie. Tra gli esempi più importanti troviamo:
+\begin{itemize}
+    \item \textbf{Credit scoring}: differenziare clienti a basso o alto rischio in base a reddito e risparmi.
+    \item \textbf{Face recognition}.
+    \item \textbf{Character recognition}.
+    \item \textbf{Speech recognition}.
+    \item \textbf{Diagnosi medica}.
+    \item \textbf{Predizione del click} su pubblicità web.
+\end{itemize}
+
+\subsection{Regressione}
+
+La \textbf{regressione} viene utilizzata quando l'output non è una categoria, ma un valore numerico continuo. Un esempio classico è la predizione del \textbf{prezzo di un'auto usata} in base ai suoi attributi.
+
+\begin{notaprof}
+Sistemi come Google o Netflix basano il loro intero modello di business sulla predizione. Google non vende solo spazi pubblicitari, ma predice quale utente cliccherà su quale banner per massimizzare i profitti. Netflix usa algoritmi di classificazione e raccomandazione per permettere all'utente di trovare rapidamente il contenuto desiderato. Inoltre, i sistemi di autenticazione biometrica non cercano una corrispondenza pixel per pixel, ma utilizzano il ML per capire quali variazioni sono significative e quali no.
+\end{notaprof}
+
+Le principali applicazioni del ML si articolano quindi in tre grandi famiglie: \textbf{associazioni}, \textbf{classificazione} e \textbf{regressione}. Esse coprono problemi di co-occorrenza, categorizzazione e stima di valori numerici.
+
+\section{Tipi di apprendimento: supervised, unsupervised, semi-supervised, reinforcement}
+
+I modelli di ML possono apprendere in modi diversi a seconda dei dati disponibili.
+
+\subsection{Supervised learning}
+
+Nel \textbf{supervised learning}, il modello riceve sia i dati di addestramento sia gli output desiderati, cioè le \textbf{label}.
+
+\begin{notaprof}
+Un esempio è fornire al modello la dimensione di un tumore dicendogli esplicitamente se in passato si è rivelato benigno o maligno, affinché impari a classificarlo in futuro.
+\end{notaprof}
+
+\subsection{Unsupervised learning}
+
+Nell'\textbf{unsupervised learning}, vengono forniti dati di addestramento senza output desiderati. Lo scopo è trovare struttura, similarità o gruppi latenti nei dati.
+
+\begin{notaprof}
+In questo caso l'obiettivo non è predire un valore esatto, ma organizzare i dati in cluster simili tra loro, ad esempio per raggruppare geni simili o fare network analysis.
+\end{notaprof}
+
+\subsection{Semi-supervised learning}
+
+\begin{notaslide}
+Il \textbf{semi-supervised learning} utilizza dati di addestramento in cui solo una parte limitata delle istanze possiede le label corrette.
+\end{notaslide}
+
+\subsection{Reinforcement learning}
+
+\begin{notaslide}
+Il \textbf{reinforcement learning} è una tipologia di apprendimento basata su un sistema di ricompense e punizioni. Nelle slide è citato, ma non viene approfondito a voce.
+\end{notaslide}
+
+Nel complesso, la distinzione tra questi paradigmi dipende dal tipo di supervisione disponibile e dal modo in cui il sistema riceve informazione utile per apprendere.
+
+\section{Etica del data mining e del ML}
+
+L'utilizzo dei dati solleva questioni etiche rilevanti. L'anonimizzazione dei dati è difficile, e l'uso di certe informazioni può condurre a discriminazioni. Per esempio, utilizzare razza, sesso o religione per l'approvazione di un prestito è eticamente problematico, mentre in ambito medico gli stessi dati possono essere legittimi.
+
+Le domande fondamentali sono:
+\begin{itemize}
+    \item Chi ha accesso ai dati?
+    \item Per quale scopo sono stati raccolti?
+    \item Quali conclusioni possono essere tratte legittimamente?
+\end{itemize}
+
+\begin{notaprof}
+Quando un sistema ML prende decisioni, la responsabilità è un tema complesso. Se una Tesla a guida autonoma causa un incidente, oggi la responsabilità legale ricade ancora su chi è al volante, anche in virtù degli accordi di licenza accettati dagli utenti. Inoltre, il ML tende a replicare i bias umani presenti nei dati storici: se nel passato una certa etnia o un certo genere ha subito discriminazioni, il modello può apprendere e riprodurre quel comportamento in futuro.
+\end{notaprof}
+
+L'etica del ML impone quindi attenzione a \textbf{privacy}, \textbf{bias}, \textbf{discriminazione} e \textbf{responsabilità}. I dati storici non sono neutrali, e i modelli possono ereditare le distorsioni del contesto da cui provengono.
+
+\section{Terminologia: istanze, feature, attributi nominali/numerici, output, modelli}
+
+Per utilizzare correttamente gli algoritmi di ML è necessario padroneggiare una terminologia standard.
+
+\subsection{Instances}
+
+Le \textbf{instances} sono i singoli esempi indipendenti del concetto da apprendere.
+
+\begin{notaprof}
+In un dataset strutturato a tabella, l'istanza rappresenta la singola riga, ad esempio la combinazione di una specifica classe software in una specifica release.
+\end{notaprof}
+
+\subsection{Features o attributi}
+
+Le \textbf{feature} sono gli aspetti misurabili di un'istanza. Possono essere:
+\begin{itemize}
+    \item \textbf{Nominali}: valori simbolici o categorici.
+    \item \textbf{Numerici}: valori quantitativi su cui si possono eseguire operazioni matematiche.
+\end{itemize}
+
+\begin{notaprof}
+Le feature rappresentano le colonne della tabella. In genere, l'ultima colonna è l'output o variabile da predire, mentre le altre sono metriche che aiutano nella predizione.
+\end{notaprof}
+
+\subsection{Output e modelli}
+
+La conoscenza prodotta da un sistema di ML può essere rappresentata tramite:
+\begin{itemize}
+    \item \textbf{tabelle decisionali};
+    \item \textbf{modelli lineari};
+    \item \textbf{alberi decisionali};
+    \item \textbf{regole};
+    \item \textbf{cluster}.
+\end{itemize}
+
+\begin{notaesame}
+Molti ambienti di ML, in particolare \textbf{Weka}, non supportano correttamente gli attributi con scala ordinale, ad esempio \emph{Low}, \emph{Medium}, \emph{High}. Weka tende a trattarli come semplici categorie nominali, perdendo l'informazione dell'ordine. Per questo motivo, spesso occorre eliminare la colonna oppure trasformarla in una variabile binaria, accettando il relativo trade-off nella perdita di informazione.
+\end{notaesame}
+
+Un dataset è dunque una tabella in cui le \textbf{righe} rappresentano le istanze e le \textbf{colonne} rappresentano le feature. La corretta interpretazione del tipo di attributo è essenziale, soprattutto quando si usano strumenti come Weka.
+
+\section{Software quality e costo dei bug}
+
+La \textbf{qualità del software} ha un impatto economico enorme. I bug costano a livello globale migliaia di miliardi di dollari, e le attività di \textbf{Quality Assurance (QA)} risultano estremamente costose.
+
+Nei sistemi industriali di grandi dimensioni:
+\begin{itemize}
+    \item vengono effettuate migliaia di \textbf{code review} al giorno;
+    \item vengono eseguiti milioni di \textbf{test};
+    \item ogni modifica deve essere controllata con attenzione.
+\end{itemize}
+
+\begin{notaprof}
+Poiché il testing è molto oneroso, diventa fondamentale stimare in anticipo quali entità del codice, come classi o metodi, abbiano maggiore probabilità di essere difettose, così da concentrare lì l'effort di QA.
+\end{notaprof}
+
+Ne segue che la defect prediction nasce anche come risposta economica e organizzativa al problema della qualità: non è sostenibile controllare tutto con la stessa intensità, quindi occorre \textbf{prioritizzare}.
+
+\section{Software analytics: definizione, obiettivi e fonti dati}
+
+La \textbf{Software Analytics} è la combinazione di \textbf{Software Data} e \textbf{Data Analytics}. Il software produce una grande quantità di dati distribuiti tra repository, sistemi di build, log di CI/CD, issue tracker, code review e file di configurazione.
+
+Gli obiettivi principali della Software Analytics sono:
+\begin{enumerate}
+    \item \textbf{Quality improvement}: prevenire crash e bug.
+    \item \textbf{Process improvement}: capire l'impatto di pratiche come code review e rapid release.
+    \item \textbf{Productivity improvement}: valutare l'effetto della CI e di altre pratiche sul team.
+    \item \textbf{Empirical theory building}: costruire teorie empiriche sull'ingegneria del software.
+\end{enumerate}
+
+La Software Analytics sfrutta quindi i dati prodotti dagli strumenti di sviluppo per migliorare \textbf{qualità}, \textbf{processi}, \textbf{produttività} e comprensione empirica del software.
+
+\section{AI/ML applicati alla Software Engineering}
+
+L'Intelligenza Artificiale sta trasformando l'Ingegneria del Software.
+
+\subsection{Applicazioni alla qualità}
+
+Tra le applicazioni principali ci sono:
+\begin{itemize}
+    \item \textbf{defect prediction};
+    \item \textbf{vulnerability prediction};
+    \item \textbf{malware prediction};
+    \item \textbf{test case generation}.
+\end{itemize}
+
+\subsection{Applicazioni alla produttività}
+
+L'AI può supportare anche la produttività del team, ad esempio tramite:
+\begin{itemize}
+    \item generazione di \textbf{UI}, requisiti, codice e commenti;
+    \item previsione della \textbf{produttività} di sviluppatori o team;
+    \item \textbf{recommendation} di developer o reviewer;
+    \item identificazione del \textbf{turnover} degli sviluppatori.
+\end{itemize}
+
+\begin{notaslide}
+Nelle slide vengono citati esempi industriali concreti, come un \textbf{AI coding assistant} sviluppato in collaborazione con Mozilla, i tool \textbf{SapFix} e \textbf{Sapienz} di Facebook per trovare e correggere bug automaticamente, e \textbf{Sketch2Code} di Microsoft per trasformare schizzi su lavagna in codice HTML.
+\end{notaslide}
+
+Nel contesto della Software Engineering, l'AI non serve quindi solo a prevedere bug, ma anche a supportare gli sviluppatori nella produzione di codice, nel testing e nella gestione del lavoro di squadra.
+
+\section{Defect prediction e ML for software defects}
+
+Nel contesto dei difetti software, il ML ha tre grandi obiettivi:
+\begin{enumerate}
+    \item \textbf{Predire} i difetti futuri, per ottimizzare le risorse di QA.
+    \item \textbf{Spiegare} perché un software fallisce.
+    \item \textbf{Costruire} teorie empiriche sulla defectiveness.
+\end{enumerate}
+
+\begin{notaprof}
+Prevenire è meglio che curare. Eliminare code smells e individuare le classi più rischiose consente di combattere i bug in modo proattivo e di stabilire priorità di testing più efficaci.
+\end{notaprof}
+
+La defect prediction non si limita quindi a indicare \emph{dove} è probabile trovare un difetto, ma cerca anche di chiarire \emph{perché} quel rischio esiste e come ridurlo a livello di processo o di codice.
+
+\section{Pipeline: measure, clean data, analyze, model, explain}
+
+L'applicazione della Software Analytics alla defect prediction segue una pipeline precisa:
+\begin{enumerate}
+    \item \textbf{Measure}: estrazione dei dati grezzi e raccolta delle metriche.
+    \item \textbf{Clean Data}: pulizia dei dati.
+    \item \textbf{Analyze}: ricerca di correlazioni e relazioni tra feature.
+    \item \textbf{Model}: costruzione e addestramento di modelli analitici o black-box.
+    \item \textbf{Explain}: estrazione di conoscenza utile per spiegare le predizioni.
+\end{enumerate}
+
+\begin{notaprof}
+Nel corso verrà seguita esattamente questa pipeline: si partirà da una tabella grezza, la si analizzerà, si sceglieranno e si normalizzeranno le colonne, si costruirà il modello e infine si cercherà di estrarre conoscenza utile a evitare in futuro gli stessi errori.
+\end{notaprof}
+
+\subsection*{In sintesi}
+La pipeline consente di trasformare dati grezzi provenienti dai repository in \textbf{modelli predittivi} e poi in \textbf{conoscenza spiegabile e azionabile}. È uno schema concettuale fondamentale perché collega raccolta dati, modellazione e interpretazione.
+
+\section{Estrazione dati da ITS e VCS e raccolta metriche}
+
+Il primo passo della pipeline consiste nell'estrazione dei dati da due sorgenti principali:
+\begin{itemize}
+    \item \textbf{ITS (Issue Tracking System)}: ad esempio Jira, che contiene ticket, bug report e informazioni di progetto.
+    \item \textbf{VCS (Version Control System)}: ad esempio Git, che contiene codice sorgente, snapshot e log dei commit.
+\end{itemize}
+
+Da queste fonti si raccolgono diverse famiglie di metriche:
+\begin{itemize}
+    \item \textbf{Code Metrics}: dimensione, complessità, design object-oriented, accoppiamento, coesione.
+    \item \textbf{Process Metrics}: numero di commit, churn, difetti pre-release, pratiche di sviluppo.
+    \item \textbf{Human Factors}: code ownership, numero di sviluppatori che hanno toccato il file, esperienza dello sviluppatore.
+\end{itemize}
+
+\begin{notaprof}
+Più persone modificano una stessa classe, maggiore è il rischio di introdurre difetti. Inoltre, se un commit è effettuato da uno sviluppatore che non ha esperienza su quella classe, la probabilità di errore cresce sensibilmente.
+\end{notaprof}
+
+Combinando dati da \textbf{Jira} e \textbf{Git}, si ottengono quindi metriche sul codice, sul processo e sui fattori umani, tutte utili per la defect prediction.
+
+\section{Identificazione difetti, labeling e defect dataset}
+
+Per addestrare un modello di defect prediction è necessario costruire un dataset etichettato, in cui ogni classe venga marcata come \textbf{difettosa} o \textbf{non difettosa}.
+
+Questo processo dipende dal \textbf{linkage} tra:
+\begin{itemize}
+    \item ticket nell'Issue Tracking System;
+    \item commit nel Version Control System;
+    \item versioni del software coinvolte nel ciclo di vita del difetto.
+\end{itemize}
+
+\begin{notaprof}
+Quando uno sviluppatore effettua un commit per risolvere un problema, inserisce spesso nel messaggio del commit l'ID del ticket Jira associato. Questo ID rappresenta il razionale del cambiamento. Grazie a questa connessione tra commit e ticket, e tramite tecniche come \textbf{SZZ} e \textbf{Proportion}, è possibile non solo sapere quale commit ha corretto il bug, ma anche risalire a ritroso fino al commit che lo aveva introdotto.
+\end{notaprof}
+
+\subsection*{In sintesi}
+Il \textbf{labeling} dipende dalla capacità di collegare correttamente ticket, commit e release. Questo collegamento è alla base della costruzione del \textbf{defect dataset} ed è il passaggio che determina la qualità dei dati su cui verranno addestrati i modelli.
+
+\section{Black-box models e necessità di spiegazione}
+
+Molti algoritmi di apprendimento producono modelli \textbf{black-box}: ricevono un input e restituiscono una predizione, ma senza rendere trasparente il ragionamento interno che ha portato a quella decisione.
+
+Per esempio, un modello può dire che una certa classe ha alta probabilità di essere difettosa, ma senza spiegare quali fattori abbiano portato a quel risultato.
+
+\begin{notaprof}
+Un predittore come una rete neurale può essere molto accurato, ma non sa giustificare in modo leggibile il perché della sua scelta. Nell'ingegneria del software, invece, capire il motivo della difettosità è cruciale, perché consente al manager di agire sulla causa e non soltanto sul sintomo.
+\end{notaprof}
+
+In contesto ingegneristico, quindi, la sola accuratezza non basta: il valore operativo di una predizione aumenta notevolmente quando essa è accompagnata da una spiegazione comprensibile.
+
+\section{XAI, GDPR, fairness, accountability, transparency}
+
+La necessità di spiegare i modelli è legata sia a motivazioni tecniche sia a motivazioni etiche e legali. In questo contesto si colloca il paradigma \textbf{FAT}:
+\begin{itemize}
+    \item \textbf{Fairness};
+    \item \textbf{Accountability};
+    \item \textbf{Transparency}.
+\end{itemize}
+
+L'\textbf{Articolo 22 del GDPR} richiede che i processi decisionali automatizzati che hanno impatto sugli individui siano accompagnati da una spiegazione adeguata.
+
+Questo porta a domande fondamentali:
+\begin{itemize}
+    \item I sistemi di AI rispettano le leggi?
+    \item I modelli producono decisioni discriminatorie?
+    \item Comprendiamo davvero perché un modello fa una certa predizione?
+\end{itemize}
+
+\begin{notaprof}
+Una tecnica di Explainable AI consiste nell'affiancare a un modello black-box, come una rete neurale, un modello gemello spiegabile, ad esempio un albero decisionale. Invece di addestrare l'albero direttamente sui dati originali, lo si addestra sugli output generati dalla rete neurale, così da mimarne il comportamento e renderne più leggibili le decisioni.
+\end{notaprof}
+
+\subsection*{In sintesi}
+La \textbf{XAI} nasce dall'esigenza di rendere i modelli comprensibili, verificabili e compatibili con vincoli legali ed etici come quelli imposti dal GDPR. In questo quadro, la spiegabilità non è un'aggiunta opzionale, ma una proprietà sempre più centrale.
+
+\section{CMMI Level 5 e process improvement}
+
+Il \textbf{CMMI (Capability Maturity Model Integrated)} è uno standard per misurare la maturità dei processi di sviluppo software.
+
+I livelli principali sono:
+\begin{enumerate}
+    \item \textbf{Initial}
+    \item \textbf{Managed}
+    \item \textbf{Defined}
+    \item \textbf{Quantitatively Managed}
+    \item \textbf{Optimizing}
+\end{enumerate}
+
+Il \textbf{Level 5}, cioè \emph{Optimizing}, rappresenta il livello più elevato: le performance del processo vengono migliorate in modo continuo tramite innovazione e controllo quantitativo.
+
+\begin{notaprof}
+Il professore riporta un'esperienza diretta in cui ha aiutato un'azienda a mantenere il Livello 5 del CMMI. L'obiettivo era dimostrare statisticamente che certe strategie di miglioramento avessero prodotto benefici reali. I risultati hanno mostrato una forte riduzione dei difetti e un marcato aumento del profitto per dipendente.
+\end{notaprof}
+
+Il riferimento al CMMI mostra bene come metriche, controllo statistico e miglioramento continuo possano essere integrati in una visione strutturata della qualità.
+
+\section{Process chart e controllo statistico}
+
+Per controllare la stabilità del processo si utilizzano i \textbf{process chart} o \textbf{control chart}. Essi servono a:
+\begin{itemize}
+    \item identificare problemi mentre si verificano;
+    \item predire l'intervallo atteso dei risultati del processo;
+    \item verificare se il processo è statisticamente stabile;
+    \item decidere se intervenire con correzioni locali o con cambiamenti più strutturali.
+\end{itemize}
+
+La costruzione di un process chart prevede:
+\begin{enumerate}
+    \item scelta della variabile da osservare;
+    \item scelta dell'unità temporale;
+    \item calcolo della \textbf{media};
+    \item calcolo dell'\textbf{Upper Control Limit} come media più tre deviazioni standard;
+    \item calcolo del \textbf{Lower Control Limit} come media meno tre deviazioni standard.
+\end{enumerate}
+
+\begin{notaprof}
+Finché i dati restano all'interno dei limiti di controllo, il processo è considerato statisticamente stabile. Se invece un punto supera uno dei limiti, si attiva una retrospettiva per analizzare la root cause dell'anomalia e capire come evitare che si ripeta.
+\end{notaprof}
+
+I \textbf{process chart} permettono dunque di monitorare il processo nel tempo e di individuare rapidamente deviazioni anomale che richiedono analisi e intervento.
+
+\section{Casi applicativi mostrati nelle slide, anche se solo introdotti}
+
+Le lezioni presentano anche alcuni casi applicativi concreti.
+
+\subsection{Simulatore di release e defect prediction}
+
+\begin{notaprof}
+È stata sviluppata un'interfaccia per supportare i manager nel \textbf{release planning}. Modificando alcuni slider relativi a variabili di input, come la percentuale di God Classes, la compliance architetturale o il numero di nuovi sviluppatori, il modello ricalcolava dinamicamente il numero atteso di difetti nella release successiva. Il sistema forniva anche intervalli di confidenza e scenari di best case e worst case.
+\end{notaprof}
+
+\subsection{Traceability recovery}
+
+\begin{notaslide}
+Nelle slide si introducono studi sull'uso di tecniche NLP e classificatori di ML per stimare il numero di link rimanenti nel recupero della tracciabilità dei requisiti.
+\end{notaslide}
+
+\subsection{Defectiveness prediction via JIT}
+
+\begin{notaslide}
+Le slide finali introducono il tema del miglioramento della defect prediction combinando informazioni \textbf{Just-In-Time} a livello di commit con metriche classiche a livello di classe e metodo.
+\end{notaslide}
+
+Le tecniche discusse trovano applicazione sia in strumenti concreti di supporto decisionale per i manager, sia in linee di ricerca avanzate su \textbf{tracciabilità} e \textbf{predizione dei difetti}.
+
+\section{Riepilogo finale}
+
+I concetti chiave emersi sono i seguenti:
+\begin{itemize}
+    \item Il \textbf{Machine Learning} apprende dai dati passati per prendere decisioni sul futuro.
+    \item Le principali famiglie di problemi sono \textbf{associazioni}, \textbf{classificazione} e \textbf{regressione}.
+    \item La \textbf{Software Analytics} usa dati provenienti da repository, issue tracker e pipeline di sviluppo per migliorare qualità, processi e produttività.
+    \item La \textbf{defect prediction} serve a stimare quali classi o componenti sono più a rischio di contenere difetti.
+    \item La pipeline fondamentale è: \textbf{Measure $\rightarrow$ Clean Data $\rightarrow$ Analyze $\rightarrow$ Model $\rightarrow$ Explain}.
+    \item Il \textbf{labeling} delle classi dipende dal corretto collegamento tra ticket, commit e release.
+    \item I modelli \textbf{black-box} sono potenti ma poco trasparenti, perciò diventa centrale la \textbf{Explainable AI}.
+    \item La spiegabilità è importante non solo dal punto di vista tecnico, ma anche per ragioni di \textbf{fairness}, \textbf{accountability}, \textbf{transparency} e conformità al \textbf{GDPR}.
+    \item Il \textbf{CMMI Level 5} e i \textbf{process chart} mostrano come il controllo quantitativo del processo possa tradursi in miglioramenti concreti di qualità e produttività.
+\end{itemize}
