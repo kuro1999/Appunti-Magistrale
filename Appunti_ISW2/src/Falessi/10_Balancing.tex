@@ -1,0 +1,251 @@
+\chapter{Snoring: rumore nei dataset di defect prediction}
+
+\section{Introduzione e contesto della defect prediction}
+
+La \textbf{defect prediction} è una tecnica che mira a identificare gli artefatti software, come le classi, che hanno un'alta probabilità di presentare un difetto.
+
+\begin{itemize}
+    \item \textbf{Obiettivo:} ridurre i costi e il tempo dedicati alle fasi di testing e code review, permettendo agli sviluppatori di concentrare gli sforzi su specifiche parti critiche del codice.
+    \item \textbf{Contesto:} lo studio si posiziona nell'ambito della \textbf{within-project defect prediction}, ovvero la classificazione delle classi difettose all'interno di una specifica release di un progetto.
+    \item \textbf{Problema dei dati:} l'affidabilità di un modello predittivo dipende interamente dalla qualità del dataset su cui viene addestrato.
+\end{itemize}
+
+\begin{notaprof}
+Questo richiama il principio del \textbf{Garbage In, Garbage Out}. Se i dati in ingresso sono inaccurati, i risultati del classificatore saranno inaffidabili.
+\end{notaprof}
+
+\begin{notaslide}
+Lavori precedenti hanno già identificato altre fonti di rumore nei dataset, come la \textbf{misclassification} e l'origine dei difetti, proponendo soluzioni mirate.
+\end{notaslide}
+
+\section{Sleeping defects e snoring classes}
+
+\begin{itemize}
+    \item \textbf{Sleeping defects (difetti dormienti):} è possibile che un difetto venga scoperto o corretto solo diverse release dopo la sua introduzione, cioè come \textbf{Post-Release Defects}. Durante questo intervallo, il difetto ``dorme'' nel codice.
+    \item \textbf{Snoring classes (classi che russano):} è il fenomeno per cui alcune classi sono affette \emph{esclusivamente} da difetti non ancora corretti. Poiché la presenza di un difetto non può essere nota prima del suo fix, queste classi appaiono erroneamente come pulite. Contenendo difetti dormienti, producono quindi \textbf{rumore} nei dataset di defect prediction.
+\end{itemize}
+
+\begin{notaprof}
+La metafora è semplice: il difetto dorme, ma è la classe che ``russa'', creando disturbo. Se una classe ha cinque bug dormienti ma anche un solo bug già identificato, la classe viene comunque etichettata come difettosa e non russa. La classe russa solo quando \textbf{tutti} i suoi bug sono dormienti, sfuggendo all'etichettatura.
+\end{notaprof}
+
+\begin{notaesame}
+Lo \textbf{snoring} introduce nei dataset \textbf{solo Falsi Negativi (FN)} e mai Falsi Positivi. Una classe etichettata come difettosa lo è per certo, perché il fix esiste; una classe etichettata come non difettosa potrebbe invece nascondere un difetto dormiente. Per questo motivo, l'ultima release di un software sembrerà sempre perfetta: i bug ci sono, ma non sono ancora stati trovati.
+\end{notaesame}
+
+\section{Come vengono assegnati i difetti alle classi}
+
+Per capire da quando una classe è difettosa, si cerca di risalire al momento di introduzione del bug:
+
+\begin{enumerate}
+    \item si considera la prima \textbf{Affected Version} riportata nel sistema di tracciamento, ad esempio Jira;
+    \item se questa informazione manca, si utilizza l'algoritmo \textbf{SZZ}.
+\end{enumerate}
+
+\begin{notaprof}
+Dal punto di vista pratico, si prendono i ticket chiusi e classificati come difetti, si individuano i commit che li risolvono e si etichettano come difettose le classi toccate da quel commit, andando a ritroso nel tempo fino alla data di iniezione.
+\end{notaprof}
+
+\section{SZZ: funzionamento e limiti}
+
+\subsection{Funzionamento}
+
+\textbf{SZZ} è un processo algoritmico per identificare quando un difetto è stato materialmente introdotto nel progetto. Sfrutta il meccanismo di annotazione del sistema di versionamento, come \texttt{git blame}, per determinare, partendo dalle righe di codice modificate durante il fix di un bug, quando quelle stesse righe erano state alterate in precedenza.
+
+\subsection{Limiti}
+
+\begin{itemize}
+    \item \textbf{Code Additions:} se il fix consiste nell'aggiungere codice mancante, SZZ fallisce perché si basa sull'assunzione che il bug sia stato introdotto nelle stesse linee di codice toccate per correggerlo.
+\end{itemize}
+
+\begin{notaslide}
+SZZ riesce a trovare solo il \textbf{26--29\%} dei \textbf{bug-introducing changes}, proprio a causa di questa assunzione restrittiva.
+\end{notaslide}
+
+\subsection{Spiegazione del diagramma SZZ nelle slide}
+
+Il diagramma mostra un esempio pratico. In \textbf{V3}, che rappresenta il fix, il programmatore corregge un ciclo da \texttt{i<=4} a \texttt{i<4} per risolvere il \textbf{Bug \#123}. Tramite una \emph{diff} con la versione precedente, SZZ traccia all'indietro l'origine di quella riga di codice, identificando \textbf{V2} come la modifica che ha introdotto l'errore.
+
+\section{Obiettivi dello studio e Research Questions}
+
+Lo studio si propone di quantificare l'impatto di questo rumore e si articola in cinque \textbf{Research Questions (RQ)}:
+
+\begin{enumerate}
+    \item \textbf{To what extent do defects sleep?} \\
+    Quanto a lungo dormono i difetti?
+    \item \textbf{To what extent do classes snore?} \\
+    In che misura le classi russano?
+    \item \textbf{To what extent does snoring impact the evaluation of classifiers accuracy?} \\
+    Come impatta la valutazione dei classificatori?
+    \item \textbf{To what extent does snoring impact defect prediction accuracy?} \\
+    Come impatta l'accuratezza predittiva?
+    \item \textbf{To what extent is no data better than snoring data?} \\
+    Fino a che punto ``nessun dato'' è meglio di ``dati che russano''?
+\end{enumerate}
+
+\section{RQ1: To what extent do defects sleep?}
+
+\subsection{Rationale}
+
+L'obiettivo è comprendere quante release trascorrono tra l'iniezione di un difetto e la sua correzione, misurando i difetti dormienti ignoti a chi crea il dataset.
+
+\subsection{Design}
+
+Sono stati selezionati \textbf{20 grandi progetti Apache}, tracciati su \textbf{Jira} e versionati su \textbf{Git}, con almeno \textbf{10 release} ed elevato tracciamento tra bug e codice.
+
+\subsection{Variabili e metriche}
+
+\begin{itemize}
+    \item \textbf{Variabile indipendente:} nome del bug in Jira.
+    \item \textbf{Variabile dipendente:} numero di release dormite, misurate tra iniezione e fix, sia in valore assoluto sia in percentuale rispetto alle release totali.
+\end{itemize}
+
+\subsection{Risultati}
+
+I diagrammi a scatola (\textbf{boxplot}) mostrano la distribuzione temporale del fenomeno. Le mediane evidenziano un forte scostamento rispetto allo zero.
+
+\subsection{Discussione}
+
+Il bug medio dorme per ben \textbf{7 release}. Nella maggior parte dei progetti, un difetto dorme per più del \textbf{19\%} delle release esistenti del progetto.
+
+\begin{notaslide}
+Esistono casi estremi come il bug \textbf{LUCENE-3672}, dormiente per \textbf{84 release}, causato da un cambio di librerie esterne.
+\end{notaslide}
+
+\section{RQ2: To what extent do classes snore?}
+
+\subsection{Rationale}
+
+Un difetto che dorme non genera automaticamente una classe che russa se un altro difetto nella stessa classe viene scoperto. L'obiettivo è quindi misurare quanto effettivamente le classi siano affette dallo \textbf{snoring}.
+
+\subsection{Design}
+
+Si misura come varia la misurazione analizzando un sottoinsieme ``sterile'', cioè il primo \textbf{5\%} del dataset, osservandolo dal futuro. Lo schema nelle slide utilizza l'icona dei \textbf{binocoli} per mostrare l'osservatore che si sposta temporalmente in avanti.
+
+\subsection{Variabili e metriche}
+
+\begin{itemize}
+    \item \textbf{Variabile indipendente:} \textbf{Progress}, cioè il progresso temporale, pari alla release misurata divisa per il numero totale di release.
+    \item \textbf{Variabile dipendente:} \textbf{Missing Rate}, che equivale ai Falsi Negativi, ossia la percentuale di classi difettose che non vengono identificate come tali:
+    \[
+        \frac{FN}{FN + TP}
+    \]
+    Questa quantità equivale a \textbf{1 - Recall}.
+\end{itemize}
+
+\subsection{Risultati}
+
+Il grafico a linee mostra chiaramente che, all'aumentare del \textbf{Progress}, il \textbf{Missing Rate} precipita verso lo zero.
+
+\subsection{Discussione}
+
+Per la maggior parte dei progetti, il \textbf{Missing Rate} è superiore al \textbf{50\%} a meno che non si rimuova più del \textbf{20\%} delle release recenti.
+
+\begin{notaprof}
+Per non avere alcun Missing Rate, cioè per arrivare a \textbf{0\%}, in media bisogna ignorare l'ultimo \textbf{71\%} delle release. Questa è la prova che la misurazione richiede molto tempo per stabilizzarsi.
+\end{notaprof}
+
+\section{RQ3: To what extent does snoring impact the evaluation of classifiers accuracy?}
+
+\subsection{Rationale}
+
+Ricercatori e praticanti valutano costantemente tecnologie e classificatori. Se lo \textbf{snoring} impatta questi test, allora anche le valutazioni riportate in letteratura risultano compromesse da un forte \textbf{bias}.
+
+\subsection{Design}
+
+Sono stati impiegati \textbf{15 algoritmi di classificazione} differenti. Si è usata la tecnica dell'\textbf{holdout} conservando l'ordine cronologico dei dati: \textbf{66\%} dei dati storici per il training e \textbf{33\%} per il testing.
+
+\subsection{Variabili e metriche}
+
+\begin{itemize}
+    \item \textbf{Variabili dipendenti:} \textbf{TP}, \textbf{FN}, \textbf{TN}, \textbf{FP}.
+    \item \textbf{Metriche complesse:} \textbf{Precision}, \textbf{Recall}, \textbf{F1}, \textbf{Cohen's Kappa}, \textbf{AUC}, \textbf{Matthews}.
+    \item \textbf{Misura aggiuntiva:} \textbf{Relative Bias}, cioè la distanza relativa tra l'accuratezza con rumore e quella senza rumore.
+    \item \textbf{Variabile indipendente:} presenza o assenza di snoring nel training e nel testing.
+\end{itemize}
+
+\subsection{Risultati}
+
+I boxplot mostrano un \textbf{Relative Bias} altissimo, vicino al \textbf{100\%} per quasi tutte le metriche. Tra i valori riportati spiccano \textbf{Recall = 1.11} e \textbf{Kappa = 1.21}, mentre l'\textbf{AUC} è molto meno colpita, con valore \textbf{0.11}.
+
+\subsection{Discussione}
+
+A causa dello snoring, si rischia di premiare algoritmi sbagliati.
+
+\begin{notaslide}
+Valutando su dati affetti da snoring, il classificatore che è realmente il migliore in un progetto viene selezionato correttamente solo nel \textbf{45\%} dei casi.
+\end{notaslide}
+
+\section{RQ4: To what extent does snoring impact defect prediction accuracy?}
+
+\subsection{Rationale}
+
+Stabilito che lo \textbf{snoring} è una forma di rumore, si vuole quantificare matematicamente quanto peggiorino i modelli predittivi usati per trovare i bug.
+
+\subsection{Design}
+
+Si testa l'accuratezza di un modello addestrato su dati sporchi, indicati come \textbf{TrS} (\textit{Training con Snoring}), contro un test set asettico e privo di rumore, indicato come \textbf{TeNS} (\textit{Test No Snoring}).
+
+\subsection{Variabili e metriche}
+
+Le variabili e le metriche considerate sono identiche a quelle della RQ3.
+
+\subsection{Risultati}
+
+Confrontando le distribuzioni nei grafici a scatola, l'accuratezza statistica crolla in modo evidente.
+
+\subsection{Discussione}
+
+Lo \textbf{snoring} degrada in maniera drammatica le performance per tutti i \textbf{15 classificatori} e su tutte le metriche. La metrica meno impattata in assoluto è la \textbf{Precision}.
+
+\begin{notaesame}
+La \textbf{Recall} viene demolita mentre la \textbf{Precision} subisce danni più lievi perché lo snoring nasconde classi difettose etichettandole come pulite, creando moltissimi \textbf{Falsi Negativi}. Se addestriamo un modello fornendogli quasi esclusivamente esempi di classi pulite, il modello diventa conservativo e tende a predire quasi sempre ``non difettoso''. Predicendo pochissimi bug, mancherà quasi tutti i bersagli veri, facendo crollare la \textbf{Recall}; tuttavia, le poche volte in cui lancerà un allarme, tenderà a farlo su basi più solide, mantenendo relativamente stabile la \textbf{Precision}. Quando il dataset è pulito, invece, l'aumento dei positivi è reale e la Recall può risalire.
+\end{notaesame}
+
+\section{RQ5: To what extent is no data better than snoring data?}
+
+\subsection{Rationale}
+
+Poiché non possiamo rimuovere chirurgicamente i singoli punti rumorosi, perché i bug sono invisibili finché non vengono scoperti, l'unica difesa consiste nell'eliminare intere release recenti, che sappiamo essere ricche di difetti non ancora emersi. La domanda è quindi se rimuovere dati migliori davvero le predizioni.
+
+\subsection{Design}
+
+Si testano i classificatori rimuovendo a scalare le ultime \textbf{1, 2, 3 o 4 release} (\textbf{DropCount}) dal set di addestramento. Le classi etichettate esplicitamente come difettose vengono invece preservate, poiché un difetto palese non può essere un falso negativo.
+
+\subsection{Variabili e metriche}
+
+\begin{itemize}
+    \item \textbf{Variabile indipendente:} numero di release eliminate.
+    \item \textbf{Variabile dipendente:} guadagno relativo sulle metriche di accuratezza.
+\end{itemize}
+
+\subsection{Risultati}
+
+Rimuovere l'ultima release, cioè \textbf{+1 DropCount}, garantisce in media un guadagno relativo del \textbf{+41\%} in \textbf{Recall} e del \textbf{+33\%} in \textbf{F1}. Rimuovere \textbf{3} o \textbf{4} release restituisce invece valori negativi.
+
+\subsection{Discussione}
+
+Ignorare una singola release è sempre meglio che usare tutti i dati. Ignorare \textbf{3} o \textbf{4} release causa l'effetto inverso e peggiora i modelli.
+
+\begin{notaprof}
+Qui emerge un conflitto ingegneristico tra il principio \textbf{Garbage In, Garbage Out}, secondo cui dati freschi ma rumorosi inquinano il modello, e il principio \textbf{Size Does Matter}, secondo cui rimuovere troppe release priva il modello di dati recenti utili per l'addestramento. Lo \textbf{sweet spot}, cioè il compromesso ideale, è scartare le ultime \textbf{1 o 2 release}.
+\end{notaprof}
+
+\section{Conclusioni}
+
+\begin{itemize}
+    \item La maggior parte dei difetti dorme per più del \textbf{19\%} del ciclo di vita del progetto.
+    \item Il \textbf{Missing Rate} resta sopra il \textbf{50\%} finché non si accetta di ignorare l'ultimo \textbf{20\%} delle release storiche.
+    \item L'errore relativo nella valutazione dei classificatori si aggira intorno al \textbf{100\%} per quasi tutte le metriche, ad eccezione dell'\textbf{AUC}.
+    \item Il rumore dello snoring deprime pesantemente \textbf{Recall}, \textbf{F1}, \textbf{Matthews} e \textbf{Cohen's Kappa}.
+    \item Applicare il \textbf{Drop} dell'ultima release migliora le predizioni di circa il \textbf{30\%}.
+\end{itemize}
+
+\section{Future works}
+
+\begin{itemize}
+    \item Sviluppo di metodologie di rimozione del rumore più \textbf{fine-grained}, cioè più granulari.
+    \item Combinazione di diverse tecniche di mitigazione del rumore.
+    \item Utilizzo di distribuzioni probabilistiche come input per i modelli predittivi al posto di etichette binarie nette, cioè difettoso/non difettoso.
+    \item Replica dello studio nel contesto della classificazione \textbf{Just-In-Time (JIT)}.
+\end{itemize}
