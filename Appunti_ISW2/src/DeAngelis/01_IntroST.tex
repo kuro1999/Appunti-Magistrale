@@ -1,0 +1,215 @@
+\title{INIZIO DEANGELIS}
+\newpage
+
+\chapter{Panoramica del modulo di Software Testing}
+
+\section{Introduzione al modulo}
+
+Questa è la lezione introduttiva al modulo di \textbf{Software Testing} di \textbf{Ingegneria del Software 2}. Il modulo ha l'obiettivo di mostrare come migliorare la qualità del software in produzione attraverso processi, metodologie e tecnologie di testing.
+
+Il corso è tenuto da \textbf{Guglielmo De Angelis}, ricercatore presso il gruppo \textbf{SaKS} del \textbf{CNR (IASI)} di Roma. Le sue aree di ricerca includono:
+\begin{itemize}
+    \item modellazione dei sistemi software;
+    \item modellazione di proprietà extra-funzionali;
+    \item generazione automatica a partire da modelli;
+    \item architetture orientate ai servizi;
+    \item software testing.
+\end{itemize}
+
+\section{Informazioni organizzative}
+
+Le lezioni si tengono il \textbf{mercoledì}, dalle \textbf{11:30 alle 13:30}, in \textbf{Aula B14}, fino al \textbf{3 giugno 2026}.
+
+\begin{notaprof}
+Di comune accordo con l'aula, si faranno due ore di lezione consecutive, iniziando in orario e finendo puntuali, senza pause intermedie. Non sono previsti ponti o riduzioni del calendario.
+\end{notaprof}
+
+\subsection{Canali Teams}
+
+Sono previsti due canali principali:
+\begin{itemize}
+    \item il \textbf{canale Generale}, usato per informazioni di carattere generale e per la condivisione delle slide;
+    \item il \textbf{canale Software Testing}, dedicato alle domande specifiche sugli argomenti del modulo e sul progetto d'esame.
+\end{itemize}
+
+\subsection{Ricevimento e comunicazione}
+
+\begin{notaprof}
+È preferibile porre i propri dubbi direttamente in aula, così che tutti possano ascoltare le risposte. In alternativa, è fortemente consigliato usare la mailing list associata al canale Teams, in modo da discutere i problemi collettivamente anche nella lezione successiva.
+\end{notaprof}
+
+\begin{notaesame}
+Il docente non legge in modo sincrono i messaggi diretti su Teams. Le richieste vanno fatte sempre via mail, preferibilmente mettendo in copia il canale Teams del modulo. Le mail private al docente devono essere usate solo per questioni strettamente personali.
+\end{notaesame}
+
+Quando il corso non è attivo, il ricevimento avviene solo su appuntamento via email.
+
+\section{Sillabo del modulo}
+
+Il sillabo segue una progressione che parte dalle basi e arriva fino alla generazione automatica dei test:
+\begin{itemize}
+    \item \textbf{Intro and General Concepts};
+    \item \textbf{Test Automation e Continuous Testing};
+    \item \textbf{Unit and Integration Testing};
+    \item \textbf{Approaches to Test Generation};
+    \item \textbf{Adequacy of the Tests: Control Flow Coverage};
+    \item \textbf{Adequacy of the Tests: Mutation Testing};
+    \item \textbf{Coverage-based Approaches to Test Generation}.
+\end{itemize}
+
+\section{Materiale didattico}
+
+\begin{notaslide}
+Tra i testi di riferimento compaiono, tra gli altri, \textbf{A.P. Mathur} con \emph{Foundations of software testing}, \textbf{B. Garcia} e \textbf{P. Tahchiev et al.} per la parte su \textbf{JUnit}, \textbf{W.E. Lewis} per il testing e il miglioramento continuo della qualità, e \textbf{J. Humble} con \textbf{D. Farley} per la \emph{Continuous Delivery}.
+\end{notaslide}
+
+\begin{notaprof}
+Le slide sono sintesi drastiche dei concetti. Studiare solo sulle slide non basta: è necessario approfondire sui libri. Il testo di Mathur è molto utile per la parte teorica, mentre i libri su JUnit sono più vicini a una manualistica tecnica da consultare per la pratica.
+\end{notaprof}
+
+\section{Modalità di esame}
+
+Il lavoro richiesto è \textbf{strettamente individuale} e consiste nell'applicare le tecniche del corso a \textbf{due classi differenti} appartenenti a \textbf{un progetto open-source} della \textbf{Apache Software Foundation}.
+
+I sorgenti del progetto devono essere disponibili su \textbf{GitHub} e lo studente deve configurare l'ambiente di lavoro del progetto.
+
+\begin{notaprof}
+Si consiglia fortemente di partire da un \emph{fork} personale del progetto su GitHub. In questo modo, se durante il lavoro si individua un bug reale, è anche possibile aprire una \emph{pull request} verso il progetto originale.
+\end{notaprof}
+
+\begin{notaesame}
+È richiesta la configurazione di un framework di \textbf{Continuous Integration}, ad esempio GitHub Actions o TravisCI. È possibile lavorare solo in locale, ma un approccio di questo tipo avrà un impatto negativo sulla valutazione finale.
+\end{notaesame}
+
+\section{Attività richieste: generazione dei test}
+
+\subsection{Scelta delle classi}
+
+\begin{notaesame}
+Il docente raccomanda esplicitamente di non scegliere classi banali, né classi legate alla GUI. In questi casi sarebbe difficile dimostrare l'apprendimento dei concetti del corso.
+\end{notaesame}
+
+\begin{notaslide}
+Se si intuisce che una classe raggiungerà subito il 100\% di coverage senza sforzo, è consigliato contattare il docente.
+\end{notaslide}
+
+\subsection{Test manuali}
+
+Su ciascuna classe bisogna definire un insieme di test tramite \textbf{category partition}, adottando preferibilmente un approccio \textbf{black-box} basato sulle funzionalità esplicite o implicite della classe.
+
+\subsection{Test automatici}
+
+Occorre poi generare automaticamente altri test usando tre approcci distinti:
+\begin{itemize}
+    \item approcci \textbf{randomici};
+    \item approcci basati su \textbf{LLM} e sperimentazione di diversi prompt;
+    \item approcci guidati da \textbf{coverage control-flow}.
+\end{itemize}
+
+\subsection{Integrazione nel build}
+
+\begin{notaprof}
+Per evitare problemi di configurazione e interferenze, è consigliabile disabilitare o rimuovere tutti i test nativi del progetto Apache, lasciando nel ciclo di build soltanto i test sviluppati da voi.
+\end{notaprof}
+
+\section{Valutazione della qualità dei test}
+
+La qualità dei test deve essere validata scegliendo almeno \textbf{due metriche di adeguatezza}, non necessariamente calcolate da tool automatici, e confrontando i valori ottenuti.
+
+Occorre inoltre:
+\begin{itemize}
+    \item valutare la significatività dei test rispetto alle funzionalità attese;
+    \item migliorare i test manuali aumentando la loro adeguatezza;
+    \item applicare tecniche di \textbf{mutation testing};
+    \item aggiungere nuovi test per migliorare la robustezza della suite;
+    \item stimare la \textbf{reliability} del sistema assumendo un profilo operazionale uniforme.
+\end{itemize}
+
+\begin{notaslide}
+Per consentire il completamento della build, quando necessario è possibile disabilitare temporaneamente i test che falliscono, purché la cosa venga documentata.
+\end{notaslide}
+
+\begin{notaprof}
+Se un test fallisce sulla classe originale, ci sono due possibilità: o il test è stato scritto male e quindi va corretto, oppure avete scoperto un bug reale, che va documentato e gestito separatamente.
+\end{notaprof}
+
+\section{Varianti delle classi e uso degli LLM}
+
+La parte finale del progetto riguarda l'evoluzione del sistema e il comportamento dei test quando il codice cambia.
+
+A partire dalla classe originale \(C_0\), bisogna chiedere a un LLM di generare quattro varianti di refactoring:
+\[
+C_1,\; C_2,\; C_3,\; C_4
+\]
+
+\begin{notaprof}
+Il fulcro dell'esperimento è fornire all'LLM quantità crescenti di informazione. In particolare:
+\begin{itemize}
+    \item \(C_1\): si fornisce solo la classe originale e si chiede il refactoring;
+    \item \(C_2\): si chiede il refactoring imponendo il passaggio dei test black-box;
+    \item \(C_3\): si aggiunge anche il vincolo di passare i test di control flow;
+    \item \(C_4\): si impone il passaggio di tutti i test, inclusa la mutation analysis.
+\end{itemize}
+\end{notaprof}
+
+Occorre poi:
+\begin{itemize}
+    \item eseguire tutti i test originari sulle varianti;
+    \item verificare se le funzionalità iniziali siano state mantenute;
+    \item generare nuovi test automatici per le varianti;
+    \item confrontare qualitativamente i test delle varianti con quelli della classe originale.
+\end{itemize}
+
+\begin{notaprof}
+Se la variante \(C_4\) non supera un test che era stato fornito esplicitamente come vincolo all'LLM, significa che l'LLM ha fallito il refactoring.
+\end{notaprof}
+
+\section{Report finale e consegna}
+
+Lo studente deve redigere un \textbf{report dettagliato} in cui descrive:
+\begin{itemize}
+    \item le attività svolte;
+    \item le decisioni prese;
+    \item la metodologia seguita;
+    \item i problemi affrontati;
+    \item i risultati ottenuti.
+\end{itemize}
+
+Il report ideale ha una lunghezza di circa \textbf{12 pagine A4}, a interlinea singola, carattere 10, font Arial, in formato PDF.
+
+\begin{notaprof}
+Le 12 pagine si riferiscono al testo descrittivo vero e proprio. Figure, tabelle e listati di codice vanno inseriti alla fine, come allegati, e referenziati nel testo.
+\end{notaprof}
+
+\begin{notaesame}
+Non bisogna usare figure, tabelle o didascalie come scorciatoia per spostare fuori dal conteggio l'analisi testuale. Le tabelle mostrano i dati; la discussione e l'interpretazione devono stare nel corpo del report.
+\end{notaesame}
+
+\subsection{File \texttt{classes.txt}}
+
+Va inoltre consegnato un file di testo chiamato \texttt{classes.txt}, contenente i nomi completi delle classi considerate, in ordine alfabetico, nel formato:
+\[
+\langle nomePackage \rangle . \langle nomeSubPackage \rangle . \dots . \langle nomeClasse \rangle
+\]
+
+\subsection{Invio e discussione orale}
+
+Il report e il file \texttt{classes.txt} vanno inviati via email al docente entro le scadenze pubblicate su Teams. L'esame orale consiste nella presentazione e discussione del report.
+
+\begin{notaprof}
+I link al repository GitHub e al framework di CI dovrebbero essere inseriti esplicitamente nel report oppure nella mail di consegna.
+\end{notaprof}
+
+\section{Messaggi chiave della lezione}
+
+\begin{notaesame}
+Il docente valuterà la comprensione critica del lavoro svolto. Non basta riportare un valore numerico, per esempio un coverage del 37\%: bisogna spiegare perché si è ottenuto quel valore e quali implicazioni ha.
+\end{notaesame}
+
+\begin{notaprof}
+Quando si generano le varianti \(C_1\)--\(C_4\) con l'LLM, conviene sempre iniziare una nuova sessione di chat fresca, in modo da evitare che il modello venga influenzato dai prompt precedenti e produca varianti troppo simili tra loro.
+\end{notaprof}
+
+\subsection*{In sintesi}
+
+Il modulo di Software Testing prevede un esame basato su un progetto individuale rigoroso. Lo studente deve lavorare su due classi non banali di un progetto Apache, generare e valutare test con approcci diversi, integrare i test in una pipeline di build, studiare l'effetto delle mutazioni e delle varianti generate con LLM, e infine documentare tutto in un report tecnico dettagliato da discutere oralmente.
