@@ -1,0 +1,315 @@
+\chapter{Effort-Aware Accuracy Metrics e valutazione dei classificatori}
+
+\section{Contesto generale}
+
+Nel campo dell'\textbf{ingegneria del software}, i modelli di \textbf{defect prediction} sono classificatori di Machine Learning con lo scopo di identificare gli artefatti software, come classi o metodi, che hanno un'alta probabilità di manifestare un difetto.
+
+\subsection{Defect prediction e testing activity context}
+
+Il fine ultimo della \textbf{defect prediction} è ridurre il costo delle attività di testing, analisi o \emph{code review}. Prevedendo dove si annidano i bug, il team di sviluppo può dare priorità agli sforzi, concentrandoli su porzioni specifiche di codice, invece di ispezionare l'intero sistema alla cieca.
+
+\subsection{Perché l'accuratezza classica non basta}
+
+Storicamente, i modelli predittivi venivano valutati tramite metriche classiche derivate dal mondo dell'\textbf{Information Retrieval}, come \textbf{Precision} o \textbf{Recall}.
+
+\begin{notaprof}
+Il professore sottolinea che, sebbene le metriche classiche siano utili a livello teorico, risultano inadeguate e poco pratiche nel contesto del testing. Sapere che un classificatore ha una Precision dello 0.90 o una Recall dello 0.89 non fornisce al manager alcuna indicazione pratica sull'impatto reale in termini di \emph{effort} necessario per ispezionare il software. Per questo motivo, le metriche classiche risultano troppo astratte.
+\end{notaprof}
+
+\subsection{Effort-aware accuracy metrics}
+
+Per colmare questo divario, sono nate le \textbf{Effort-Aware Accuracy Metrics (EAM)}. Si tratta di metriche di accuratezza che tengono esplicitamente in considerazione l'\textbf{effort}, cioè il costo o il tempo richiesto per ispezionare il codice suggerito dal classificatore, garantendo così una stima più realistica dei benefici apportati.
+
+\section{Concetti fondamentali}
+
+\subsection{Definizione di EAM}
+
+Le \textbf{Effort-Aware Metrics} misurano i benefici forniti da un classificatore in base alla sua capacità di ordinare correttamente le entità candidate a essere difettose, bilanciando i bug trovati con lo sforzo speso per cercarli.
+
+\subsection{Ranking delle entità difettose}
+
+Poiché è impossibile analizzare tutto il software, file e classi vengono inseriti in un \textbf{ranking}, cioè una lista ordinata. Il tester ispezionerà il codice partendo dalla cima della lista e scendendo verso il basso finché non esaurisce le risorse a disposizione.
+
+\subsection{Relazione tra effort e LOC da ispezionare}
+
+\begin{notaprof}
+Nell'approccio EAM si assume, come approssimazione, che l'effort necessario per testare un'entità sia linearmente proporzionale alla sua dimensione fisica, cioè al numero di \textbf{Linee di Codice (LOC)}. Ispezionare una classe enorme costerà quindi molto più effort rispetto a una classe molto piccola.
+\end{notaprof}
+
+\subsection{Differenza tra ranking per probabilità e ranking effort-aware}
+
+L'approccio classico ordina semplicemente le classi in base alla \textbf{probabilità} di contenere un bug. Un approccio realmente \textbf{effort-aware}, invece, ordina le classi tenendo conto anche di quanto \emph{costa} ispezionarle in termini di LOC.
+
+\section{PofBx e NPofBx}
+
+\subsection{Definizione di PofBx}
+
+La \textbf{PofBx} è la EAM non normalizzata più nota. Definisce la percentuale di bug che un tester può identificare ispezionando il top \(x\%\) delle linee di codice del sistema, seguendo un ranking basato esclusivamente sulla \textbf{probabilità predetta} di difetto.
+
+\subsection{Definizione di NPofBx}
+
+La \textbf{NPofBx} è la metrica proposta dagli autori del paper. Rappresenta la versione \textbf{normalizzata} della PofBx. Mantiene la stessa logica generale, ma utilizza un ranking differente.
+
+\subsection{Significato della normalizzazione}
+
+Invece di ordinare semplicemente per probabilità predetta, la NPofBx usa un ranking basato sulla \textbf{predicted defect density}, cioè una densità predetta dei difetti.
+
+\subsection{Ranking per predicted probability / size}
+
+La densità viene calcolata dividendo la probabilità predetta di un'entità per la sua dimensione:
+\[
+\frac{\text{predicted probability}}{\text{size}}
+\]
+
+\subsection{Differenza pratica tra i due approcci}
+
+\begin{notaprof}
+Senza normalizzazione, il modello potrebbe suggerire di testare per prima una classe enorme con probabilità del 90\% di contenere un bug, esaurendo subito il budget di LOC analizzabili. Con la normalizzazione, il modello capisce che è più conveniente testare per prime diverse classi piccole ma promettenti, trovando molti più bug a parità di LOC lette.
+\end{notaprof}
+
+\section{Esempio introduttivo}
+
+Per chiarire l'effetto della normalizzazione, le slide e l'audio presentano un esempio pratico.
+
+\subsection{Dataset di esempio}
+
+Si considera un sistema di \textbf{1790 LOC}, diviso in \textbf{7 entità}, di cui \textbf{3} effettivamente difettose.
+
+\subsection{Significato di PofB20}
+
+Si assume di poter utilizzare il \(20\%\) del budget di ispezione. Il \(20\%\) di 1790 LOC corrisponde a \textbf{358 LOC}. Ordinando le 7 entità per semplice \textbf{probabilità predetta}, le prime due entità consumano tutto il budget disponibile. Analizzandole, si trova solo \textbf{1} delle \textbf{3} entità difettose. Di conseguenza:
+\[
+PofB20 = 33\%
+\]
+
+\subsection{Significato di NPofB20}
+
+Applicando la normalizzazione, cioè ordinando le entità per \(\text{Probabilità}/\text{Size}\), le classi piccole e promettenti risalgono la graduatoria. Con lo stesso tetto di 358 LOC, si riescono ad analizzare \textbf{3} entità anziché 2, trovando \textbf{2} delle \textbf{3} entità difettose. Di conseguenza:
+\[
+NPofB20 = 66\%
+\]
+
+\subsection{Perché la normalizzazione migliora il numero di difetti trovati}
+
+Semplicemente cambiando il criterio di ordinamento del ranking, senza alterare i dati originali né il classificatore, il numero di bug trovati \textbf{raddoppia}.
+
+\section{Aim del lavoro e Research Questions}
+
+\subsection{Problemi nell'uso delle EAM}
+
+Il lavoro nasce dall'osservazione che esiste una grave carenza, e talvolta un uso scorretto, delle EAM in letteratura, il che ne mina la validità e la generalizzazione.
+
+\subsection{Proposta di normalizzazione}
+
+L'obiettivo del lavoro è duplice:
+\begin{enumerate}
+    \item evidenziare le problematiche storiche nell'uso delle EAM;
+    \item proporre e valutare la validità della metrica normalizzata \textbf{NPofB}, basata sulla \textbf{predicted defect density}.
+\end{enumerate}
+
+\subsection{Research Questions}
+
+Le quattro domande di ricerca sono:
+\begin{itemize}
+    \item \textbf{RQ1}: quali EAM vengono usate nei paper di Ingegneria del Software?
+    \item \textbf{RQ2}: la normalizzazione migliora effettivamente i valori di PofBs?
+    \item \textbf{RQ3}: il ranking dei classificatori cambia se si normalizza la PofB?
+    \item \textbf{RQ4}: il ranking dei classificatori cambia al variare della \(x\) nelle NPofBx normalizzate?
+\end{itemize}
+
+\section{RQ1}
+
+Per rispondere alla prima domanda, gli autori hanno effettuato uno \textbf{Systematic Mapping Study}.
+
+\subsection{Numero di studi, progetti, EAM e classifier}
+
+Sono stati analizzati \textbf{152 primary studies} provenienti dai principali journal del settore. Lo studio finale è stato validato su \textbf{14 progetti} \textemdash{} 12 open-source e 2 industriali \textemdash{} confrontando \textbf{10} diverse soglie di EAM e usando \textbf{10 classificatori}.
+
+\subsection{Risultati principali}
+
+I risultati mostrano che:
+\begin{itemize}
+    \item la grande maggioranza della letteratura ignora le EAM: \textbf{132 studi su 152} usano \textbf{0 EAM}, valutando i modelli solo tramite Precision o Recall;
+    \item i pochi studi che usano EAM si limitano quasi sempre a \textbf{una sola metrica}, tipicamente \textbf{PofB20}, riducendo la generalizzabilità dei risultati;
+    \item sette studi su venti presentavano un \textbf{mismatch nei nomi delle metriche}, sintomo di scarsa comprensione o assenza di standardizzazione.
+\end{itemize}
+
+\section{RQ2}
+
+\subsection{Intuizione di base}
+
+La RQ2 indaga se la \textbf{NPofB} ottenga performance matematicamente migliori rispetto alla \textbf{PofB}.
+
+\subsection{Variabili indipendente e dipendente}
+
+\begin{notaprof}
+Il professore richiama una nozione cruciale di ingegneria degli esperimenti. In questo studio, la \textbf{variabile indipendente} è la presenza o assenza della normalizzazione, mentre la \textbf{variabile dipendente} è lo score della PofB calcolato con o senza normalizzazione.
+\end{notaprof}
+
+\subsection{PofB10--PofB90 e average}
+
+La valutazione è stata eseguita su un intero spettro di soglie, dal \textbf{10\%} al \textbf{90\%} a passi di 10, escludendo \(0\) e \(100\) perché banali, più una metrica media, \textbf{AveragePofB}. In totale vengono considerate \textbf{10 PofBs}.
+
+\subsection{Preprocessing}
+
+Prima dell'esperimento, i dati sono stati preprocessati tramite:
+\begin{enumerate}
+    \item \textbf{Log10 normalization};
+    \item \textbf{Feature subset selection};
+    \item \textbf{SMOTE}.
+\end{enumerate}
+
+\begin{notaprof}
+La trasformazione in \(\log_{10}\) è fondamentale. Se si usano feature disomogenee, per esempio secondi, numero di bug o LOC, passare al logaritmo base 10 rende le distribuzioni più omogenee e aumenta l'accuratezza di base.
+\end{notaprof}
+
+\subsection{Walk-forward}
+
+\begin{notaprof}
+Il \textbf{walk-forward} è vitale nell'ingegneria del software. Si dividono i dati in release sequenziali: per predire la Release 4 si usa come training set l'unione delle release 1, 2 e 3. Questo impedisce al modello di leggere il futuro e preserva il realismo temporale.
+\end{notaprof}
+
+\subsection{Classifier usati}
+
+\begin{notaslide}
+Sono stati usati 10 algoritmi ML ben noti: \textbf{Decision Table}, \textbf{IBk (k-NN)}, \textbf{J48}, \textbf{KStar}, \textbf{Naive Bayes}, \textbf{SMO}, \textbf{Random Forest}, \textbf{Logistic Regression}, \textbf{BayesNet} e \textbf{Bagging}.
+\end{notaslide}
+
+\subsection{Risultati}
+
+La normalizzazione incrementa i valori della PofB in modo statisticamente significativo e di svariati ordini di grandezza.
+
+\subsection{Relative gain}
+
+Il guadagno relativo viene calcolato come:
+\[
+\frac{NPofB - PofB}{PofB}
+\]
+
+Il \textbf{relative gain} cresce fortemente per soglie più basse: per esempio, il guadagno della \textbf{PofB10} è circa doppio rispetto a quello della \textbf{PofB20}.
+
+\subsection{Cliff's delta e p-value}
+
+\begin{notaesame}
+Il professore insiste molto sulla differenza tra \textbf{p-value} ed \textbf{effect size}. Il \textbf{p-value} indica quanto sia probabile commettere errore nel rigettare l'ipotesi nulla, ma \emph{non} misura la grandezza dell'effetto. Il \textbf{Cliff's delta}, invece, misura proprio quanto l'effetto sia grande e importante.
+\end{notaesame}
+
+\begin{notaprof}
+Nel caso della normalizzazione, i valori di \textbf{Cliff's delta} risultano per lo più classificati come \textbf{Large}, cioè maggiori o uguali a \(0.43\), mostrando che l'effetto non è solo statisticamente significativo, ma anche sostanzialmente rilevante.
+\end{notaprof}
+
+\section{RQ3}
+
+\subsection{Spearman rank correlation}
+
+La RQ3 si chiede se, normalizzando la PofB, il classificatore che prima risultava il migliore resti tale oppure se la graduatoria venga stravolta. Per confrontare i ranking si usa il coefficiente di correlazione di \textbf{Spearman}.
+
+\subsection{Confronto ranking con e senza normalizzazione}
+
+Il confronto viene fatto tra le classifiche dei classificatori ottenute con la stessa PofB, ma calcolata \textbf{con} e \textbf{senza} normalizzazione.
+
+\subsection{Best classifier}
+
+L'analisi si concentra anche su un aspetto pratico fondamentale: verificare se il \textbf{miglior classificatore} resti lo stesso prima e dopo la normalizzazione.
+
+\subsection{Risultati e interpretazione pratica}
+
+I risultati mostrano una correlazione solo \textbf{modesta} nella maggior parte dei casi. In pratica, identificare il miglior classificatore usando la vecchia PofB equivale spesso a scegliere il classificatore sbagliato rispetto alla più realistica NPofB.
+
+Questo implica che molti studi passati basati sulla PofB non normalizzata risultano fuorvianti, perché potrebbero aver promosso come \emph{miglior modello} un algoritmo che, in realtà, non fornisce il massimo beneficio effort-aware al tester.
+
+\section{RQ4}
+
+\subsection{Confronto tra diverse NPofBx}
+
+Una volta stabilito che la normalizzazione è opportuna, la RQ4 si chiede se basti usare una sola metrica, per esempio \textbf{NPofB20}, oppure se il comportamento dei classificatori cambi al variare della soglia \(x\).
+
+\subsection{Ruolo di \(x\) da 10 a 90}
+
+L'analisi considera soglie che vanno dal \textbf{10\%} al \textbf{90\%}, oltre alla metrica media \textbf{Average NPofB}.
+
+\subsection{Average NPofB e confronto dei ranking}
+
+Le diverse classifiche vengono confrontate a coppie tramite \textbf{Spearman}, valutando anche il comportamento dell'\textbf{Average NPofB}.
+
+\subsection{Risultati e best classifier}
+
+I risultati dimostrano che i ranking dei classificatori sono molto lontani dall'essere identici al variare della soglia \(x\). In circa l'\textbf{88\%} dei casi, il classificatore migliore cambia se si cambia la quantità di codice da ispezionare.
+
+In altre parole, il modello ottimale per ispezionare il \textbf{10\%} del codice potrebbe non essere più il migliore se l'obiettivo è ispezionarne il \textbf{50\%}.
+
+\section{Figure, tabelle e grafici}
+
+\begin{notaslide}
+Le tabelle e i grafici descritti qui sono presentati nelle slide come supporto visivo dei risultati, anche quando non vengono spiegati in dettaglio a voce.
+\end{notaslide}
+
+\subsection{Esempio PofB20 e NPofB20}
+
+Le tabelle iniziali del paper illustrano visivamente l'esempio dei 7 file, mostrando il passaggio da \textbf{33\%} a \textbf{66\%} di bug trovati grazie alla normalizzazione.
+
+\subsection{Tabella delle EAM usate negli studi precedenti}
+
+La \textbf{Tabella 4.4} mostra che, su \textbf{152} studi primari, \textbf{132} usano \textbf{0 EAM}. Nessun paper in letteratura ha usato \textbf{5 o più EAM}.
+
+\subsection{Tabella dei relative gains}
+
+La \textbf{Tabella 4.6} mostra il forte guadagno dovuto alla normalizzazione:
+\begin{itemize}
+    \item \(+414\%\) per \textbf{PofB10};
+    \item guadagni progressivamente decrescenti fino a \(+11\%\) per \textbf{PofB90};
+    \item tutti i confronti hanno \textbf{p-value < 0.0001}.
+\end{itemize}
+
+\subsection{Tabella degli equivalent best classifiers}
+
+La \textbf{Tabella 4.8} e il boxplot associato mostrano la proporzione di casi in cui il miglior modello resta lo stesso. Per esempio, si passa dal \textbf{15\%} per \textbf{NPofB10} al \textbf{29\%} per \textbf{NPofB90}. Questo dato è importante perché smonta l'idea che testare una sola EAM sia statisticamente e industrialmente corretto.
+
+\section{Main results e conclusioni}
+
+\subsection{Superiorità delle NPofBs rispetto alle PofBs}
+
+Dal punto di vista statistico e dell'ordine di grandezza, la \textbf{NPofB} risulta nettamente superiore alla \textbf{PofB}. Fornisce valutazioni più realistiche perché allinea le stime matematiche al comportamento effettivo di uno sviluppatore, che nella pratica considera sempre anche il peso delle dimensioni del file.
+
+\subsection{Cambiamento del best classifier dopo la normalizzazione}
+
+L'impatto più forte della normalizzazione è che essa \textbf{ribalta il ranking dei classificatori}. Modelli ritenuti ottimi nella letteratura precedente perdono il primato quando si passa alla valutazione normalizzata.
+
+\subsection{Implicazioni pratiche}
+
+Chiunque valuti un classificatore in ingegneria del software dovrebbe:
+\begin{itemize}
+    \item calcolare metriche \textbf{Effort-Aware normalizzate}, cioè \textbf{NPofB};
+    \item testare il classificatore su \textbf{molteplici soglie} \(x\), e non su una sola;
+    \item evitare conclusioni basate esclusivamente su una singola metrica o su una sola soglia.
+\end{itemize}
+
+\section{ACUME tool}
+
+\subsection{Scopo}
+
+L'assenza di metriche EAM in letteratura è spesso dovuta alla mancanza di librerie standard per calcolarle. Gli autori propongono quindi \textbf{ACUME} (\textbf{ACcUracy MEtrics}), un tool open-source in Python per automatizzare il processo.
+
+\subsection{Input e output}
+
+Il tool agisce alla fine della pipeline. Prende in input un file \textbf{CSV} predetto da strumenti di Machine Learning, come Weka o scikit-learn, con quattro colonne essenziali:
+\begin{itemize}
+    \item \textbf{ID}
+    \item \textbf{Size}
+    \item \textbf{Predicted Probability}
+    \item \textbf{Actual Defectiveness}
+\end{itemize}
+
+In output produce un singolo file CSV contenente:
+\begin{itemize}
+    \item le metriche classiche di accuratezza;
+    \item tutte le EAM discusse nel lavoro.
+\end{itemize}
+
+\subsection{Utilità per i ricercatori}
+
+ACUME evita sprechi di tempo, riduce il rischio di mismatch nei nomi delle metriche, aumenta la generalizzazione dei risultati e migliora la riproducibilità degli esperimenti.
+
+\subsection*{In sintesi}
+
+Le metriche classiche, come Precision e Recall, risultano troppo astratte nel mondo reale del testing software. Questo studio mostra che pesare il ranking dividendo la probabilità per la grandezza del file, cioè usando \textbf{NPofB}, aumenta drasticamente la capacità di ritrovare i bug veri. Il risultato è un cambiamento profondo nelle modalità con cui l'accademia e i professionisti dovrebbero valutare i classificatori: mai più con una sola soglia e mai più senza normalizzazione.
