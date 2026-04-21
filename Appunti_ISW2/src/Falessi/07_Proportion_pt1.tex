@@ -8,96 +8,129 @@ La \textbf{defect prediction} ha l'obiettivo di identificare gli artefatti softw
 
 \subsection{Importanza del dataset}
 
-Affinché un modello di predizione sia affidabile, è fondamentale costruire \textbf{dataset di difetti di alta qualità}. Modelli addestrati su dati rumorosi raggiungono performance sensibilmente peggiori rispetto a modelli addestrati su dati puliti, in particolare in termini di \textbf{Recall}.
+Affinché un modello di predizione sia affidabile, è fondamentale costruire \textbf{dataset di difetti di alta qualità}. L'intero lavoro si concentra infatti non tanto sul classificatore in sé, quanto sulla fase precedente, cioè la \textbf{costruzione del dataset} e in particolare il \textbf{labeling} delle classi come difettose o non difettose.
+
+Se il labeling è inaccurato, il modello apprenderà relazioni sbagliate tra metriche e defectiveness. Per questo motivo, la qualità del dataset non è un dettaglio secondario, ma una condizione necessaria per ottenere risultati credibili.
+
+\begin{notaprof}
+Ci troviamo nella fase iniziale di \textbf{misurazione} e creazione del dataset. Prima ancora di addestrare un modello di Machine Learning, bisogna capire come etichettare correttamente le classi che in passato sono state davvero affette da difetti.
+\end{notaprof}
 
 \subsection{Labeling delle classi difettose}
 
-\begin{notaprof}
-Ci troviamo nella fase iniziale di \textbf{misurazione} e creazione del dataset. Per costruire un modello di Machine Learning, dobbiamo prima etichettare correttamente quali classi siano state effettivamente difettose in passato.
-\end{notaprof}
+Le slide presentano due strategie principali per etichettare le classi come difettose o non difettose:
+
+\begin{itemize}
+    \item usare \textbf{SZZ};
+    \item usare la \textbf{Earliest Affected Version (AV) in JIRA}, quando disponibile.
+\end{itemize}
+
+Il problema è che entrambe queste fonti possono essere incomplete o inaccurate. Da qui nasce la necessità di studiare metodi automatici alternativi per ricostruire il ciclo di vita del difetto.
 
 \subsection{Obiettivo generale dello studio}
 
-Lo studio ha tre obiettivi principali:
+Lo studio ha un duplice obiettivo.
+
+Da un lato, vuole capire \textbf{quanto siano disponibili e affidabili le informazioni di AV} inserite dagli sviluppatori nei ticket Jira. Dall'altro, propone un nuovo metodo automatizzato, chiamato \textbf{Proportion}, basato sull'idea che i difetti abbiano un \textbf{life-cycle relativamente stabile}.
+
+In sintesi, il lavoro vuole:
+
 \begin{enumerate}
-    \item misurare la proporzione di difetti per cui è possibile usare un approccio realistico basato sui dati esatti di Jira;
-    \item proporre un nuovo metodo automatizzato, chiamato \textbf{Proportion}, per recuperare l'origine del difetto quando i dati di Jira mancano;
-    \item confrontare l'accuratezza del nuovo metodo rispetto alle tradizionali implementazioni di \textbf{SZZ}.
+    \item misurare quanto sia realistico affidarsi ai dati di AV presenti in Jira;
+    \item proporre un metodo alternativo quando l'AV manca o è incoerente;
+    \item confrontare l'accuratezza del nuovo metodo con quella di diverse varianti di \textbf{SZZ}.
 \end{enumerate}
 
 \section{Concetti fondamentali}
 
 \subsection{SZZ}
 
-\textbf{SZZ} è l'algoritmo classico per identificare l'origine di un difetto nel codice.
+\textbf{SZZ} è l'algoritmo classico per identificare il momento in cui un difetto è stato introdotto nel codice. A partire da un \textbf{fix commit}, SZZ usa il meccanismo di annotation del versioning system, per esempio \texttt{git blame}, per risalire all'ultima modifica precedente delle linee corrette.
 
 \subsection{Earliest AV in JIRA}
 
-L'approccio \textbf{Earliest AV in JIRA} consiste nell'usare la prima \textbf{Affected Version} riportata manualmente dagli sviluppatori nel sistema di tracciamento, ad esempio Jira.
+L'approccio \textbf{Earliest AV in JIRA} consiste nell'usare la prima \textbf{Affected Version} riportata manualmente dagli sviluppatori nel sistema di tracciamento, ad esempio Jira. Se questa informazione fosse sempre presente e consistente, costituirebbe un riferimento molto utile per il labeling.
 
 \subsection{Defect lifecycle}
 
-Ogni difetto ha un \textbf{ciclo di vita} che attraversa diverse versioni o release del software.
+L'idea centrale del paper è che ogni difetto attraversi un \textbf{ciclo di vita} che può essere descritto in termini di versioni del software. Questo ciclo di vita collega il momento in cui il difetto viene introdotto, quello in cui viene osservato e quello in cui viene definitivamente corretto.
 
 \subsection{Significato di IV, OV, FV e AV}
 
+Per descrivere il life-cycle del difetto, il paper usa quattro nozioni fondamentali.
+
 \begin{itemize}
-    \item \textbf{IV (Introduction / Injected Version)}:
+    \item \textbf{IV (Injected Version)}: è la versione in cui il difetto viene introdotto nel codice.
     \begin{notaprof}
-    è la prima versione del codice in cui il difetto è stato fisicamente scritto o iniettato.
+    È la prima versione in cui il bug esiste davvero nel sistema, anche se magari nessuno se n'è ancora accorto.
     \end{notaprof}
 
-    \item \textbf{OV (Opening Version)}: è la versione in cui viene creato il ticket di segnalazione.
+    \item \textbf{OV (Opening Version)}: è la versione in cui viene aperto il ticket del bug.
     \begin{notaprof}
-    È il momento in cui la \emph{failure}, cioè il malfunzionamento, viene osservata dall'utente in produzione.
+    È il momento in cui la \emph{failure}, cioè il malfunzionamento osservabile, viene riconosciuta e registrata.
     \end{notaprof}
 
     \item \textbf{FV (Fixed Version)}: è la prima versione rilasciata dopo il \emph{fix commit}.
     \begin{notaprof}
-    È la prima versione del software che non contiene più il bug.
+    È la prima release in cui quel bug non dovrebbe più comparire.
     \end{notaprof}
 
-    \item \textbf{AV (Affected Versions)}: sono tutte le versioni affette dal difetto, comprese nell'intervallo \([IV, FV)\).
+    \item \textbf{AV (Affected Versions)}: sono tutte le versioni affette dal difetto, cioè l'intervallo di versioni comprese tra il momento di introduzione e quello di correzione.
 \end{itemize}
+
+In termini concettuali, le versioni difettose sono quelle comprese nell'intervallo \([IV, FV)\). Questo significa che la \textbf{Fixed Version} non è più affetta dal bug, mentre tutte le versioni precedenti a partire dalla \textbf{Injected Version} lo sono.
 
 \section{SZZ: funzionamento e limiti}
 
 \subsection{Come funziona SZZ}
 
-SZZ individua i commit che hanno introdotto il bug tracciando la storia del codice sorgente.
+SZZ individua i commit che hanno introdotto il bug tracciando la storia del codice sorgente. L'algoritmo parte da un \textbf{fix commit}, cioè da un commit che sappiamo correggere un bug, e usa quella correzione come indizio per cercare all'indietro il possibile \textbf{bug-introducing commit}.
 
 \subsection{Uso di \texttt{git blame} / annotation mechanism}
 
-SZZ prende le linee di codice modificate da un \textbf{fix commit}, cioè il commit che risolve il bug, e utilizza \texttt{git blame} per risalire indietro nel tempo e scoprire quando quelle specifiche linee rimosse o modificate erano state introdotte originariamente.
+Operativamente, SZZ prende le linee di codice modificate da un \textbf{fix commit} e usa \texttt{git blame} per risalire nel tempo, identificando il commit precedente che aveva introdotto o modificato quelle stesse righe.
+
+L'assunzione di fondo è che il bug sia stato introdotto proprio nelle linee poi corrette dal fix. Quando questa assunzione è vera, SZZ può fornire una buona stima del momento di introduzione del difetto.
 
 \subsection{Bug introducing commit}
 
+Il commit individuato tramite backward search viene considerato il \textbf{bug-introducing commit}. Da quel momento in poi, la classe o il file coinvolto vengono etichettati come difettosi.
+
 \begin{notaprof}
-Il commit che ha inserito quella riga originaria viene considerato il \textbf{bug introducing commit}, e da quel momento la classe viene etichettata come difettosa.
+In pratica, il commit che ha scritto la forma sbagliata del codice viene trattato come l'origine storica del bug. È un'inferenza plausibile, ma non sempre perfetta.
 \end{notaprof}
 
 \subsection{Limiti del metodo}
 
-Le ricerche, e il paper stesso, mostrano che SZZ è lontano dall'essere ideale:
+Le slide chiariscono che SZZ ha limiti strutturali importanti.
+
 \begin{itemize}
-    \item non è perfettamente accurato;
-    \item non riesce a identificare correttamente i \textbf{regression bugs};
-    \item non funziona quando un difetto viene corretto soltanto con \textbf{aggiunta di codice}, senza cancellazione o modifica di righe precedenti, perché non ha linee su cui applicare \texttt{git blame}.
+    \item \textbf{Non è perfettamente accurato}: il commit trovato da SZZ è una stima, non una verità certa.
+    \item \textbf{Non riesce a identificare bene i regression bugs}: un codice può diventare errato solo in seguito a cambiamenti successivi del sistema, anche se in passato era corretto.
+    \item \textbf{Non funziona bene quando il fix consiste solo in aggiunta di codice}: se il bug viene corretto introducendo codice nuovo, senza modificare righe già esistenti, SZZ non ha una traccia storica affidabile su cui applicare \texttt{git blame}.
 \end{itemize}
 
 \begin{notaprof}
-SZZ genera numerosi \textbf{falsi positivi}, quando va troppo indietro nel tempo attribuendo la colpa a linee di codice storicamente corrette, e \textbf{falsi negativi}, quando invece non risale abbastanza indietro e non individua il vero punto di introduzione del bug.
+SZZ può generare sia \textbf{falsi positivi} sia \textbf{falsi negativi}. Produce falsi positivi quando va troppo indietro nel tempo e attribuisce il difetto a linee che storicamente erano corrette; produce falsi negativi quando non riesce a risalire al vero punto di introduzione del bug.
 \end{notaprof}
 
 \section{Aim dello studio e Research Questions}
 
 \subsection{Idea di stable life-cycle dei defect}
 
-L'intuizione centrale dello studio è che i difetti abbiano un \textbf{ciclo di vita stabile}. Esisterebbe cioè una proporzione relativamente costante tra il numero di versioni necessarie per accorgersi di un bug e quelle necessarie per risolverlo.
+L'intuizione centrale dello studio è che i difetti abbiano un \textbf{ciclo di vita stabile}. In altre parole, pur variando da bug a bug, sembrerebbe esistere una relazione abbastanza regolare tra:
+
+\begin{itemize}
+    \item il numero di versioni che intercorrono tra introduzione del difetto e sua scoperta;
+    \item il numero di versioni che intercorrono tra scoperta del difetto e sua correzione.
+\end{itemize}
+
+Questa ipotesi motiva il metodo \textbf{Proportion}: se tale proporzione è abbastanza stabile, allora è possibile stimare automaticamente la posizione dell'IV anche quando l'AV esplicita manca.
 
 \subsection{Research Questions}
 
-Le domande di ricerca sono:
+Le domande di ricerca dello studio sono quattro:
+
 \begin{itemize}
     \item \textbf{RQ1}: le \textbf{Affected Versions (AV)} sono disponibili e consistenti in Jira?
     \item \textbf{RQ2}: i vari metodi, ad esempio SZZ e Proportion, hanno accuratezze diverse nell'etichettare le \textbf{Affected Versions}?
@@ -105,267 +138,148 @@ Le domande di ricerca sono:
     \item \textbf{RQ4}: l'uso di metodi diversi porta all'identificazione di \textbf{feature importanti} diverse nei modelli di predizione?
 \end{itemize}
 
+In questo capitolo ci fermiamo a \textbf{RQ1} e \textbf{RQ2}.
+
 \section{RQ1: Is the AV available and consistent?}
 
 \subsection{Rationale}
 
-Si vuole verificare se gli sviluppatori inseriscano regolarmente il campo \textbf{Affected Version} in Jira e, nel caso in cui lo facciano, se quel dato sia \textbf{consistente}, cioè compatibile con la sequenza temporale delle versioni.
+La prima domanda vuole verificare se il campo \textbf{Affected Version} sia effettivamente utilizzabile come fonte affidabile per il labeling. Ci sono infatti due problemi distinti:
+
+\begin{itemize}
+    \item \textbf{availability}: gli sviluppatori potrebbero non compilare affatto il campo AV;
+    \item \textbf{consistency}: il campo potrebbe essere compilato, ma in modo incoerente rispetto all'ordine temporale delle versioni.
+\end{itemize}
 
 \begin{notaprof}
-Se il bug risulta riportato in una versione futura rispetto all'apertura del ticket, allora il campo è stato compilato in modo errato.
+Per esempio, se la versione più vecchia indicata come affetta risulta successiva all'apertura del ticket, allora quella AV non è coerente e non può essere usata come ground truth affidabile.
 \end{notaprof}
 
 \subsection{Design e selezione di progetti e bug}
 
-Sono stati analizzati \textbf{212 progetti Apache} tracciati sia su Git sia su Jira. Sono stati selezionati i ticket che rispettavano i seguenti criteri:
+Per RQ1 sono stati analizzati \textbf{212 progetti Apache} collegati sia a \textbf{Git} sia a \textbf{Jira}. Sono stati considerati solo gli issue report che soddisfacevano simultaneamente i seguenti criteri:
+
 \begin{itemize}
-    \item \texttt{Type == "Bug"};
-    \item \texttt{Status == "Closed"} oppure \texttt{"Resolved"};
-    \item \texttt{Resolution == "Fixed"}.
+    \item \texttt{Type == Bug};
+    \item \texttt{Status == Closed} oppure \texttt{Resolved};
+    \item \texttt{Resolution == Fixed}.
 \end{itemize}
 
-Sono stati esclusi:
+Inoltre, sono stati esclusi:
+
 \begin{itemize}
-    \item i bug senza un commit di fix collegato su Git;
-    \item i difetti \textbf{non post-release}, cioè risolti prima del rilascio in produzione.
+    \item i difetti che non avevano un \textbf{Git-related fix commit};
+    \item i difetti che \textbf{non erano post-release}.
+\end{itemize}
+
+Dal punto di vista sperimentale:
+
+\begin{itemize}
+    \item la \textbf{variabile indipendente} è il singolo \textbf{defect};
+    \item la \textbf{variabile dipendente} è la \textbf{percentuale di AV disponibili} e di AV \textbf{disponibili e consistenti}.
 \end{itemize}
 
 \subsection{Risultati}
 
-Su un totale di \textbf{125.860 bug validi}, ben \textbf{63.539 bug}, cioè il \textbf{51\%}, non avevano un campo AV utilizzabile oppure presentavano un'AV inconsistente.
+I risultati mostrano che il problema è molto rilevante. Sul totale dei difetti selezionati:
+
+\begin{itemize}
+    \item il numero complessivo di bug chiusi e collegati a Git nei 212 progetti Apache è pari a \textbf{125.860};
+    \item \textbf{63.539 bug}, cioè circa il \textbf{51\%}, risultano privi di AV utilizzabile oppure presentano un'AV inaffidabile.
+\end{itemize}
+
+Inoltre, per la maggior parte dei progetti, più del \textbf{25\%} dei difetti non possiede una AV disponibile e consistente.
 
 \subsection{Discussione e implicazioni pratiche}
 
-Nella maggior parte dei progetti esaminati esiste più del \textbf{25\%} di difetti senza AV affidabile. Ne segue che l'approccio realistico, basato esclusivamente sulle informazioni di Jira, è \textbf{inapplicabile} nella maggioranza dei casi.
+La conclusione di RQ1 è netta: l'approccio basato esclusivamente sulla AV inserita in Jira \textbf{non è sufficiente} nella maggioranza dei casi.
+
+Se più della metà dei bug non ha una AV affidabile, allora il labeling realistico basato solo sui dati espliciti del ticket diventa spesso impossibile. Questo giustifica la necessità di metodi automatici alternativi.
 
 \begin{notaprof}
-Se non abbiamo l'AV e non usiamo algoritmi compensativi, perdiamo statisticamente una parte rilevante delle classi difettose, generando molti \textbf{falsi negativi}.
+Se non abbiamo un'AV affidabile e non introduciamo un metodo compensativo, finiamo per etichettare come pulite molte classi che invece erano già affette da difetti. Questo produce inevitabilmente molti \textbf{falsi negativi} nel dataset.
 \end{notaprof}
 
 \section{RQ2: Do methods have different accuracy in AV labeling?}
 
 \subsection{Razionale}
 
-Dal momento che in RQ1 si osserva che l'AV spesso manca, occorre valutare l'accuratezza di diverse euristiche per calcolarla automaticamente.
+Dato che RQ1 mostra che l'AV è spesso assente o inconsistente, RQ2 si chiede se esistano metodi automatici più accurati per \textbf{predire correttamente le versioni affette da un bug}.
+
+La domanda non è più semplicemente ``l'AV c'è?'', ma: \emph{quando manca, quale metodo ricostruisce meglio l'intervallo delle versioni difettose?}
+
+\subsection{Selezione dei progetti}
+
+Per valutare i metodi in modo affidabile, RQ2 restringe l'analisi a progetti per cui esiste una ground truth più solida. I criteri di selezione sono:
+
+\begin{itemize}
+    \item progetti con più del \textbf{50\%} di AV disponibili e consistenti;
+    \item progetti con almeno \textbf{100 bug} collegati a un Git fix commit e con AV disponibile e consistente;
+    \item progetti con almeno \textbf{6 versioni}.
+\end{itemize}
+
+Dopo questa selezione, rimangono \textbf{76 progetti Apache Jira}.
 
 \subsection{Formula della Proportion e significato di \(P\)}
 
-La costante proporzionale viene definita come:
+Il paper introduce una misura proporzionale del ciclo di vita del difetto:
+
 \[
 P = \frac{FV - IV}{FV - OV}
 \]
 
-La formula per predire l'inizio del bug quando manca l'AV è:
+Questa quantità misura, in termini di versioni, il rapporto tra:
+
+\begin{itemize}
+    \item la distanza tra \textbf{Fixed Version} e \textbf{Injected Version};
+    \item la distanza tra \textbf{Fixed Version} e \textbf{Opening Version}.
+\end{itemize}
+
+Una volta stimata \(P\), è possibile ricavare una \textbf{Predicted IV} mediante la formula:
+
 \[
 \text{Predicted IV} = FV - (FV - OV)\cdot P
 \]
 
 \begin{notaprof}
-L'intuizione è simile a quella delle proporzioni corporee: anche se gli individui hanno altezze diverse, certe relazioni interne tendono a restare stabili. Allo stesso modo, difetti diversi possono avere durate diverse, ma la proporzione tra tempo di scoperta e tempo di correzione tende a mantenersi relativamente costante.
+L'idea intuitiva è che, pur cambiando la durata assoluta dei singoli bug, la \textbf{proporzione} tra momento di scoperta e momento di correzione tenda a essere relativamente stabile. Per questo motivo si prova a usare \(P\) come ``firma temporale'' del lifecycle dei difetti.
 \end{notaprof}
 
 \subsection{Varianti di Proportion}
 
+Il paper confronta tre modi diversi di stimare \(P\):
+
 \begin{itemize}
-    \item \textbf{Cold Start}: calcola \(P\) come mediana dei valori osservati in tutti gli altri progetti.
-    \item \textbf{Increment}: calcola \(P\) come media dei difetti corretti nelle versioni precedenti dello stesso progetto.
-    \item \textbf{Moving Window}: calcola \(P\) come media dell'ultimo \(1\%\) dei difetti corretti, risultando più robusto rispetto a outlier e cambiamenti storici di processo.
+    \item \textbf{Cold Start}: \(P\) è calcolato come mediana dei difetti osservati negli altri progetti;
+    \item \textbf{Increment}: \(P\) è calcolato come media dei difetti corretti nelle versioni precedenti dello stesso progetto;
+    \item \textbf{Moving Window}: \(P\) è calcolato come media dell'ultimo \(1\%\) dei difetti corretti.
 \end{itemize}
 
+Le tre varianti riflettono tre strategie diverse: usare esperienza di altri progetti, usare solo il passato interno del progetto, oppure concentrarsi sul comportamento più recente del processo.
+
 \begin{notaprof}
-A lezione è stata discussa anche una variante chiamata \textbf{Total}, non presente nel paper, che calcola \(P\) su tutti i difetti passati e futuri.
+A lezione è stata discussa anche una variante chiamata \textbf{Total}, che usa tutti i difetti passati e futuri per stimare \(P\). Questa variante non appartiene al paper, ma è utile per capire il problema del realismo temporale.
 \end{notaprof}
 
 \begin{notaesame}
-La variante \textbf{Total} è concettualmente sbagliata nel Machine Learning perché viola il \textbf{realismo temporale}. Usare dati del futuro per etichettare il passato porta a una sovrastima artificiale delle performance del classificatore. In un contesto reale, il modello non avrebbe mai accesso ai bug futuri per stimare \(P\).
+La variante \textbf{Total} è concettualmente scorretta in ottica di Machine Learning realistico, perché usa informazioni del futuro per etichettare il passato. In un vero scenario predittivo, il futuro non è disponibile al momento della costruzione del dataset.
 \end{notaesame}
 
 \subsection{Metodi confrontati}
 
-I metodi messi a confronto sono:
-\begin{itemize}
-    \item \textbf{Simple}, che assume \(IV = OV\);
-    \item \textbf{SZZ\_B} (Basic);
-    \item \textbf{SZZ\_U} (Unleashed);
-    \item \textbf{SZZ\_RA} (Refactoring Aware);
-    \item i tre metodi \textbf{Proportion};
-    \item le versioni \textbf{SZZ\_X+}, che combinano SZZ con i risultati di Simple.
-\end{itemize}
-
-\subsection{Metriche}
-
-Le metriche considerate sono:
-\begin{itemize}
-    \item \textbf{TP, TN, FP, FN};
-    \item \textbf{Precision};
-    \item \textbf{Recall};
-    \item \textbf{F1};
-    \item \textbf{Kappa};
-    \item \textbf{MCC} (\emph{Matthews Correlation Coefficient}).
-\end{itemize}
-
-\begin{notaesame}
-Il significato pratico di \textbf{FP} e \textbf{FN} è centrale. Nel contesto software:
-\begin{itemize}
-    \item \textbf{Falso Negativo (FN)}: il sistema dice che la classe non ha bug, ma in realtà lo ha. È il caso più pericoloso, perché la classe non viene testata e il difetto può arrivare in produzione.
-    \item \textbf{Falso Positivo (FP)}: il sistema dice che la classe ha un bug, ma in realtà non ce l'ha. Questo comporta uno spreco di effort di testing, ma non introduce direttamente un bug in produzione.
-\end{itemize}
-\end{notaesame}
-
-\subsection{Risultati e discussione}
-
-Dai risultati emerge che:
-\begin{itemize}
-    \item tutti i metodi \textbf{Proportion} hanno \textbf{Precision} e accuratezza composita (\textbf{F1}, \textbf{MCC}, \textbf{Kappa}) superiori rispetto a tutti i metodi SZZ;
-    \item \textbf{SZZ\_U} ottiene la \textbf{Recall} più alta in assoluto;
-    \item \textbf{SZZ\_B+} ha la migliore Precision e le migliori metriche composite all'interno della famiglia SZZ.
-\end{itemize}
-
-\begin{notaslide}
-L'incremento di accuratezza ottenuto combinando \(SZZ\_X\) con \textbf{Simple}, generando \(SZZ\_X+\), è statisticamente significativo secondo il \emph{Wilcoxon Signed Rank test} con \(p < 0.01\), ma praticamente irrilevante, poiché l'aumento osservato è inferiore all'1\%.
-\end{notaslide}
-
-\section{RQ3: Do methods have different accuracy in classes labeling?}
-
-\subsection{Differenza rispetto a RQ2}
-
-In RQ2 si misura la validità dell'intervallo temporale delle \textbf{Affected Versions}; in RQ3, invece, si passa a una granularità più fine, cioè alla \textbf{singola coppia classe-versione}.
-
-\subsection{Design}
-
-Si usano gli stessi metodi e le stesse metriche di RQ2, ma una coppia \textbf{classe-release} viene etichettata come difettosa se almeno un \textbf{defect-fix commit} ha toccato quella classe in quella specifica versione.
-
-\subsection{Risultati}
-
-I risultati mostrano che:
-\begin{itemize}
-    \item anche a livello class-level i metodi \textbf{Proportion} ottengono \textbf{Precision} e metriche composite migliori rispetto a SZZ;
-    \item \textbf{SZZ\_U} mantiene la \textbf{Recall} più alta;
-    \item \textbf{Proportion\_MovingWindow} domina nettamente tutti i metodi su tutte le metriche composite.
-\end{itemize}
-
-\subsection{Discussione}
-
-Tutti i metodi risultano più accurati nel predire le classi rispetto alle AV. Questo accade perché una singola classe può essere affetta da più difetti simultaneamente: anche se un metodo manca un difetto, può comunque azzeccare l'etichetta grazie a un altro difetto concomitante.
-
-L'incremento mediano osservato passando da AV labeling a class labeling è:
-\begin{itemize}
-    \item \(+13\%\) in \textbf{Precision};
-    \item \(+16\%\) in \textbf{F1};
-    \item \(+39\%\) in \textbf{Kappa}.
-\end{itemize}
-
-\section{RQ4: Do methods lead to different identification of important features?}
-
-\subsection{Razionale}
-
-RQ4 valuta l'effetto a cascata del labeling. Se il dataset viene etichettato male, allora anche le \textbf{feature} selezionate per addestrare il modello potrebbero risultare sbagliate, così come le loro correlazioni con la defectiveness.
-
-\subsection{Feature selection}
-
-Viene usato un approccio di \textbf{Exhaustive Search Feature Selection}, tramite Weka e \texttt{CfsSubsetEval}, che valuta i sottoinsiemi di feature privilegiando quelle altamente correlate con il difetto e poco inter-correlate tra loro.
-
-\subsection{Correlation analysis e Standard Mean Relative Error}
-
-Per valutare la bontà delle correlazioni si misura la discrepanza tra:
-\begin{itemize}
-    \item la correlazione osservata nel dataset \textbf{vero};
-    \item la correlazione osservata nel dataset \textbf{stimato} dai vari metodi.
-\end{itemize}
-
-L'errore è definito come:
-\[
-\text{Errore} = \frac{|\text{Predicted} - \text{Actual}|}{\text{Actual}}
-\]
-
-\subsection{Risultati}
-
-I metodi \textbf{Proportion} risultano più accurati dei metodi SZZ in tutte e cinque le metriche considerate. In particolare, mostrano \textbf{Precision} e \textbf{Recall} mediane perfette, pari al \(100\%\). L'errore dei metodi Proportion è circa il \textbf{25\%} dell'errore commesso da SZZ.
-
-\subsection{Discussione}
+I metodi messi a confronto in RQ2 sono:
 
 \begin{itemize}
-    \item A differenza di quanto visto nelle altre RQ, esiste poca variazione interna tra le varie implementazioni di SZZ.
-    \item La qualità del labeling influenza direttamente la capacità di identificare le metriche software davvero rilevanti.
+    \item \textbf{Simple}: assume semplicemente \(IV = OV\);
+    \item \textbf{SZZ\_B} (\emph{Basic});
+    \item \textbf{SZZ\_U} (\emph{Unleashed});
+    \item \textbf{SZZ\_RA} (\emph{Refactoring Aware});
+    \item \textbf{Proportion\_ColdStart};
+    \item \textbf{Proportion\_Increment};
+    \item \textbf{Proportion\_MovingWindow};
+    \item le versioni \textbf{SZZ\_X+}, cioè ciascun metodo SZZ combinato con \textbf{Simple}.
 \end{itemize}
 
-\begin{notaslide}
-Anche il metodo basilare \textbf{Simple} risulta più accurato rispetto a tutti i metodi SZZ in questo task specifico, arrivando a dimezzarne gli errori.
-\end{notaslide}
+\subsection{Variabili dipendenti e definizione di TP, TN, FP, FN}
 
-\section{Figure, tabelle e workflow del paper}
-
-Questo capitolo descrive formalmente i workflow visuali presentati nelle slide e nel paper.
-
-\subsection{Diagramma del defect lifecycle}
-
-La figura sul \textbf{defect lifecycle} mostra la linea temporale che va da \textbf{IV} a \textbf{FV}, evidenziando il momento della \textbf{Ticket Creation} corrispondente a \textbf{OV} e il \textbf{Fix Commit} successivo.
-
-\subsection{Workflow del predicted AV}
-
-Il workflow relativo al \textbf{predicted AV} descrive il processo seguito in RQ2: i \textbf{Bug ID} collegano Jira, da cui si ricava la creazione del ticket, e Git, da cui si ricava il \textbf{Fix Hash}. A partire da queste informazioni, il metodo predice una AV che viene poi confrontata con l'\textbf{Actual AV}, usata come ground truth.
-
-\subsection{Workflow del class labeling}
-
-Il workflow del \textbf{class labeling}, utilizzato in RQ3, associa i file Java o Python toccati dai bug alle rispettive release per verificare i casi di \textbf{TP}, \textbf{TN}, \textbf{FP} e \textbf{FN}.
-
-\subsection{Workflow dei complete datasets}
-
-Il processo di creazione dei \textbf{complete datasets} estrae dal codice una serie di metriche, tra cui:
-\begin{itemize}
-    \item \textbf{Size (LOC)};
-    \item \textbf{LOC Touched};
-    \item \textbf{Nfix};
-    \item \textbf{Churn};
-    \item \textbf{Age};
-    \item \textbf{Change Set Size}.
-\end{itemize}
-
-\subsection{Feature selection e correlation analysis}
-
-I workflow successivi mostrano:
-\begin{itemize}
-    \item il processo di \textbf{feature selection} tramite \emph{Exhaustive Search};
-    \item l'applicazione della \textbf{correlazione di Spearman} tra la feature, ad esempio LOC, e la probabilità di difetto;
-    \item la produzione finale del grafico del \textbf{Mean Relative Error}.
-\end{itemize}
-
-\subsection{Interpretazione di grafici, boxplot e tabelle}
-
-I \textbf{boxplot} e le \textbf{tabelle comparative} confermano visivamente la superiorità strutturale dei metodi \textbf{Proportion}, in particolare \textbf{Proportion\_MovingWindow} e \textbf{Proportion\_Increment}, rispetto a SZZ in metriche come \textbf{MCC} e \textbf{Kappa}. Inoltre, la tabella sulla deviazione standard mostra che la deviazione standard di \textbf{P} è nettamente inferiore rispetto a quella di \textbf{IV}, \textbf{OV} e \textbf{FV}, rafforzando l'ipotesi di stabilità del ciclo di vita dei difetti.
-
-\section{Conclusioni e future work}
-
-\subsection{Risultati principali del paper}
-
-I risultati principali sono:
-\begin{enumerate}
-    \item l'\textbf{Affected Version} non può essere usata nel \textbf{51\%} dei difetti;
-    \item il metodo \textbf{Proportion} è mediamente più accurato di SZZ per etichettare le classi difettose.
-\end{enumerate}
-
-\subsection{Perché AV non basta}
-
-Molto spesso gli sviluppatori non compilano il campo AV, oppure lo compilano in maniera inconsistente rispetto alle date di rilascio.
-
-\subsection{Perché Proportion è rilevante}
-
-L'ipotesi che i bug abbiano un \textbf{life-cycle stabile} risulta supportata dai dati: la deviazione standard di \(P\) all'interno dello stesso progetto è molto bassa. Proportion non solo supera SZZ nel labeling, ma commette anche una frazione molto più piccola dell'errore nell'identificare le feature ingegneristiche rilevanti.
-
-\subsection{Significatività statistica vs rilevanza pratica}
-
-Combinare le informazioni sul ciclo di vita dei defect con i metodi SZZ tradizionali produce un miglioramento \textbf{statisticamente significativo}, ma \textbf{praticamente trascurabile}, inferiore all'1\%.
-
-\subsection{Sviluppi futuri}
-
-Le linee future di ricerca includono:
-\begin{itemize}
-    \item analizzare commit bug-introducing successivi in SZZ;
-    \item studiare l'accuratezza delle Affected Versions etichettate dagli sviluppatori Jira;
-    \item replicare l'esperimento nel contesto della \textbf{Just-In-Time defect prediction};
-    \item testare combinazioni più raffinate tra metodi \textbf{Proportion} e \textbf{SZZ}.
-\end{itemize}
-
-\subsection*{In sintesi}
-
-Lo studio dimostra che i dataset di difettosità costruiti esclusivamente con \texttt{git blame}, quindi con SZZ, risultano inaccurati. Sfruttare invece una \textbf{costante di proporzionalità temporale} del ciclo di vita dei difetti, come avviene nei metodi \textbf{Proportion}, permette di costruire dataset più precisi e di migliorare sensibilmente la capacità dei modelli di Machine Learning di individuare i veri predittori dei bug nel codice.
+L'unità di analisi di RQ2 non è ancora la classe-versione, ma la \textbf{versione rispetto a un singolo difetto}. In altre parole, si valuta se un metodo etichetti correttamente una certa versione come affetta

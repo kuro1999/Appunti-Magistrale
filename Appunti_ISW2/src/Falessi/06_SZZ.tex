@@ -4,60 +4,63 @@
 
 \subsection{Cos'è la defect prediction}
 
-La \textbf{defect prediction} è una tecnica che mira a identificare gli \textbf{artefatti software} (come classi, metodi o linee di codice) che hanno un'alta probabilità di presentare un difetto. L'obiettivo principale è \textbf{ridurre i costi e i tempi del testing e della code review}, permettendo agli sviluppatori di concentrarsi sulle parti più critiche del codice.
+La \textbf{defect prediction} è una tecnica che mira a identificare gli \textbf{artefatti software} --- per esempio classi, metodi o linee di codice --- che hanno un'alta probabilità di contenere un difetto. L'obiettivo principale è \textbf{ridurre i costi e i tempi del testing e della code review}, permettendo agli sviluppatori di concentrare lo sforzo sulle parti più critiche del sistema.
 
 \begin{notaprof}
-Il testing, sia esso automatico o manuale (come l'ispezione del codice), può essere molto oneroso in termini economici e computazionali. Ottimizzare questi sforzi è il vero scopo di queste predizioni. Anche se per semplicità nel progetto si lavora a livello di classe, questi concetti si applicano a vari livelli di granularità, come linea di codice, commit, metodo e classe.
+Il testing, sia automatico sia manuale, può essere molto costoso in termini economici e computazionali. Il punto della defect prediction non è ``indovinare i bug'' in astratto, ma usare i dati storici per \textbf{prioritizzare} le attività di qualità. Anche se nel progetto del corso si lavora soprattutto a livello di classe, la stessa logica può essere applicata anche a commit, metodi o linee di codice.
 \end{notaprof}
 
 \subsection{Perché la qualità del dataset è fondamentale}
 
-L'\textbf{affidabilità di un modello di predizione} dipende direttamente dalla \textbf{qualità dei dati} usati per addestrarlo.
+L'\textbf{affidabilità di un modello di predizione} dipende direttamente dalla \textbf{qualità del dataset} con cui il modello viene addestrato. Se le etichette sono sbagliate o rumorose, il classificatore apprenderà relazioni imprecise e tenderà a produrre risultati poco affidabili.
 
 \begin{notaprof}
-Vale il principio del \emph{Garbage In, Garbage Out}: se i dati in input contengono impurità o errori, anche l'accuratezza del modello ne risentirà proporzionalmente.
+Qui vale in pieno il principio del \emph{Garbage In, Garbage Out}: se i dati in ingresso sono sbagliati, incompleti o rumorosi, anche il modello finale sarà inevitabilmente distorto.
 \end{notaprof}
 
 \subsection{Principali fonti di rumore nei dataset}
 
-Le principali \textbf{fonti di rumore} indicate sono:
+Tra le principali fonti di rumore citate nelle slide compaiono:
+
 \begin{itemize}
     \item \textbf{defect misclassification};
     \item \textbf{defect origin}.
 \end{itemize}
 
 \begin{notaslide}
-Lavori precedenti hanno identificato queste fonti di rumore e hanno proposto delle soluzioni per gestirle.
+Le slide ricordano che lavori precedenti hanno già identificato queste fonti di rumore e hanno proposto tecniche per affrontarle.
 \end{notaslide}
 
 \begin{notaprof}
-Un esempio pratico di rumore è che circa un terzo dei ticket classificati come ``bug'' in realtà sono nuove ``feature'' (\emph{misclassification}). Un'altra fonte di rumore è il \textbf{linkage}: se nei commenti dei commit non viene riportato l'ID del ticket (ad esempio di Jira), si perde lo storico delle classi difettose, generando \textbf{falsi negativi} nel dataset.
+Un esempio tipico di \textbf{misclassification} è quando un ticket classificato come ``bug'' in realtà descrive una nuova funzionalità o un miglioramento. Un altro problema è il \textbf{linkage}: se il commit di fix non contiene l'ID del ticket, allora si perde il collegamento tra issue tracker e version control system, e diventa molto più difficile ricostruire quali classi fossero davvero difettose.
 \end{notaprof}
 
 \section{Cos'è SZZ}
 
 \subsection{Definizione e obiettivo}
 
-\textbf{SZZ} è un processo algoritmico usato per identificare il \textbf{momento esatto in cui un difetto è stato introdotto} all'interno di un progetto software.
+\textbf{SZZ} è un processo algoritmico usato per identificare \textbf{quando un difetto è stato effettivamente introdotto} all'interno di un progetto software. In altre parole, non si limita a dire quale commit ha corretto il problema, ma cerca di risalire al commit precedente che ha inserito la modifica difettosa.
 
 \begin{notaprof}
-Il nome dell'algoritmo deriva semplicemente dai cognomi dei suoi autori.
+Il nome \textbf{SZZ} deriva semplicemente dai cognomi degli autori del lavoro originario.
 \end{notaprof}
 
 \subsection{Uso del versioning e dell'annotation}
 
-Il metodo sfrutta il \textbf{meccanismo di annotazione} dei sistemi di versionamento, come per esempio il comando \texttt{git blame} in Git.
+Il metodo sfrutta il \textbf{meccanismo di annotation} dei sistemi di versionamento, ad esempio il comando \texttt{git blame} in Git. Questo meccanismo permette di associare ogni riga del codice alla revisione che l'ha modificata per ultima.
 
 \begin{notaprof}
-L'annotazione permette di analizzare una riga di codice nel suo stato attuale e scoprire in quale revisione precedente è stata modificata l'ultima volta e da chi.
+L'annotation è importante perché consente di guardare una riga del file nello stato corrente e chiedersi: \emph{chi l'ha scritta o modificata per ultimo, e in quale commit?} È proprio questa informazione che permette a SZZ di fare la ricerca all'indietro.
 \end{notaprof}
 
 \subsection{Idea di partire dal fix per risalire al bug-introducing change}
 
-L'approccio cerca di determinare, per le specifiche \textbf{linee di codice modificate durante la correzione di un difetto}, quando queste erano state alterate per l'ultima volta prima del fix.
+L'idea centrale di SZZ è partire da un'informazione affidabile nel presente, cioè il \textbf{fix commit}, e usarla per ricostruire il passato. In particolare, l'algoritmo osserva \textbf{quali linee sono state cambiate per correggere il bug} e poi cerca di capire \textbf{quando quelle stesse linee erano state modificate l'ultima volta prima del fix}.
+
+Il commit precedente individuato da questa ricerca viene considerato il \textbf{bug-introducing change}, cioè il candidato che ha introdotto il difetto.
 
 \begin{notaesame}
-Il concetto chiave di SZZ è definire come ``sorgente'' del difetto la stessa esatta zona di codice impattata dalla sua correzione. Se per riparare la macchina il meccanico cambia la trasmissione, il problema era la trasmissione; allo stesso modo, se nel fix di un bug viene modificata una riga di codice, è ragionevole assumere che l'errore risiedesse proprio in quella riga.
+Il punto chiave da ricordare è questo: \textbf{SZZ usa la correzione del bug come indizio per ricostruirne l'origine}. Non parte dal bug report in senso astratto, ma dalla porzione concreta di codice che è stata cambiata per eliminare il problema.
 \end{notaesame}
 
 \section{Come funziona SZZ}
@@ -67,101 +70,151 @@ Il concetto chiave di SZZ è definire come ``sorgente'' del difetto la stessa es
 Il primo passo consiste nell'identificare il \textbf{fix commit}, cioè il commit che corregge il difetto.
 
 \begin{notaprof}
-Si parte dal sistema di tracciamento, ad esempio Jira, si prendono tutti i ticket chiusi e classificati come ``bug''. Ogni commit associato a questi ticket rappresenta una \textbf{fix} nel codice sorgente.
+Operativamente, si parte dall'issue tracker, ad esempio Jira, si selezionano i ticket chiusi e classificati come bug, e si cercano i commit collegati a quei ticket. Quel commit rappresenta la \textbf{fix} osservabile nel repository.
 \end{notaprof}
 
 \subsection{Analisi delle linee modificate}
 
-Una volta trovato il commit di fix, si analizzano le \textbf{esatte linee di codice toccate} dalla correzione.
+Una volta trovato il fix commit, SZZ confronta la versione corretta con la versione immediatamente precedente e individua le \textbf{linee di codice effettivamente toccate dalla correzione}. Questo passaggio viene normalmente realizzato tramite una \textbf{diff}.
+
+L'idea è che il difetto sia collegato proprio a quella parte di codice che è stata modificata nel fix. Perciò SZZ non analizza l'intero file in modo indistinto, ma si concentra sulla porzione di codice che ha subito la correzione.
 
 \begin{notaprof}
-Si sa con certezza che in quel momento, prima del fix, in quelle righe era presente un bug.
+SZZ non ``capisce'' il significato del bug. Non fa reasoning semantico. Vede solo che certe righe sono state corrette e assume che proprio lì si trovi la traccia storica utile per risalire all'origine del problema.
 \end{notaprof}
 
 \subsection{Ricerca all'indietro dell'ultima modifica precedente}
 
-Dopo aver individuato le righe corrette, si usa \texttt{git blame} per effettuare una \textbf{backward search}, cioè una ricerca all'indietro del commit precedente che aveva inserito o modificato quelle stesse righe.
+Dopo aver isolato le linee corrette, l'algoritmo esegue una \textbf{backward search}. Per ogni riga coinvolta nel fix, usa il meccanismo di annotation per trovare \textbf{l'ultima modifica precedente} che aveva scritto o cambiato quella stessa riga.
+
+Quel commit storico viene trattato come il miglior candidato disponibile per il \textbf{bug-introducing commit}. L'idea è quindi:
+
+\begin{center}
+\textbf{fix osservato nel presente $\rightarrow$ righe corrette $\rightarrow$ ricerca storica dell'ultima modifica precedente}
+\end{center}
 
 \begin{notaesame}
-L'entità toccata dal fix era difettosa; SZZ individua la prima modifica precedente a quel fix per etichettare il momento in cui l'errore è nato.
+SZZ è un algoritmo di \textbf{tracciamento storico}, non di comprensione semantica del bug. Funziona bene quando il problema è davvero contenuto nelle linee poi corrette; funziona peggio quando il bug dipende da contesto, interazioni più ampie o codice mancante.
 \end{notaesame}
 
 \subsection{Differenza tra bug-fix change e bug-introducing change}
 
-È fondamentale distinguere tra:
+È fondamentale distinguere chiaramente tra:
+
 \begin{itemize}
-    \item \textbf{bug-fix change}: il commit che risolve il problema correggendo il codice;
-    \item \textbf{bug-introducing change}: il commit passato che aveva materialmente scritto o alterato in modo errato le linee poi corrette dal fix.
+    \item \textbf{bug-fix change}: il commit che \emph{risolve} il problema correggendo il codice;
+    \item \textbf{bug-introducing change}: il commit passato che, secondo SZZ, ha \emph{introdotto} il difetto, cioè la modifica storica da cui ha origine la porzione di codice poi corretta.
 \end{itemize}
+
+La differenza non è solo temporale, ma anche metodologica: il \textbf{bug-fix change} è osservabile con certezza, mentre il \textbf{bug-introducing change} è una \textbf{stima inferita} tramite backward search.
+
+\begin{notaprof}
+Nel dataset di defect prediction questa distinzione è decisiva. Non basta sapere quale commit ha riparato il bug: bisogna stimare da quale versione in poi una certa classe o un certo file debbano essere considerati difettosi.
+\end{notaprof}
 
 \section{Esempi nelle slide}
 
 \subsection{Esempio 1: ``When Do Changes Induce Fixes?''}
 
 \begin{notaslide}
-Il primo diagramma mostra una sequenza temporale in cui viene segnalato un bug con ID 42233. Successivamente avviene un fix, nella revisione 1.18, in cui vengono modificati tre metodi: \texttt{a()}, \texttt{b()} e \texttt{c()}. L'algoritmo SZZ traccia all'indietro ciascun metodo per trovare il \textbf{bug-introducing change}, scoprendo che \texttt{a()} era stato modificato nella revisione 1.11, \texttt{b()} nella 1.14 e \texttt{c()} nella 1.16.
+Il primo diagramma mostra una sequenza temporale in cui viene segnalato un bug e, in una revisione successiva, viene effettuato un fix. Nel fix commit vengono modificati tre metodi distinti, indicati come \texttt{a()}, \texttt{b()} e \texttt{c()}. SZZ traccia all'indietro la storia di ciascuna di queste porzioni di codice e individua tre revisioni precedenti differenti, ad esempio 1.11, 1.14 e 1.16.
 \end{notaslide}
+
+Questo esempio è importante perché mostra che \textbf{un singolo bug fix può dipendere da più cambiamenti storici diversi}. Il fix avviene in un unico momento, ma le righe o i metodi corretti possono essere stati introdotti o alterati in revisioni differenti.
+
+Il messaggio didattico è quindi duplice:
+
+\begin{enumerate}
+    \item SZZ lavora a livello di \textbf{porzioni di codice}, non a livello astratto di ``bug'' nel suo complesso;
+    \item la genealogia del difetto può essere \textbf{distribuita} su più commit precedenti.
+\end{enumerate}
 
 \subsection{Esempio 2: ``The Impact of Refactoring Changes on the SZZ Algorithm: An Empirical Study''}
 
 \begin{notaprof}
-Viene illustrato il caso di un ciclo \texttt{for}. Nella versione che introduce il bug (V2), la condizione era scritta come \texttt{for(int i=0; i\textless{}=4; i++)}. In seguito a un'eccezione riportata nel Bug \#123 (V3), il fix altera il ciclo facendolo diventare \texttt{for(int i=0; i\textless{}4; i++)}.
+Nel secondo esempio compare un ciclo \texttt{for}. Nella versione che introduce il comportamento errato, la condizione è scritta come \texttt{for(int i=0; i<=4; i++)}. In seguito al bug report \#123, il fix corregge il codice trasformandolo in \texttt{for(int i=0; i<4; i++)}.
 \end{notaprof}
 
-I diagrammi mostrano operativamente i tre passaggi dell'algoritmo:
+L'esempio serve a visualizzare il funzionamento operativo di SZZ in modo molto concreto:
+
 \begin{enumerate}
-    \item recuperare il \textbf{link nel commit di fix} tramite l'ID del bug;
-    \item eseguire il \textbf{diff} con la versione precedente per isolare la riga corretta;
-    \item tracciare all'indietro quella specifica riga per individuare il \textbf{bug-introducing change}.
+    \item si individua il \textbf{fix commit} grazie al collegamento tra bug report e commit;
+    \item si esegue la \textbf{diff} rispetto alla versione precedente per isolare la riga corretta;
+    \item si traccia all'indietro la storia di quella riga per capire in quale commit era comparsa la forma difettosa.
 \end{enumerate}
 
-Nel caso mostrato, il cambiamento difettoso è la presenza della condizione \texttt{i\textless{}=4}, poi corretta in \texttt{i\textless{}4}.
+Nel caso illustrato, la forma errata è la condizione \texttt{i<=4}, che viene poi corretta in \texttt{i<4}. SZZ usa proprio questa differenza come indizio per risalire al \textbf{bug-introducing change}.
+
+Questo esempio chiarisce bene la logica standard dell'algoritmo: \textbf{si osserva il fix, si isolano le righe corrette, si segue la loro storia all'indietro}.
 
 \section{Limiti di SZZ}
 
-Le slide elencano diverse \textbf{limitazioni} che riducono l'accuratezza del metodo.
+Le slide sottolineano che SZZ ha diverse \textbf{limitazioni} e che la sua accuratezza non è perfetta. Il problema di fondo è che l'algoritmo si basa su un'assunzione forte: \emph{il bug è stato introdotto nelle stesse linee che vengono poi modificate per correggerlo}. Questa ipotesi è spesso utile, ma non sempre vera.
 
 \subsection{Code additions}
 
 \begin{notaslide}
-Appena il 26--29\% dei \textbf{bug-introducing commits} può essere trovato usando l'algoritmo basato sull'assunzione che ``un bug è stato introdotto dalle linee di codice che sono state modificate per fixarlo''.
+Le slide riportano che solo il \textbf{26--29\%} dei \textbf{bug-introducing commits} può essere trovato con un algoritmo basato sull'assunzione che un bug sia stato introdotto dalle stesse linee di codice poi modificate per fixarlo.
 \end{notaslide}
 
-Questo limite riduce l'accuratezza perché, se il fix consiste esclusivamente nell'\textbf{aggiunta di nuove righe di codice mancanti}, non esiste una modifica precedente da tracciare all'indietro.
+Questo limite emerge quando il bug non viene corretto modificando una riga sbagliata già esistente, ma \textbf{aggiungendo codice che prima mancava}. Per esempio, il fix può consistere nell'inserire un controllo, una condizione o una gestione d'errore assente nella versione difettosa.
+
+In questo caso, SZZ fallisce o diventa molto impreciso, perché non esiste una versione precedente di quella nuova riga da tracciare con \texttt{git blame}.
+
+\begin{notaprof}
+Se il difetto dipende da qualcosa che mancava nel codice, l'algoritmo cerca nel passato una riga che in realtà non esisteva ancora. Questo spiega perché i casi di \textbf{code addition} siano così problematici per SZZ.
+\end{notaprof}
 
 \subsection{Regressive bugs}
 
+I \textbf{regressive bugs} sono difetti che emergono dopo modifiche successive del sistema, anche se la riga coinvolta in passato era corretta nel contesto originario.
+
+Il problema è che SZZ tende a tornare alla \textbf{prima modifica storica trovata su quella riga}, attribuendo il bug a un commit antico che magari, al momento della sua introduzione, non era affatto errato. La riga può essere diventata problematica solo più tardi, quando il contesto del sistema è cambiato.
+
 \begin{notaprof}
-Sono bug che si creano mentre si sta cercando di implementare qualcos'altro. Questo riduce l'accuratezza perché il codice originario, ad esempio \texttt{i\textless{}=4}, poteva essere corretto in precedenza e diventare sbagliato solo dopo l'introduzione di un'altra feature. SZZ, facendo la ricerca all'indietro, incolpa ingiustamente lo sviluppatore che aveva scritto quella riga in origine, generando un \textbf{falso positivo}.
+Qui il limite è concettuale: una riga non è necessariamente ``sbagliata in assoluto''. Può diventare sbagliata solo dopo l'introduzione di una nuova feature o dopo una modifica dell'ambiente o dei requisiti. SZZ, però, tende a incolpare chi ha scritto per primo quella riga.
 \end{notaprof}
 
 \subsection{Refactoring}
 
+Il \textbf{refactoring} cambia la struttura del codice senza modificarne, almeno idealmente, il comportamento funzionale. Esempi tipici sono rinominare variabili, spostare metodi o riorganizzare il codice.
+
+Se la prima modifica precedente trovata da SZZ è proprio un refactoring, l'algoritmo rischia di etichettare quel commit come \textbf{bug-introducing}, anche se quel commit non ha realmente introdotto il difetto. In altre parole, il refactoring può \textbf{interrompere la pista storica} e nascondere il vero punto di introduzione del bug.
+
 \begin{notaprof}
-Il \textbf{refactoring} è una modifica del codice che ne cambia la struttura ma lascia intatta la funzionalità, ad esempio rinominare una variabile. Se la prima modifica precedente trovata da SZZ è un mero refactoring estetico, l'algoritmo attribuirà erroneamente a quel refactoring l'introduzione del bug, perdendo lo storico reale della funzionalità difettosa.
+SZZ segue la storia delle righe, non il significato profondo della funzionalità. Per questo un refactoring può far sembrare che il bug nasca lì, quando in realtà quella modifica ha solo riscritto o spostato codice senza introdurre il problema.
 \end{notaprof}
 
 \subsection{Imprecise backward search}
 
-\begin{notaprof}
-SZZ è molto forte nell'identificare \textbf{cosa} è difettoso, ma è impreciso nell'identificare \textbf{da quanto tempo} lo è. Un codice poteva essere corretto rispetto a requisiti passati e diventare difettoso solo in seguito a un cambiamento dei requisiti. Se si risale troppo indietro, si etichettano come buggy versioni del codice che, al tempo, erano corrette.
-\end{notaprof}
+La \textbf{imprecise backward search} indica che SZZ può essere abbastanza efficace nell'individuare \textbf{quale porzione di codice} sia collegata al difetto, ma molto meno preciso nello stabilire \textbf{da quanto tempo} quella porzione debba essere considerata buggy.
+
+Una riga di codice può essere stata introdotta molto tempo prima in modo corretto e diventare difettosa solo in seguito a cambiamenti dei requisiti, del contesto o delle interazioni con altre parti del sistema. Se SZZ risale troppo indietro, rischia di etichettare come difettose versioni che, storicamente, erano ancora corrette.
+
+\begin{notaesame}
+Questo è uno dei limiti più importanti da ricordare: \textbf{SZZ è spesso più affidabile nel dire ``dove guardare'' che nel dire con precisione ``da quando'' il codice sia diventato errato}.
+\end{notaesame}
 
 \subsection{Snoring}
 
 \begin{notaslide}
-Lo \textbf{snoring} è solo nominato nell'elenco puntato della slide senza alcuna descrizione.
+Nelle slide lo \textbf{snoring} è semplicemente citato nell'elenco delle limitazioni, ma non viene spiegato nel dettaglio.
 \end{notaslide}
 
+Nel quadro generale del corso, lo snoring è il fenomeno per cui alcune classi contengono già difetti, ma questi difetti non sono ancora stati scoperti o corretti. Di conseguenza, il dataset può continuare a etichettarle come non difettose.
+
+Il collegamento con SZZ è che l'algoritmo dipende dall'esistenza di un \textbf{fix osservabile}. Se un difetto esiste ma non è ancora stato corretto, SZZ non ha alcuna traccia concreta da seguire e quindi non può ricostruirne l'origine.
+
 \begin{notaprof}
-Il professore lo cita esplicitamente chiarendo che è un concetto legato a come la misurazione del dataset cambia nel tempo, ma rimanda la spiegazione dettagliata alle lezioni successive. In questa lezione, quindi, non viene approfondito.
+In questa lezione lo snoring viene solo accennato. L'idea essenziale è che SZZ vede soltanto i bug che hanno già lasciato una traccia nella storia dei fix. I bug ancora ``dormienti'' sfuggono all'algoritmo e contribuiscono a sporcare il labeling del dataset.
 \end{notaprof}
 
 \section{Da ricordare per l'esame}
 
 \begin{itemize}
-    \item \textbf{Definizione di SZZ}: algoritmo che sfrutta l'annotazione dei sistemi di versionamento per identificare il commit in cui un difetto è stato introdotto nel codice sorgente.
-    \item \textbf{Passaggi essenziali}: identificare i commit di fix, analizzare le linee modificate da questi fix e ricercare all'indietro, tramite \texttt{git blame}, la modifica immediatamente precedente su quelle stesse righe.
-    \item \textbf{Differenza tra fix commit e bug-introducing commit}: il primo ripara il difetto, il secondo è la revisione precedente che aveva inserito o alterato in modo errato la riga poi corretta.
-    \item \textbf{Principali limiti}: \emph{code additions}, \emph{regressive bugs}, \emph{refactoring} e \emph{imprecise backward search}.
+    \item \textbf{Definizione di SZZ:} è un algoritmo che sfrutta il meccanismo di annotation dei sistemi di versionamento per risalire dal \textbf{fix commit} al possibile \textbf{bug-introducing commit}.
+    \item \textbf{Idea chiave:} si parte dalle \textbf{linee corrette dal fix} e si cerca l'ultima modifica precedente di quelle stesse linee.
+    \item \textbf{Differenza fondamentale:} il \textbf{bug-fix change} è il commit che ripara il problema; il \textbf{bug-introducing change} è il commit storico che, secondo SZZ, ha introdotto la modifica difettosa.
+    \item \textbf{Passaggi essenziali:} identificare il fix commit, eseguire la diff, isolare le righe corrette, usare \texttt{git blame} per la backward search.
+    \item \textbf{Principali limiti:} \textbf{code additions}, \textbf{regressive bugs}, \textbf{refactoring}, \textbf{imprecise backward search} e, in senso più ampio, i problemi legati ai bug non ancora osservabili come nel caso dello \textbf{snoring}.
 \end{itemize}
