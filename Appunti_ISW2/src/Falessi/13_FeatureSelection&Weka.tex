@@ -1,0 +1,284 @@
+\chapter{Weka GUI e Feature Selection}
+
+\section{Introduzione a Weka}
+
+\textbf{Weka} è un toolkit per il \textbf{machine learning} e il \textbf{data mining} scritto in Java e distribuito con licenza GNU. Viene usato per ricerca, didattica e applicazioni pratiche, ed è collegato al libro \emph{Data Mining} di Witten e Frank.
+
+Le componenti principali di Weka sono:
+
+\begin{itemize}
+    \item \textbf{Explorer}: permette di esplorare visivamente i dati, applicare filtri e usare algoritmi di classificazione;
+    \item \textbf{Experimenter}: consente di confrontare più algoritmi su uno o più dataset, anche con test statistici;
+    \item \textbf{Knowledge Flow}: permette di progettare graficamente pipeline di machine learning;
+    \item \textbf{Simple CLI}: interfaccia da riga di comando per eseguire direttamente classi Java di Weka.
+\end{itemize}
+
+\begin{notaprof}
+Nel corso si usano soprattutto \textbf{Explorer} ed \textbf{Experimenter}. Explorer è utile per prendere confidenza con dataset, distribuzioni, filtri e classificatori; Experimenter è più adatto per confrontare più modelli in modo sistematico e ottenere risultati statisticamente confrontabili.
+\end{notaprof}
+
+\section{Formato dati in Weka}
+
+Weka lavora principalmente con file \textbf{flat}, cioè dataset organizzati come tabelle relazionali singole.
+
+\begin{notaslide}
+I formati supportati includono \textbf{ARFF}, \textbf{CSV}, \textbf{C4.5} e \textbf{binary}.
+\end{notaslide}
+
+Il formato proprietario di Weka è \textbf{ARFF}, che si basa su tre parti principali:
+
+\begin{itemize}
+    \item \texttt{@relation}: nome del dataset;
+    \item \texttt{@attribute}: definizione degli attributi, cioè nome e tipo di ogni colonna;
+    \item \texttt{@data}: valori delle singole istanze, separati da virgola.
+\end{itemize}
+
+Weka distingue tra attributi \textbf{numerici} e attributi \textbf{nominali}. Per impostazione predefinita, l'ultimo attributo viene considerato la \textbf{classe target} da predire.
+
+\begin{notaprof}
+Nel progetto è consigliabile importare i CSV e salvarli subito in formato ARFF. Il CSV non specifica esplicitamente i tipi delle colonne, quindi Weka potrebbe interpretare alcuni attributi in modo errato. Inoltre, Weka non gestisce direttamente le scale ordinali, come \emph{low}, \emph{medium}, \emph{high}: queste vanno trasformate con attenzione, ad esempio tramite codifica binaria o numerica.
+\end{notaprof}
+
+\section{Explorer: preprocessing e classificazione}
+
+Nel tab \textbf{Preprocess} dell'Explorer è possibile importare i dati tramite il pulsante \emph{Open file}. Dopo l'importazione, Weka permette di visualizzare gli attributi, le distribuzioni, il numero di valori distinti, i valori mancanti e alcune statistiche descrittive.
+
+I filtri di preprocessing permettono di trasformare il dataset prima dell'addestramento.
+
+\begin{notaslide}
+Tra i filtri disponibili nelle slide sono citati \textbf{discretization}, \textbf{normalization}, \textbf{resampling} e \textbf{attribute selection}.
+\end{notaslide}
+
+Selezionando un attributo, Weka mostra informazioni come minimo, massimo, media, deviazione standard e un istogramma colorato rispetto alla classe target.
+
+Nel tab \textbf{Classify}, Weka permette di scegliere diversi classificatori.
+
+\begin{notaslide}
+Tra i classificatori citati nelle slide compaiono alberi decisionali come \textbf{J48} e \textbf{RandomForest}, classificatori instance-based come \textbf{IBk}, SVM, logistic regression e Bayes nets, tra cui \textbf{NaiveBayes}.
+\end{notaslide}
+
+Weka include anche \textbf{meta-classifiers}, cioè classificatori costruiti sopra altri classificatori.
+
+\begin{notaslide}
+Tra i meta-classifiers sono citati \textbf{bagging}, \textbf{boosting} e \textbf{stacking}.
+\end{notaslide}
+
+Cliccando sul nome del classificatore è possibile aprire l'\emph{object editor} e configurare i parametri. Le principali opzioni di test sono:
+
+\begin{itemize}
+    \item \textbf{Use training set};
+    \item \textbf{Supplied test set};
+    \item \textbf{Cross-validation}, ad esempio 10-fold;
+    \item \textbf{Percentage split}.
+\end{itemize}
+
+\section{Experimenter}
+
+L'\textbf{Experimenter} permette di confrontare diversi learning schemes in modo più sistematico rispetto all'Explorer. È utilizzabile sia per problemi di classificazione sia per problemi di regressione.
+
+\begin{notaprof}
+L'Experimenter è particolarmente utile quando bisogna confrontare più classificatori, più dataset o più configurazioni. I risultati possono essere esportati, ad esempio in formato CSV, per analisi successive.
+\end{notaprof}
+
+\begin{notaslide}
+Le slide indicano che l'Experimenter supporta \textbf{cross-validation}, \textbf{learning curve} e \textbf{hold-out}. Inoltre può iterare su diversi parametri e include strumenti di \textbf{significance testing}.
+\end{notaslide}
+
+Il significance testing permette di capire se la differenza tra due classificatori è statisticamente significativa, invece di limitarsi a confrontare valori medi di accuratezza.
+
+\section{Feature Selection: obiettivi}
+
+La \textbf{feature selection}, o selezione degli attributi, serve a scegliere un sottoinsieme di feature informative rispetto al task predittivo.
+
+Gli obiettivi principali sono:
+
+\begin{itemize}
+    \item ridurre il costo di learning, diminuendo il numero di attributi;
+    \item migliorare le performance rispetto all'uso del \emph{full attribute set};
+    \item ridurre il costo di misurazione delle feature.
+\end{itemize}
+
+\begin{notaesame}
+Nel contesto della Software Engineering, il costo più importante non è sempre il tempo di addestramento del modello, ma il costo di misurazione. Estrarre decine o centinaia di metriche per ogni classe può richiedere molto effort. Ridurre il numero di feature significa ridurre anche il costo di raccolta dei dati.
+\end{notaesame}
+
+Nei dataset di defect prediction è frequente avere metriche ridondanti o sovrapposte. Per esempio, LOC, numero di metodi e numero di attributi possono misurare indirettamente la dimensione della classe. La feature selection permette di mantenere solo le feature più utili.
+
+\section{Filter approach}
+
+Il \textbf{filter approach} valuta gli attributi partendo dai dati, senza considerare il classificatore che verrà poi usato.
+
+I filtri assegnano alle feature un \textbf{merit score}, cioè un punteggio che misura quanto una feature sia utile per separare le classi o per descrivere la variabile target.
+
+La valutazione può avvenire in due modi:
+
+\begin{itemize}
+    \item valutando ogni feature singolarmente;
+    \item valutando sottoinsiemi di feature.
+\end{itemize}
+
+Valutare le feature singolarmente è veloce, ma può essere sub-ottimale perché ignora le relazioni tra attributi. Valutare i subset è più potente, ma introduce un problema combinatorio: il numero di possibili sottoinsiemi cresce in modo esponenziale.
+
+\begin{notaprof}
+I filtri sono molto veloci e utili quando il numero di attributi è grande. Il limite è che il punteggio prodotto, ad esempio un valore di Info Gain, non sempre indica chiaramente dove fissare la soglia per eliminare le feature.
+\end{notaprof}
+
+\section{Info Gain e Spearman}
+
+\subsection{Information Gain}
+
+L'\textbf{Information Gain} misura quanta informazione una feature fornisce sulla classe target. Più precisamente, quantifica la riduzione dell'incertezza, misurata tramite entropia, quando si conosce il valore di un attributo.
+
+Un valore alto di Information Gain indica che la feature è utile per separare le istanze in classi distinte.
+
+\begin{notaprof}
+Una feature con alto Information Gain aiuta il classificatore perché riduce l'incertezza su quale classe assegnare a un'istanza.
+\end{notaprof}
+
+\subsection{Spearman correlation}
+
+La \textbf{Spearman correlation}, o coefficiente rho di Spearman, è una misura non parametrica della forza e della direzione dell'associazione tra due variabili ordinate.
+
+\begin{notaslide}
+A differenza di Pearson, che misura relazioni lineari sui valori grezzi, Spearman valuta relazioni monotone sui ranghi. Il coefficiente varia da \(-1\) a \(+1\).
+\end{notaslide}
+
+Una relazione monotona esiste quando una variabile tende ad aumentare al crescere dell'altra, oppure tende a diminuire al crescere dell'altra, anche se non necessariamente a ritmo costante.
+
+\begin{notaprof}
+Metriche come Spearman sono interpretabili, ma non risolvono completamente il problema della ridondanza. Due feature possono essere entrambe molto correlate con la classe target, ma misurare quasi la stessa informazione.
+\end{notaprof}
+
+\section{Wrapper approach}
+
+Il \textbf{wrapper approach} seleziona le feature usando il classificatore come una \emph{black box}. A differenza dei filtri, il wrapper dipende dal classificatore specifico.
+
+Il processo generale è:
+
+\begin{enumerate}
+    \item scegliere un subset di feature;
+    \item creare training e test set basati su quel subset;
+    \item addestrare il classificatore sul training set;
+    \item valutare l'accuratezza su un validation set;
+    \item ripetere il processo per più subset e scegliere quello con il miglior risultato.
+\end{enumerate}
+
+Il vantaggio è che le feature vengono ottimizzate per uno specifico classificatore. Lo svantaggio è il costo computazionale elevato, perché il modello deve essere addestrato e testato molte volte.
+
+\begin{notaprof}
+I wrapper sono più lenti dei filtri, ma possono produrre feature subset più adatti a un classificatore specifico.
+\end{notaprof}
+
+\section{Search strategies}
+
+Poiché il numero di possibili subset di feature è esponenziale, nei wrapper si usano strategie di ricerca.
+
+\begin{itemize}
+    \item \textbf{Exhaustive search}: prova tutte le combinazioni possibili. È completa, ma spesso impraticabile;
+    \item \textbf{Forward search}: parte da un insieme vuoto e aggiunge progressivamente la feature che migliora di più il risultato;
+    \item \textbf{Backward search}: parte dall'insieme completo e rimuove progressivamente la feature la cui eliminazione danneggia meno l'accuratezza;
+    \item \textbf{Greedy search}: prende decisioni locali cercando un buon compromesso tra accuratezza e costo computazionale.
+\end{itemize}
+
+\begin{notaslide}
+Le slide indicano che la forward search e la backward search hanno costo \(O(n^2 \cdot learning/testing\ time)\) e che esistono anche altre euristiche.
+\end{notaslide}
+
+\begin{notaesame}
+Se si ha molta fiducia nel set di feature iniziale, può convenire usare \textbf{Backward Search}, perché parte da tutte le feature e ne elimina poche. Se invece si sospetta che molte feature siano inutili o ridondanti, può convenire usare \textbf{Forward Search}, perché costruisce un subset più ristretto partendo da zero.
+\end{notaesame}
+
+\section{Train, validation e test}
+
+È fondamentale distinguere tra:
+
+\begin{itemize}
+    \item \textbf{training set}: usato per addestrare il modello;
+    \item \textbf{validation set}: usato per tuning, scelta delle feature e scelta del modello;
+    \item \textbf{test set}: usato solo per la valutazione finale.
+\end{itemize}
+
+\begin{notaesame}
+Il test set non deve essere usato per scegliere feature o parametri. Se si usa il test set durante la selezione, si introduce data leakage e la valutazione finale non è più realistica.
+\end{notaesame}
+
+Il validation set serve a prendere decisioni sul modello senza contaminare il test set. Solo alla fine il modello selezionato viene valutato sul test set.
+
+\section{Feature Selection in Weka}
+
+In Weka, la selezione degli attributi può essere eseguita tramite il pannello \textbf{Select attributes}. I metodi di attribute selection sono composti da due parti:
+
+\begin{itemize}
+    \item \textbf{Search Method}: metodo con cui si esplora lo spazio dei subset;
+    \item \textbf{Attribute Evaluator}: criterio con cui si valuta la qualità delle feature o dei subset.
+\end{itemize}
+
+\begin{notaslide}
+Tra i search method citati nelle slide compaiono \textbf{best-first}, \textbf{forward selection}, \textbf{random}, \textbf{exhaustive}, \textbf{genetic algorithm} e \textbf{ranking}.
+\end{notaslide}
+
+\begin{notaslide}
+Tra gli evaluation method citati nelle slide compaiono metodi \textbf{correlation-based}, \textbf{wrapper}, \textbf{information gain} e \textbf{chi-squared}.
+\end{notaslide}
+
+\begin{notaprof}
+Weka è flessibile perché permette di combinare quasi arbitrariamente search method ed evaluator.
+\end{notaprof}
+
+\section{Lab e collegamento con il progetto}
+
+Il laboratorio richiede di confrontare l'accuratezza con e senza feature selection.
+
+Il workflow richiesto è:
+
+\begin{enumerate}
+    \item prendere un dataset;
+    \item usare tre classificatori:
+    \begin{itemize}
+        \item \textbf{RandomForest};
+        \item \textbf{NaiveBayes};
+        \item \textbf{IBk};
+    \end{itemize}
+    \item eseguire una \textbf{10-fold cross validation};
+    \item confrontare i risultati con e senza feature selection;
+    \item discutere se la valutazione è fair;
+    \item valutare se usare API o GUI.
+\end{enumerate}
+
+\begin{notaesame}
+Fare feature selection sull'intero dataset prima della cross-validation non è fair. Significa permettere alla selezione delle feature di vedere anche le fold che dovrebbero essere usate come test. Questo produce data leakage.
+\end{notaesame}
+
+\begin{notaprof}
+In Weka, per evitare data leakage, è preferibile usare il meta-classificatore \texttt{AttributeSelectedClassifier}. In questo modo la feature selection viene eseguita separatamente dentro ogni fold di training, senza usare la fold di test.
+\end{notaprof}
+
+\begin{notaprof}
+La GUI è utile per capire il dataset, osservare le distribuzioni e sperimentare rapidamente. Le API o la CLI sono invece più adatte al progetto finale, perché permettono di automatizzare esperimenti ripetibili.
+\end{notaprof}
+
+\begin{notaprof}
+Se si usano sia feature selection sia balancing, è opportuno prestare attenzione all'ordine delle operazioni. La feature selection dovrebbe essere valutata senza contaminare il test set; anche il balancing deve essere applicato solo sul training set.
+\end{notaprof}
+
+\section{Da ricordare}
+
+\begin{notaesame}
+In Software Engineering, la feature selection è importante soprattutto perché riduce il costo di misurazione delle metriche, non solo il tempo di training del modello.
+\end{notaesame}
+
+\begin{notaesame}
+I filtri, come Info Gain e Spearman, sono veloci e indipendenti dal classificatore. I wrapper sono più lenti ma ottimizzano le feature per uno specifico classificatore.
+\end{notaesame}
+
+\begin{notaesame}
+Il test set non deve mai essere usato per scegliere feature, parametri o modelli. Qualsiasi forma di selezione deve avvenire usando solo training e validation set.
+\end{notaesame}
+
+\begin{notaesame}
+In Weka, \texttt{AttributeSelectedClassifier} è utile perché consente di eseguire feature selection in modo corretto dentro la cross-validation, evitando data leakage.
+\end{notaesame}
+
+\begin{notaesame}
+La GUI serve per comprendere e ispezionare il problema; API e CLI servono per automatizzare esperimenti ripetibili e scalabili.
+\end{notaesame}

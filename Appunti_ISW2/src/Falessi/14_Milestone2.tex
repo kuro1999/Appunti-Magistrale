@@ -1,0 +1,249 @@
+\chapter{Milestone 2: Classifiers Accuracy}
+
+\section{Obiettivo della Milestone 2}
+
+La \textbf{Milestone 2} ha come obiettivo principale il confronto dell'accuratezza di tre classificatori di Machine Learning applicati al dataset costruito nella Milestone 1.
+
+L'input della Milestone 2 è quindi il file CSV prodotto nella Milestone 1, contenente le metriche delle classi e la relativa etichetta di \textbf{bugginess}.
+
+Le metriche da confrontare non si limitano alla semplice accuracy, ma includono:
+
+\begin{itemize}
+    \item \textbf{Precision};
+    \item \textbf{Recall};
+    \item \textbf{AUC};
+    \item \textbf{Kappa};
+    \item \textbf{NPofB20}.
+\end{itemize}
+
+\begin{notaesame}
+La Milestone 2 non richiede solo di eseguire tre classificatori, ma di confrontarli criticamente usando più metriche. Il miglior classificatore può cambiare a seconda della metrica considerata.
+\end{notaesame}
+
+\section{Classificatori da confrontare}
+
+\begin{notaslide}
+I tre classificatori richiesti per l'esperimento sono \textbf{RandomForest}, \textbf{NaiveBayes} e \textbf{IBk}.
+\end{notaslide}
+
+\subsection{RandomForest}
+
+\textbf{RandomForest} è un classificatore basato su un insieme di alberi decisionali. Ogni albero produce una predizione e il modello finale combina i risultati. In genere è robusto e adatto a dataset complessi.
+
+\subsection{NaiveBayes}
+
+\textbf{NaiveBayes} è un classificatore probabilistico basato sul teorema di Bayes. Assume, in modo semplificato, che le feature siano indipendenti tra loro.
+
+\begin{notaprof}
+NaiveBayes è un classificatore molto veloce in Weka. Questa caratteristica può renderlo utile come baseline o come modello semplice da confrontare con algoritmi più complessi.
+\end{notaprof}
+
+\subsection{IBk}
+
+\textbf{IBk} è l'implementazione Weka del metodo \emph{k-Nearest Neighbours}. È un classificatore \emph{instance-based}: una nuova istanza viene classificata in base alle classi delle \(k\) istanze più simili presenti nel training set.
+
+\section{Validazione sperimentale}
+
+La tecnica richiesta è la \textbf{10 times 10-fold cross-validation}.
+
+Nella \textbf{10-fold cross-validation} semplice, il dataset viene diviso in 10 parti. A turno, 9 parti vengono usate per il training e 1 per il testing, fino a usare ciascuna fold come test set una volta.
+
+Nella \textbf{10 times 10-fold cross-validation}, l'intero processo viene ripetuto 10 volte con partizioni differenti, ottenendo complessivamente 100 run.
+
+Ripetere la cross-validation serve a ridurre l'effetto della casualità nella suddivisione delle fold e a ottenere una stima più stabile delle performance.
+
+\begin{notaesame}
+La 10 times 10-fold cross-validation è richiesta dalla Milestone 2. Tuttavia, nella Software Engineering è utile ragionare anche su split temporali, come ordered holdout o walk-forward, perché mischiare release passate e future può produrre una stima ottimistica dell'accuratezza.
+\end{notaesame}
+
+\section{Feature Selection}
+
+La Milestone 2 richiede l'uso di filtri come tecnica di \textbf{feature selection}. La feature selection permette di selezionare solo le metriche più utili, eliminando attributi irrilevanti o ridondanti.
+
+I principali vantaggi sono:
+
+\begin{itemize}
+    \item ridurre il rumore nel dataset;
+    \item migliorare, in alcuni casi, le performance del modello;
+    \item ridurre il costo di estrazione e misurazione delle metriche;
+    \item semplificare l'interpretazione del modello.
+\end{itemize}
+
+\begin{notaprof}
+Se dopo la feature selection l'accuratezza migliora, significa che alcune feature generavano confusione nel modello. Se invece l'accuratezza diminuisce leggermente, si può comunque ottenere un vantaggio pratico: usare meno metriche e ridurre il costo di raccolta dati.
+\end{notaprof}
+
+\begin{notaesame}
+La feature selection non deve essere applicata sull'intero dataset prima della cross-validation. Se il filtro vede anche le fold di test, si introduce \textbf{data leakage} e la valutazione diventa falsata.
+\end{notaesame}
+
+In Weka, una soluzione corretta è usare il meta-classificatore:
+
+\[
+\texttt{AttributeSelectedClassifier}
+\]
+
+In questo modo la feature selection viene applicata separatamente sulle fold di training, senza usare informazioni provenienti dalla fold di test.
+
+\section{Balancing}
+
+Nei dataset di defect prediction la classe \textbf{buggy} è spesso minoritaria. Questo sbilanciamento può spingere il classificatore a predire quasi sempre la classe maggioritaria, cioè \texttt{non buggy}.
+
+Per mitigare il problema si possono usare tecniche di \textbf{balancing}, come:
+
+\begin{itemize}
+    \item \textbf{undersampling}: riduzione della classe maggioritaria;
+    \item \textbf{oversampling}: aumento della classe minoritaria;
+    \item \textbf{SMOTE}: generazione di istanze sintetiche della classe minoritaria.
+\end{itemize}
+
+\begin{notaesame}
+Il balancing deve essere applicato solo al \textbf{training set}, mai al test set. Bilanciare il test set significa alterare artificialmente la distribuzione reale dei dati su cui si valuta il modello.
+\end{notaesame}
+
+In Weka, il balancing può essere gestito tramite il meta-classificatore:
+
+\[
+\texttt{FilteredClassifier}
+\]
+
+\begin{notaesame}
+Se si usano sia feature selection sia balancing, bisogna evitare che uno dei due passaggi contamini il test set. Le operazioni devono essere incapsulate nei meta-classificatori, in modo che vengano applicate solo alle fold di training durante la cross-validation.
+\end{notaesame}
+
+\begin{notaprof}
+Quando si combinano feature selection e balancing, è importante ragionare sull'ordine delle operazioni. Il balancing altera artificialmente le istanze, quindi può influenzare la valutazione statistica delle feature se applicato nel momento sbagliato.
+\end{notaprof}
+
+\section{Metriche di valutazione}
+
+\subsection{Precision}
+
+La \textbf{Precision} misura quanti degli elementi predetti come buggy sono effettivamente buggy:
+
+\[
+Precision = \frac{TP}{TP + FP}
+\]
+
+Una Precision alta indica pochi falsi positivi.
+
+\subsection{Recall}
+
+La \textbf{Recall} misura quanti degli elementi realmente buggy sono stati trovati dal classificatore:
+
+\[
+Recall = \frac{TP}{TP + FN}
+\]
+
+Una Recall alta indica pochi falsi negativi.
+
+\subsection{AUC}
+
+L'\textbf{AUC}, cioè Area Under the ROC Curve, valuta la capacità del classificatore di distinguere tra classi positive e negative al variare della soglia decisionale.
+
+\subsection{Kappa}
+
+Il \textbf{Kappa di Cohen} confronta le prestazioni del classificatore con quelle ottenibili per caso. Un valore maggiore di zero indica che il modello sta facendo meglio di una classificazione casuale o banale.
+
+\begin{notaprof}
+Il classificatore ZeroR predice sempre la classe maggioritaria. In dataset sbilanciati può ottenere un'accuracy alta, ma un Kappa pari a zero, perché non sta realmente imparando un pattern predittivo.
+\end{notaprof}
+
+\subsection{NPofB20}
+
+\begin{notaslide}
+\textbf{NPofB20} è una metrica effort-aware normalizzata. Valuta quanti difetti si riescono a trovare ispezionando il 20\% delle LOC del sistema.
+\end{notaslide}
+
+La logica è ordinare le classi in base a una priorità di ispezione, tipicamente legata alla probabilità predetta di difettosità normalizzata rispetto alla dimensione della classe.
+
+\begin{notaesame}
+L'accuracy da sola non basta nei dataset sbilanciati. Un modello che predice sempre \texttt{non buggy} può sembrare accurato, ma non trovare nessuna classe difettosa. Per questo sono fondamentali metriche come Recall, Kappa e NPofB20.
+\end{notaesame}
+
+\section{Domande da rispondere nella Milestone 2}
+
+La Milestone 2 richiede di rispondere a domande sperimentali come:
+
+\begin{itemize}
+    \item quale classificatore è più accurato degli altri?
+    \item il miglior classificatore cambia in base al dataset?
+    \item il miglior classificatore cambia in base al numero di release considerate?
+    \item il miglior classificatore cambia in base alla metrica?
+    \item quale classificatore è migliore per una determinata metrica?
+\end{itemize}
+
+Non esiste necessariamente un classificatore migliore in assoluto. Un modello può avere alta Recall ma bassa Precision, oppure buona AUC ma Kappa modesto.
+
+\begin{notaesame}
+Nel report è importante discutere i trade-off. Il docente non cerca solo il valore numerico migliore, ma la capacità di giustificare le scelte sperimentali e interpretare i risultati.
+\end{notaesame}
+
+\section{Weka e API}
+
+\subsection{Uso della GUI}
+
+La GUI di Weka, in particolare Explorer ed Experimenter, è utile per comprendere il workflow, testare rapidamente i classificatori e confrontare configurazioni diverse.
+
+L'Experimenter permette di lanciare esperimenti ripetuti, come la 10 times 10-fold cross-validation, e salvare i risultati in una tabella esportabile.
+
+\begin{notaprof}
+Dal CSV prodotto dall'Experimenter può essere utile costruire una colonna descrittiva del modello, combinando classificatore e opzioni, ad esempio \texttt{RandomForest\_FS\_Balanced}.
+\end{notaprof}
+
+\subsection{Limite della GUI per NPofB20}
+
+La GUI di Weka non calcola nativamente la \textbf{NPofB20}. Per calcolarla servono informazioni a livello di singola istanza, come:
+
+\begin{itemize}
+    \item ID dell'istanza;
+    \item LOC o dimensione della classe;
+    \item classe reale;
+    \item probabilità predetta;
+    \item ordinamento delle classi secondo la priorità effort-aware.
+\end{itemize}
+
+\begin{notaprof}
+Le API Java di Weka o uno script esterno sono utili per stampare le predizioni istanza per istanza e calcolare automaticamente NPofB20.
+\end{notaprof}
+
+\section{Collegamento con il progetto}
+
+L'input della Milestone 2 è il CSV finale prodotto nella Milestone 1. L'output è una tabella di confronto tra classificatori e configurazioni sperimentali.
+
+Per ciascuno dei tre classificatori si possono confrontare diverse varianti:
+
+\begin{itemize}
+    \item modello base;
+    \item modello con feature selection;
+    \item modello con balancing;
+    \item modello con feature selection e balancing.
+\end{itemize}
+
+Questo produce una tabella comparativa su più metriche, come Precision, Recall, AUC, Kappa e NPofB20.
+
+\begin{notaesame}
+L'obiettivo finale della Milestone 2 è identificare e giustificare un \textbf{best classifier}, cioè la combinazione di algoritmo e preprocessing più adatta al proprio dataset. Questo modello sarà poi usato nella Milestone 3.
+\end{notaesame}
+
+\section{Da ricordare}
+
+\begin{notaesame}
+Feature selection e balancing devono essere applicati senza contaminare il test set. In Weka è opportuno usare meta-classificatori come \texttt{AttributeSelectedClassifier} e \texttt{FilteredClassifier}.
+\end{notaesame}
+
+\begin{notaesame}
+Il balancing va applicato solo al training set. Bilanciare il test set significa falsare la valutazione.
+\end{notaesame}
+
+\begin{notaesame}
+La 10 times 10-fold cross-validation è richiesta dalla Milestone 2, ma bisogna essere consapevoli che nei dati software l'ordine temporale delle release ha significato.
+\end{notaesame}
+
+\begin{notaesame}
+L'accuracy non è sufficiente per valutare modelli su dataset sbilanciati. Bisogna considerare Precision, Recall, AUC, Kappa e NPofB20.
+\end{notaesame}
+
+\begin{notaesame}
+Il miglior classificatore può cambiare in base alla metrica. Per questo il risultato deve essere discusso, non solo riportato numericamente.
+\end{notaesame}

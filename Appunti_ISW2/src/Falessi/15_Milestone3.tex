@@ -1,0 +1,277 @@
+\chapter{What If I Had No Smells?}
+
+\section{Introduzione ai code smells}
+
+\subsection{Definizione ed esempi}
+
+I \textbf{code smells} sono artefatti del codice che rappresentano sintomi di scelte di progettazione o implementazione non ottimali. Non coincidono necessariamente con un difetto osservabile, ma segnalano la presenza di strutture che possono rendere il software più difficile da comprendere, modificare o mantenere.
+
+Tra gli esempi riportati nel materiale compaiono:
+
+\begin{itemize}
+    \item \textbf{God classes}, cioè classi troppo grandi e sovraccariche di responsabilità;
+    \item \textbf{code clones}, cioè duplicazioni di codice;
+    \item \textbf{low comment frequency}, cioè una frequenza troppo bassa di commenti;
+    \item \textbf{non-intuitive variable naming}, cioè nomi di variabili poco chiari o poco intuitivi.
+\end{itemize}
+
+\subsection{Legame con il technical debt}
+
+I \textbf{code smells} contribuiscono all'accumulo di \textbf{technical debt}, cioè codice non pienamente buono o non pienamente pulito che viene comunque rilasciato nel prodotto software. Questo debito tecnico non implica necessariamente un malfunzionamento immediato, ma può ridurre progressivamente la qualità del prodotto e rendere più costose le attività future di evoluzione e manutenzione.
+
+\subsection{Analisi storica e analisi controfattuale}
+
+Gran parte della letteratura tradizionale ha studiato il problema in termini di \textbf{analisi storica}: si osservano i repository e si cerca di capire se gli smells siano correlati alla qualità del prodotto o al numero di difetti.
+
+Questo studio propone invece una \textbf{analisi controfattuale}. La domanda non è più soltanto \emph{che cosa è successo}, ma \emph{che cosa sarebbe successo se gli smells fossero stati evitati}. Il passaggio concettuale è quindi da una logica descrittiva a una logica ipotetica e decisionale.
+
+\section{Obiettivo del lavoro}
+
+\subsection{Domanda centrale del paper}
+
+La domanda centrale del lavoro è la seguente: \textbf{il numero di file difettosi diminuisce se i code smells vengono evitati, mantenendo inalterate le altre caratteristiche di processo e di prodotto?}
+
+\subsection{Significato della stima}
+
+L'obiettivo è definire un metodo per \textbf{stimare il numero di defective files} in uno scenario ipotetico in cui gli smells siano assenti. Non si tratta quindi di misurare direttamente un intervento reale di refactoring, ma di costruire uno scenario sintetico in cui la variabile relativa agli smells venga modificata per valutare quale impatto avrebbe avuto sul numero di file difettosi.
+
+\subsection{Interesse pratico e di ricerca}
+
+Dal punto di vista della ricerca, questo problema è interessante perché gli esperimenti controllati sugli smells sono costosi, difficili da scalare e poco adatti a scenari multivariati. Dal punto di vista industriale, invece, i manager hanno bisogno di strumenti che supportino decisioni pratiche su qualità, costi ed effort, senza richiedere necessariamente esperimenti complessi o interventi invasivi sul codice.
+
+\section{What-if analysis method}
+
+\subsection{Significato di what-if scenario}
+
+La \textbf{what-if analysis} è una tecnica che costruisce scenari ipotetici modificando il valore di alcune variabili per osservare come cambierebbero i risultati finali. Nel caso di questo studio, lo scenario ipotetico è quello di un software in cui i file non presentino code smells.
+
+\subsection{Azzerare gli smells mantenendo invariate le altre caratteristiche}
+
+L'idea metodologica consiste nel modificare i dati storici in modo da porre a zero il numero di smells, mantenendo però invariate le altre caratteristiche del file e del processo di sviluppo, come dimensione, churn, numero di revisioni, autori e altre change metrics.
+
+\begin{notaprof}
+È importante capire perché la feature \texttt{NSmells} sia stata scelta come variabile da manipolare. Non tutte le feature sono realmente \emph{actionable}. Se un modello dicesse che i difetti aumentano con la dimensione del codice, non potremmo semplicemente ridurre il numero di righe eliminando funzionalità utili. Invece, la presenza di code smells può essere controllata attivamente, per esempio tramite refactoring o quality gates, senza modificare i requisiti funzionali del sistema.
+\end{notaprof}
+
+\subsection{Uso di modelli appresi su dati reali e applicati a dati sintetici}
+
+Il metodo prevede di addestrare modelli di classificazione su dati reali e poi applicarli a dati sintetici ottenuti azzerando la variabile relativa agli smells. In questo modo si cerca di stimare la difettosità attesa in uno scenario in cui il codice, a parità di altre condizioni, non presenti smells.
+
+\section{Contesto industriale}
+
+\subsection{Progetti e tipi di smell analizzati}
+
+Lo studio è stato applicato su dati provenienti da \textbf{cinque progetti industriali} della durata di circa dieci anni, appartenenti all'azienda \textbf{Keymind}. Complessivamente sono stati analizzati \textbf{106 tipi diversi di smells}.
+
+\subsection{Ruolo di SonarQube e dei quality gates}
+
+Nel contesto industriale illustrato, \textbf{SonarQube} viene usato per identificare gli smells nel codice e per supportare la gestione del debito tecnico. Inoltre, vengono utilizzati i \textbf{quality gates}, cioè regole che bloccano automaticamente l'accettazione di commit o push request quando il codice supera determinate soglie di qualità.
+
+\begin{notaslide}
+Nel materiale è mostrato anche un esempio di output di SonarQube, in cui viene segnalato uno smell dovuto alla presenza di linee di codice commentate invece che rimosse.
+\end{notaslide}
+
+\subsection{Avoiding smells vs removing smells}
+
+Lo studio insiste sulla differenza tra due strategie:
+
+\begin{itemize}
+    \item \textbf{removing smells}, cioè eliminare gli smells dopo che sono già entrati nella codebase, tipicamente tramite refactoring;
+    \item \textbf{avoiding smells}, cioè impedire che entrino fin dall'inizio, per esempio bloccando il codice non conforme tramite quality gates.
+\end{itemize}
+
+La seconda strategia è considerata particolarmente interessante perché impedisce l'accumulo del debito tecnico e riduce il rischio di dover poi rifattorizzare codice già integrato.
+
+\subsection{Vantaggi e svantaggi dell'evitare smells a priori}
+
+Evitare gli smells a priori ha diversi vantaggi: impedisce l'accumulo progressivo di technical debt, evita parte dei rischi connessi al refactoring e rende più semplice mantenere il codice sotto controllo nel tempo.
+
+Esistono però anche svantaggi importanti. Questa strategia richiede infrastrutture e tool adeguati, è applicabile soprattutto al nuovo codice e può entrare in conflitto con obiettivi di business come il \textbf{time-to-market}. In alcuni contesti aziendali, accettare una certa quantità di smells può quindi essere una scelta intenzionale e ragionevole.
+
+\section{Metodo dello studio}
+
+Il metodo proposto si articola in \textbf{cinque step} principali:
+
+\begin{enumerate}
+    \item \textbf{metric selection};
+    \item \textbf{metric collection};
+    \item \textbf{dataset manipulation};
+    \item \textbf{model selection};
+    \item \textbf{estimation results}.
+\end{enumerate}
+
+L'intero studio può essere letto come una pipeline in cui si parte dalla scelta delle metriche, si raccolgono i dati, si costruiscono scenari sintetici, si seleziona il classificatore più adatto e infine si stima l'impatto dell'assenza di smells sulla difettosità.
+
+\section{Metric selection e metric collection}
+
+\subsection{Perché servono metriche oltre a Size e NSmells}
+
+Per costruire un predittore credibile non basta conoscere la dimensione del file o il numero di smells presenti. È necessario considerare anche metriche capaci di descrivere l'evoluzione del file e le attività di manutenzione subite durante una release.
+
+\subsection{Ruolo delle change metrics}
+
+Le \textbf{change metrics} sono state selezionate perché ampiamente usate in letteratura per la \textbf{defect estimation}. Esse descrivono sia aspetti di prodotto sia aspetti di processo, e aiutano a catturare il comportamento storico del file durante lo sviluppo.
+
+\subsection{Tabella delle metriche}
+
+\begin{notaslide}
+La tabella delle metriche include, oltre a \texttt{NSmells}, anche metriche come \texttt{Size}, \texttt{LOC\_touched}, \texttt{NR}, \texttt{NFix}, \texttt{NAuth}, \texttt{LOC\_added}, \texttt{Churn}, \texttt{ChgSetSize}, \texttt{Age} e \texttt{WeightedAge}. Nel complesso, queste variabili descrivono quanto un file sia grande, quanto venga modificato, da quanti sviluppatori venga toccato e quanto sia esposto a dinamiche di manutenzione.
+\end{notaslide}
+
+\subsection{Raccolta dei dati con SonarQube}
+
+La raccolta delle metriche è stata eseguita usando \textbf{SonarQube}, che nel contesto del paper viene descritto come capace di identificare fino a \textbf{1297 tipi di smells}. Nel dataset studiato sono stati raccolti \textbf{6912 smells} complessivi.
+
+\subsection{Differenza temporale tra smells e difetti}
+
+Un punto metodologico cruciale è la differenza temporale tra le misurazioni:
+
+\begin{itemize}
+    \item gli \textbf{smells} e la \textbf{dimensione del file} vengono misurati all'\textbf{inizio} della release;
+    \item le \textbf{change metrics} e i \textbf{difetti} vengono misurati alla \textbf{fine} della release.
+\end{itemize}
+
+Questa scelta serve a rispettare la direzione temporale del fenomeno: gli smells devono essere già presenti prima che possano influenzare il lavoro degli sviluppatori e contribuire all'introduzione di difetti.
+
+\begin{notaprof}
+L'idea è che gli smells funzionino come una sorta di trappola o di fattore di rischio. Per poter influenzare negativamente chi modifica il codice, devono esistere già nel momento in cui inizia la manutenzione del file.
+\end{notaprof}
+
+\subsection{Significato del diagramma di raccolta dati}
+
+\begin{notaslide}
+Il diagramma di raccolta dati per release e file mostra visivamente una \emph{release window} in cui gli smells sono osservati in prossimità della \textbf{first revision}, mentre churn e defects vengono osservati alla \textbf{last revision}. Il messaggio principale è che le cause potenziali vengono misurate prima degli effetti osservati.
+\end{notaslide}
+
+\section{Dataset manipulation}
+
+\subsection{Definizione dei dataset A, B+, B e C}
+
+La manipolazione del dataset introduce quattro insiemi distinti:
+
+\begin{itemize}
+    \item \textbf{A}: il dataset originale, non alterato;
+    \item \textbf{B+}: la porzione di A che contiene solo file con almeno uno smell, cioè \texttt{NSmells > 0};
+    \item \textbf{C}: la porzione di A che contiene file senza smells, cioè \texttt{NSmells = 0};
+    \item \textbf{B}: il dataset sintetico ottenuto da B+ azzerando artificialmente la feature \texttt{NSmells}.
+\end{itemize}
+
+\subsection{Perché B rappresenta lo scenario sintetico}
+
+Il dataset \textbf{B} rappresenta il vero \textbf{what-if scenario}. I file sono gli stessi di B+, ma la presenza di smells viene forzata a zero. In questo modo si costruisce una versione artificiale dei file originariamente ``smelly'', come se tali smells fossero stati evitati fin dall'inizio.
+
+\subsection{Media delle feature e correlazione}
+
+\begin{notaslide}
+Nel materiale viene mostrata una tabella con la media delle feature nei dataset A, B e C e con la correlazione rispetto a \texttt{NSmells} e \texttt{Defectiveness}. Il messaggio importante è che \texttt{NSmells} ha una correlazione significativa ma non fortissima con la defectiveness, e non mostra una collinearità dominante con le altre change metrics. Questo suggerisce che la feature trasporta un'informazione aggiuntiva e non banalmente ridondante.
+\end{notaslide}
+
+\subsection{Messaggio metodologico della manipolazione}
+
+La manipolazione del dataset non ha soltanto un valore pratico, ma anche metodologico. Il paper giustifica l'uso del modello appreso su A per fare predizioni su B mostrando che, salvo eccezioni limitate, A e B non risultano trattabili come popolazioni radicalmente diverse. Ciò rende più plausibile applicare il classificatore addestrato sul dataset reale a uno scenario sintetico ottenuto modificando la sola feature \texttt{NSmells}.
+
+\section{Model selection}
+
+\subsection{Classificatori confrontati}
+
+I modelli confrontati sono i seguenti:
+
+\begin{itemize}
+    \item \textbf{Bagging};
+    \item \textbf{BayesNet};
+    \item \textbf{J48};
+    \item \textbf{Logistic}.
+\end{itemize}
+
+\subsection{Uso della leave-one-out cross-validation}
+
+Per misurare in modo rigoroso le performance dei modelli, viene utilizzata la \textbf{leave-one-out cross-validation}. Questa tecnica è particolarmente adatta quando il dataset disponibile non è enorme e si vuole sfruttare al massimo l'informazione presente, mantenendo comunque una validazione severa.
+
+\subsection{Criterio di scelta del modello migliore}
+
+Il criterio di scelta si basa soprattutto sul bilanciamento tra \textbf{Precision} e \textbf{Recall}. L'idea non è selezionare un modello che sia semplicemente aggressivo nel trovare positivi, ma uno che riesca anche a farlo in modo sufficientemente affidabile.
+
+\subsection{Perché Bagging risulta il migliore}
+
+Il modello \textbf{Bagging} risulta il migliore nel materiale perché ottiene i valori migliori nel confronto mostrato, con una \textbf{Precision pari a 0.79} e una \textbf{Recall pari a 0.70}. Rispetto agli altri tre classificatori, offre quindi il compromesso più convincente tra capacità di trovare file difettosi e affidabilità delle predizioni positive.
+
+\section{Results}
+
+\subsection{Applicazione del modello ai dataset A, B+, B e C}
+
+Una volta scelto il modello migliore, cioè \textbf{Bagging}, esso viene addestrato sul dataset A e poi applicato ai dataset \textbf{A}, \textbf{B+}, \textbf{B} e \textbf{C} per stimare il numero di \textbf{defective files} nei diversi scenari.
+
+\subsection{Interpretazione del passaggio da 66 a 38 defective files in B+}
+
+Nel sottoinsieme \textbf{B+}, cioè tra i file che originariamente avevano almeno uno smell, il numero di file difettosi passa da \textbf{66} a \textbf{38} quando si considera il dataset sintetico \textbf{B}, in cui gli smells sono stati azzerati.
+
+Questo significa che \textbf{28 file} sarebbero potenzialmente stati risparmiati, con una riduzione del:
+
+\[
+\frac{66 - 38}{66} = 42\%
+\]
+
+Questa percentuale va letta come una riduzione interna al solo gruppo dei file che in origine erano affetti da smells.
+
+\subsection{Riduzione complessiva del 20\% su A}
+
+Nel dataset complessivo \textbf{A} erano presenti \textbf{135 defective files}. Se 28 di essi risultano potenzialmente evitabili nello scenario senza smells, allora la riduzione globale stimata sull'intero dataset è pari a:
+
+\[
+\frac{66 - 38}{135} \approx 20\%
+\]
+
+Il risultato complessivo del paper è quindi che circa \textbf{il 20\% dei file difettosi totali} potrebbe essere stato evitato se gli smells fossero stati prevenuti.
+
+\subsection{Differenza tra riduzione sui file smelly e riduzione sull'intero dataset}
+
+\begin{notaprof}
+È fondamentale non confondere la riduzione del \textbf{42\%} con quella del \textbf{20\%}. Il 42\% riguarda soltanto il sottoinsieme dei file originariamente smelly, cioè B+. Il 20\% riguarda invece l'intero dataset A. I file presenti in C erano già privi di smells ma potevano comunque essere difettosi. Questi rappresentano bug che non sarebbero stati evitati semplicemente eliminando gli smells, e spiegano perché la riduzione complessiva sia molto più bassa di quella osservata nel solo sottoinsieme smelly.
+\end{notaprof}
+
+\section{Limiti e messaggi chiave}
+
+\subsection{Perché il risultato non implica causalità certa}
+
+Il risultato ottenuto non dimostra una causalità certa tra smells e difetti. La \textbf{what-if analysis} costruisce una stima controfattuale basata su modelli statistici, non un esperimento controllato in cui le condizioni vengono realmente manipolate nel mondo reale.
+
+\subsection{Natura ipotetica dello scenario senza smells}
+
+L'intero ragionamento si basa su una storia ipotetica: si immagina un software in cui il numero di smells sia pari a zero, ma si mantengano inalterate tutte le altre caratteristiche osservate. Questa è un'assunzione forte e semplificatrice, utile per costruire l'analisi ma non pienamente realistica.
+
+\begin{notaprof}
+Nella realtà, correggere uno smell non significa soltanto cambiare il valore di \texttt{NSmells}. Spesso comporta modifiche strutturali che alterano anche altre feature, come la dimensione del file, il churn, il numero di autori o la complessità complessiva. Per questo lo scenario sintetico è utile come strumento di ragionamento, ma non va interpretato come una fotografia perfetta di ciò che sarebbe davvero successo.
+\end{notaprof}
+
+\subsection{Evitare alcuni smells potrebbe non ridurre i difetti}
+
+Non tutti gli smells vanno interpretati come fattori che, se rimossi, riducono automaticamente il numero di bug. In alcuni casi, evitare o rimuovere certi smells potrebbe non produrre alcun beneficio rilevante sulla difettosità, e in altri casi potrebbe persino peggiorare la situazione se il codice risultante diventasse più complesso o meno comprensibile.
+
+\subsection{Casi in cui accettare smells può essere ragionevole}
+
+Dal punto di vista industriale, esistono casi in cui accettare una certa quantità di smells può essere una scelta razionale. Per esempio, un'azienda può preferire tollerare alcuni problemi di qualità interna pur di rispettare scadenze rigide, contenere i costi o arrivare rapidamente sul mercato.
+
+\subsection{Trade-off con costi, effort e time-to-market}
+
+Il tema centrale, quindi, non è inseguire sempre e comunque l'obiettivo di \textbf{zero smells}, ma bilanciare:
+
+\begin{itemize}
+    \item \textbf{qualità del codice};
+    \item \textbf{effort richiesto per prevenire o rimuovere gli smells};
+    \item \textbf{time-to-market};
+    \item \textbf{costo complessivo della decisione}.
+\end{itemize}
+
+\subsection{Contributo principale del paper}
+
+Il contributo principale del lavoro non è solo il valore numerico finale del \textbf{20\%}, ma soprattutto la proposta di un metodo basato su \textbf{what-if analysis} per supportare il \textbf{decision making} manageriale. Il paper mostra come i dati storici e i modelli predittivi possano essere usati non solo per descrivere il passato, ma anche per ragionare in modo quantitativo su scenari alternativi.
+
+\subsection{Valore della what-if analysis e ruolo degli smells}
+
+Il valore della \textbf{what-if analysis} sta nel trasformare il problema degli smells in una domanda decisionale concreta: \emph{vale la pena imporre regole più severe per prevenire gli smells?} Il lavoro suggerisce che gli smells possono rappresentare un fattore collegato alla difettosità e che, almeno in alcuni contesti, evitarli potrebbe ridurre in modo significativo il numero di file difettosi.
+
+\subsection{Importanza di contestualizzare i risultati}
+
+Il messaggio finale è che i risultati devono sempre essere letti nel loro contesto. Non esiste una regola universale secondo cui eliminare gli smells sia sempre la scelta migliore. La bontà della decisione dipende dal tipo di progetto, dai vincoli aziendali, dal processo di sviluppo e dagli obiettivi di business.
+
+In sintesi, il paper propone una metodologia utile per ragionare su un trade-off reale della Software Engineering: \textbf{quanto conviene investire oggi nella qualità interna del codice per ridurre i costi e i difetti di domani}.

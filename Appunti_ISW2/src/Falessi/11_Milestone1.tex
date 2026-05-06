@@ -1,0 +1,268 @@
+\chapter{Milestone 1: Dataset Creation}
+
+\section{Obiettivo della Milestone 1}
+
+La \textbf{Milestone 1} richiede la costruzione di un dataset CSV per un progetto software assegnato. Il dataset deve essere usato per attività di \textbf{defect prediction}, cioè per predire se una classe in una specifica release sia difettosa oppure no.
+
+L'unità di analisi è la coppia:
+
+\[
+    \text{classe} \;-\; \text{release}
+\]
+
+Ogni riga del CSV rappresenta quindi una classe Java osservata in una determinata release del progetto.
+
+\begin{notaesame}
+La Milestone 1 non consiste solo nell'estrarre metriche dal codice: il punto più delicato è costruire correttamente la colonna \textbf{Bugginess}, cioè stabilire se una classe deve essere etichettata come buggy o non buggy in una certa release.
+\end{notaesame}
+
+\section{Assegnazione del progetto}
+
+Ogni studente lavora su un progetto determinato tramite la prima lettera del cognome.
+
+Il procedimento è il seguente:
+
+\begin{enumerate}
+    \item si prende la prima lettera del cognome;
+    \item si converte la lettera nel numero corrispondente dell'alfabeto;
+    \item si calcola:
+    \[
+        X = numero \bmod 6
+    \]
+    \item si assegna il progetto secondo la seguente mappatura:
+    \begin{itemize}
+        \item \(X = 0\): AVRO;
+        \item \(X = 1\): OPENJPA;
+        \item \(X = 2\): STORM;
+        \item \(X = 3\): ZOOKEEPER;
+        \item \(X = 4\): SYNCOPE;
+        \item \(X = 5\): TAJO.
+    \end{itemize}
+\end{enumerate}
+
+\section{Struttura del dataset CSV}
+
+Il dataset finale deve essere una tabella in formato CSV contenente, per ogni classe e release, le informazioni necessarie alla defect prediction.
+
+Le colonne richieste sono:
+
+\begin{itemize}
+    \item \textbf{Name of the project}: nome del progetto;
+    \item \textbf{Name of the class}: path o nome della classe Java;
+    \item \textbf{Release ID}: identificativo della release;
+    \item \textbf{Feature}: circa 20 metriche descrittive della classe o del processo di sviluppo;
+    \item \textbf{NSmells}: numero di code smells rilevati;
+    \item \textbf{Bugginess}: etichetta finale, con valore \texttt{yes} o \texttt{no}.
+\end{itemize}
+
+\begin{notaprof}
+Il dataset deve essere piatto, cioè organizzato come una tabella classica: ogni riga è un'istanza, ogni colonna è una feature o una label. Questa struttura è necessaria per poter usare successivamente strumenti di machine learning.
+\end{notaprof}
+
+\section{Selezione delle release}
+
+Il workflow prevede di individuare tutte le release del progetto e le relative date. Successivamente bisogna ignorare l'ultimo \textbf{66\%} delle release.
+
+Di conseguenza, il dataset finale contiene solo il primo \textbf{34\%} delle release più antiche.
+
+\begin{notaesame}
+Ignorare l'ultimo 66\% delle release significa non inserirle come righe nel CSV finale. Tuttavia, i ticket e i commit successivi possono ancora essere necessari per capire se una classe appartenente al primo 34\% era già difettosa.
+\end{notaesame}
+
+\section{Snapshot di release}
+
+Per ogni release selezionata è necessario trovare l'ultimo commit associato a quella release. A quel punto si effettua il checkout dell'intero codice alla revisione corrispondente.
+
+Questo passaggio serve a costruire un inventario realistico delle classi Java effettivamente presenti nella release.
+
+\begin{notaprof}
+Una classe può essere etichettata come buggy in una release solo se esiste realmente nello snapshot di quella release. Non basta sapere che quella classe sarà toccata da un fix in futuro.
+\end{notaprof}
+
+\section{Classi da considerare}
+
+Per ogni release selezionata bisogna individuare le classi Java di produzione presenti nello snapshot.
+
+\begin{notaesame}
+Devono essere escluse le \textbf{test classes}. Il dataset deve considerare le classi di produzione, tipicamente sotto percorsi come \texttt{src/main/java}, evitando file sotto \texttt{src/test/java}.
+\end{notaesame}
+
+\section{Class metrics}
+
+Le \textbf{class metrics} descrivono la storia e le caratteristiche della classe all'interno della release considerata. Le principali metriche richieste sono:
+
+\begin{itemize}
+    \item \textbf{Size (LOC)}: numero di linee di codice;
+    \item \textbf{LOC Touched}: somma delle linee aggiunte e cancellate nelle revisioni;
+    \item \textbf{NR}: numero di revisioni;
+    \item \textbf{Nfix}: numero di fix di difetti;
+    \item \textbf{Nauth}: numero di autori;
+    \item \textbf{LOC Added}: totale delle linee aggiunte;
+    \item \textbf{Max LOC Added}: massimo numero di linee aggiunte in una revisione;
+    \item \textbf{Average LOC Added}: media delle linee aggiunte per revisione;
+    \item \textbf{Churn}: somma delle linee aggiunte e cancellate;
+    \item \textbf{Max Churn}: massimo churn osservato;
+    \item \textbf{Average Churn}: churn medio;
+    \item \textbf{Change Set Size}: numero di file committati insieme alla classe;
+    \item \textbf{Max Change Set}: massimo change set osservato;
+    \item \textbf{Average Change Set}: change set medio;
+    \item \textbf{Age}: età della classe o della release;
+    \item \textbf{Weighted Age}: età pesata rispetto al LOC touched.
+\end{itemize}
+
+\begin{notaslide}
+Le slide indicano che alcune metriche possono essere calcolate entro la singola release oppure a partire dalla release 0, cioè considerando tutta la storia disponibile fino alla release corrente.
+\end{notaslide}
+
+\section{Commit metrics}
+
+Le \textbf{commit metrics} descrivono le caratteristiche dei cambiamenti effettuati nel repository. Esse sono utili perché alcune proprietà dei commit sono correlate alla probabilità di introdurre difetti.
+
+Le metriche principali sono:
+
+\begin{itemize}
+    \item \textbf{NS}: numero di sottosistemi modificati;
+    \item \textbf{ND}: numero di directory modificate;
+    \item \textbf{NF}: numero di file modificati;
+    \item \textbf{Entropy}: distribuzione delle modifiche tra i file;
+    \item \textbf{LA}: linee di codice aggiunte;
+    \item \textbf{LD}: linee di codice cancellate;
+    \item \textbf{LT}: linee di codice nel file prima del cambiamento;
+    \item \textbf{FIX}: indica se il cambiamento è un defect fix;
+    \item \textbf{NDEV}: numero di sviluppatori che hanno modificato i file coinvolti;
+    \item \textbf{AGE}: intervallo medio tra l'ultima modifica e quella corrente;
+    \item \textbf{NUC}: numero di cambiamenti unici ai file modificati;
+    \item \textbf{EXP}: esperienza dello sviluppatore;
+    \item \textbf{REXP}: esperienza recente dello sviluppatore;
+    \item \textbf{SEXP}: esperienza dello sviluppatore sul sottosistema.
+\end{itemize}
+
+\begin{notaprof}
+Le metriche di processo sono importanti perché non misurano soltanto il codice, ma anche il modo in cui il codice è stato modificato. File toccati spesso, da molti sviluppatori o in commit molto grandi tendono a essere più rischiosi.
+\end{notaprof}
+
+\section{NSmells}
+
+La feature \textbf{NSmells} rappresenta il numero di code smells rilevati nella classe. Può essere calcolata tramite strumenti di analisi statica come SonarCloud, PMD o strumenti simili.
+
+\begin{notaprof}
+NSmells è una feature del dataset, non la label. Una classe con molti smells non è automaticamente buggy, ma può avere una maggiore probabilità di diventarlo.
+\end{notaprof}
+
+\section{Labeling della bugginess}
+
+La colonna \textbf{Bugginess} indica se una classe in una specifica release deve essere considerata difettosa.
+
+Il processo parte assumendo che tutte le classi siano inizialmente \texttt{no}. Successivamente, per i ticket di difetto validi, alcune coppie classe-release vengono trasformate in \texttt{yes}.
+
+I ticket da considerare sono quelli che soddisfano condizioni del tipo:
+
+\begin{itemize}
+    \item tipo uguale a defect o bug;
+    \item stato \texttt{Closed} oppure \texttt{Resolved};
+    \item resolution uguale a \texttt{Fixed}.
+\end{itemize}
+
+\begin{notaesame}
+Il labeling è il passaggio più critico della Milestone 1: se una classe difettosa viene etichettata come non buggy, il classificatore apprenderà da un esempio sbagliato.
+\end{notaesame}
+
+\section{Uso di SZZ e Proportion}
+
+Per identificare le classi buggy è necessario collegare ticket, fix commit e classi modificate.
+
+Una strategia possibile è:
+
+\begin{enumerate}
+    \item individuare i ticket di difetto validi;
+    \item trovare i commit che correggono quei ticket;
+    \item identificare le classi Java toccate dai fix commit;
+    \item stimare le release affette dal difetto;
+    \item marcare come buggy le coppie classe-release comprese nell'intervallo stimato.
+\end{enumerate}
+
+Quando l'Affected Version è disponibile e affidabile, può essere usata per stimare l'inizio del difetto. Quando manca o non è affidabile, si ricorre a SZZ o a metodi come \textbf{Proportion Total}.
+
+\begin{notaprof}
+L'idea di Proportion è stimare la Injected Version quando non è nota, usando l'andamento medio del ciclo di vita dei difetti osservati nel progetto.
+\end{notaprof}
+
+\section{ComputedAV e intervallo di release affette}
+
+Nel progetto è utile distinguere tra:
+
+\begin{itemize}
+    \item \textbf{AV originale}: informazione grezza proveniente da Jira;
+    \item \textbf{ComputedAV}: insieme di release calcolate come affette dal difetto.
+\end{itemize}
+
+La ComputedAV rappresenta l'intervallo di release in cui il difetto deve essere considerato presente. Operativamente, si può interpretare come un intervallo:
+
+\[
+    [IV, FV)
+\]
+
+cioè dalla Injected Version inclusa fino alla Fixed Version esclusa.
+
+\begin{notaesame}
+L'AV originale di Jira non deve essere interpretata automaticamente come intervallo continuo. Va validata rispetto alla timeline delle release. La ComputedAV è invece la rappresentazione operativa usata per il labeling.
+\end{notaesame}
+
+\section{Workflow operativo completo}
+
+Il workflow della Milestone 1 può essere sintetizzato così:
+
+\begin{enumerate}
+    \item identificare il progetto assegnato;
+    \item recuperare le release e le rispettive date;
+    \item selezionare solo il primo 34\% delle release;
+    \item per ogni release selezionata:
+    \begin{enumerate}
+        \item trovare l'ultimo commit della release;
+        \item effettuare il checkout del codice;
+        \item individuare le classi Java di produzione;
+        \item calcolare le metriche di classe;
+        \item calcolare le metriche di commit;
+        \item calcolare NSmells;
+        \item scrivere una riga nel CSV per ogni classe.
+    \end{enumerate}
+    \item recuperare i ticket di difetto validi;
+    \item collegare ticket e fix commit;
+    \item identificare le classi toccate dai fix;
+    \item stimare IV, OV, FV e ComputedAV;
+    \item assegnare la label \texttt{yes/no};
+    \item produrre il CSV finale.
+\end{enumerate}
+
+\section{Errori comuni da evitare}
+
+\begin{itemize}
+    \item \textbf{Scartare i ticket futuri}: anche se il CSV contiene solo il primo 34\% delle release, i ticket successivi possono servire per etichettare correttamente quelle release.
+    \item \textbf{Confondere AV e ComputedAV}: l'AV di Jira è dato grezzo; la ComputedAV è l'intervallo operativo usato nel progetto.
+    \item \textbf{Etichettare classi non presenti}: una classe deve essere marcata buggy solo se esiste nello snapshot della release.
+    \item \textbf{Includere classi di test}: il dataset deve riguardare classi di produzione.
+    \item \textbf{Usare date incoerenti}: IV, OV, FV, resolution date e fix date devono essere trattate con una semantica chiara.
+    \item \textbf{Sovrascrivere informazioni grezze}: i dati originali, come AV da Jira, vanno mantenuti distinti dai dati calcolati.
+\end{itemize}
+
+\begin{notaesame}
+L'errore più grave è costruire il dataset usando solo i ticket presenti entro il primo 34\% delle release. Questo fa apparire come non buggy classi che saranno corrette in seguito, reintroducendo falsi negativi nel labeling.
+\end{notaesame}
+
+\section{Da ricordare}
+
+\begin{notaesame}
+La riga del dataset rappresenta una coppia classe-release, non una classe in generale.
+\end{notaesame}
+
+\begin{notaesame}
+Il CSV finale contiene solo il primo 34\% delle release, ma la bugginess deve essere calcolata usando tutti i ticket e i commit disponibili.
+\end{notaesame}
+
+\begin{notaesame}
+La label \textbf{Bugginess} deve essere coerente con la presenza reale della classe nello snapshot della release.
+\end{notaesame}
+
+\begin{notaesame}
+NSmells è una feature, non una label: serve al classificatore per apprendere, ma non determina da sola se una classe è buggy.
+\end{notaesame}

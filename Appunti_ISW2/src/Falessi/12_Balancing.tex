@@ -1,0 +1,208 @@
+\chapter{Balancing}
+
+\section{Problema del class imbalance}
+
+Il \textbf{class imbalance} si verifica quando i possibili valori della variabile di interesse non sono distribuiti in modo equilibrato dal punto di vista della numerosità. Per esempio, se in un dataset sono presenti il 5\% di classi \emph{buggy} e il 95\% di classi \emph{non buggy}, il dataset è fortemente sbilanciato.
+
+Nella maggior parte delle applicazioni reali, lo sbilanciamento è una caratteristica naturale del problema. L'evento che si vuole identificare, cioè la classe positiva, è spesso raro.
+
+\begin{notaslide}
+Il class imbalance è frequente in applicazioni come \textbf{fraud detection}, \textbf{intrusion detection}, \textbf{risk management}, classificazione di testi e diagnosi o monitoraggio medico.
+\end{notaslide}
+
+I classificatori standard tendono a essere dominati dalla classe maggioritaria. Poiché nel training set osservano molte più istanze della maggioranza, imparano a predire soprattutto quella classe. Il risultato è un'alta accuratezza predittiva sulla classe maggioritaria, ma una bassa capacità predittiva sulla classe minoritaria.
+
+Un input bilanciato può aiutare il classificatore perché rende più visibili i pattern della classe minoritaria, mettendo il modello in condizione di riconoscere meglio i positivi.
+
+\section{Effetto dello sbilanciamento sui classificatori}
+
+In presenza di class imbalance, un classificatore può ottenere una \textbf{accuracy} apparentemente alta predicendo quasi sempre la classe maggioritaria. Tuttavia, questo comportamento può essere inutile rispetto all'obiettivo reale del problema.
+
+\begin{notaprof}
+Se lo scopo è trovare frodi o diagnosticare una malattia, un modello che predice sempre ``sano'' o ``non frode'' può ottenere un'accuracy elevata quando i positivi sono pochi, ma fallisce proprio nel compito più importante: identificare i casi rari.
+\end{notaprof}
+
+Nel contesto della \textbf{defect prediction}, la classe minoritaria è spesso quella delle classi \emph{buggy}. Il problema non è riconoscere le molte classi sane, ma individuare le poche classi realmente difettose.
+
+Se il training set contiene pochi difetti, il modello tenderà a predire pochi difetti anche nel testing set, riducendo soprattutto la capacità di trovare veri positivi.
+
+\section{Undersampling}
+
+L'\textbf{undersampling} è una tecnica di bilanciamento che riduce il numero di istanze della classe maggioritaria, preservando tutte le istanze della classe minoritaria.
+
+L'idea è estrarre un sottoinsieme più piccolo della maggioranza, in modo che la distribuzione tra le classi diventi più equilibrata.
+
+\begin{notaslide}
+Nel diagramma delle slide, un'icona a forma di forbice taglia le righe in eccesso dal blocco della \emph{majority class}, riducendolo fino a renderlo confrontabile con il blocco della \emph{minority class}.
+\end{notaslide}
+
+Il vantaggio principale dell'undersampling è la semplicità: il dataset diventa più bilanciato e spesso anche più piccolo, riducendo il costo computazionale dell'addestramento.
+
+Lo svantaggio principale è la \textbf{perdita di informazione}. Eliminando istanze della classe maggioritaria, si possono rimuovere esempi utili per descrivere correttamente il problema.
+
+\begin{notaprof}
+L'undersampling può peggiorare le prestazioni del classificatore perché fornisce meno dati al modello. Bilanciare il dataset eliminando esempi significa anche rinunciare a una parte della conoscenza disponibile.
+\end{notaprof}
+
+\section{Oversampling}
+
+L'\textbf{oversampling} è una tecnica di bilanciamento che aumenta il numero di istanze della classe minoritaria.
+
+Nella sua forma più semplice, l'oversampling duplica le istanze minoritarie già presenti, fino a rendere la classe minoritaria numericamente confrontabile con la classe maggioritaria.
+
+\begin{notaslide}
+Nel diagramma delle slide, una lente di ingrandimento ispeziona il piccolo blocco della \emph{minority class} e lo espande, creando copie fino a raggiungere una dimensione simile a quella della \emph{majority class}.
+\end{notaslide}
+
+Il vantaggio principale dell'oversampling è che non elimina dati storici: tutte le istanze originali vengono mantenute.
+
+Lo svantaggio è il rischio di \textbf{overfitting}. Il classificatore può attribuire troppa importanza a istanze duplicate, scambiando ripetizioni artificiali per informazione reale.
+
+\begin{notaprof}
+Duplicare dati non significa aggiungere nuova conoscenza. Se un evento raro viene copiato molte volte, il modello può credere che quel pattern sia più rappresentativo di quanto non sia realmente.
+\end{notaprof}
+
+\section{SMOTE}
+
+\textbf{SMOTE} significa \textbf{Synthetic Minority Oversampling Technique}. A differenza dell'oversampling semplice, SMOTE non si limita a duplicare istanze esistenti, ma genera nuove istanze sintetiche della classe minoritaria.
+
+La generazione avviene usando le similarità nello \textbf{spazio delle feature} tra istanze minoritarie già presenti. In pratica, SMOTE crea nuovi punti intermedi tra esempi minoritari simili.
+
+\begin{notaslide}
+Nel diagramma delle slide, i \emph{majority samples} sono rappresentati come quadrati tratteggiati, i \emph{minority samples} come pallini neri e i \emph{synthetic samples} come pallini rossi. SMOTE genera esempi sintetici posizionandoli lungo segmenti che collegano istanze minoritarie simili.
+\end{notaslide}
+
+Il vantaggio di SMOTE è che introduce maggiore variabilità rispetto alla semplice duplicazione. Tuttavia, esiste il rischio che le istanze sintetiche non siano realistiche.
+
+\begin{notaprof}
+Il professore sconsiglia l'uso disinvolto di SMOTE. Creare istanze sintetiche significa affidarsi a un algoritmo esterno per inventare nuovi esempi, inserendo dati artificiali nel training set di un altro predittore. Questo può ridurre il realismo dell'esperimento.
+\end{notaprof}
+
+\section{Confronto tra undersampling, oversampling e SMOTE}
+
+Le tre tecniche modificano il dataset in modi diversi:
+
+\begin{itemize}
+    \item \textbf{undersampling}: riduce la classe maggioritaria;
+    \item \textbf{oversampling}: duplica la classe minoritaria;
+    \item \textbf{SMOTE}: genera nuove istanze sintetiche della classe minoritaria.
+\end{itemize}
+
+L'undersampling può essere utile quando il dataset è molto grande e si vuole ridurre il costo computazionale. L'oversampling può essere utile quando non si vuole perdere informazione storica. SMOTE prova a superare la duplicazione semplice, ma introduce dati artificiali.
+
+I principali rischi sono:
+
+\begin{itemize}
+    \item \textbf{perdita di informazione}, tipica dell'undersampling;
+    \item \textbf{overfitting}, tipico dell'oversampling semplice;
+    \item \textbf{istanze sintetiche non realistiche}, tipiche di SMOTE.
+\end{itemize}
+
+\section{Lab}
+
+Il laboratorio richiede di confrontare l'accuratezza dei modelli di machine learning con e senza applicazione dell'oversampling.
+
+Il workflow richiesto è:
+
+\begin{enumerate}
+    \item prendere un dataset;
+    \item usare tre classificatori:
+    \begin{itemize}
+        \item \textbf{RandomForest};
+        \item \textbf{NaiveBayes};
+        \item \textbf{IBk};
+    \end{itemize}
+    \item applicare una validazione tramite \textbf{66/33 ordered split};
+    \item confrontare i risultati con e senza oversampling.
+\end{enumerate}
+
+\begin{notaprof}
+In un progetto software reale, lo split casuale può essere poco realistico. Se si vuole predire una release futura, il modello deve essere addestrato sulle release precedenti. Mischiare release passate e future può introdurre conoscenza futura nel training, falsando l'esperimento.
+\end{notaprof}
+
+\section{Weka API}
+
+\subsection{Undersampling}
+
+\begin{notaslide}
+In Weka, l'undersampling può essere eseguito con il filtro:
+\[
+\texttt{weka.filters.supervised.instance.SpreadSubsample -M 1.0}
+\]
+\end{notaslide}
+
+\subsection{Oversampling}
+
+\begin{notaslide}
+In Weka, l'oversampling può essere eseguito con il filtro:
+\[
+\texttt{weka.filters.supervised.instance.Resample}
+\]
+\end{notaslide}
+
+Per l'oversampling, le slide indicano i seguenti parametri:
+
+\begin{itemize}
+    \item \texttt{noReplacement=false}, per permettere la duplicazione;
+    \item \texttt{biasToUniformClass=1.0};
+    \item \texttt{sampleSizePercent=Y}.
+\end{itemize}
+
+Il parametro \(Y\) si calcola come:
+
+\[
+Y = 100 \cdot \frac{majority - minority}{minority}
+\]
+
+\begin{notaslide}
+Per il dataset diabetes, le slide riportano l'esempio:
+\[
+\texttt{weka.filters.supervised.instance.Resample -B 1.0 -Z 130.3}
+\]
+\end{notaslide}
+
+\subsection{SMOTE}
+
+\begin{notaslide}
+In Weka, SMOTE può richiedere l'installazione di un package aggiuntivo tramite il gestore dei pacchetti di Weka.
+\end{notaslide}
+
+\section{Collegamento con il progetto}
+
+Il balancing è rilevante nei dataset di defect prediction perché le classi \emph{buggy} sono spesso una minoranza rispetto alle classi \emph{non buggy}.
+
+Senza balancing, un classificatore può imparare a predire quasi sempre \texttt{no}, ottenendo una buona accuracy apparente ma fallendo nel riconoscimento delle classi difettose.
+
+Valutare solo l'accuracy è quindi fuorviante. In un dataset con il 95\% di classi sane, un classificatore che predice sempre \texttt{no} ottiene il 95\% di accuracy, ma non individua alcun difetto.
+
+\begin{notaprof}
+Dopo il balancing ci si può aspettare un aumento della \textbf{Recall}, perché il modello riconosce più positivi reali. Tuttavia, può diminuire la \textbf{Precision}, perché aumentando le predizioni positive possono aumentare anche i falsi allarmi.
+\end{notaprof}
+
+Per valutare correttamente i modelli, oltre all'accuracy, è opportuno osservare metriche come:
+
+\begin{itemize}
+    \item \textbf{Precision};
+    \item \textbf{Recall};
+    \item \textbf{F1};
+    \item \textbf{AUC};
+    \item \textbf{Kappa di Cohen}.
+\end{itemize}
+
+\section{Da ricordare}
+
+\begin{notaesame}
+Il class imbalance è centrale nella defect prediction perché le classi buggy sono spesso rare. Un modello non bilanciato può sembrare accurato, ma ignorare proprio i difetti.
+\end{notaesame}
+
+\begin{notaesame}
+L'undersampling riduce la classe maggioritaria ma può perdere informazione. L'oversampling mantiene i dati ma può causare overfitting. SMOTE crea dati sintetici, ma questi possono non essere realistici.
+\end{notaesame}
+
+\begin{notaesame}
+Tutte le attività di bilanciamento devono essere applicate esclusivamente al \textbf{training set}. Non si deve mai bilanciare il testing set. Bilanciare l'intero dataset prima dello split significa falsare la valutazione, perché il classificatore può essere testato su istanze duplicate o artificiali collegate a quelle viste in addestramento.
+\end{notaesame}
+
+\begin{notaesame}
+In presenza di class imbalance, l'accuracy da sola non basta. È necessario osservare metriche come Recall, Precision, F1, AUC e Kappa.
+\end{notaesame}
