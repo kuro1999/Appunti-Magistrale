@@ -1,0 +1,664 @@
+\chapter{Approcci alla generazione dei test}
+
+\section{Domande fondamentali del testing}
+
+La generazione dei test parte da tre domande fondamentali:
+
+\begin{itemize}
+    \item quali e quanti input selezionare;
+    \item quando è possibile smettere di testare;
+    \item come stabilire se il risultato ottenuto è corretto.
+\end{itemize}
+
+Il dominio degli input è solitamente troppo vasto, o addirittura concettualmente infinito, per poter essere esplorato in modo esaustivo. Il problema centrale diventa quindi scegliere un sottoinsieme di valori \textbf{rappresentativi}, capaci di esporre il sistema a condizioni significative e potenzialmente critiche.
+
+Per stabilire quando interrompere l'attività di testing è necessario definire criteri di copertura e soglie minime di accettazione. Tra i criteri possibili rientrano:
+
+\begin{itemize}
+    \item copertura degli statement;
+    \item copertura degli archi;
+    \item copertura delle condizioni;
+    \item copertura dei flussi;
+    \item copertura delle funzionalità.
+\end{itemize}
+
+Un ulteriore problema fondamentale è l'\textbf{oracle problem}: per sapere se un test è passato o fallito, bisogna conoscere l'output atteso. Tale output può essere dedotto da specifiche, dati storici, sistemi equivalenti già in esecuzione o proprietà che devono valere.
+
+\begin{notaprof}
+Un caso di test non è soltanto un insieme di input. Un test completo deve specificare almeno \textbf{input}, \textbf{contesto} e \textbf{output atteso}. Se manca l'output atteso, non si sta progettando realmente un test, ma solo scegliendo dati da fornire al sistema.
+\end{notaprof}
+
+\begin{notaesame}
+È legittimo progettare casi di test in cui l'output atteso è una failure controllata, un errore o il lancio di un'eccezione. In questi casi il test passa se il sistema fallisce nel modo previsto.
+\end{notaesame}
+
+\section{Approcci alla generazione dei test}
+
+Le slide presentano diversi approcci per selezionare o generare casi di test:
+
+\begin{itemize}
+    \item uso di dati da esecuzioni storiche;
+    \item selezione randomica degli input;
+    \item generazione automatica guidata da misure di adequacy;
+    \item partizionamento del dominio in classi di equivalenza;
+    \item uso di Large Language Models.
+\end{itemize}
+
+Ogni approccio ha vantaggi, limiti e contesti d'uso differenti.
+
+\subsection{Uso di dati storici}
+
+L'uso di dati storici consiste nel costruire test a partire da esecuzioni reali o passate del sistema.
+
+I principali vantaggi sono:
+
+\begin{itemize}
+    \item si testano modalità di utilizzo effettivamente sperimentate;
+    \item il metodo è utile per attività di validazione;
+    \item permette di focalizzarsi sulle parti del sistema maggiormente sollecitate dagli utenti;
+    \item può dare indicazioni sulla reliability effettiva del sistema in esercizio.
+\end{itemize}
+
+Gli svantaggi principali sono:
+
+\begin{itemize}
+    \item non risolve direttamente il problema della selezione o prioritizzazione dei test;
+    \item può produrre un numero molto alto di casi;
+    \item non è applicabile a nuove funzionalità o aspetti del sistema non ancora utilizzati.
+\end{itemize}
+
+\subsection{Random testing}
+
+Il \textbf{random testing} consiste nel selezionare valori di input, o casi di test, in modo casuale.
+
+I vantaggi principali sono:
+
+\begin{itemize}
+    \item semplicità apparente di realizzazione;
+    \item capacità di far emergere malfunzionamenti grossolani;
+    \item utilità nelle fasi iniziali del testing.
+\end{itemize}
+
+Gli svantaggi principali sono:
+
+\begin{itemize}
+    \item è una ricerca cieca;
+    \item richiede un numero elevato di test per fornire livelli di confidenza significativi;
+    \item realizzare un processo realmente randomico può essere più complesso del previsto;
+    \item bisogna prestare attenzione a eventuali bias nascosti nella generazione casuale.
+\end{itemize}
+
+\begin{notaprof}
+Il random testing può essere utile per scoprire bug grossolani, ma non sostituisce una strategia ragionata di selezione degli input. La casualità può sembrare neutrale, ma spesso contiene bias dovuti al modo in cui viene implementata.
+\end{notaprof}
+
+\subsection{Generazione guidata da adequacy}
+
+Le misure di \textbf{adequacy} stimano la bontà di un insieme di test. La generazione automatica può quindi essere guidata da obiettivi di copertura o da altre metriche di adeguatezza.
+
+I vantaggi principali sono:
+
+\begin{itemize}
+    \item alto livello di automatizzabilità;
+    \item facile integrazione con processi di sviluppo e Continuous Integration;
+    \item possibilità di generare test in modo sistematico rispetto a un obiettivo misurabile.
+\end{itemize}
+
+Gli svantaggi principali sono:
+
+\begin{itemize}
+    \item se la generazione è guidata solo dal SUT, possono risultare molti test poco significativi rispetto alle condizioni reali di utilizzo;
+    \item se la generazione è guidata da modelli del SUT, gli strumenti possono essere meno versatili nell'integrazione con i processi di sviluppo;
+    \item sono presenti complessità legate a iper-parametri ed euristiche di generazione.
+\end{itemize}
+
+\subsection{Classi di equivalenza}
+
+La generazione tramite \textbf{classi di equivalenza} consiste nel partizionare il dominio degli input, dei parametri e dello stato del SUT in gruppi che dovrebbero produrre comportamenti equivalenti.
+
+L'idea è selezionare almeno un test rappresentativo per ogni partizione.
+
+I vantaggi principali sono:
+
+\begin{itemize}
+    \item l'approccio è indipendente dall'implementazione;
+    \item si basa su requisiti, specifiche e conoscenza del dominio;
+    \item permette di identificare aspetti salienti del comportamento atteso.
+\end{itemize}
+
+Gli svantaggi principali sono:
+
+\begin{itemize}
+    \item la qualità dei test dipende dalla chiarezza di requisiti e specifiche;
+    \item vengono considerati solo vincoli e limitazioni noti o esplicitamente deducibili;
+    \item richiede familiarità con il SUT;
+    \item richiede conoscenza dei contesti operativi e di deployment.
+\end{itemize}
+
+\subsection{Uso di Large Language Models}
+
+Gli LLM possono essere interrogati in linguaggio naturale per generare casi di test o programmi di test.
+
+I vantaggi principali sono:
+
+\begin{itemize}
+    \item semplicità apparente di interazione;
+    \item elevata capacità di ragionamento in tempi ridotti;
+    \item possibilità di elaborare codice e linguaggio naturale nello stesso contesto.
+\end{itemize}
+
+Gli svantaggi principali sono:
+
+\begin{itemize}
+    \item forte dipendenza dalla formulazione del prompt;
+    \item rischio di eccessiva fiducia nelle risposte;
+    \item possibili bias o allucinazioni;
+    \item ragionamento black-box e probabilistico;
+    \item risultati non deterministici.
+\end{itemize}
+
+\begin{notaesame}
+Gli LLM possono essere utili per supportare la generazione dei test, ma non devono essere trattati come oracoli affidabili. I test generati vanno sempre validati, riparati e giustificati.
+\end{notaesame}
+
+\section{Randoop}
+
+\textbf{Randoop} è un generatore automatico di unit test per programmi Java. Produce automaticamente programmi JUnit che implementano casi di test.
+
+L'approccio seguito è detto \textbf{feedback-directed random test generation}. Randoop genera sequenze casuali di invocazioni di metodi e usa il feedback ottenuto dall'esecuzione per decidere se mantenere, scartare o minimizzare tali sequenze.
+
+\subsection{Test utili, ridondanti e illegali}
+
+\begin{notaslide}
+Le slide distinguono tra test utili, test ridondanti e test illegali.
+\end{notaslide}
+
+Un \textbf{test utile} è una sequenza valida che può essere mantenuta come caso di test.
+
+Un \textbf{test ridondante} è una sequenza che non aggiunge informazione significativa rispetto a sequenze più semplici. Randoop tende a scartare questi casi.
+
+Un \textbf{test illegale} è una sequenza che viola i contratti o produce situazioni non ammissibili. Tali test non devono essere generati o devono essere scartati.
+
+\subsection{Singola iterazione di Randoop}
+
+La singola iterazione di Randoop può essere sintetizzata così:
+
+\[
+\text{sequenza randomica}
+\rightarrow
+\text{esecuzione e check dei contratti}
+\rightarrow
+\text{valutazione}
+\]
+
+Se viene violato un contratto, Randoop minimizza la sequenza e produce un test case che evidenzia la violazione. Se la sequenza è ridondante, viene scartata. Se invece è valida e non ridondante, viene accettata come test.
+
+\begin{notaslide}
+Le slide mostrano il flusso: sequenza randomica di invocazioni, esecuzione e controllo dei contratti, eventuale minimizzazione della sequenza, scarto delle sequenze ridondanti e accettazione delle sequenze utili.
+\end{notaslide}
+
+\subsection{Contratti di default}
+
+Randoop usa contratti di default per valutare il comportamento delle sequenze generate. Per esempio, può considerare anomalo il lancio di alcune eccezioni o la violazione di proprietà base degli oggetti.
+
+\begin{notaslide}
+Tra i contratti riportati nelle slide compaiono controlli su eccezioni inattese e su metodi standard come \texttt{equals}, \texttt{hashCode} e \texttt{toString}.
+\end{notaslide}
+
+\subsection{Indicazioni operative}
+
+\begin{notaprof}
+Randoop può essere usato offline, senza integrarlo direttamente nel processo di build Maven. È possibile generare localmente molti test, selezionare solo quelli realmente utili e includere nel repository soltanto i test ritenuti significativi per la sperimentazione.
+\end{notaprof}
+
+\begin{notaesame}
+Non bisogna includere automaticamente tutti i test generati. I test prodotti da Randoop vanno analizzati, selezionati e giustificati.
+\end{notaesame}
+
+\section{Classi di equivalenza}
+
+Il partizionamento in classi di equivalenza consiste nel dividere il dominio di input in sottoinsiemi. Per ogni elemento di una partizione, il SUT dovrebbe evidenziare lo stesso comportamento, oppure dalle specifiche si può assumere che sia così.
+
+La regola generale è includere nella test suite almeno un elemento per ogni partizione identificata.
+
+La qualità della test suite dipende da:
+
+\begin{itemize}
+    \item chiarezza di requisiti e specifiche;
+    \item vincoli o limitazioni esplicitamente espressi;
+    \item familiarità con il SUT;
+    \item conoscenza dei contesti operativi e di deployment;
+    \item conoscenza dell'implementazione, quando disponibile.
+\end{itemize}
+
+\begin{notaprof}
+Un parametro del test non coincide necessariamente con un parametro formale del metodo Java. Può includere anche lo stato interno della classe, la configurazione dell'ambiente, il contenuto della persistenza o lo stato di altre istanze collegate al SUT.
+\end{notaprof}
+
+\subsection{Linee guida generali}
+
+Le slide forniscono alcune linee guida per costruire classi di equivalenza.
+
+\subsubsection{Range}
+
+Per valori numerici o intervalli, bisogna considerare:
+
+\begin{itemize}
+    \item un valore nel range valido;
+    \item un valore sotto il range;
+    \item un valore sopra il range.
+\end{itemize}
+
+\subsubsection{Stringhe}
+
+Per le stringhe bisogna considerare almeno:
+
+\begin{itemize}
+    \item stringhe valide;
+    \item stringhe non valide;
+    \item stringa vuota \texttt{""};
+    \item valore \texttt{null}.
+\end{itemize}
+
+\subsubsection{Enumerazioni}
+
+Per le enumerazioni, ogni valore può essere assegnato a una classe di equivalenza differente.
+
+\subsubsection{Array}
+
+Per gli array bisogna considerare almeno:
+
+\begin{itemize}
+    \item array legali;
+    \item array vuoti;
+    \item array che superano la lunghezza massima consentita.
+\end{itemize}
+
+\subsubsection{Tipi complessi}
+
+Per i tipi di dato complessi, le regole vanno applicate iterativamente ai campi interni della struttura. È importante considerare anche il valore \texttt{null}.
+
+\begin{notaesame}
+Le linee guida basate sul tipo sintattico sono utili, ma non sufficienti. Bisogna considerare anche la semantica del parametro. Una \texttt{String} che rappresenta una password non va trattata solo come stringa generica, ma come elemento del dominio applicativo.
+\end{notaesame}
+
+\subsection{Semantica del parametro}
+
+Se un parametro è sintatticamente una stringa ma semanticamente rappresenta una password, le classi di equivalenza possono includere:
+
+\begin{itemize}
+    \item password vuota;
+    \item password \texttt{null};
+    \item password valida nel dominio;
+    \item password corretta;
+    \item password errata;
+    \item password non valida nel dominio.
+\end{itemize}
+
+\begin{notaprof}
+La semantica del parametro può essere più importante del suo tipo sintattico. Limitarsi al tipo Java rischia di produrre partizioni troppo povere.
+\end{notaprof}
+
+\subsection{Validità del valore e correttezza nel SUT}
+
+È importante non confondere la \textbf{validità} di un valore con la \textbf{correttezza} rispetto alla configurazione del SUT.
+
+Per esempio, una email può essere sintatticamente valida, ma non corrispondere ad alcun utente registrato nella configurazione del sistema.
+
+\begin{notaesame}
+Un valore valido non è necessariamente corretto per uno specifico stato del SUT. La progettazione dei test deve considerare anche il contesto e lo stato del sistema.
+\end{notaesame}
+
+\section{Criteri per identificare i test}
+
+Le slide distinguono due criteri principali per combinare le classi di equivalenza:
+
+\begin{itemize}
+    \item approccio unidimensionale;
+    \item approccio multidimensionale.
+\end{itemize}
+
+\subsection{Approccio unidimensionale}
+
+Nell'approccio unidimensionale, ogni parametro di input è considerato indipendentemente dagli altri. I test sono scelti o sintetizzati in modo che tutte le classi di equivalenza considerate siano coperte almeno una volta.
+
+Questo approccio riduce il numero di test, ma può perdere combinazioni significative tra parametri.
+
+\subsection{Approccio multidimensionale}
+
+Nell'approccio multidimensionale, si considera il prodotto cartesiano delle classi di equivalenza dei vari parametri. I test coprono quindi la matrice di combinazione delle classi.
+
+Questo approccio è più completo, ma può generare un numero molto alto di test.
+
+\begin{notaesame}
+L'approccio unidimensionale è più economico, ma meno potente nel far emergere failure legate all'interazione tra parametri. L'approccio multidimensionale è più sistematico, ma può esplodere combinatoriamente.
+\end{notaesame}
+
+\subsection{Procedura sistematica}
+
+La procedura sistematica per il partizionamento prevede quattro passi:
+
+\begin{enumerate}
+    \item identificare i domini di input;
+    \item identificare le classi di equivalenza per ogni parametro del test;
+    \item combinare le classi di equivalenza;
+    \item eliminare le combinazioni non ammissibili.
+\end{enumerate}
+
+I domini possono essere identificati a partire da:
+
+\begin{itemize}
+    \item key abstraction;
+    \item feature;
+    \item needs;
+    \item requisiti;
+    \item tipi di dato legati a scelte implementative;
+    \item condizioni imposte in modo esplicito o implicito.
+\end{itemize}
+
+\section{Boundary-value analysis}
+
+La \textbf{boundary-value analysis} si basa sull'osservazione empirica che molti bug di programmazione si manifestano ai confini delle classi di equivalenza.
+
+Errori tipici come usare \texttt{<} al posto di \texttt{<=}, oppure gestire male un valore minimo o massimo, emergono spesso in prossimità dei bordi del dominio.
+
+La procedura consiste in:
+
+\begin{enumerate}
+    \item partizionare il dominio di riferimento per ogni parametro;
+    \item identificare i confini di ogni partizione;
+    \item selezionare valori in modo che ogni confine compaia in almeno un test.
+\end{enumerate}
+
+Nel caso multidimensionale, ogni confine può essere combinato con tutte le possibili combinazioni degli altri parametri. Nel caso unidimensionale, ogni confine deve apparire almeno in una tupla di input.
+
+\begin{notaesame}
+La boundary-value analysis è uno strumento centrale nella progettazione dei test, perché molti difetti si trovano nei valori limite tra classi di equivalenza.
+\end{notaesame}
+
+\begin{notaesame}
+Una selezione unidimensionale dei boundary values può ridurre molto il numero di test, ma può anche limitare la capacità di esporre failure. Alcune combinazioni escluse potrebbero essere significative.
+\end{notaesame}
+
+\section{Esempio: \texttt{LedgerHandle.asyncReadEntriesInternal}}
+
+Le slide considerano il metodo:
+
+\begin{verbatim}
+void asyncReadEntriesInternal(
+    long firstEntry,
+    long lastEntry,
+    ReadCallback cb,
+    Object ctx,
+    boolean isRecoveryRead
+)
+\end{verbatim}
+
+dalla classe \texttt{LedgerHandle} di Apache BookKeeper.
+
+\subsection{Classi di equivalenza iniziali}
+
+Una prima identificazione delle classi di equivalenza può essere:
+
+\begin{itemize}
+    \item \texttt{isRecoveryRead}: \{\texttt{false}\}, \{\texttt{true}\};
+    \item \texttt{cb}: \{\texttt{null}\}, \{\texttt{valid\_instance}\}, \{\texttt{invalid\_instance}\};
+    \item \texttt{ctx}: \{\texttt{null}\}, \{\texttt{valid\_instance}\}, \{\texttt{invalid\_instance}\};
+    \item \texttt{firstEntry}: \{\(\leq 0\)\}, \{\(> 0\)\};
+    \item \texttt{lastEntry}: \{\(\leq 0\)\}, \{\(> 0\)\};
+    \item \texttt{LedgerHandle}: \{vuoto\}, \{ha sufficienti entry\}, \{non ha sufficienti entry\}.
+\end{itemize}
+
+\subsection{Miglioramento semantico}
+
+Una classificazione solo positiva/negativa per \texttt{firstEntry} e \texttt{lastEntry} è troppo debole. Questi parametri rappresentano indici e devono essere considerati anche in relazione tra loro.
+
+Una classificazione migliore per \texttt{lastEntry} è:
+
+\begin{itemize}
+    \item \texttt{lastEntry < firstEntry};
+    \item \texttt{lastEntry = firstEntry};
+    \item \texttt{lastEntry > firstEntry}.
+\end{itemize}
+
+\begin{notaprof}
+Il miglioramento deriva dall'analisi semantica del parametro. Non basta sapere che \texttt{lastEntry} è un numero; bisogna capire che rappresenta un indice correlato a \texttt{firstEntry}.
+\end{notaprof}
+
+\subsection{Ruolo dello stato del SUT}
+
+Nel caso di \texttt{LedgerHandle}, anche lo stato del ledger è rilevante. Non basta considerare i parametri formali del metodo. Bisogna tenere conto, per esempio, del fatto che il ledger sia vuoto, abbia entry sufficienti o non abbia entry sufficienti.
+
+\begin{notaesame}
+Il SUT stesso può costituire parte del dominio di input. Lo stato interno dell'oggetto prima dell'invocazione è parte del contesto del test.
+\end{notaesame}
+
+\subsection{Attenzione agli \texttt{invalid\_instance}}
+
+Le slide avvertono di non escludere casi \texttt{invalid\_instance} per tipi complessi con giustificazioni deboli, come:
+
+\begin{quote}
+``Il costruttore della classe torna solo istanze corrette.''
+\end{quote}
+
+Questa giustificazione non è sufficiente perché:
+
+\begin{itemize}
+    \item il costruttore potrebbe cambiare in futuro introducendo bug;
+    \item soluzioni polimorfe potrebbero legare istanze di sottoclassi con implementazioni diverse;
+    \item un mock potrebbe simulare comportamenti non previsti dall'implementazione standard.
+\end{itemize}
+
+\begin{notaesame}
+Non bisogna escludere input complessi non validi senza una motivazione solida. Le assunzioni sull'implementazione attuale possono diventare false in presenza di modifiche o polimorfismo.
+\end{notaesame}
+
+\subsection{Boundary values per \texttt{firstEntry} e \texttt{lastEntry}}
+
+Limitandosi a \texttt{firstEntry} e \texttt{lastEntry}, le slide indicano boundary values come:
+
+\begin{itemize}
+    \item \texttt{firstEntry}: \(-1\), \(0\), \(1\);
+    \item \texttt{lastEntry}: \texttt{firstEntry - 1}, \texttt{firstEntry}, \texttt{firstEntry + 1}.
+\end{itemize}
+
+Una selezione minimale unidimensionale potrebbe includere:
+
+\begin{itemize}
+    \item \texttt{firstEntry = -1}, \texttt{lastEntry = -2};
+    \item \texttt{firstEntry = 0}, \texttt{lastEntry = 0};
+    \item \texttt{firstEntry = 1}, \texttt{lastEntry = 2}.
+\end{itemize}
+
+Tuttavia, una selezione più ricca può considerare combinazioni come:
+
+\begin{itemize}
+    \item \texttt{firstEntry = 1}, \texttt{lastEntry = 0};
+    \item \texttt{firstEntry = 1}, \texttt{lastEntry = -1};
+    \item \texttt{firstEntry = -1}, \texttt{lastEntry = 0};
+    \item \texttt{firstEntry = 0}, \texttt{lastEntry = -1}.
+\end{itemize}
+
+\begin{notaesame}
+Una selezione troppo minimale può perdere failure. Non bisogna escludere a priori combinazioni potenzialmente significative solo perché si vuole ridurre il numero di test.
+\end{notaesame}
+
+\section{LLM per la generazione dei test}
+
+I \textbf{Large Language Models} sono grandi reti neurali addestrate su grandissime moli di dati. Uno dei loro punti di forza è l'interazione tramite linguaggio naturale.
+
+Nel contesto della Software Engineering, gli LLM possono supportare la generazione automatica di artefatti software, tra cui programmi di test.
+
+\subsection{Vantaggi}
+
+I principali vantaggi sono:
+
+\begin{itemize}
+    \item rapidità nella generazione;
+    \item apparente semplicità di interazione;
+    \item capacità di elaborare codice e linguaggio naturale;
+    \item possibilità di generare bozze di test program.
+\end{itemize}
+
+\subsection{Limiti}
+
+I principali limiti sono:
+
+\begin{itemize}
+    \item forte dipendenza dal prompt;
+    \item output probabilistici e non deterministici;
+    \item rischio di allucinazioni;
+    \item possibili bias;
+    \item rischio di eccessiva fiducia nelle risposte;
+    \item difficoltà a controllare il ragionamento interno del modello.
+\end{itemize}
+
+\begin{notaesame}
+Gli LLM non sostituiscono la progettazione dei test. Possono generare candidati, ma l'ingegnere deve controllare compilabilità, significatività, oracle e coerenza con le specifiche.
+\end{notaesame}
+
+\section{Prompting per test generation}
+
+Una richiesta a un LLM viene formulata tramite un \textbf{prompt}. È possibile strutturare il prompt specificando:
+
+\begin{itemize}
+    \item ruolo del modello;
+    \item contesto;
+    \item codice del PUT, cioè Program Under Test;
+    \item formato della risposta attesa;
+    \item vincoli sul numero o tipo di test;
+    \item livello di dettaglio desiderato.
+\end{itemize}
+
+\subsection{Pure-prompting schema}
+
+\begin{notaslide}
+Il pure-prompting schema include: PUT, processed PUT, context, prompt, raw generated tests, validator e selected/repaired tests.
+\end{notaslide}
+
+Il flusso può essere descritto così:
+
+\begin{enumerate}
+    \item il PUT e il contesto vengono preparati;
+    \item viene costruito un prompt;
+    \item il prompt viene inviato all'LLM;
+    \item l'LLM produce test grezzi;
+    \item un validator controlla i test;
+    \item i test vengono selezionati, riparati o scartati.
+\end{enumerate}
+
+\subsection{Zero-shot prompting}
+
+Nel \textbf{zero-shot prompting}, il modello riceve direttamente la richiesta di generare test senza esempi espliciti.
+
+Un esempio di struttura è chiedere al modello di agire come un tester professionale e generare un file JUnit per una classe specifica.
+
+\begin{notaslide}
+Le slide mostrano un prompt zero-shot in cui si chiede di generare un file JUnit 4 per testare tutti i metodi di una classe, fornendo il codice sorgente e delimitando l'output con marker di inizio e fine.
+\end{notaslide}
+
+\subsection{Few-shot prompting}
+
+Nel \textbf{few-shot prompting}, il prompt contiene esempi di test o di risposte attese. Gli esempi servono a guidare lo stile, il formato e il livello di dettaglio dell'output.
+
+\begin{notaprof}
+Il few-shot prompting può aiutare l'LLM a produrre test più simili a quelli desiderati, perché mostra direttamente il tipo di risposta attesa.
+\end{notaprof}
+
+\subsection{Chain-of-Thought}
+
+Nel contesto delle slide, il prompting con \textbf{Chain-of-Thought} aggiunge indicazioni operative passo-passo per guidare il modello nel processo di generazione.
+
+Per esempio, si può chiedere di:
+
+\begin{enumerate}
+    \item identificare i metodi pubblici;
+    \item individuare edge cases;
+    \item proporre scenari di test;
+    \item generare i test JUnit.
+\end{enumerate}
+
+\subsection{Guided Tree-of-Thoughts}
+
+Nel \textbf{Guided Tree-of-Thoughts prompting}, il prompt guida il modello a esplorare più direzioni o prospettive. Le slide mostrano un esempio in cui diversi esperti propongono test, discutono, scartano idee errate e convergono su una test suite.
+
+\begin{notaslide}
+Le slide precisano che Guided ToT può includere esempi, come nel few-shot prompting, anche se nell'esempio mostrato non sono riportati.
+\end{notaslide}
+
+\subsection{RAG}
+
+La \textbf{Retrieval-Augmented Generation} consiste nel fornire al modello informazioni mirate di contesto, recuperate da fonti esterne o documentazione indicizzata.
+
+\begin{notaprof}
+Gli LLM possono essere addestrati su dati generici o non aggiornati. Il RAG consente di fornire documentazione specifica del progetto, API aggiornate o dettagli di dominio necessari a generare test più contestualizzati.
+\end{notaprof}
+
+\section{Collegamento con progetto ed esame}
+
+Nel corso sono richiesti pochi test rispetto ai numeri industriali, ma le scelte devono essere motivate in modo rigoroso.
+
+\begin{notaslide}
+Le slide riportano esempi industriali e reali: Google esegue quotidianamente centinaia di migliaia di build e milioni di test; Apache BookKeeper ha centinaia di classi di test e migliaia di metodi annotati con \texttt{@Test}.
+\end{notaslide}
+
+\begin{notaesame}
+Non bisogna giustificare un basso numero di test dicendo che si vuole mantenere basso il costo o il numero di test. Le scelte devono essere giustificate con partizioni, boundary analysis, oracle e rimozione logica di casi ridondanti o non ammissibili.
+\end{notaesame}
+
+Nel progetto bisogna:
+
+\begin{itemize}
+    \item identificare partizioni del dominio;
+    \item condurre boundary-value analysis;
+    \item proporre test con output atteso;
+    \item usare eventualmente LLM per generare test;
+    \item variare i prompt;
+    \item discutere la qualità dei test prodotti.
+\end{itemize}
+
+In particolare, può essere richiesto di proporre prompt:
+
+\begin{itemize}
+    \item zero-shot;
+    \item few-shot;
+    \item Chain-of-Thought;
+    \item Tree-of-Thoughts.
+\end{itemize}
+
+Gli errori da evitare sono:
+
+\begin{itemize}
+    \item scrivere test senza oracle;
+    \item usare prompt vaghi;
+    \item fidarsi ciecamente dell'LLM;
+    \item basare le partizioni solo sul tipo sintattico;
+    \item escludere combinazioni solo per ridurre il numero di test;
+    \item non giustificare la selezione dei casi.
+\end{itemize}
+
+\section{Da ricordare}
+
+\begin{notaesame}
+Un test è completo solo se contiene input, contesto e output atteso, cioè un oracle.
+\end{notaesame}
+
+\begin{notaesame}
+La boundary-value analysis è fondamentale perché molti errori di programmazione si manifestano sui valori limite delle classi di equivalenza.
+\end{notaesame}
+
+\begin{notaesame}
+La category partition è un processo semantico, non solo sintattico. Bisogna considerare le regole di business e il significato dei parametri, non soltanto il loro tipo Java.
+\end{notaesame}
+
+\begin{notaesame}
+Randoop genera test automaticamente tramite feedback-directed random testing, ma i test generati devono essere selezionati e giustificati prima di essere inclusi nel progetto.
+\end{notaesame}
+
+\begin{notaesame}
+Gli LLM sono strumenti utili per generare candidati test, ma producono output probabilistici. Prompt, contesto, esempi e validazione sono essenziali per ottenere risultati affidabili.
+\end{notaesame}
+
+\begin{notaesame}
+Non bisogna giustificare pochi test con la riduzione del costo. Bisogna giustificarli tramite partizioni, boundary values, oracle e analisi delle combinazioni ammissibili.
+\end{notaesame}
