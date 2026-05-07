@@ -1,0 +1,279 @@
+\chapter{Test di integrazione, Mockito e Maven}
+
+\section{Test di integrazione}
+
+L'obiettivo dei \textbf{test di integrazione} è far emergere malfunzionamenti derivanti dall'interazione tra due o più moduli o componenti del \textbf{System Under Test} (SUT).
+
+Questi test servono ad acquisire confidenza sul fatto che:
+
+\begin{itemize}
+    \item le interconnessioni tra moduli siano corrette;
+    \item le interazioni rispettino i contratti funzionali;
+    \item i protocolli di comunicazione tra componenti siano rispettati.
+\end{itemize}
+
+\begin{notaprof}
+Un esempio classico è un sensore di temperatura progettato in Europa che invia gradi Celsius a una centralina sviluppata negli Stati Uniti che si aspetta gradi Fahrenheit. I due moduli possono funzionare correttamente se testati da soli, ma fallire quando vengono integrati.
+\end{notaprof}
+
+L'assunzione di base è che ogni modulo, preso in isolamento, sia già stato testato correttamente tramite test di unità.
+
+I test di integrazione possono essere scritti ed eseguiti da sviluppatori, integratori o tester. Possono seguire sia approcci \textbf{white-box}, quando si conosce il codice dei moduli, sia \textbf{black-box}, quando si conoscono solo le interfacce.
+
+\begin{notaprof}
+Nella pratica si ha spesso un approccio ibrido: si conosce il proprio modulo, ma una dipendenza esterna viene trattata come una scatola nera.
+\end{notaprof}
+
+Stub, mock, driver e framework di supporto sono necessari perché spesso alcuni componenti non sono disponibili, sono costosi da usare o non si vogliono coinvolgere direttamente nel test.
+
+\section{Stub, mock e test driver}
+
+Gli \textbf{stub} e i \textbf{mock} sono elementi software definiti per la fase di test. Servono a simulare componenti mancanti, non disponibili o non desiderati nell'esecuzione del test.
+
+Uno stub o mock:
+
+\begin{itemize}
+    \item non è il soggetto del test;
+    \item fa parte dell'ambiente di test;
+    \item può avere comportamento banale, costante o controllato;
+    \item permette di isolare l'interazione che si vuole verificare.
+\end{itemize}
+
+\begin{notaprof}
+Se si vuole testare l'integrazione di un componente con un modulo di crittografia complesso, si può usare uno stub che finge di criptare. In questo modo ci si concentra solo sullo scambio dei messaggi tra componenti.
+\end{notaprof}
+
+Il \textbf{test driver} è invece l'elemento che guida o coordina l'esecuzione del test. Può limitarsi a invocare i moduli da testare, oppure occuparsi anche di configurazione dell'ambiente, gestione delle risorse e clean-up finale.
+
+La differenza pratica è che il driver guida l'esecuzione dall'alto, mentre stub e mock rispondono simulando dipendenze richieste dal sistema.
+
+\section{Strategie di integration testing}
+
+\begin{notaslide}
+Individuare una strategia ottima di integrazione è un problema difficile, classificato come \textbf{NP-complete}.
+\end{notaslide}
+
+Le strategie principali sono:
+
+\begin{itemize}
+    \item \textbf{Big bang}: tutti i componenti vengono integrati in un unico passo e poi testati insieme;
+    \item \textbf{Top-down}: si parte dai moduli più generali o vicini alle interfacce esterne, usando stub per simulare i componenti non ancora integrati;
+    \item \textbf{Bottom-up}: si parte dalle unità più elementari e si usano driver per simulare i moduli chiamanti.
+\end{itemize}
+
+Nel \textbf{big bang}, il vantaggio è la semplicità organizzativa, ma quando qualcosa fallisce è difficile localizzare l'origine del problema.
+
+Nel \textbf{top-down}, si può verificare presto il comportamento generale del sistema, ma servono molti stub per simulare i livelli inferiori.
+
+Nel \textbf{bottom-up}, si testano progressivamente componenti sempre più grandi partendo dalle unità di base, ma servono driver per simulare i moduli superiori.
+
+\begin{notaslide}
+I diagrammi con i componenti C1, C2, C3, C4 e C5 mostrano una gerarchia di chiamate. Nel top-down si parte da C1 usando stub per i moduli sottostanti; nel bottom-up si parte dai componenti più bassi, come C5, usando driver per simulare i chiamanti.
+\end{notaslide}
+
+\section{Integration testing in Object-Oriented}
+
+Nei sistemi object-oriented, gli oggetti collaborano scambiandosi messaggi. Per questo, nei test di integrazione è spesso necessario simulare alcuni collaboratori esterni.
+
+In questo contesto:
+
+\begin{itemize}
+    \item \textbf{JUnit} può fungere da test driver;
+    \item \textbf{Mockito} può essere usato per generare e gestire stub e mock.
+\end{itemize}
+
+Simulare le dipendenze permette di testare una specifica interazione senza dover istanziare l'intera rete di oggetti coinvolti.
+
+\section{Mockito}
+
+\begin{notaslide}
+\textbf{Mockito} è un framework Java per la definizione di stub e mock a supporto del testing. Supporta anche pratiche come TDD e BDD.
+\end{notaslide}
+
+Le primitive principali sono:
+
+\begin{itemize}
+    \item \texttt{mock()}: crea un oggetto finto;
+    \item \texttt{spy()}: crea un wrapper su un oggetto reale, permettendo di osservarne o modificarne parzialmente il comportamento.
+\end{itemize}
+
+Le annotazioni principali sono:
+
+\begin{itemize}
+    \item \texttt{@Mock};
+    \item \texttt{@Spy};
+    \item \texttt{@Captor};
+    \item \texttt{@InjectMocks}.
+\end{itemize}
+
+Per definire valori di ritorno si possono usare:
+
+\begin{verbatim}
+when(istanza.metodo()).thenReturn(valore);
+given(istanza.metodo()).willReturn(valore);
+\end{verbatim}
+
+Per comportamenti più personalizzati si può usare:
+
+\begin{verbatim}
+thenAnswer(...)
+\end{verbatim}
+
+Per verificare che un mock sia stato effettivamente usato si può ricorrere a:
+
+\begin{verbatim}
+verify(istanza).metodo();
+then(istanza).should().metodo();
+\end{verbatim}
+
+Mockito si integra con JUnit tramite:
+
+\begin{itemize}
+    \item \texttt{MockitoJUnitRunner};
+    \item \texttt{MockitoJUnit.rule()}.
+\end{itemize}
+
+\begin{notaslide}
+Gli esempi \texttt{SimpleAgendaTest.java} e \texttt{AgendaTest.java} mostrano l'uso pratico di mock, stub e verifiche delle interazioni.
+\end{notaslide}
+
+\section{Maven nel testing}
+
+\textbf{Maven} è un sistema di build e gestione delle dipendenze sviluppato da Apache. È basato su un'architettura modulare a plug-in.
+
+\begin{notaprof}
+Maven gestisce in modo automatico e transitivo le dipendenze. Scarica da Maven Central non solo le librerie dichiarate direttamente, ma anche le sotto-librerie necessarie, mettendole in cache nella directory locale \texttt{.m2}.
+\end{notaprof}
+
+Il file \texttt{pom.xml} è il descrittore del progetto o modulo. Specifica dipendenze, plug-in e configurazioni di build.
+
+I plug-in si collegano alle fasi del ciclo di build. Le fasi principali sono:
+
+\begin{itemize}
+    \item \texttt{validate};
+    \item \texttt{compile};
+    \item \texttt{test};
+    \item \texttt{package};
+    \item \texttt{integration-test};
+    \item \texttt{verify};
+    \item \texttt{install};
+    \item \texttt{deploy};
+    \item \texttt{clean};
+    \item \texttt{site}.
+\end{itemize}
+
+\begin{notaesame}
+Le fasi Maven sono sequenziali e bloccanti. Un errore in una fase, ad esempio un test fallito nella fase \texttt{test}, può causare il fallimento della build e impedire le fasi successive.
+\end{notaesame}
+
+\section{Maven Surefire e Maven Failsafe}
+
+\subsection{Surefire}
+
+\textbf{Maven Surefire Plugin} è il plug-in usato principalmente per i test di unità. Viene attivato nella fase:
+
+\[
+\texttt{test}
+\]
+
+Cerca test nella directory tipica:
+
+\[
+\texttt{src/test}
+\]
+
+ed esegue metodi pubblici annotati con \texttt{@Test}.
+
+\begin{notaesame}
+Per default, Surefire esegue solo classi che rispettano pattern come:
+\texttt{Test*}, \texttt{*Test}, \texttt{*Tests}, \texttt{*TestCase}.
+\end{notaesame}
+
+I report vengono prodotti in:
+
+\[
+\texttt{target/surefire-reports}
+\]
+
+\subsection{Failsafe}
+
+\textbf{Maven Failsafe Plugin} è pensato per i test di integrazione. Viene attivato nelle fasi:
+
+\[
+\texttt{integration-test}
+\quad \text{e} \quad
+\texttt{verify}
+\]
+
+È utile quando i test richiedono set-up e tear-down più complessi, come avvio di container, servizi, database o deploy temporanei.
+
+I pattern tipici per i test di integrazione sono:
+
+\[
+\texttt{IT*}, \quad \texttt{*IT}, \quad \texttt{*ITCase}
+\]
+
+I report vengono prodotti in:
+
+\[
+\texttt{target/failsafe-reports}
+\]
+
+\begin{notaslide}
+Failsafe permette di gestire scenari più complessi rispetto ai test di unità, includendo set-up dell'ambiente, deploy, esecuzione dei test, clean-up e teardown.
+\end{notaslide}
+
+\section{Surefire vs Failsafe}
+
+La differenza principale è legata al tipo di test e alla fase del ciclo Maven:
+
+\begin{itemize}
+    \item \textbf{Surefire}: test di unità, fase \texttt{test}, pattern \texttt{*Test};
+    \item \textbf{Failsafe}: test di integrazione, fasi \texttt{integration-test} e \texttt{verify}, pattern \texttt{*IT}.
+\end{itemize}
+
+Separare unit test e integration test è importante perché i test di integrazione sono spesso più lenti, richiedono ambienti più complessi e possono avere bisogno di configurazioni e pulizie specifiche.
+
+\begin{notaesame}
+Surefire va usato per test rapidi su moduli isolati; Failsafe va usato per test che verificano l'integrazione tra moduli o componenti e che richiedono fasi di set-up e clean-up.
+\end{notaesame}
+
+\section{Collegamento con il progetto}
+
+Nel progetto è necessario collegare correttamente unit test e integration test al processo di build e CI.
+
+Le indicazioni principali sono:
+
+\begin{itemize}
+    \item usare \textbf{JUnit} e \textbf{Surefire} per i test di unità;
+    \item usare \textbf{Failsafe} per i test di integrazione;
+    \item usare \textbf{Mockito} per simulare dipendenze non disponibili o non desiderate;
+    \item integrare l'esecuzione dei test nel processo di Continuous Integration.
+\end{itemize}
+
+\begin{notaesame}
+Un errore frequente è chiamare le classi di test in modo non riconosciuto da Maven. Se una classe non rispetta i pattern previsti, può essere ignorata, dando una falsa impressione di successo.
+\end{notaesame}
+
+Altri errori da evitare sono:
+
+\begin{itemize}
+    \item usare mock per testare lo stub stesso invece dell'interazione reale;
+    \item lanciare integration test come se fossero unit test;
+    \item saltare le fasi di set-up e clean-up;
+    \item non integrare i test nella CI.
+\end{itemize}
+
+\section{Da ricordare}
+
+\begin{notaesame}
+L'integration testing non serve a ritestare la logica interna del singolo modulo, ma a verificare che la comunicazione tra moduli rispetti contratti, interfacce e protocolli.
+\end{notaesame}
+
+\begin{notaesame}
+\textbf{Surefire} è per unit test: fase \texttt{test}, pattern \texttt{*Test}. \textbf{Failsafe} è per integration test: fasi \texttt{integration-test}/\texttt{verify}, pattern \texttt{*IT}.
+\end{notaesame}
+
+\begin{notaesame}
+Mockito permette di creare stub e mock per simulare dipendenze e verificare che le interazioni previste siano effettivamente avvenute.
+\end{notaesame}
