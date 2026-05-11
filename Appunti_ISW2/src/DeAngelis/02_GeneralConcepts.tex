@@ -4,9 +4,6 @@
 
 Nei sistemi software esiste spesso una discrepanza tra ciò che il cliente desidera, ciò che viene progettato, ciò che viene implementato e ciò che è realmente necessario. Questa distanza rende necessario introdurre attività sistematiche di garanzia della qualità.
 
-\begin{notaslide}
-L'immagine dell'altalena mostra il classico problema della comunicazione nei progetti software: ciò che il cliente spiega, ciò che il progettista interpreta, ciò che il programmatore realizza e ciò che l'utente realmente voleva possono essere molto diversi.
-\end{notaslide}
 
 Citando Boehm, le attività di Verifica e Validazione rispondono a due domande diverse:
 
@@ -41,9 +38,13 @@ Un programma \(P\) soddisfa la specifica \(S\) se e solo se, per ogni input \(d 
 P(d) = S(d)
 \]
 
-\begin{notaslide}
-I diagrammi delle slide rappresentano graficamente il dominio \(D\), il codominio \(C\), la specifica \(S\) e il programma \(P\). L'obiettivo è che il comportamento implementato da \(P\) coincida con quello richiesto da \(S\).
-\end{notaslide}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{img/DeAngelis/02_GeneralConcepts/dominio.png}
+    \caption{Rappresentazione del dominio \(D\), del codominio \(C\), del programma \(P\) e della specifica \(S\). Il programma è corretto rispetto alla specifica quando, per ogni input del dominio, il comportamento prodotto da \(P\) coincide con quello atteso da \(S\).}
+    \label{fig:modello-psdc}
+\end{figure}
+
 
 \section{Verifica formale, testing e debugging}
 
@@ -81,9 +82,12 @@ La relazione causale è:
 
 Un errore umano introduce un fault nel codice; il fault, se attivato in certe condizioni, può manifestarsi come failure.
 
-\begin{notaprof}
-Nell'esempio della mappa, il sistema suggerisce un percorso a piedi impossibile, come attraversare il mare. Il comportamento osservabile errato è la failure; il problema nel sistema di calcolo del percorso è il fault; la causa originaria è l'errore umano o progettuale che ha permesso quella situazione.
-\end{notaprof}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/DeAngelis/02_GeneralConcepts/ffe.png}
+    \caption{Relazione tra \emph{error}, \emph{fault} e \emph{failure}: l'errore umano introduce un difetto nel sistema software, che può manifestarsi all'utente come malfunzionamento osservabile. La figura evidenzia anche tre strategie di intervento: prevenzione degli errori, rilevazione e rimozione dei fault, e contenimento delle failure.}
+    \label{fig:error-fault-failure}
+\end{figure}
 
 \subsection{Esempio \texttt{makeItDouble}}
 
@@ -107,9 +111,6 @@ In questo caso:
     \item l'\textbf{error} può essere un typo oppure un errore di interpretazione tra ``double'' e ``power''.
 \end{itemize}
 
-\begin{notaslide}
-Le slide distinguono anche tra \textbf{failure prevention}, cioè prevenire il manifestarsi del malfunzionamento, e \textbf{fault detection and removal}, cioè individuare e rimuovere il difetto nel codice.
-\end{notaslide}
 
 \section{Software Testing}
 
