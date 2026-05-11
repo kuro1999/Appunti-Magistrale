@@ -30,6 +30,13 @@ Le componenti della SQA includono \textbf{software testing}, \textbf{quality con
 Il \textbf{software testing} è solo una delle componenti della SQA. Le attività di testing devono essere sempre collegate a un piano di qualità più ampio che definisce cosa significhi qualità per quello specifico progetto.
 \end{notaesame}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.62\textwidth]{img/DeAngelis/03_Automatic&ContinuosTesting/SQA_testing}
+    \caption{Il software testing come una delle componenti della Software Quality Assurance: la figura evidenzia che il testing si inserisce in un quadro più ampio che comprende anche quality control, procedure e software configuration management.}
+    \label{fig:lez8-sqa-testing}
+\end{figure}
+
 \section{Esempio \texttt{myBuggyFact}}
 
 Nelle slide viene mostrata una funzione ricorsiva per il calcolo del fattoriale:
@@ -106,6 +113,13 @@ Il \textbf{build server} si occupa di:
     \item eseguire la build del sistema;
     \item eseguire i casi di test.
 \end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.68\textwidth]{img/DeAngelis/03_Automatic&ContinuosTesting/CICT}
+    \caption{Schema concettuale di integrazione tra Continuous Integration e Continuous Testing: il build server configura l'ambiente, costruisce il sistema ed esegue automaticamente i casi di test.}
+    \label{fig:lez8-ci-ct}
+\end{figure}
 
 \section{Git e Source Control}
 
@@ -222,6 +236,12 @@ Le annotazioni principali sono:
     \item \texttt{@BeforeClass}: metodo eseguito una sola volta prima di tutti i test della classe;
     \item \texttt{@AfterClass}: metodo eseguito una sola volta dopo tutti i test della classe.
 \end{itemize}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.70\textwidth]{img/DeAngelis/03_Automatic&ContinuosTesting/JUNIT4}
+    \caption{Ciclo di esecuzione di un test in JUnit 4: la figura distingue le operazioni di setup e teardown a livello di classe da quelle eseguite prima e dopo ogni singolo caso di test.}
+    \label{fig:lez8-junit4-lifecycle}
+\end{figure}
 
 \begin{notaslide}
 L'ordine di esecuzione tra più metodi con la stessa annotazione, ad esempio più metodi \texttt{@Before}, non è specificato.
@@ -288,7 +308,12 @@ Il flusso tipico è:
     \item il server lancia i test JUnit;
     \item viene prodotto un report di successo o fallimento.
 \end{enumerate}
-
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.72\textwidth]{img/DeAngelis/03_Automatic&ContinuosTesting/CICT_completa}
+    \caption{Visione complessiva del flusso di Continuous Integration e Continuous Testing: commit, push, pull request, build automatica ed esecuzione dei test concorrono a mantenere sotto controllo la qualità del software.}
+    \label{fig:lez8-ci-ct-overview}
+\end{figure}
 \begin{notaprof}
 L'automazione serve a verificare che il codice non funzioni solo sulla macchina dello sviluppatore, ma anche in ambienti puliti, riproducibili ed eterogenei.
 \end{notaprof}
