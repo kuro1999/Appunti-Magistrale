@@ -1,23 +1,23 @@
 \chapter{Teoria della Misurazione e Scale di Misura}
 
 \section{Introduzione alla Misurazione del Software}
-La misurazione nel software engineering non è un fine, ma uno strumento decisionale di supporto. Come ricordano Lord Kelvin e Tom DeMarco, l'assenza di misurazione impedisce il controllo e, di conseguenza, il miglioramento dei processi e dei prodotti[cite: 330, 341].
+La misurazione nel software engineering non è un fine, ma uno strumento decisionale di supporto. Come ricordano Lord Kelvin e Tom DeMarco, l'assenza di misurazione impedisce il controllo e, di conseguenza, il miglioramento dei processi e dei prodotti.
 
 \subsection{Definizioni Formali}
 Secondo i modelli standard, è necessario distinguere tre concetti fondamentali:
 \begin{itemize}[label=\textbullet]
-    \item \textbf{Misura (Measure):} Rappresentazione numerica di una caratteristica o di un attributo di un prodotto o processo software (es. 5000 LOC, 30 mesi-uomo)[cite: 363, 364, 365, 368].
-    \item \textbf{Metrica (Metric):} La scala o il sistema di misurazione utilizzato per quantificare una misura[cite: 352]. Definisce le regole di assegnazione dei valori (es. Complessità Ciclomatica, Densità dei Difetti)[cite: 353, 354].
-    \item \textbf{Misurazione (Measurement):} Il processo pratico di assegnazione dei numeri alle misure utilizzando una metrica[cite: 357].
+    \item \textbf{Misura (Measure):} Rappresentazione numerica di una caratteristica o di un attributo di un prodotto o processo software (es. 5000 LOC, 30 mesi-uomo).
+    \item \textbf{Metrica (Metric):} La scala o il sistema di misurazione utilizzato per quantificare una misura. Definisce le regole di assegnazione dei valori (es. Complessità Ciclomatica, Densità dei Difetti).
+    \item \textbf{Misurazione (Measurement):} Il processo pratico di assegnazione dei numeri alle misure utilizzando una metrica.
 \end{itemize}
 
 \subsection{Proprietà di una Metrica di Qualità}
 Per essere considerata valida, una metrica deve soddisfare i seguenti criteri:
 \begin{description}
-    \item[Rilevanza:] Deve misurare un attributo significativo e importante del prodotto o processo software[cite: 380].
-    \item[Oggettività:] Il risultato deve basarsi su dati verificabili e riproducibili, non su opinioni o stime soggettive[cite: 381, 382].
-    \item[Affidabilità e Consistenza:] La metrica deve produrre risultati costanti in condizioni diverse e deve essere coerente con gli obiettivi del progetto[cite: 383, 384].
-    \item[Usabilità:] Il calcolo e l'interpretazione devono essere facili, intuitivi e non richiedere sforzi o risorse eccessive[cite: 385, 386].
+    \item[Rilevanza:] Deve misurare un attributo significativo e importante del prodotto o processo software.
+    \item[Oggettività:] Il risultato deve basarsi su dati verificabili e riproducibili, non su opinioni o stime soggettive.
+    \item[Affidabilità e Consistenza:] La metrica deve produrre risultati costanti in condizioni diverse e deve essere coerente con gli obiettivi del progetto.
+    \item[Usabilità:] Il calcolo e l'interpretazione devono essere facili, intuitivi e non richiedere sforzi o risorse eccessive.
 \end{description}
 
 \begin{notaprof}
@@ -25,12 +25,12 @@ La pertinenza di una metrica è strettamente legata al contesto di business. Un 
 \end{notaprof}
 
 \section{Tassonomia delle Scale di Misura}
-La scelta della scala utilizzata dipende dalla natura dei dati misurati e determina quali operazioni statistiche siano matematicamente applicabili[cite: 407, 459, 477].
+La scelta della scala utilizzata dipende dalla natura dei dati misurati e determina quali operazioni statistiche siano matematicamente applicabili.
 
 \subsection{Scala Nominale e Ordinale}
 \begin{itemize}
-    \item \textbf{Nominale:} Utilizzata per assegnare valori a etichette o categorie senza un ordine intrinseco o magnitudine (es. tipi di difetti: logica, UI, performance, sicurezza)[cite: 417, 418, 419]. Operazioni ammesse: Moda, frequenza[cite: 459].
-    \item \textbf{Ordinale:} Prevede un ordine di rango per le categorie, ma la distanza o magnitudine tra i valori non è definita né significativa (es. priorità dei difetti: Critical, High, Medium, Low)[cite: 422, 423, 424]. Operazioni ammesse: Mediana[cite: 459].
+    \item \textbf{Nominale:} Utilizzata per assegnare valori a etichette o categorie senza un ordine intrinseco o magnitudine (es. tipi di difetti: logica, UI, performance, sicurezza). Operazioni ammesse: Moda, frequenza.
+    \item \textbf{Ordinale:} Prevede un ordine di rango per le categorie, ma la distanza o magnitudine tra i valori non è definita né significativa (es. priorità dei difetti: Critical, High, Medium, Low). Operazioni ammesse: Mediana.
 \end{itemize}
 
 \begin{notaprof}
@@ -38,28 +38,28 @@ Le scale ordinali, pur limitando le analisi statistiche alla mediana, offrono sp
 \end{notaprof}
 
 \subsection{Scale Numeriche (Intervallo e Rapporto)}
-In queste scale i valori sono assegnati in ordine di rango e la magnitudine della differenza tra i punti ha un significato reale e misurabile[cite: 427, 433].
+In queste scale i valori sono assegnati in ordine di rango e la magnitudine della differenza tra i punti ha un significato reale e misurabile.
 \begin{itemize}
-    \item \textbf{Intervallo:} La magnitudine delle differenze è significativa, ma non possiede uno zero assoluto reale[cite: 427, 428].
-    \item \textbf{Rapporto (Ratio):} È il tipo di scala più sofisticato, in cui la magnitudine delle differenze è calcolabile e possiede uno zero assoluto reale (es. LOC, sforzo, tempo)[cite: 433, 434, 435].
+    \item \textbf{Intervallo:} La magnitudine delle differenze è significativa, ma non possiede uno zero assoluto reale.
+    \item \textbf{Rapporto (Ratio):} È il tipo di scala più sofisticato, in cui la magnitudine delle differenze è calcolabile e possiede uno zero assoluto reale (es. LOC, sforzo, tempo).
 \end{itemize}
-\textbf{Statistiche ammesse per entrambe:} Media, Deviazione Standard, Varianza, Range (per la scala di Rapporto sono ammessi anche coefficiente di variazione e media geometrica)[cite: 459].
+\textbf{Statistiche ammesse per entrambe:} Media, Deviazione Standard, Varianza, Range. Per la scala di Rapporto sono ammessi anche coefficiente di variazione e media geometrica.
 
 \section{Modelli di Qualità: Lo Standard ISO/IEC 25010}
-Lo standard ISO 25010 definisce una tassonomia dettagliata degli attributi di qualità (qualità del prodotto e qualità in uso)[cite: 33]. Le caratteristiche principali individuate dallo standard sono:
+Lo standard ISO 25010 definisce una tassonomia dettagliata degli attributi di qualità, distinguendo tra qualità del prodotto e qualità in uso. Le caratteristiche principali individuate dallo standard sono:
 \begin{enumerate}
-    \item \textbf{Functional Suitability (Adeguatezza funzionale):} Completezza, correttezza e adeguatezza funzionale[cite: 39, 40, 41, 42].
-    \item \textbf{Performance Efficiency (Efficienza delle prestazioni):} Comportamento temporale, utilizzo delle risorse e capacità strutturale[cite: 43, 44, 45, 46].
-    \item \textbf{Security (Sicurezza):} Riservatezza, integrità, non ripudio, responsabilità e autenticità[cite: 47, 48, 49, 50, 51, 52].
-    \item \textbf{Maintainability (Manutenibilità):} Modularità, riusabilità, analizzabilità, modificabilità e testabilità[cite: 53, 54, 55, 56, 57, 58].
+    \item \textbf{Functional Suitability (Adeguatezza funzionale):} Completezza, correttezza e adeguatezza funzionale.
+    \item \textbf{Performance Efficiency (Efficienza delle prestazioni):} Comportamento temporale, utilizzo delle risorse e capacità strutturale.
+    \item \textbf{Security (Sicurezza):} Riservatezza, integrità, non ripudio, responsabilità e autenticità.
+    \item \textbf{Maintainability (Manutenibilità):} Modularità, riusabilità, analizzabilità, modificabilità e testabilità.
 \end{enumerate}
 
 \begin{notaprof}
-È cruciale distinguere sempre il modello di qualità dalle metriche: il modello (come l'ISO 25010) definisce \textit{cosa} significa la qualità fornendone una tassonomia, mentre le metriche definiscono \textit{come} quantificarla operativamente[cite: 30]. L'adozione di questi standard fallisce sistematicamente se manca la "buona fede" aziendale; l'uso delle metriche al solo scopo di ottenere certificazioni formali di facciata, senza mirare a un miglioramento sostanziale del prodotto, svilisce l'utilità dell'intero sistema di valutazione ingegneristico.
+È cruciale distinguere sempre il modello di qualità dalle metriche: il modello, come l'ISO 25010, definisce \textit{cosa} significa la qualità fornendone una tassonomia, mentre le metriche definiscono \textit{come} quantificarla operativamente. L'adozione di questi standard fallisce sistematicamente se manca la ``buona fede'' aziendale; l'uso delle metriche al solo scopo di ottenere certificazioni formali di facciata, senza mirare a un miglioramento sostanziale del prodotto, svilisce l'utilità dell'intero sistema di valutazione ingegneristico.
 \end{notaprof}
 
 \section{Introduzione alle Metriche Object-Oriented}
-Le metriche object-oriented vengono impiegate per misurare la qualità dei sistemi software ad oggetti e identificare tempestivamente difetti di progettazione o futuri problemi di manutenibilità[cite: 68, 69]. Vanno sempre interpretate come indicatori di rischio e valutate in modo comparativo (rispetto a una baseline o a un trend) e non in senso assoluto[cite: 73].
+Le metriche object-oriented vengono impiegate per misurare la qualità dei sistemi software ad oggetti e identificare tempestivamente difetti di progettazione o futuri problemi di manutenibilità. Vanno sempre interpretate come indicatori di rischio e valutate in modo comparativo, rispetto a una baseline o a un trend, e non in senso assoluto.
 
 \begin{notaprof}
 In ambito manageriale, è molto più efficace adottare un approccio pratico basato sulle distribuzioni piuttosto che sulle medie globali. Risulta strategicamente più utile concentrare le attività di analisi, refactoring e test mirati esclusivamente sul 10\% delle classi che presentano i valori peggiori di complessità (\textit{outliers}), piuttosto che tentare di ottimizzare e riscrivere l'intero sistema in modo uniforme.
