@@ -1,0 +1,177 @@
+\chapter{Characterizing Automated Refactoring}
+
+\section{Obiettivo della Milestone 4}
+
+\subsection{Significato di \emph{characterizing automated refactoring}}
+
+L'obiettivo di questa fase finale del progetto è studiare e caratterizzare la capacità dei \textbf{Large Language Models (LLM)} di svolgere attività di \textbf{automated refactoring}. In particolare, si vuole capire se sia possibile ottenere codice con \textbf{zero smells} e quale tipo di input, in termini di prompt e test, sia necessario fornire al modello per permettergli di completare correttamente il task.
+
+\subsection{Collegamento con maintainability e smells}
+
+La rimozione degli \textbf{smells} dal codice sorgente ha come finalità il miglioramento della \textbf{maintainability} del sistema software.
+
+\begin{notaesame}
+L'intera logica della milestone si inserisce in una storia metodologica più ampia: capire quanti difetti si sarebbero potuti prevenire se il codice avesse avuto zero smells e verificare se sia realisticamente possibile avvicinarsi a questo stato usando il refactoring automatico guidato da LLM.
+\end{notaesame}
+
+\section{Class selection}
+
+\subsection{Ranking delle classi dell'ultima release}
+
+La prima fase operativa richiede di selezionare le classi su cui effettuare l'esperimento. Per farlo, si considera l'\textbf{ultima release attuale del progetto} e si costruisce un ranking delle classi in base al numero di smells presenti, cioè in base a \textbf{NSmells}.
+
+\subsection{Esclusione delle classi troppo piccole o semplici}
+
+Dal ranking devono essere escluse le classi troppo banali, per esempio quelle caratterizzate da pochi metodi o da una struttura troppo semplice.
+
+\begin{notaprof}
+Questa scelta è inevitabilmente soggettiva e va giustificata nel report. L'idea è che una classe troppo piccola renderebbe il task di refactoring banale anche per l'LLM, togliendo valore sperimentale all'analisi.
+\end{notaprof}
+
+\subsection{Algoritmo di selezione delle due classi}
+
+Una volta filtrata la lista, si selezionano due classi tramite un algoritmo basato sulla prima lettera del proprio nome:
+
+\begin{enumerate}
+    \item si prende il numero corrispondente alla prima lettera del nome;
+    \item si calcola \(X = \text{numero} \bmod 5\);
+    \item in base al valore di \(X\), si scelgono due classi in posizioni simmetriche del ranking.
+\end{enumerate}
+
+Per esempio, se \(X = 0\), si selezionano la prima e l'ultima classe; se \(X = 1\), la seconda e la penultima; e così via.
+
+\begin{notaprof}
+Questo meccanismo serve a garantire che l'LLM venga testato su due casi di difficoltà differente: una classe molto problematica, in alto nel ranking, e una classe meno problematica, in basso. In questo modo è possibile osservare se il comportamento del modello cambia al variare della gravità iniziale degli smells.
+\end{notaprof}
+
+\section{Automated refactoring con Microsoft Copilot}
+
+\subsection{Uso dell'account universitario}
+
+Per svolgere il task è richiesto l'uso di \textbf{Microsoft Copilot} tramite l'account universitario, così da poter utilizzare una versione avanzata del modello.
+
+\subsection{Significato di \(C_0\) e \(C_X\)}
+
+Nel processo di refactoring, \(\mathbf{C_0}\) rappresenta la \textbf{classe originale}, cioè la classe di partenza con i suoi smells. Invece, \(\mathbf{C_X}\) rappresenta la \textbf{nuova classe refactored} prodotta dall'LLM in risposta al prompt.
+
+\subsection{Struttura del prompt e vincoli}
+
+Il prompt suggerito imposta il modello come un esperto sviluppatore Java e gli chiede di migliorare la \textbf{maintainability} della classe \(C_0\), producendo una nuova versione \(C_X\). Il prompt deve imporre alcuni vincoli precisi:
+
+\begin{enumerate}
+    \item mantenere invariata la funzionalità;
+    \item rimuovere gli smells indicati nel report diagnostico di SonarCloud;
+    \item fare in modo che la classe passi una specifica \textbf{test suite};
+    \item evitare modifiche non richieste;
+    \item garantire che \(C_X\) possa sostituire \(C_0\) in modo \emph{plug and play}, continuando a lavorare correttamente con il resto del sistema.
+\end{enumerate}
+
+\begin{notaprof}
+La frase con cui si chiede al modello di prendersi tutto il tempo necessario per fornire una risposta accurata non è un dettaglio stilistico: può influenzare concretamente la qualità dell'output generato.
+\end{notaprof}
+
+\section{Versioni refactored e tabella \(C_X\)}
+\subsection{Significato delle versioni}
+
+Lo studio prevede la generazione di più versioni del refactoring, così da capire quale livello di informazione debba essere fornito all'LLM per ottenere risultati convincenti. Le versioni considerate sono:
+
+\begin{itemize}
+    \item \(\mathbf{C_0}\): classe originale;
+    \item \(\mathbf{C_1}, C_2, C_3, C_4\): versioni refactored generate modificando l'input del prompt.
+\end{itemize}
+
+\subsection{Differenza tra classe originale e versioni refactored}
+
+La classe \(C_0\) è il file reale estratto dal progetto, mentre le classi \(C_1, C_2, C_3, C_4\) sono output prodotti dal modello di intelligenza artificiale in condizioni sperimentali diverse.
+
+\subsection{Spiegazione della tabella mostrata nelle slide}
+
+Nelle slide è presente una tabella che mette in relazione le versioni della classe con i \textbf{test sviluppati a partire da \(C_0\)}. Le colonne riportano le sigle \textbf{Test BB}, \textbf{Test CF}, \textbf{Test MT}, \textbf{Test RND}, \textbf{Test ES} e \textbf{Test LLM}.
+
+\begin{notaprof}
+BB indica \emph{Black Box}. Ai fini metodologici, però, il punto principale non è tanto entrare nei dettagli di ciascun tipo di test, quanto osservare che cosa accade alla qualità dell'output man mano che aumentano le informazioni fornite all'LLM.
+\end{notaprof}
+
+\begin{notaslide}
+Le sigle \textbf{MT}, \textbf{RND}, \textbf{ES} e \textbf{LLM} compaiono nella tabella come parte della progressione sperimentale, ma non vengono spiegate nel dettaglio nell'audio della lezione.
+\end{notaslide}
+
+\subsection{Interpretazione della progressione No/Yes}
+
+I valori \textbf{No/Yes} nella tabella non indicano se la classe passa o fallisce i test dopo la generazione. Indicano invece se quel test è stato \textbf{fornito come input nel prompt} per produrre la relativa versione \(C_X\).
+
+Più precisamente:
+
+\begin{itemize}
+    \item per \(C_1\), nessun test è fornito in input;
+    \item per \(C_2\), viene fornito solo il test BB;
+    \item per \(C_3\), vengono forniti BB e CF;
+    \item per \(C_4\), vengono forniti BB, CF e MT.
+\end{itemize}
+
+Il significato metodologico della tabella è quindi mostrare una \textbf{crescita progressiva dell'informazione} data al modello.
+
+\section{Analisi finale dei risultati}
+
+Una volta ottenute le classi \(C_X\), esse devono essere analizzate con tre domande principali.
+
+\subsection{Compilazione}
+
+La prima domanda è se \(\mathbf{C_X}\) \textbf{compili}. Inoltre, va verificato se compili in isolamento oppure se compili correttamente quando reintegrata nel sistema.
+
+\subsection{Presenza di smells}
+
+La seconda domanda è se \(\mathbf{C_X}\) presenti ancora degli \textbf{smells}. In particolare, bisogna distinguere tra:
+
+\begin{itemize}
+    \item smells rimasti dalla versione originale;
+    \item smells effettivamente rimossi;
+    \item nuovi smells eventualmente introdotti dal refactoring.
+\end{itemize}
+
+\subsection{Confronto tra \(C_X\) e \(C_0\)}
+
+La terza domanda è relativa al confronto tra la versione originaria \(C_0\) e le versioni refactored \(C_X\). Lo scopo è capire se il refactoring automatico abbia prodotto un miglioramento reale oppure solo apparente.
+
+\section{Feature e bugginess}
+
+\subsection{Feature positivamente correlate con la bugginess}
+
+L'analisi non può fermarsi al fatto che il codice compili o che alcuni smells siano spariti. Occorre ricalcolare anche le \textbf{feature architetturali} e confrontarle con quelle osservate in \(C_0\).
+
+In particolare, bisogna considerare le feature che nelle milestone precedenti erano risultate \textbf{positivamente correlate con la bugginess}. Se tali feature aumentano in \(C_X\), allora il refactoring potrebbe avere solo nascosto il problema, peggiorando in realtà la maintainability.
+
+Un esempio tipico è la \textbf{size}: eliminare uno smell ma ottenere una classe molto più grande o complessa non rappresenta necessariamente un miglioramento.
+
+\subsection{Feature negativamente correlate con la bugginess}
+
+Se invece aumenta una feature che era risultata \textbf{negativamente correlata con la bugginess}, allora il refactoring può essere interpretato come un miglioramento reale della maintainability.
+
+\begin{notaprof}
+Non è necessario ricalcolare da zero tutte le correlazioni. È sufficiente usare i risultati già emersi nelle milestone precedenti e osservare se, nelle versioni refactored, le metriche rilevanti siano salite o scese rispetto a \(C_0\).
+\end{notaprof}
+
+\section{Significato metodologico della milestone}
+
+\subsection{Che cosa significa caratterizzare un refactoring automatico}
+
+\textbf{Characterizing automated refactoring} significa studiare in modo empirico il comportamento dell'intelligenza artificiale durante il refactoring, cercando di capire non solo se il modello riesca a modificare il codice, ma anche \textbf{quale livello di informazione gli serva} per farlo bene.
+
+\subsection{Refactoring sintatticamente corretto e refactoring realmente utile}
+
+\begin{notaesame}
+Un refactoring automatico non può essere considerato riuscito soltanto perché il codice compila o perché SonarCloud non segnala più gli smells originari. Se la nuova classe non passa più i test, oppure degrada pesantemente altre metriche rilevanti, allora il refactoring è da considerarsi fallito.
+\end{notaesame}
+
+\subsection{Importanza di una valutazione olistica}
+
+La validazione finale del task richiede quindi una prospettiva \textbf{olistica}. Per stabilire se il refactoring automatico abbia davvero migliorato il sistema, bisogna considerare contemporaneamente:
+
+\begin{itemize}
+    \item la \textbf{compilazione};
+    \item il passaggio della \textbf{test suite};
+    \item la presenza o assenza di \textbf{smells};
+    \item l'andamento delle \textbf{metriche software} correlate con la bugginess.
+\end{itemize}
+
+Solo combinando questi quattro elementi è possibile concludere se \(C_X\) rappresenti davvero una versione migliore di \(C_0\) dal punto di vista della maintainability.
