@@ -310,17 +310,3 @@ Gli errori da evitare nel progetto sono:
     \item avere una build non riproducibile;
     \item non integrare automaticamente i test nella build.
 \end{itemize}
-
-\section{Da ricordare}
-
-\begin{notaesame}
-Nel progetto bisogna configurare un ecosistema in cui \textbf{Git} traccia il codice, \textbf{Maven} gestisce build e dipendenze, e la \textbf{CI} esegue automaticamente build e test a ogni Pull Request.
-\end{notaesame}
-
-\begin{notaesame}
-Se i file di test JUnit non rispettano i pattern riconosciuti da Maven, come \texttt{*Test.java}, Maven può ignorarli durante la fase di test.
-\end{notaesame}
-
-\begin{notaesame}
-Il software testing trova failure esibite dal programma, ma è solo una parte della SQA. L'automazione serve ad abbattere i costi e a rendere ripetibili i test di regressione a ogni modifica del codice.
-\end{notaesame}

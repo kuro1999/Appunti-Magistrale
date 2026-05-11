@@ -1,8 +1,4 @@
-\chapter{Unit and Integration Testing: Frameworks}
-
-\section{Test di integrazione}
-
-Il \textbf{test di integrazione} ha l'obiettivo di far emergere malfunzionamenti derivanti dall'interazione tra due o più moduli o componenti del \textbf{System Under Test} (SUT).
+\chapter{Unit and Integration Testing: Frameworks} ha l'obiettivo di far emergere malfunzionamenti derivanti dall'interazione tra due o più moduli o componenti del \textbf{System Under Test} (SUT).
 
 In particolare, serve ad acquisire confidenza che:
 
@@ -46,6 +42,13 @@ Le strategie comuni sono:
     \item \textbf{top-down};
     \item \textbf{bottom-up}.
 \end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.72\textwidth]{img/DeAngelis/05_UnitIntegration_Frameworks/slide06}
+    \caption{Principali strategie di integration testing. La figura mette a confronto approccio big bang, top-down e bottom-up, evidenziando il ruolo di stub e test driver nel raffinamento progressivo dell'integrazione.}
+    \label{fig:lez17-integration-strategies}
+\end{figure}
 
 \subsection{Big bang}
 
@@ -177,44 +180,6 @@ Nel caso di \texttt{AgendaTest}, si testa un'implementazione reale, come \texttt
 In questo modo il test esercita le API reali di \texttt{MyAgenda}, ma controlla artificialmente una dipendenza interna, rendendo l'ambiente di test più prevedibile.
 \end{notaprof}
 
-\section{Maven}
-
-\textbf{Maven} è un sistema di automazione della build, particolarmente usato in ambiente Java. Gestisce le dipendenze in modo esplicito e transitivo tramite repository come \textbf{Maven Central}.
-
-Il file principale di configurazione è il \texttt{pom.xml}, in cui si dichiarano:
-
-\begin{itemize}
-    \item \texttt{groupId};
-    \item \texttt{artifactId};
-    \item versione del progetto;
-    \item dipendenze;
-    \item plugin;
-    \item configurazioni di build e test.
-\end{itemize}
-
-\begin{notaslide}
-Maven è un framework modulare basato su plugin. Ogni plugin aggiunge funzionalità specifiche e si innesta in una o più fasi del ciclo di build.
-\end{notaslide}
-
-Le principali fasi Maven sono:
-
-\begin{itemize}
-    \item \texttt{validate};
-    \item \texttt{compile};
-    \item \texttt{test};
-    \item \texttt{package};
-    \item \texttt{integration-test};
-    \item \texttt{verify};
-    \item \texttt{install};
-    \item \texttt{deploy};
-    \item \texttt{clean};
-    \item \texttt{site}.
-\end{itemize}
-
-\begin{notaslide}
-Le fasi Maven sono organizzate in sequenza. Un errore in una fase comporta tipicamente il fallimento dell'intero processo di build.
-\end{notaslide}
-
 \section{Maven Surefire Plugin}
 
 Il \textbf{Maven Surefire Plugin} è pensato principalmente per eseguire i \textbf{test di unità}.
@@ -301,6 +266,13 @@ La distinzione principale è:
     \item \textbf{Failsafe}: esegue integration test nelle fasi \texttt{integration-test} e \texttt{verify}.
 \end{itemize}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.72\textwidth]{img/DeAngelis/05_UnitIntegration_Frameworks/slide23}
+    \caption{Configurazione del Maven Failsafe Plugin per l'esecuzione dei test di integrazione durante le fasi \texttt{integration-test} e \texttt{verify} del ciclo di build Maven.}
+    \label{fig:lez17-maven-failsafe}
+\end{figure}
+
 \begin{notaprof}
 Quando si esegue \texttt{mvn test}, Maven attiva i test gestiti da Surefire. Quando si esegue \texttt{mvn verify}, Maven arriva anche alle fasi pensate per i test di integrazione e può quindi attivare Failsafe.
 \end{notaprof}
@@ -335,21 +307,3 @@ Errori comuni da evitare:
     \item confondere il test driver con il SUT;
     \item testare lo stub o il mock invece dell'unità reale sotto test.
 \end{itemize}
-
-\section{Da ricordare}
-
-\begin{notaesame}
-Nel \textbf{top-down} si usano soprattutto stub per simulare componenti di livello più basso non ancora disponibili. Nel \textbf{bottom-up} si usano soprattutto test driver per simulare i moduli chiamanti o più esterni.
-\end{notaesame}
-
-\begin{notaesame}
-\textbf{Surefire} è associato ai test di unità e alla fase \texttt{test}; \textbf{Failsafe} è associato ai test di integrazione e alle fasi \texttt{integration-test} e \texttt{verify}.
-\end{notaesame}
-
-\begin{notaesame}
-Un \textbf{mock} finge il comportamento di un oggetto configurandone output e interazioni. Una \textbf{spy} usa l'oggetto reale, ma permette di osservarne e verificarne le chiamate.
-\end{notaesame}
-
-\begin{notaesame}
-Mockito serve a isolare il SUT e a controllare le interazioni, ma non sostituisce la progettazione del test: servono input significativi, oracoli corretti, assert e verifiche coerenti.
-\end{notaesame}
