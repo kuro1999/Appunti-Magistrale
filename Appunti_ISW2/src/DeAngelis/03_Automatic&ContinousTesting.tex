@@ -155,26 +155,11 @@ Uno dei suoi ruoli principali è la gestione delle dipendenze.
 La caratteristica fondamentale di Maven è la gestione esplicita e transitiva delle dipendenze. Lo sviluppatore dichiara le librerie necessarie e le loro versioni; Maven scarica automaticamente tali librerie e anche le dipendenze indirette richieste.
 \end{notaprof}
 
-Un progetto Maven è organizzato secondo una struttura di directory standard, ad esempio:
-
-\begin{itemize}
-    \item \texttt{src/main/java};
-    \item \texttt{src/test/java};
-    \item \texttt{target}.
-\end{itemize}
+Un progetto Maven segue in genere una struttura standard di directory, pensata per distinguere chiaramente il codice applicativo, i test e i risultati prodotti dalla build.
 
 La directory \texttt{target} contiene tipicamente i risultati della build.
 
-Il file principale di configurazione è il \texttt{pom.xml}, che contiene informazioni come:
-
-\begin{itemize}
-    \item \texttt{artifactId};
-    \item \texttt{groupId};
-    \item nome e versione del progetto;
-    \item sviluppatori;
-    \item dipendenze;
-    \item direttive di build, test e deploy.
-\end{itemize}
+Il file principale di configurazione è il \texttt{pom.xml}, che raccoglie le informazioni fondamentali del progetto e le direttive necessarie per gestirne dipendenze, build, test e deploy.
 
 Le principali fasi Maven sono:
 
@@ -213,12 +198,7 @@ Gli obiettivi principali di JUnit sono:
 JUnit fornisce l'infrastruttura per scrivere ed eseguire test, ma \textbf{non} decide la strategia di test, \textbf{non} seleziona i valori di input e \textbf{non} indica quali test siano più significativi. Queste decisioni spettano all'ingegnere.
 \end{notaesame}
 
-Le versioni principali sono:
-
-\begin{itemize}
-    \item \textbf{JUnit 4}: riferimento del corso, basato su annotazioni;
-    \item \textbf{JUnit 5}: evoluzione più modulare, con separazione tra API e SPI e maggiore flessibilità nella gestione dei runner.
-\end{itemize}
+La versione di riferimento per il corso è \textbf{JUnit 4}, che si basa sull'uso di annotazioni per definire e organizzare i casi di test.
 
 \begin{notaslide}
 JUnit 5 introduce una maggiore modularità architetturale, permette la composizione esplicita di più runner e distingue tra API per scrivere test e SPI per estendere strategie di scoperta, scelta ed esecuzione dei test.
@@ -239,7 +219,7 @@ Le annotazioni principali sono:
 \end{itemize}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.70\textwidth]{img/DeAngelis/03_Automatic&ContinuosTesting/JUNIT4}
+    \includegraphics[width=0.25\textwidth]{img/DeAngelis/03_Automatic&ContinuosTesting/JUNIT4}
     \caption{Ciclo di esecuzione di un test in JUnit 4: la figura distingue le operazioni di setup e teardown a livello di classe da quelle eseguite prima e dopo ogni singolo caso di test.}
     \label{fig:lez8-junit4-lifecycle}
 \end{figure}
@@ -309,12 +289,14 @@ Il flusso tipico è:
     \item il server lancia i test JUnit;
     \item viene prodotto un report di successo o fallimento.
 \end{enumerate}
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.72\textwidth]{img/DeAngelis/03_Automatic&ContinuosTesting/CICT_completa}
     \caption{Visione complessiva del flusso di Continuous Integration e Continuous Testing: commit, push, pull request, build automatica ed esecuzione dei test concorrono a mantenere sotto controllo la qualità del software.}
     \label{fig:lez8-ci-ct-overview}
 \end{figure}
+
 \begin{notaprof}
 L'automazione serve a verificare che il codice non funzioni solo sulla macchina dello sviluppatore, ma anche in ambienti puliti, riproducibili ed eterogenei.
 \end{notaprof}
