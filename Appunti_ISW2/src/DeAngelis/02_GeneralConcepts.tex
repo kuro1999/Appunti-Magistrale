@@ -131,9 +131,6 @@ Il limite fondamentale è che il testing non può dimostrare l'assenza di difett
 Secondo Dijkstra, il software testing può dimostrare la presenza di guasti, ma non la loro assenza. Se un test fallisce, sappiamo che esiste un problema; se tutti i test passano, sappiamo solo che non abbiamo trovato problemi nei casi testati.
 \end{notaesame}
 
-\begin{notaslide}
-Il contesto tipico di un test include \textbf{setup}, \textbf{exercise}, \textbf{verify} e \textbf{teardown}. Il test interagisce con il System Under Test (SUT), eventualmente con componenti dipendenti (DOC), e produce un test verdict.
-\end{notaslide}
 
 \section{Esempio \texttt{myBuggyFact} e dominio di input}
 
@@ -235,20 +232,52 @@ La stessa funzione può avere reliability diverse in base al profilo d'uso. Se g
 
 \subsection{Esempi su \texttt{myBuggyFact}}
 
-Nel primo operational profile, gli input \([-5, -3, 0, 2, 4]\) sono equiprobabili. Se uno di questi attiva il difetto, la reliability risulta:
+Nel caso di \texttt{myBuggyFact}, il difetto si manifesta quando l'input è \(0\). Per questo motivo, la \textbf{reliability} dipende dalla probabilità con cui l'utente usa proprio quel valore.
+
+Nel primo operational profile gli input sono:
 
 \[
-Reliability = 0.8
+[-5,\ -3,\ 0,\ 2,\ 4,\ \texttt{othersNum}]
 \]
 
-Nel secondo operational profile, l'input problematico ha probabilità molto bassa, mentre l'uso è concentrato su input che non manifestano il problema. In questo caso la reliability risulta:
+con probabilità d'uso:
 
 \[
-Reliability = 0.998
+[0.2,\ 0.2,\ 0.2,\ 0.2,\ 0.2,\ 0]
 \]
 
-Lo stesso codice può quindi avere reliability diverse a seconda dell'uso reale.
+Poiché l'input \(0\) ha probabilità \(0.2\), la probabilità di fallimento è:
 
+\[
+PFD = 0.2
+\]
+
+quindi:
+
+\[
+Reliability = 1 - PFD = 1 - 0.2 = 0.8
+\]
+
+Nel secondo operational profile gli input sono gli stessi, ma cambiano le probabilità d'uso:
+
+\[
+[0,\ 0,\ 0.002,\ 0.499,\ 0.499,\ 0]
+\]
+
+In questo caso l'input \(0\) ha probabilità molto bassa:
+
+\[
+PFD = 0.002
+\]
+
+quindi:
+
+\[
+Reliability = 1 - PFD = 1 - 0.002 = 0.998
+\]
+\begin{notaesame}
+Lo stesso programma può avere reliability diverse a seconda dell'operational profile considerato. La reliability non misura la correttezza assoluta del codice, ma la probabilità che il programma funzioni correttamente rispetto al modo in cui viene effettivamente usato.
+\end{notaesame}
 \section{Collegamento con progetto ed esame}
 
 Il testing non dimostra l'assenza di bug, perché esplora solo una parte del dominio. Serve quindi progettare i test in modo ingegneristico, scegliendo input rappresentativi e criteri di copertura adeguati.
