@@ -151,9 +151,6 @@ int myBuggyFact(int p){
 
 Il dominio degli input è molto ampio: per un intero a 32 bit ci sono \(2^{32}\) possibili valori. L'esplorazione esaustiva è quindi impraticabile.
 
-\begin{notaslide}
-Le slide usano la metafora dell'ago nel pagliaio per rappresentare la difficoltà di trovare l'input che manifesta il difetto all'interno di un dominio enorme.
-\end{notaslide}
 
 Per questo motivo occorre selezionare in modo intelligente solo alcune parti del dominio, ad esempio usando classi di equivalenza.
 
@@ -294,24 +291,3 @@ L'oracolo è necessario per stabilire se un test è passato o fallito, mentre l'
     \item la reliability è una proprietà statistica rispetto all'uso.
 \end{itemize}
 
-\section{Da ricordare}
-
-\begin{notaesame}
-La correttezza assoluta si dimostra con verifica formale; il testing, basandosi su campioni di input, fornisce confidenza e stime di reliability, non certezza matematica.
-\end{notaesame}
-
-\begin{notaesame}
-Distinguere sempre tra \textbf{failure}, \textbf{fault} ed \textbf{error}: la failure è il sintomo osservabile, il fault è il difetto nel codice o modello, l'error è la causa umana che ha introdotto il fault.
-\end{notaesame}
-
-\begin{notaesame}
-Testing e debugging sono attività diverse: il testing cerca di evidenziare malfunzionamenti, il debugging localizza e rimuove il difetto che li causa.
-\end{notaesame}
-
-\begin{notaesame}
-Il software testing può dimostrare la presenza di difetti, mai la loro assenza.
-\end{notaesame}
-
-\begin{notaesame}
-L'operational profile influenza la reliability: lo stesso programma può apparire più o meno affidabile a seconda di come viene effettivamente usato.
-\end{notaesame}

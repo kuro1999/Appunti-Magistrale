@@ -169,9 +169,6 @@ L'approccio seguito è detto \textbf{feedback-directed random test generation}. 
 
 \subsection{Test utili, ridondanti e illegali}
 
-\begin{notaslide}
-Le slide distinguono tra test utili, test ridondanti e test illegali.
-\end{notaslide}
 
 Un \textbf{test utile} è una sequenza valida che può essere mantenuta come caso di test.
 
@@ -192,7 +189,12 @@ La singola iterazione di Randoop può essere sintetizzata così:
 \]
 
 Se viene violato un contratto, Randoop minimizza la sequenza e produce un test case che evidenzia la violazione. Se la sequenza è ridondante, viene scartata. Se invece è valida e non ridondante, viene accettata come test.
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/DeAngelis/06_TestGeneration/randoop.png}
+    \caption{Flusso di funzionamento di Randoop: una sequenza randomica di invocazioni viene eseguita e controllata rispetto a contratti di default. Se un contratto viene violato, la sequenza viene minimizzata e trasformata in un test case che evidenzia la violazione; se non viola contratti ma è ridondante, viene scartata; altrimenti viene accettata come test.}
+    \label{fig:randoop-flow}
+\end{figure}
 \begin{notaslide}
 Le slide mostrano il flusso: sequenza randomica di invocazioni, esecuzione e controllo dei contratti, eventuale minimizzazione della sequenza, scarto delle sequenze ridondanti e accettazione delle sequenze utili.
 \end{notaslide}
@@ -204,6 +206,36 @@ Randoop usa contratti di default per valutare il comportamento delle sequenze ge
 \begin{notaslide}
 Tra i contratti riportati nelle slide compaiono controlli su eccezioni inattese e su metodi standard come \texttt{equals}, \texttt{hashCode} e \texttt{toString}.
 \end{notaslide}
+
+\subsection{Randoop: condizioni per la generazione dei test}
+
+Randoop genera test per un metodo o un costruttore \(M\) solo se alcune condizioni sono soddisfatte.
+
+In particolare, \(M\) deve essere raggiungibile attraverso uno dei parametri di configurazione previsti da Randoop, come:
+
+\begin{itemize}
+    \item \texttt{--testjar};
+    \item \texttt{--classlist};
+    \item \texttt{--testclass};
+    \item \texttt{--methodlist}.
+\end{itemize}
+
+Inoltre, il metodo non deve essere stato esplicitamente escluso dalla generazione tramite opzioni come:
+
+\begin{itemize}
+    \item \texttt{--omit-methods};
+    \item \texttt{--omit-methods-file}.
+\end{itemize}
+
+Infine, la classe che contiene il metodo, il package e il tipo di ritorno devono essere inclusi nel classpath di Randoop.
+
+\begin{notaslide}
+Le slide mostrano anche il riferimento alla documentazione ufficiale di Randoop e alle opzioni di esecuzione da riga di comando. L'idea operativa è fornire a Randoop il codice da analizzare, il classpath corretto e le classi o i metodi per cui generare test.
+\end{notaslide}
+
+\begin{notaesame}
+Randoop non genera test in modo magico per tutto il progetto: bisogna configurare correttamente classpath, classi, metodi inclusi ed eventuali esclusioni. Una configurazione incompleta può produrre pochi test, test non compilabili o nessun test utile.
+\end{notaesame}
 
 \subsection{Indicazioni operative}
 
@@ -355,6 +387,22 @@ I domini possono essere identificati a partire da:
     \item tipi di dato legati a scelte implementative;
     \item condizioni imposte in modo esplicito o implicito.
 \end{itemize}
+
+\subsection{Uso della category partition}
+
+Il metodo di \textbf{category partition} può essere usato sia nel testing manuale sia nel testing automatico.
+
+Nel \textbf{manual software testing}, la category partition aiuta a ragionare sul dominio del problema, sulle classi di input significative e sui casi da includere nella test suite. Questo è l'approccio richiesto nel corso: lo studente deve mostrare di saper identificare partizioni, combinazioni e boundary values in modo motivato.
+
+Nel \textbf{automatic software testing}, invece, la category partition può essere usata come base per strumenti automatici, euristiche o soluzioni basate su AI capaci di generare casi di test.
+
+\begin{notaslide}
+Le slide specificano che l'uso automatico avanzato della category partition richiede la progettazione e lo sviluppo di strumenti di generazione automatica, eventualmente basati su euristiche o AI. Questo è indicato come lavoro più adatto a una tesi o a sviluppi avanzati.
+\end{notaslide}
+
+\begin{notaesame}
+Nel progetto non basta dire quali test sono stati scelti. Bisogna spiegare come sono state identificate le partizioni, quali combinazioni sono state considerate e perché alcune combinazioni sono state mantenute o eliminate.
+\end{notaesame}
 
 \section{Boundary-value analysis}
 
@@ -529,12 +577,35 @@ Una richiesta a un LLM viene formulata tramite un \textbf{prompt}. È possibile 
     \item vincoli sul numero o tipo di test;
     \item livello di dettaglio desiderato.
 \end{itemize}
+\subsection{Struttura dei prompt}
+
+Un prompt è una richiesta in linguaggio naturale inviata a un LLM. La struttura del prompt può essere definita in modo abbastanza libero e può riguardare aspetti:
+
+\begin{itemize}
+    \item sintattici, cioè il formato della richiesta;
+    \item semantici, cioè il significato del task richiesto;
+    \item conversazionali, cioè il ruolo assegnato al modello;
+    \item contestuali, cioè le informazioni di progetto o dominio fornite.
+\end{itemize}
+
+È possibile specificare anche la struttura della risposta attesa. Per esempio, si può chiedere che l'output sia un file JUnit completo, che inizi e finisca con marker specifici, oppure che includa solo codice senza spiegazioni.
+
+\begin{notaslide}
+Le slide mostrano prompt in cui il modello viene istruito a comportarsi come un \emph{professional software tester}, a generare un file JUnit 4, a testare tutti i metodi della classe e a delimitare l'output con marker come \texttt{\#\#\#Test START\#\#\#} e \texttt{\#\#\#Test END\#\#\#}.
+\end{notaslide}
 
 \subsection{Pure-prompting schema}
 
 \begin{notaslide}
 Il pure-prompting schema include: PUT, processed PUT, context, prompt, raw generated tests, validator e selected/repaired tests.
 \end{notaslide}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/DeAngelis/06_TestGeneration/llm.png}
+    \caption{Schema di generazione dei test tramite LLM: il Program Under Test viene eventualmente preprocessato e combinato con prompt e contesto aggiuntivo. L'LLM produce test grezzi, che vengono poi validati, selezionati ed eventualmente riparati prima di essere usati.}
+    \label{fig:llm-test-generation-flow}
+\end{figure}
 
 Il flusso può essere descritto così:
 
@@ -553,17 +624,54 @@ Nel \textbf{zero-shot prompting}, il modello riceve direttamente la richiesta di
 
 Un esempio di struttura è chiedere al modello di agire come un tester professionale e generare un file JUnit per una classe specifica.
 
-\begin{notaslide}
-Le slide mostrano un prompt zero-shot in cui si chiede di generare un file JUnit 4 per testare tutti i metodi di una classe, fornendo il codice sorgente e delimitando l'output con marker di inizio e fine.
-\end{notaslide}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/DeAngelis/06_TestGeneration/zeroshot.png}
+    \caption{Esempio di prompt zero-shot per la generazione di test JUnit 4. Il prompt assegna al modello il ruolo di tester professionale, specifica la classe da testare, richiede di coprire tutti i metodi, impone marker di inizio e fine dell'output e include il codice sorgente del SUT tramite \texttt{\{source\_code\}}.}
+    \label{fig:zero-shot-prompt-source-code}
+\end{figure}
+
+
+\subsection{Variante zero-shot senza codice del SUT}
+
+Una variante interessante dello zero-shot prompting consiste nel rimuovere dal prompt il codice del SUT.
+
+In questo caso si può osservare come cambia l'output dell'LLM quando non riceve direttamente l'implementazione da testare. Questa variante può aiutare a capire quanto il modello stia ragionando sulle informazioni fornite e quanto, invece, stia producendo test generici o basati su conoscenza pregressa.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/DeAngelis/06_TestGeneration/zeroshotvariant}
+    \caption{Variante zero-shot senza codice del SUT: il prompt mantiene ruolo, obiettivo, classe target e vincoli di output, ma rimuove il codice sorgente. Questa configurazione permette di osservare quanto la qualità dei test dipenda dal contesto fornito al modello.}
+    \label{fig:zero-shot-prompt-no-source-code}
+\end{figure}
+
+\begin{notaesame}
+Se si rimuove il codice del SUT, i test generati possono diventare più generici, meno compilabili o meno aderenti al comportamento reale. Questa variante è utile per discutere criticamente il ruolo del contesto nel prompting.
+\end{notaesame}
 
 \subsection{Few-shot prompting}
+Nel \textbf{few-shot prompting}, oltre alla richiesta principale, il prompt contiene uno o più esempi di test o di risposte attese.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/DeAngelis/06_TestGeneration/fewshot.png}
+    \caption{Esempio di prompt few-shot per la generazione di test JUnit 4. Rispetto allo zero-shot, il prompt include uno o più esempi tramite \texttt{\{fewshot\_example\}}, oltre al nome della classe, al codice sorgente del SUT e ai marker di inizio e fine dell'output.}
+    \label{fig:few-shot-prompt}
+\end{figure}
+Questi esempi servono a guidare il modello rispetto a:
 
-Nel \textbf{few-shot prompting}, il prompt contiene esempi di test o di risposte attese. Gli esempi servono a guidare lo stile, il formato e il livello di dettaglio dell'output.
+\begin{itemize}
+    \item stile del codice;
+    \item struttura della classe di test;
+    \item uso delle annotazioni JUnit;
+    \item forma delle assert;
+    \item livello di dettaglio richiesto.
+\end{itemize}
 
-\begin{notaprof}
-Il few-shot prompting può aiutare l'LLM a produrre test più simili a quelli desiderati, perché mostra direttamente il tipo di risposta attesa.
-\end{notaprof}
+Rispetto allo zero-shot, il few-shot può produrre output più aderenti al formato desiderato, ma dipende fortemente dalla qualità degli esempi forniti.
+
+\begin{notaesame}
+Gli esempi inseriti nel prompt influenzano molto l'output. Esempi poveri, incompleti o con assert deboli possono guidare l'LLM verso test altrettanto deboli.
+\end{notaesame}
 
 \subsection{Chain-of-Thought}
 
@@ -578,22 +686,57 @@ Per esempio, si può chiedere di:
     \item generare i test JUnit.
 \end{enumerate}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/DeAngelis/06_TestGeneration/ppcot.png}
+    \caption{Schema di generazione dei test con Chain-of-Thought: oltre al PUT, al contesto e al prompt, il modello riceve indicazioni di ragionamento passo-passo. L'obiettivo è guidare l'LLM nell'analisi del codice, nell'identificazione degli edge cases e nella produzione di test più strutturati.}
+    \label{fig:cot-test-generation-flow}
+\end{figure}
 \subsection{Guided Tree-of-Thoughts}
 
-Nel \textbf{Guided Tree-of-Thoughts prompting}, il prompt guida il modello a esplorare più direzioni o prospettive. Le slide mostrano un esempio in cui diversi esperti propongono test, discutono, scartano idee errate e convergono su una test suite.
+Nel \textbf{Guided Tree-of-Thoughts prompting}, il modello viene guidato a simulare più ragionamenti o più prospettive alternative.
 
-\begin{notaslide}
-Le slide precisano che Guided ToT può includere esempi, come nel few-shot prompting, anche se nell'esempio mostrato non sono riportati.
-\end{notaslide}
+Un esempio tipico consiste nel chiedere al modello di immaginare più esperti di software testing che collaborano per costruire una test suite. Ogni esperto propone idee, controlla quelle degli altri, individua casi mancanti e scarta soluzioni errate.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/DeAngelis/06_TestGeneration/guidedcot}
+    \caption{Esempio di prompt Guided Tree-of-Thoughts per la generazione di test JUnit 4. Il prompt simula più esperti di software testing che collaborano, estraendo metodi pubblici, identificando edge cases ed eccezioni, generando test individuali e fondendoli in una test suite finale.}
+    \label{fig:guided-tot-prompt}
+\end{figure}
+La strategia può includere passaggi come:
+
+\begin{enumerate}
+    \item identificare tutti i metodi pubblici;
+    \item verificare nomi, firme e funzionalità dei metodi;
+    \item individuare edge cases;
+    \item includere scenari di eccezione;
+    \item generare test JUnit;
+    \item fondere i singoli test in una test suite completa.
+\end{enumerate}
+
+\begin{notaesame}
+Guided ToT non garantisce automaticamente test corretti, ma può aiutare a rendere più esplicito il processo di ragionamento richiesto all'LLM e a ridurre omissioni evidenti.
+\end{notaesame}
 \subsection{RAG}
 
-La \textbf{Retrieval-Augmented Generation} consiste nel fornire al modello informazioni mirate di contesto, recuperate da fonti esterne o documentazione indicizzata.
+La \textbf{Retrieval-Augmented Generation} consiste nel fornire all'LLM informazioni aggiuntive recuperate da fonti esterne, come documentazione, specifiche, codice del progetto, API o esempi di utilizzo.
+
+Nel contesto della generazione dei test, il RAG serve a dare al modello più contesto sul \textbf{Program Under Test} e sul progetto. In questo modo l'LLM non genera test basandosi solo sulla conoscenza generale appresa in addestramento, ma usa anche informazioni specifiche e aggiornate.
 
 \begin{notaprof}
-Gli LLM possono essere addestrati su dati generici o non aggiornati. Il RAG consente di fornire documentazione specifica del progetto, API aggiornate o dettagli di dominio necessari a generare test più contestualizzati.
+Per esempio, se si vuole generare un test per un metodo di Apache BookKeeper, il RAG può recuperare documentazione della classe, firme dei metodi, vincoli sui parametri ed esempi d'uso. Questo aiuta l'LLM a produrre test più aderenti al comportamento reale del sistema.
 \end{notaprof}
 
+\begin{notaesame}
+Il RAG riduce il rischio che l'LLM inventi API, parametri o comportamenti non presenti nel progetto. Tuttavia, anche con RAG, i test generati devono essere controllati, compilati e validati.
+\end{notaesame}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/DeAngelis/06_TestGeneration/rag}
+    \caption{Schema di test generation con Retrieval-Augmented Generation: oltre al PUT, al prompt e al contesto iniziale, l'LLM riceve informazioni aggiuntive recuperate da fonti esterne, come documentazione, API o specifiche di progetto. Questo contesto supplementare aiuta a generare test più coerenti con il sistema reale.}
+    \label{fig:rag-test-generation-flow}
+\end{figure}
 \section{Collegamento con progetto ed esame}
 
 Nel corso sono richiesti pochi test rispetto ai numeri industriali, ma le scelte devono essere motivate in modo rigoroso.
@@ -637,28 +780,3 @@ Gli errori da evitare sono:
     \item non giustificare la selezione dei casi.
 \end{itemize}
 
-\section{Da ricordare}
-
-\begin{notaesame}
-Un test è completo solo se contiene input, contesto e output atteso, cioè un oracle.
-\end{notaesame}
-
-\begin{notaesame}
-La boundary-value analysis è fondamentale perché molti errori di programmazione si manifestano sui valori limite delle classi di equivalenza.
-\end{notaesame}
-
-\begin{notaesame}
-La category partition è un processo semantico, non solo sintattico. Bisogna considerare le regole di business e il significato dei parametri, non soltanto il loro tipo Java.
-\end{notaesame}
-
-\begin{notaesame}
-Randoop genera test automaticamente tramite feedback-directed random testing, ma i test generati devono essere selezionati e giustificati prima di essere inclusi nel progetto.
-\end{notaesame}
-
-\begin{notaesame}
-Gli LLM sono strumenti utili per generare candidati test, ma producono output probabilistici. Prompt, contesto, esempi e validazione sono essenziali per ottenere risultati affidabili.
-\end{notaesame}
-
-\begin{notaesame}
-Non bisogna giustificare pochi test con la riduzione del costo. Bisogna giustificarli tramite partizioni, boundary values, oracle e analisi delle combinazioni ammissibili.
-\end{notaesame}

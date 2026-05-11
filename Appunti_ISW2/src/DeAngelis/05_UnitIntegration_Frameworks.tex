@@ -1,10 +1,15 @@
-\chapter{Unit and Integration Testing: Frameworks} ha l'obiettivo di far emergere malfunzionamenti derivanti dall'interazione tra due o più moduli o componenti del \textbf{System Under Test} (SUT).
+\chapter{Unit and Integration Testing: Frameworks}
+
+\section{Test di integrazione}
+
+Il \textbf{test di integrazione} ha l'obiettivo di far emergere malfunzionamenti derivanti dall'interazione tra due o più moduli o componenti del \textbf{System Under Test} (SUT).
 
 In particolare, serve ad acquisire confidenza che:
 
 \begin{itemize}
     \item esistano le dovute interconnessioni tra i moduli o componenti del SUT;
-    \item le interazioni rispettino i \textbf{contratti funzionali} stabiliti dai protocolli o dalle specifiche di interazione.
+    \item le interazioni rispettino i \textbf{contratti funzionali} stabiliti dai protocolli o dalle specifiche di interazione;
+    \item i moduli comunichino correttamente quando vengono composti.
 \end{itemize}
 
 L'assunzione di partenza è che ogni modulo, testato in isolamento, si comporti correttamente. In altre parole, i \textbf{test di unità} devono essere già stati superati.
@@ -21,11 +26,41 @@ I test di integrazione possono essere progettati secondo approcci diversi:
 Nella pratica si usano spesso approcci misti. Da un lato serve conoscere l'API esposta, quindi il contratto visibile dall'esterno; dall'altro può essere necessario conoscere alcune meccaniche interne per configurare correttamente l'interazione tra componenti.
 \end{notaprof}
 
+
 Poiché il test di integrazione è spesso incrementale, non sempre tutti i moduli sono disponibili o desiderabili nell'ambiente di test. Per questo motivo si usano \textbf{stub}, \textbf{mock} e \textbf{test driver}.
 
-Uno \textbf{stub} o \textbf{mock} simula il comportamento di un'unità mancante o non considerata nel test. Spesso tale comportamento è semplice, costante o controllato artificialmente.
+\section{Stub, mock e test driver}
+
+Uno \textbf{stub} o \textbf{mock} simula il comportamento di un'unità mancante, non disponibile o non considerata nel test. Spesso tale comportamento è semplice, costante o controllato artificialmente.
+
+Uno stub o mock:
+
+\begin{itemize}
+    \item non è il soggetto del test;
+    \item fa parte dell'ambiente di test;
+    \item simula una dipendenza richiesta dal SUT;
+    \item permette di isolare l'interazione che si vuole verificare.
+\end{itemize}
+
+\begin{notaprof}
+Se si vuole testare un componente che dipende da un database, può essere utile usare un mock del database. In questo modo si verifica la logica del componente senza dipendere realmente da un database esterno, che potrebbe essere lento, instabile o difficile da configurare.
+\end{notaprof}
 
 Un \textbf{test driver} è invece un elemento software che esegue o coordina il test, configurando l'ambiente, preparando le risorse, attivando le interazioni e svolgendo operazioni di clean-up dopo l'esecuzione.
+
+Un test driver avanzato può occuparsi anche di:
+
+\begin{itemize}
+    \item configurazione dell'ambiente di test;
+    \item inizializzazione delle risorse;
+    \item coordinamento tra componenti;
+    \item clean-up dopo l'esecuzione;
+    \item teardown dell'ambiente.
+\end{itemize}
+
+\begin{notaesame}
+Stub e mock rispondono simulando dipendenze richieste dal SUT. Il test driver, invece, guida l'esecuzione del test e coordina l'interazione tra i componenti.
+\end{notaesame}
 
 \section{Strategie di integration testing}
 
@@ -43,12 +78,7 @@ Le strategie comuni sono:
     \item \textbf{bottom-up}.
 \end{itemize}
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.72\textwidth]{img/DeAngelis/05_UnitIntegration_Frameworks/slide06}
-    \caption{Principali strategie di integration testing. La figura mette a confronto approccio big bang, top-down e bottom-up, evidenziando il ruolo di stub e test driver nel raffinamento progressivo dell'integrazione.}
-    \label{fig:lez17-integration-strategies}
-\end{figure}
+
 
 \subsection{Big bang}
 
@@ -58,6 +88,10 @@ La strategia \textbf{big bang} consiste nell'integrare tutte le componenti in un
 È la soluzione più semplice da descrivere, ma spesso è sconsigliata. Se il sistema fallisce dopo aver integrato tutto insieme, diventa molto difficile capire quale interazione abbia causato il problema. Inoltre, più difetti possono mascherarsi a vicenda.
 \end{notaprof}
 
+\begin{notaesame}
+Il limite principale del big bang è la bassa diagnosabilità: quando qualcosa non funziona, è difficile capire se il problema dipenda da un singolo componente, da una specifica interfaccia o dall'interazione tra più moduli.
+\end{notaesame}
+
 \subsection{Top-down}
 
 La strategia \textbf{top-down} parte dalle interfacce esposte e dalle funzionalità più generali, cioè quelle più vicine ai confini del SUT.
@@ -65,6 +99,8 @@ La strategia \textbf{top-down} parte dalle interfacce esposte e dalle funzionali
 Le sequenze di test sono definite a partire dagli scenari d'uso del sistema. Il raffinamento avviene progressivamente:
 
 \begin{itemize}
+    \item partendo dai moduli di livello superiore;
+    \item simulando i moduli inferiori non ancora disponibili tramite stub;
     \item sostituendo gli stub con implementazioni reali;
     \item aggiungendo moduli interni via via più dettagliati;
     \item ampliando il sottoinsieme del sistema considerato.
@@ -78,15 +114,19 @@ Nel top-down, gli \textbf{stub} simulano comportamenti o funzionalità mancanti 
 Nel top-down si parte dall'alto, cioè dalle funzionalità più visibili, e si scende progressivamente verso i dettagli interni. Gli stub vengono rimpiazzati quando i componenti reali diventano disponibili.
 \end{notaprof}
 
+Il vantaggio del top-down è che consente di verificare presto il comportamento generale del sistema. Il limite è che può richiedere molti stub, soprattutto quando i moduli inferiori sono numerosi o complessi.
+
 \subsection{Bottom-up}
 
 La strategia \textbf{bottom-up} parte dalle unità elementari, cioè dai componenti più interni o lontani dai bordi del sistema.
 
-In questo caso il raffinamento avviene considerando progressivamente interfacce più generali o parti più periferiche del sistema.
+In questo caso il raffinamento avviene considerando progressivamente interfacce più generali o parti più periferiche del sistema. I moduli superiori non ancora disponibili vengono simulati tramite \textbf{test driver}.
 
 \begin{notaslide}
 Nel bottom-up, i \textbf{test driver} simulano il comportamento di moduli o componenti più esterni del sistema. Se alcune funzionalità mancanti devono comunque essere richiamate, possono essere emulate tramite stub.
 \end{notaslide}
+
+Il vantaggio del bottom-up è che si costruisce progressivamente fiducia sui componenti di base. Il limite è che il comportamento complessivo del sistema emerge più tardi, perché le interfacce più alte vengono integrate solo nelle fasi successive.
 
 \subsection{Spiegazione dei diagrammi}
 
@@ -94,9 +134,19 @@ Nel bottom-up, i \textbf{test driver} simulano il comportamento di moduli o comp
 Il diagramma delle slide mostra una gerarchia di moduli: C1 è il modulo più alto, che interagisce con C2 e C3; questi a loro volta portano verso moduli più interni come C4 e C5.
 \end{notaslide}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\textwidth]{img/DeAngelis/05_UnitIntegration_Frameworks/slide06}
+    \caption{Principali strategie di integration testing. La figura mette a confronto approccio big bang, top-down e bottom-up, evidenziando il ruolo di stub e test driver nel raffinamento progressivo dell'integrazione.}
+    \label{fig:lez17-integration-strategies}
+\end{figure}
 Nel caso \textbf{top-down}, si parte da C1 e si simulano inizialmente C2 e C3 con stub. Successivamente si introducono C2 e C3 reali, continuando a simulare i moduli più profondi, fino ad arrivare al sistema completo.
 
 Nel caso \textbf{bottom-up}, si parte dai moduli più bassi, ad esempio C5 o C4-C5, usando test driver per simulare i livelli superiori. Si risale poi gradualmente verso C1.
+
+\begin{notaesame}
+Non esiste una strategia sempre migliore. La scelta dipende dalla struttura del sistema, dalla disponibilità dei componenti, dal costo di creare stub e driver, e dagli obiettivi del test.
+\end{notaesame}
 
 \section{Test di integrazione in sistemi Object-Oriented}
 
@@ -116,6 +166,8 @@ Nei sistemi a oggetti può essere scomodo o costoso costruire manualmente tutte 
 \begin{notaslide}
 Gli strumenti di test supportano il testing incrementale, permettendo di isolare specifiche interazioni del SUT e di emulare componenti mancanti dell'ambiente.
 \end{notaslide}
+
+Simulare collaboratori esterni consente di testare una specifica interazione senza dover istanziare l'intera rete di oggetti coinvolti.
 
 \section{Mockito}
 
@@ -180,6 +232,58 @@ Nel caso di \texttt{AgendaTest}, si testa un'implementazione reale, come \texttt
 In questo modo il test esercita le API reali di \texttt{MyAgenda}, ma controlla artificialmente una dipendenza interna, rendendo l'ambiente di test più prevedibile.
 \end{notaprof}
 
+\begin{notaesame}
+Mockito non serve a testare il mock in sé. Serve a controllare il comportamento del SUT quando interagisce con dipendenze simulate.
+\end{notaesame}
+
+\section{Maven nel testing}
+
+\textbf{Maven} è un sistema di build e gestione delle dipendenze sviluppato da Apache. È molto usato nei progetti Java ed è basato su un'architettura modulare a plug-in.
+
+Maven gestisce:
+
+\begin{itemize}
+    \item compilazione;
+    \item dipendenze;
+    \item test;
+    \item packaging;
+    \item installazione e deploy;
+    \item plug-in collegati al ciclo di build.
+\end{itemize}
+
+\begin{notaprof}
+Maven gestisce automaticamente le dipendenze in modo transitivo. Lo sviluppatore dichiara le librerie nel \texttt{pom.xml}; Maven scarica da Maven Central sia le librerie indicate sia le loro sotto-dipendenze, mettendole in cache nella directory locale \texttt{.m2}.
+\end{notaprof}
+
+Il file \texttt{pom.xml} descrive il progetto e contiene:
+
+\begin{itemize}
+    \item coordinate del progetto;
+    \item dipendenze;
+    \item plug-in;
+    \item configurazioni di build;
+    \item informazioni sui moduli.
+\end{itemize}
+
+Le principali fasi del ciclo di build Maven sono:
+
+\begin{itemize}
+    \item \texttt{validate};
+    \item \texttt{compile};
+    \item \texttt{test};
+    \item \texttt{package};
+    \item \texttt{integration-test};
+    \item \texttt{verify};
+    \item \texttt{install};
+    \item \texttt{deploy};
+    \item \texttt{clean};
+    \item \texttt{site}.
+\end{itemize}
+
+\begin{notaesame}
+Le fasi Maven sono sequenziali. Un errore in una fase, per esempio un test fallito durante \texttt{test}, può interrompere la build e impedire l'esecuzione delle fasi successive.
+\end{notaesame}
+
 \section{Maven Surefire Plugin}
 
 Il \textbf{Maven Surefire Plugin} è pensato principalmente per eseguire i \textbf{test di unità}.
@@ -216,6 +320,10 @@ I report vengono generalmente generati in:
 \begin{notaslide}
 Le slide mostrano una configurazione del \texttt{pom.xml} in cui il plugin \texttt{maven-surefire-plugin} è dichiarato sotto \texttt{pluginManagement}. È inoltre mostrata la dipendenza da JUnit con \texttt{scope} impostato a \texttt{test}.
 \end{notaslide}
+
+\begin{notaesame}
+Se una classe di test non rispetta i pattern riconosciuti da Surefire, Maven potrebbe ignorarla. Questo può produrre una falsa sensazione di successo, perché la build passa senza aver realmente eseguito quel test.
+\end{notaesame}
 
 \section{Maven Failsafe Plugin}
 
@@ -266,7 +374,7 @@ La distinzione principale è:
     \item \textbf{Failsafe}: esegue integration test nelle fasi \texttt{integration-test} e \texttt{verify}.
 \end{itemize}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.72\textwidth]{img/DeAngelis/05_UnitIntegration_Frameworks/slide23}
     \caption{Configurazione del Maven Failsafe Plugin per l'esecuzione dei test di integrazione durante le fasi \texttt{integration-test} e \texttt{verify} del ciclo di build Maven.}
@@ -284,6 +392,8 @@ Chiamare un integration test con un nome compatibile con Surefire, ad esempio \t
 \end{notaesame}
 
 \section{Raccomandazioni per il progetto}
+
+Nel progetto è importante collegare correttamente progettazione dei test, implementazione, build e Continuous Integration.
 
 \begin{notaesame}
 Nel progetto è fortemente consigliato sperimentare la progettazione e realizzazione di test di unità associandoli al processo di Continuous Integration tramite Maven Surefire.
@@ -305,5 +415,6 @@ Errori comuni da evitare:
     \item scrivere test senza \texttt{assert} o senza \texttt{verify};
     \item abusare di matcher troppo generici, come \texttt{any()}, indebolendo l'oracolo del test;
     \item confondere il test driver con il SUT;
-    \item testare lo stub o il mock invece dell'unità reale sotto test.
+    \item testare lo stub o il mock invece dell'unità reale sotto test;
+    \item non agganciare i test automatici alla CI.
 \end{itemize}
