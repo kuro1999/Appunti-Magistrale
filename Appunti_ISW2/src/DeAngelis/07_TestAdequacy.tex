@@ -1,0 +1,383 @@
+\chapter{Adeguatezza dei test e criteri di coverage}
+
+\section{Adeguatezza dei test}
+
+Una volta iniziata l'attività di testing, uno dei problemi principali è stabilire \textbf{se e quando sia possibile smettere di testare} il \textbf{System Under Test} (SUT).
+
+Le domande fondamentali sono:
+
+\begin{itemize}
+    \item i miei test sono sufficientemente buoni?
+    \item il SUT è stato testato in modo abbastanza meticoloso?
+    \item i test sono adeguati rispetto agli obiettivi prefissati?
+\end{itemize}
+
+\begin{notaprof}
+Non potendo esplorare il dominio degli input in modo esaustivo, il testing è sempre un'attività \emph{best-effort}. La qualità della test suite dipende da vincoli di tempo, budget, risorse computazionali e obiettivi del progetto.
+\end{notaprof}
+
+Non esiste una tecnica di adeguatezza perfetta e generale. Le diverse tecniche dipendono dal tipo di processo, dagli artefatti disponibili e dalle strategie applicate. Di conseguenza, il testing richiede spesso di negoziare \textbf{trade-off} tra costo, profondità dell'analisi e livello di confidenza ottenuto.
+
+\begin{notaesame}
+L'adeguatezza dei test non dimostra l'assenza di bug. Serve piuttosto a fornire evidenza del fatto che la test suite ha esplorato il SUT secondo criteri espliciti e misurabili.
+\end{notaesame}
+
+\section{Functional vs Structural Adequacy}
+
+I criteri di adeguatezza possono essere distinti in due grandi famiglie:
+
+\begin{itemize}
+    \item \textbf{criteri funzionali}, basati su requisiti, specifiche o modelli del comportamento atteso;
+    \item \textbf{criteri strutturali}, basati sull'effettiva implementazione del SUT.
+\end{itemize}
+
+\subsection{Adeguatezza funzionale}
+
+L'adeguatezza funzionale è basata su modelli o specifiche del SUT non necessariamente eseguibili. L'attenzione è posta sui \textbf{comportamenti osservabili} del sistema, senza considerare direttamente il codice sorgente.
+
+Questo approccio è vicino al testing \textbf{black-box}: si valuta se la test suite copre scenari significativi derivati da requisiti, specifiche, activity diagram o regole di business.
+
+\begin{notaslide}
+Il limite principale dell'approccio funzionale è che non permette di scoprire errori dovuti a dettagli implementativi. Se il programmatore ha introdotto un caso limite non descritto dalle specifiche, un criterio puramente funzionale potrebbe non intercettarlo.
+\end{notaslide}
+
+\subsection{Adeguatezza strutturale}
+
+L'adeguatezza strutturale si basa invece sull'implementazione effettiva del SUT, come codice sorgente o \textbf{Control-Flow Graph}. L'obiettivo è esplorare la maggior parte possibile del codice realmente eseguito.
+
+Questo approccio è vicino al testing \textbf{white-box}: si misura quanto codice, quanti rami o quante condizioni sono state effettivamente esercitate dalla test suite.
+
+\begin{notaesame}
+La coverage strutturale aumenta la confidenza sul fatto che il codice sia stato esplorato, ma non garantisce che i test abbiano un oracle corretto né che siano state trovate failure.
+\end{notaesame}
+
+\begin{notaprof}
+Se un sistema dovrebbe offrire sia tè sia caffè, ma il programmatore implementa solo il caffè, una coverage strutturale del 100\% sul codice esistente non farà emergere la funzionalità mancante del tè. I criteri strutturali non possono scoprire ciò che non è stato implementato.
+\end{notaprof}
+
+\section{Criteri funzionali}
+
+I criteri funzionali stabiliscono quando una test suite può essere considerata adeguata rispetto a requisiti o specifiche.
+
+Nel caso di Apache BookKeeper, le slide riportano alcuni esempi di criteri funzionali:
+
+\begin{itemize}
+    \item \textbf{CF1}: almeno un test di scrittura-lettura su una entry dove nessun bookie fallisce;
+    \item \textbf{CF2}: almeno un test di scrittura-lettura che simuli il fallimento di \(Q_a - 2\) bookies;
+    \item \textbf{CF3}: almeno un test di scrittura-lettura che simuli il fallimento di \(Q_a - 1\) bookies;
+    \item \textbf{CF4}: almeno un test che scriva entry su un ledger e le recuperi verificando che siano nello stesso ordine;
+    \item \textbf{CF5}: almeno un test con un writer e più reader, in cui i reader confrontano le entry recuperate.
+\end{itemize}
+
+\begin{notaslide}
+Altri esempi di criteri funzionali sono: \textbf{CF6}, almeno un test che si chiuda con successo; \textbf{CF7}, almeno un test che causi il fallimento del ``CAS Write''; \textbf{CF8}, almeno un test che si chiuda con un errore.
+\end{notaslide}
+
+\begin{notaprof}
+Un criterio di adeguatezza funzionale stabilisce a priori quali scenari devono essere coperti. Una test suite è adeguata se copre gli scenari derivati dai requisiti o dalle specifiche, indipendentemente da come i test siano stati generati.
+\end{notaprof}
+
+\section{Criteri strutturali di control-flow}
+
+I criteri strutturali basati sul \textbf{control-flow} valutano quanto la test suite esplori il codice eseguibile del SUT.
+
+Il programma può essere rappresentato tramite un \textbf{Control-Flow Graph} (CFG), composto da:
+
+\begin{itemize}
+    \item nodi, che rappresentano statement o blocchi di statement;
+    \item archi, che rappresentano i possibili passaggi di controllo;
+    \item decisioni, che rappresentano punti di scelta come \texttt{if}, \texttt{while} o \texttt{switch};
+    \item condizioni atomiche, cioè sotto-espressioni booleane semplici.
+\end{itemize}
+
+\begin{notaesame}
+Se esistono statement, decisioni o condizioni sintatticamente irraggiungibili, questi elementi non dovrebbero penalizzare ingiustamente la metrica. Devono essere esclusi dal denominatore della misura di coverage.
+\end{notaesame}
+
+\subsection{Statement e Block Coverage}
+
+La \textbf{Statement Coverage} misura la percentuale di istruzioni eseguite almeno una volta dalla test suite.
+
+La \textbf{Block Coverage} ragiona in modo simile, ma considera blocchi di istruzioni senza diramazioni interne.
+
+Una test suite è pienamente adeguata rispetto a questo criterio quando tutti gli statement o blocchi raggiungibili sono stati eseguiti almeno una volta.
+
+\begin{notaprof}
+Anche una coverage molto alta può non bastare. Coprire il 99\% delle righe può essere insufficiente se l'1\% mancante contiene l'unico ramo che nasconde un bug critico.
+\end{notaprof}
+
+\subsection{Branch o Decision Coverage}
+
+La \textbf{Branch Coverage}, detta anche \textbf{Decision Coverage}, misura se ogni decisione è stata esplorata in tutti i suoi possibili esiti.
+
+Per esempio, in un \texttt{if}, una test suite adeguata deve far valutare la decisione almeno una volta a \texttt{true} e almeno una volta a \texttt{false}.
+
+Questo criterio è più forte della semplice statement coverage, perché obbliga a esplorare anche le alternative del flusso di controllo.
+
+\begin{notaesame}
+La Branch Coverage considera il risultato complessivo della decisione, ma non spiega quali condizioni atomiche abbiano determinato quel risultato.
+\end{notaesame}
+
+\subsection{Condition Coverage}
+
+La \textbf{Condition Coverage} valuta le condizioni booleane atomiche contenute nelle decisioni complesse.
+
+Una test suite è adeguata se ogni condizione atomica assume almeno una volta il valore \texttt{true} e almeno una volta il valore \texttt{false}.
+
+Per esempio, nella decisione:
+
+\[
+(i > 0) \land (j > 0)
+\]
+
+le condizioni atomiche sono:
+
+\[
+(i > 0)
+\qquad
+(j > 0)
+\]
+
+Entrambe devono essere valutate sia a \texttt{true} sia a \texttt{false}.
+
+\begin{notaprof}
+In linguaggi come Java o C++, la \emph{lazy evaluation} può impedire la valutazione di alcune condizioni. Per esempio, in una congiunzione con \texttt{\&\&}, se la prima condizione è falsa, la seconda potrebbe non essere valutata.
+\end{notaprof}
+
+\begin{notaesame}
+La Condition Coverage non implica necessariamente la Branch Coverage, e la Branch Coverage non implica necessariamente la Condition Coverage.
+\end{notaesame}
+
+\subsection{Branch-Condition Coverage}
+
+La \textbf{Branch-Condition Coverage} combina branch coverage e condition coverage.
+
+L'obiettivo è coprire sia:
+
+\begin{itemize}
+    \item gli esiti complessivi delle decisioni;
+    \item i valori \texttt{true} e \texttt{false} delle condizioni atomiche.
+\end{itemize}
+
+Questo criterio è più forte dei due criteri presi singolarmente, ma può ancora non essere sufficiente per dimostrare che ogni condizione atomica abbia un effetto indipendente sulla decisione complessa.
+
+\subsection{Multiple Condition Coverage}
+
+La \textbf{Multiple Condition Coverage} richiede di coprire tutte le possibili combinazioni di valori delle condizioni atomiche.
+
+Se una decisione contiene \(k\) condizioni atomiche, il numero di combinazioni possibili è:
+
+\[
+2^k
+\]
+
+Quindi, per una decisione con tre condizioni atomiche, bisognerebbe considerare otto combinazioni.
+
+\begin{notaesame}
+La Multiple Condition Coverage è molto completa, ma soffre di esplosione combinatoria. Per questo motivo può essere impraticabile nei sistemi reali.
+\end{notaesame}
+
+\subsection{MC/DC Coverage}
+
+La \textbf{Modified Condition/Decision Coverage} (MC/DC) è un compromesso pratico tra completezza e costo.
+
+L'obiettivo è evitare l'esplosione combinatoria della Multiple Condition Coverage, ma mantenere una forte garanzia sul ruolo delle condizioni atomiche.
+
+Una test suite MC/DC adequate deve garantire che:
+
+\begin{enumerate}
+    \item ogni blocco o statement rilevante sia coperto;
+    \item ogni condizione atomica assuma almeno una volta \texttt{true} e almeno una volta \texttt{false};
+    \item ogni decisione assuma tutti i suoi possibili esiti;
+    \item ogni condizione atomica mostri un \textbf{effetto indipendente} sul risultato della decisione complessa.
+\end{enumerate}
+
+\begin{notaesame}
+L'effetto indipendente significa che bisogna trovare due test in cui cambia una sola condizione atomica, tutte le altre restano uguali, e il risultato della decisione complessa cambia.
+\end{notaesame}
+
+MC/DC è particolarmente rilevante nei contesti critici, perché fornisce un livello di confidenza elevato senza richiedere necessariamente tutte le combinazioni possibili.
+
+\section{Relazioni tra i criteri}
+
+I criteri di coverage non sono tutti equivalenti e non misurano la stessa cosa.
+
+Una coverage alta non garantisce l'assenza di bug. Essa indica solo che il codice è stato esplorato secondo un certo criterio. Per rivelare failure servono anche oracle corretti e test significativi.
+
+\begin{notaslide}
+Le slide sottolineano che non esiste una garanzia per cui alta coverage strutturale implichi esposizione di failure. La coverage strutturale aumenta solo la confidenza nell'esplorazione del SUT.
+\end{notaslide}
+
+Un esempio classico riguarda la decisione:
+
+\[
+(i > 0) \land (j > 0)
+\]
+
+Con i test:
+
+\[
+(i=-3, j=2)
+\qquad
+(i=4, j=2)
+\]
+
+si può ottenere Branch Coverage, perché la decisione complessiva assume sia \texttt{false} sia \texttt{true}. Tuttavia, la condizione \(j > 0\) rimane sempre vera, quindi non si ottiene Condition Coverage completa.
+
+Viceversa, con i test:
+
+\[
+(i=-3, j=2)
+\qquad
+(i=24, j=-1)
+\]
+
+le condizioni atomiche possono assumere sia \texttt{true} sia \texttt{false}, ma la decisione complessiva può rimanere sempre falsa. In questo caso si può ottenere Condition Coverage senza ottenere Branch Coverage completa.
+
+\begin{notaesame}
+Coprire le condizioni atomiche non basta a coprire i rami, e coprire i rami non basta a dimostrare il ruolo delle singole condizioni atomiche.
+\end{notaesame}
+
+\section{MC/DC}
+
+La MC/DC nasce per gestire decisioni complesse senza dover eseguire tutte le combinazioni booleane possibili.
+
+Nel caso di una decisione con molte condizioni atomiche, la Multiple Condition Coverage richiederebbe \(2^k\) combinazioni. MC/DC riduce il costo, richiedendo però di dimostrare che ciascuna condizione atomica possa influenzare indipendentemente l'esito della decisione.
+
+\begin{notaesame}
+MC/DC è più forte della semplice Branch Coverage e della semplice Condition Coverage, perché richiede di mostrare l'effetto indipendente di ogni condizione atomica sulla decisione complessa.
+\end{notaesame}
+
+Per dimostrare l'effetto indipendente di una condizione atomica, bisogna individuare una coppia di test in cui:
+
+\begin{itemize}
+    \item la condizione atomica considerata cambia valore;
+    \item tutte le altre condizioni atomiche restano invariate;
+    \item il valore finale della decisione cambia.
+\end{itemize}
+
+Questo criterio permette di capire se una condizione atomica è realmente capace di determinare l'esito della decisione, invece di essere mascherata da altre condizioni.
+
+\section{Esempio MC/DC da Mathur}
+
+\begin{notaslide}
+L'esempio MC/DC è tratto dal problema P7.14 del libro di Mathur.
+\end{notaslide}
+
+Il programma considerato decide quale funzione di sparo invocare, tra \texttt{fire-1}, \texttt{fire-2} e \texttt{fire-3}, sulla base di coordinate, direzione corrente e direzione precedente. Il comportamento avviene all'interno di un ciclo.
+
+\subsection{Requisiti}
+
+I requisiti principali sono:
+
+\begin{itemize}
+    \item \textbf{R1}: definisce le regole per scegliere quale funzione di sparo invocare;
+    \item \textbf{R1.1}: specifica il caso in cui invocare \texttt{fire-1};
+    \item \textbf{R1.2}: specifica il caso in cui invocare \texttt{fire-2};
+    \item \textbf{R1.3}: rappresenta il caso di default, cioè l'invocazione di \texttt{fire-3};
+    \item \textbf{R2}: stabilisce che l'invocazione continua in loop finché \texttt{done} non diventa \texttt{true}.
+\end{itemize}
+
+\subsection{Decisioni e condizioni}
+
+Le decisioni principali sono:
+
+\begin{itemize}
+    \item \(\mathbf{C_1}\): condizione del ciclo, cioè \texttt{!done};
+    \item \(\mathbf{C_2}\): condizione complessa:
+    \[
+    (x < y) \land (z \cdot z > y) \land (prev == \text{``East''})
+    \]
+    \item \(\mathbf{C_3}\): condizione complessa dell'\texttt{else-if}:
+    \[
+    ((x < y) \land (z \cdot z \leq y)) \lor (current == \text{``South''})
+    \]
+\end{itemize}
+
+\subsection{Test suite T1}
+
+La prima test suite, \(T_1\), contiene quattro test iniziali:
+
+\[
+t_1, t_2, t_3, t_4
+\]
+
+Questa suite raggiunge il 100\% di statement coverage, block coverage e decision coverage.
+
+Tuttavia, \(T_1\) non è sufficiente per ottenere condition coverage completa, perché l'espressione \texttt{x < y} risulta sempre vera nei test considerati.
+
+\begin{notaesame}
+Una suite può raggiungere statement, block e decision coverage senza essere adeguata rispetto alla condition coverage.
+\end{notaesame}
+
+\subsection{Test suite T2}
+
+La seconda test suite, \(T_2\), aggiunge un test \(t_5\) per forzare la condizione \texttt{x < y} a \texttt{false}.
+
+In questo modo si migliora la copertura delle condizioni atomiche e si raggiunge la condition coverage.
+
+Tuttavia, \(T_2\) non è ancora sufficiente per MC/DC, perché non dimostra l'effetto indipendente di tutte le condizioni atomiche. In particolare, non viene provato in modo indipendente l'effetto della condizione:
+
+\[
+current == \text{``South''}
+\]
+
+sulla decisione \(C_3\).
+
+\subsection{Test suite T3}
+
+La test suite \(T_3\) aggiunge ulteriori test:
+
+\[
+t_6, t_7, t_8, t_9
+\]
+
+Questi test permettono di formare coppie in cui varia una sola condizione atomica alla volta, mentre le altre restano invariate. Se il risultato della decisione cambia, allora è dimostrato l'effetto indipendente della condizione considerata.
+
+Per questo motivo, \(T_3\) è considerata \textbf{MC/DC adequate}.
+
+\begin{notaesame}
+Una suite MC/DC adequate deve dimostrare che ogni condizione atomica può cambiare indipendentemente il risultato della decisione complessa.
+\end{notaesame}
+
+\subsection{Importanza dell'ordine dei test}
+
+Nell'esempio di Mathur, l'ordine dei test è importante perché il programma contiene stato interno aggiornato durante l'esecuzione, come le variabili \texttt{prev} e \texttt{current}.
+
+Due test possono avere gli stessi valori di input per \(x\), \(y\) e \(z\), ma produrre effetti diversi se lo stato interno del programma è diverso.
+
+\begin{notaesame}
+In presenza di stato interno o cicli, i test non sono sempre indipendenti. L'ordine di esecuzione può influenzare il comportamento osservato.
+\end{notaesame}
+
+\section{Tool e collegamento con il progetto}
+
+\textbf{JaCoCo} è uno degli strumenti più usati in ambito Java per misurare la code coverage. Può essere integrato con Maven e con processi di Continuous Integration.
+
+\begin{notaprof}
+Nel progetto è utile scrivere prima test manuali black-box e poi usare JaCoCo per osservare quali statement o branch non sono stati coperti. A quel punto si possono aggiungere test mirati in ottica white-box.
+\end{notaprof}
+
+JaCoCo può produrre report di coverage, spesso consultabili in formato HTML nella directory:
+
+\[
+\texttt{target/site/jacoco}
+\]
+
+\begin{notaslide}
+Le slide richiamano anche altri strumenti di coverage, come Emma, Cobertura e SonarCloud, oltre alla possibilità di usare JaCoCo in progetti Maven multi-modulo.
+\end{notaslide}
+
+Nel report di progetto non basta riportare il valore numerico della coverage. È necessario spiegare:
+
+\begin{itemize}
+    \item quale criterio è stato usato;
+    \item quale valore è stato ottenuto inizialmente;
+    \item quali test sono stati aggiunti per migliorare la coverage;
+    \item quali limiti restano;
+    \item quali trade-off sono stati accettati.
+\end{itemize}
+
+\begin{notaesame}
+Non basta dire ``ho raggiunto alta coverage''. Bisogna spiegare cosa misura quella coverage, quali parti del codice sono state esplorate, quali non sono state coperte e perché.
+\end{notaesame}
