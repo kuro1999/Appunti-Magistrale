@@ -1,101 +1,96 @@
 \chapter{Mutation Testing}
 
-\section{Limiti dei criteri di adequacy già visti}
+\section{Limiti dei criteri di adequacy precedenti}
 
-I criteri di adeguatezza visti in precedenza servono per decidere quando smettere di testare, ma presentano alcuni limiti intrinseci.
+I criteri di adeguatezza visti in precedenza permettono di stimare quanto una test suite esplori il \textbf{System Under Test} (SUT), ma non misurano direttamente la sua capacità di rilevare difetti.
 
-La \textbf{functional adequacy} si basa su modelli o specifiche non direttamente eseguibili e valuta i comportamenti osservabili del sistema. Il suo limite principale è che non riesce a scoprire errori dovuti a dettagli implementativi introdotti dal programmatore.
+La \textbf{functional adequacy} si basa su specifiche, requisiti o comportamenti osservabili. Il suo limite principale è che non riesce a scoprire errori dovuti a dettagli implementativi introdotti dal programmatore.
 
-La \textbf{structural adequacy}, invece, si basa sul codice e cerca di esplorare la maggior parte possibile dell'implementazione. Tuttavia, anche una coverage strutturale molto alta non garantisce che la test suite sia davvero capace di trovare difetti.
+La \textbf{structural adequacy}, invece, si basa sul codice e misura l'esplorazione di statement, branch o condizioni. Tuttavia, anche una coverage molto alta non garantisce che i test siano realmente efficaci nel trovare difetti.
 
 \begin{notaslide}
-I criteri di adequacy funzionali e strutturali danno un'idea di quanta parte del SUT, delle specifiche o del codice sia stata esplorata, ma non sono indici diretti dell'effettiva capacità di fault detection della test suite.
+I criteri funzionali e strutturali danno solo un'idea di quanta parte del SUT sia stata esplorata, ma non sono indici diretti dell'effettiva capacità di \emph{fault detection} della test suite.
 \end{notaslide}
 
 \begin{notaprof}
-L'assunzione secondo cui esplorare molto codice aumenta la probabilità di trovare errori è una correlazione empirica, non una garanzia matematica. Inoltre, i criteri strutturali non possono rivelare errori su funzionalità mancanti, perché se un certo codice non è stato implementato, non può far parte del calcolo della coverage.
+L'assunzione secondo cui esplorare tutto il codice faccia trovare i bug è solo una correlazione empirica. Se si raggiunge il 100\% di coverage, ma le asserzioni non controllano il reale stato del sistema, i test possono comunque passare ignorando errori logici.
 \end{notaprof}
 
 \begin{notaesame}
-Alta coverage non significa automaticamente alta capacità di trovare bug. La coverage misura l'esplorazione del codice, non la forza delle asserzioni né la capacità della test suite di distinguere comportamenti corretti e scorretti.
+Alta coverage non significa automaticamente test efficaci. La coverage misura l'esplorazione del codice, non la forza degli oracle né la capacità della test suite di rilevare difetti.
 \end{notaesame}
 
 \section{Idea del Mutation Testing}
 
-Il \textbf{Mutation Testing} nasce per stimare la qualità di una test suite da un punto di vista diverso rispetto alla semplice esplorazione del codice.
+Il \textbf{Mutation Testing} è un approccio basato sull'inserimento deliberato di \textbf{mutazioni}, cioè alterazioni artificiali, all'interno del codice del SUT.
 
-L'idea è introdurre deliberatamente nel SUT delle \textbf{alterazioni artificiali}, dette \textbf{mutazioni}, e osservare se la test suite riesce ad accorgersi di tali alterazioni.
+L'obiettivo non è misurare semplicemente quanto codice viene eseguito, ma stimare la bontà di una test suite osservando se essa riesce ad accorgersi di difetti artificialmente introdotti.
 
-Una \textbf{mutazione} è quindi una modifica artificiale introdotta nel programma originale. Il programma modificato prende il nome di \textbf{mutante}.
-
-L'obiettivo del Mutation Testing è stimare la bontà e l'adeguatezza di una test suite esistente in base a:
+In questo senso, il Mutation Testing misura:
 
 \begin{itemize}
-    \item la sua potenziale capacità di rilevare errori;
-    \item la sua robustezza rispetto a evoluzioni o modifiche del codice.
+    \item la potenziale capacità della test suite di rilevare errori;
+    \item la robustezza della test suite rispetto a modifiche ed evoluzioni future del codice;
+    \item la capacità degli oracle di distinguere il comportamento originale da quello alterato.
 \end{itemize}
 
-\begin{notaprof}
-L'assunzione di base è che il SUT originale sia corretto. Lo si altera artificialmente: se i test si accorgono del cambiamento, allora sono buoni; se invece continuano a passare ignorando la modifica, significa che sono trasparenti a quel difetto e quindi deboli.
-\end{notaprof}
-
 \begin{notaesame}
-Il Mutation Testing non misura semplicemente se una riga è stata eseguita. Misura se i test sono in grado di rilevare una modifica artificiale del comportamento del programma.
+Il Mutation Testing valuta la qualità di una test suite esistente introducendo piccoli difetti artificiali nel SUT e verificando se i test riescono a rilevarli.
 \end{notaesame}
 
-\section{Concetti principali}
+\section{Concetti fondamentali}
 
-Nel Mutation Testing si utilizzano alcune definizioni fondamentali.
+Nel Mutation Testing si usano alcuni concetti ricorrenti.
 
 \begin{description}
-    \item[\(P\) -- SUT originale:] è il programma di partenza, assunto come corretto.
+    \item[\(P\) -- SUT originale:] è il programma di partenza, assunto per ipotesi come corretto.
 
-    \item[\(M\) -- Mutante:] è una versione alterata del programma originale. Ogni mutante dovrebbe contenere una sola modifica rispetto a \(P\).
+    \item[\(M\) -- Mutante:] è una variante del SUT in cui è stata introdotta una sola alterazione artificiale.
 
-    \item[\(L\) -- Mutanti vivi:] sono i mutanti generati ma non ancora scoperti dai test.
+    \item[\(T\) -- Test set:] è l'insieme dei test usati per valutare il programma originale e i mutanti.
 
-    \item[\(D\) -- Mutanti killed o distinguished:] sono i mutanti che la test suite è riuscita a rivelare, cioè a distinguere dal programma originale.
+    \item[\(D\) -- Mutanti killed o distinguished:] sono i mutanti rivelati dai test, cioè quelli per cui almeno un test produce un comportamento diverso rispetto al programma originale.
 
-    \item[\(E\) -- Mutanti equivalenti:] sono mutanti sintatticamente diversi dal programma originale, ma semanticamente indistinguibili da esso.
+    \item[\(L\) -- Mutanti live:] sono i mutanti vivi, cioè quelli che nessun test è riuscito a distinguere dal programma originale.
 
-    \item[\(T\) -- Test set:] è l'insieme dei test usati per valutare il SUT e i suoi mutanti.
+    \item[\(E\) -- Mutanti equivalenti:] sono mutanti sintatticamente diversi dal programma originale, ma semanticamente equivalenti, quindi indistinguibili da qualunque test.
 \end{description}
 
-\begin{notaprof}
-Ogni mutante dovrebbe contenere una e una sola alterazione rispetto al programma originale. Se un mutante contenesse più modifiche, un errore potrebbe mascherarne un altro e rendere più difficile interpretare il risultato.
-\end{notaprof}
-
 \begin{notaslide}
-Il test set \(T\) può essere visto sia come insieme di tuple di input, sia come insieme di test program, in genere dotati di asserzioni. Nel secondo caso, i test devono passare sul SUT originale e fallire almeno su alcuni mutanti.
+Il test set \(T\) può essere visto come insieme di tuple di input oppure come insieme di \emph{test program} dotati di \texttt{assert}. Nel secondo caso, i test devono passare sul programma originale \(P\) e fallire sul mutante \(M\), se la mutazione è osservabile.
 \end{notaslide}
 
-\section{Schema di processo}
+\begin{notaprof}
+Ogni mutante dovrebbe contenere una sola alterazione. Se un mutante contenesse più modifiche, un errore potrebbe mascherarne un altro e rendere difficile capire quale modifica sia stata effettivamente rilevata dai test.
+\end{notaprof}
 
-Il processo di Mutation Testing segue un flusso logico preciso.
+\section{Processo di Mutation Testing}
+
+Il processo di Mutation Testing può essere descritto come una sequenza di passi.
 
 \begin{enumerate}
-    \item Si esegue il SUT originale \(P\) su tutti i casi di test presenti in \(T\), registrando gli output \(P(t)\). Se i test sono programmi con asserzioni, devono passare sul programma originale.
+    \item Si esegue il test set \(T\) sul programma originale \(P\). I test devono passare, perché \(P\) viene assunto come comportamento di riferimento.
 
-    \item Si generano i mutanti, cioè versioni alterate del SUT, e li si inserisce nell'insieme dei mutanti vivi \(L\).
+    \item Si generano i mutanti \(M\), ciascuno ottenuto introducendo una piccola alterazione artificiale nel SUT.
 
-    \item Finché ci sono mutanti vivi, si seleziona un mutante \(M\) da analizzare.
+    \item I mutanti generati vengono inseriti nell'insieme dei mutanti vivi \(L\).
 
-    \item Si esegue un test \(t\) sul mutante \(M\), ottenendo l'output \(M(t)\).
+    \item Per ogni mutante \(M\), si eseguono i test del test set \(T\).
 
-    \item Si confronta il comportamento del programma originale con quello del mutante, verificando se:
+    \item Per ogni test \(t\), si confronta il comportamento del programma originale con quello del mutante:
     \[
         P(t) = M(t)
     \]
 
-    \item Se l'output è diverso:
+    \item Se almeno un test produce un comportamento diverso:
     \[
         P(t) \neq M(t)
     \]
-    allora il mutante è stato distinto dal programma originale. Si dice quindi che il mutante è stato \textbf{ucciso} e viene aggiunto all'insieme \(D\).
+    allora il mutante viene considerato \textbf{killed} o \textbf{distinguished} e viene spostato nell'insieme \(D\).
 
-    \item Se invece il mutante produce lo stesso comportamento del programma originale per tutti i test disponibili, il mutante resta vivo.
+    \item Se invece nessun test riesce a distinguere il mutante dal programma originale, il mutante resta vivo.
 
-    \item Al termine, i mutanti rimasti vivi vengono analizzati per identificare eventuali mutanti equivalenti \(E\).
+    \item Al termine del processo, i mutanti vivi vengono analizzati per individuare eventuali mutanti equivalenti \(E\).
 
     \item Infine, si calcola il \textbf{Mutation Score}.
 \end{enumerate}
@@ -105,111 +100,173 @@ Nel diagramma del processo, le linee continue rappresentano il flusso di control
 \end{notaslide}
 
 \begin{notaesame}
-Un mutante viene ucciso quando almeno un test riesce a produrre un comportamento diverso tra il programma originale e il mutante.
-\end{notaesame}
-
-\section{Mutanti killed, live ed equivalent}
-
-Un mutante è detto \textbf{killed} o \textbf{distinguished} quando almeno un test della suite riesce a distinguerlo dal programma originale. In termini pratici, il test passa su \(P\), ma fallisce o produce un risultato diverso su \(M\).
-
-Un mutante è detto \textbf{live} quando sopravvive all'intera test suite. Questo significa che tutti i test producono sul mutante lo stesso risultato osservato sul programma originale.
-
-\begin{notaesame}
-Un mutante vivo indica una possibile debolezza della test suite: i test non sono riusciti ad accorgersi della modifica artificiale introdotta nel codice.
-\end{notaesame}
-
-Un caso particolare è il \textbf{mutante equivalente}. Un mutante equivalente è sintatticamente diverso dal programma originale, ma semanticamente identico. In altre parole, nessun test può distinguerlo dal SUT originale, perché il comportamento osservabile non cambia.
-
-\begin{notaprof}
-Un esempio semplice è trasformare una condizione come \texttt{a == b} in \texttt{b == a}. Il codice cambia sintatticamente, ma il comportamento rimane identico.
-\end{notaprof}
-
-I mutanti equivalenti sono problematici perché identificarli può essere molto difficile. Stabilire se due programmi siano semanticamente equivalenti è, in generale, un problema indecidibile. Per questo motivo, spesso è necessaria un'ispezione manuale.
-
-\begin{notaesame}
-I mutanti equivalenti non devono penalizzare il Mutation Score. Se venissero conteggiati come semplici mutanti vivi, abbasserebbero artificialmente il punteggio della test suite, anche se nessun test potrebbe realmente ucciderli.
+Un mutante viene ucciso quando almeno un test riesce a distinguere il comportamento del mutante dal comportamento del programma originale.
 \end{notaesame}
 
 \section{Mutation Score}
 
-Il \textbf{Mutation Score} misura la capacità della test suite di distinguere il programma originale dalle sue versioni mutate.
+Il \textbf{Mutation Score} misura la capacità della test suite di uccidere i mutanti generati.
 
-In forma intuitiva, un Mutation Score alto indica che la test suite è efficace nel rilevare alterazioni artificiali del codice. Un Mutation Score basso indica invece che molti mutanti sopravvivono, quindi i test sono probabilmente deboli o poco sensibili agli errori introdotti.
-
-Una formula comune del Mutation Score è:
+Una prima formulazione è:
 
 \[
-MS = \frac{D}{G - E}
+MS = \frac{|D|}{|L| + |D|}
 \]
 
 dove:
 
 \begin{itemize}
-    \item \(D\) è il numero di mutanti uccisi;
-    \item \(G\) è il numero totale di mutanti generati;
-    \item \(E\) è il numero di mutanti equivalenti.
+    \item \(|D|\) è il numero di mutanti uccisi;
+    \item \(|L|\) è il numero di mutanti vivi non equivalenti.
 \end{itemize}
 
-In alternativa, se si considera l'insieme finale dei mutanti vivi non equivalenti, si può scrivere:
+Una formulazione alternativa, che tiene conto dei mutanti equivalenti, è:
 
 \[
-MS = \frac{D}{D + L_{final}}
+MS = \frac{|D|}{|M| - |E|}
 \]
 
-dove \(L_{final}\) rappresenta i mutanti vivi non equivalenti rimasti alla fine del processo.
+dove:
 
-\begin{notaesame}
-Il Mutation Score non misura quante righe sono state eseguite, ma quanto la test suite riesce a distinguere il programma originale dai mutanti.
-\end{notaesame}
+\begin{itemize}
+    \item \(|M|\) è il numero totale di mutanti generati;
+    \item \(|E|\) è il numero di mutanti equivalenti;
+    \item \(|M| - |E|\) rappresenta il numero di mutanti effettivamente rilevabili.
+\end{itemize}
 
-Uno score alto suggerisce che i test hanno buone asserzioni e sono sensibili a cambiamenti del comportamento. Uno score basso suggerisce che la suite potrebbe eseguire il codice senza verificarlo davvero in modo efficace.
+L'interpretazione è la seguente:
 
-\section{Mutation Testing e coverage}
-
-Il Mutation Testing non sostituisce la coverage strutturale, ma la completa.
-
-La coverage, ad esempio con JaCoCo, dice se una certa parte del codice è stata eseguita. Il Mutation Testing, invece, dice se i test che hanno eseguito quel codice erano anche capaci di rilevare una modifica artificiale.
+\begin{itemize}
+    \item \textbf{Mutation Score = 1}: la test suite ha ucciso tutti i mutanti non equivalenti ed è considerata adeguata rispetto al criterio di mutation testing;
+    \item \textbf{Mutation Score = 0}: nessun mutante è stato ucciso, quindi la test suite non è riuscita ad accorgersi di alcuna alterazione artificiale.
+\end{itemize}
 
 \begin{notaprof}
-Un test può attraversare una riga di codice e quindi aumentare la coverage, ma senza avere una \texttt{assert} significativa. In quel caso il codice è stato eseguito, ma non realmente verificato. Il Mutation Testing aiuta a scoprire questo tipo di debolezza.
+I mutanti equivalenti non possono essere rivelati da nessun test. Se venissero conteggiati nel denominatore, il Mutation Score risulterebbe artificialmente basso, penalizzando la test suite per un limite teorico del generatore di mutanti.
 \end{notaprof}
 
 \begin{notaesame}
-Coverage alta e Mutation Score alto misurano due aspetti diversi. La prima misura esplorazione, il secondo misura sensibilità della test suite rispetto ad alterazioni del codice.
+I mutanti equivalenti devono essere esclusi dal calcolo del Mutation Score, perché nessun test potrebbe distinguerli dal programma originale.
 \end{notaesame}
+
+\section{Condizioni per uccidere un mutante}
+
+Perché un mutante venga ucciso, devono essere soddisfatte contemporaneamente tre condizioni.
+
+\begin{description}
+    \item[C1 -- Raggiungibilità:] deve esistere un cammino di esecuzione che raggiunga lo statement mutato.
+
+    \item[C2 -- Infezione dello stato:] dopo l'esecuzione dello statement mutato, lo stato interno del mutante deve differire dallo stato interno del programma originale.
+
+    \item[C3 -- Propagazione dello stato:] la differenza di stato deve propagarsi fino a un punto osservabile, come l'output finale o una \texttt{assert}.
+\end{description}
+
+Se un test raggiunge il codice mutato ma la mutazione non altera lo stato, il mutante non viene ucciso. Se altera lo stato ma tale differenza viene sovrascritta prima dell'osservazione, il mutante continua comunque a sopravvivere.
+
+\begin{notaesame}
+Per uccidere un mutante non basta eseguire la riga mutata: la mutazione deve modificare lo stato e tale modifica deve propagarsi fino a un comportamento osservabile.
+\end{notaesame}
+
+\begin{notaesame}
+Se non esiste alcun test nel dominio degli input capace di soddisfare contemporaneamente C1, C2 e C3, allora il mutante è equivalente.
+\end{notaesame}
+
+\section{Principi importanti}
+
+\subsection{Competent Programmer Hypothesis}
+
+La \textbf{Competent Programmer Hypothesis} afferma che un programmatore competente produce un programma non troppo distante dalla versione corretta.
+
+L'idea alla base del Mutation Testing è che molti difetti reali siano piccoli errori locali, come operatori sbagliati, condizioni invertite o modifiche sintattiche minime. Per questo motivo, introdurre mutazioni artificiali piccole può aiutare a stimare la capacità della test suite di rilevare difetti realistici.
+
+\begin{notaprof}
+L'assunzione è che il programmatore abbia compreso l'algoritmo e che il programma scritto sia vicino a quello corretto, ma possa comunque contenere piccoli errori sintattici, logici o tipografici.
+\end{notaprof}
+
+\subsection{Indecidibilità dell'equivalenza}
+
+Stabilire in modo generale e automatico se un mutante è semanticamente equivalente al programma originale è un problema \textbf{indecidibile}.
+
+Per questo motivo, nella pratica, l'identificazione dei mutanti equivalenti richiede spesso analisi manuale.
+
+\begin{notaesame}
+Il tester ha un ruolo importante nell'analisi dei mutanti sopravvissuti: deve capire se sono dovuti a test deboli, oracle incompleti, codice non raggiunto oppure mutanti equivalenti.
+\end{notaesame}
+
+\subsection{Strong mutation e weak mutation}
+
+Si distinguono due forme principali di mutation testing.
+
+Nella \textbf{strong mutation}, un mutante è considerato ucciso solo se produce un comportamento osservabile esternamente diverso dal programma originale.
+
+Nella \textbf{weak mutation}, invece, l'osservazione può fermarsi a stati intermedi interni, per esempio valori di variabili locali subito dopo lo statement mutato.
+
+\begin{notaesame}
+Un mutante può essere equivalente rispetto alla strong mutation, perché non cambia l'output osservabile, ma non equivalente rispetto alla weak mutation, perché produce uno stato interno diverso.
+\end{notaesame}
+
+\section{PIT / Pitest}
+
+\textbf{PIT}, o \textbf{Pitest}, è un framework Java usato per automatizzare il Mutation Testing.
+
+PIT si integra con il ciclo di build e può essere usato insieme a Maven e Surefire. Il tool modifica il bytecode, genera mutanti, esegue i test e produce un report sui mutanti uccisi e sopravvissuti.
+
+\begin{notaslide}
+PIT si integra nel progetto Maven tramite il plugin \texttt{pitest-maven}. La configurazione può essere inserita nel \texttt{pom.xml}, specificando le classi da mutare e i test da eseguire.
+\end{notaslide}
+
+Gli elementi principali della configurazione sono:
+
+\begin{itemize}
+    \item \texttt{targetClasses}: indica le classi del SUT da mutare;
+    \item \texttt{targetTests}: indica le classi di test da usare;
+    \item goal \texttt{mutationCoverage}: avvia l'analisi di mutation testing;
+    \item directory \texttt{target/pit-reports}: contiene il report HTML generato.
+\end{itemize}
+
+Il goal Maven può essere eseguito con un comando del tipo:
+
+\begin{verbatim}
+mvn org.pitest:pitest-maven:mutationCoverage
+\end{verbatim}
+
+\begin{notaprof}
+Nel report HTML di PIT è possibile aprire una classe e osservare, riga per riga, quante mutazioni sono state generate, quante sono state uccise e quante sono sopravvissute. Questo permette di capire quali aspetti del codice hanno ingannato la test suite.
+\end{notaprof}
 
 \section{Collegamento con il progetto}
 
-Nel progetto, il Mutation Testing può essere usato per valutare la qualità dei test già scritti.
+Nel progetto, il Mutation Testing può essere usato per valutare la qualità reale dei test già scritti.
 
 \begin{notaesame}
-Nel progetto è importante non confondere la coverage di JaCoCo con il Mutation Score di PIT. La coverage indica quanto codice è stato eseguito; il Mutation Score indica quanto i test sono capaci di rilevare alterazioni artificiali.
+JaCoCo e PIT misurano aspetti diversi. JaCoCo misura l'esplorazione white-box del codice; PIT misura la capacità della test suite di rilevare difetti artificiali.
 \end{notaesame}
 
-Uno strumento tipico per Java è \textbf{PIT}, noto anche come \textbf{Pitest}. PIT automatizza la generazione dei mutanti, l'esecuzione della test suite e il calcolo del Mutation Score.
+Una possibile strategia è usare JaCoCo per capire quali parti del codice non sono state ancora esplorate e PIT per capire se i test già presenti contengono oracle sufficientemente forti.
 
-Nel report di progetto è utile documentare:
+Nel report di progetto è utile indicare:
 
 \begin{itemize}
     \item il tool usato;
+    \item il Mutation Score ottenuto;
     \item il numero di mutanti generati;
     \item il numero di mutanti uccisi;
     \item il numero di mutanti sopravvissuti;
-    \item eventuali mutanti equivalenti o sospetti tali;
-    \item il Mutation Score finale;
-    \item i limiti dell'analisi.
+    \item eventuali mutanti equivalenti o sospetti equivalenti;
+    \item le cause principali dei mutanti sopravvissuti.
 \end{itemize}
 
-Se sopravvivono molti mutanti, bisogna analizzare il report HTML prodotto dal tool per capire il motivo. Le cause più comuni sono:
+Se sopravvivono molti mutanti, bisogna analizzare il report HTML e distinguere tra diverse cause possibili:
 
 \begin{itemize}
-    \item test senza asserzioni significative;
-    \item oracle troppo deboli;
+    \item test senza \texttt{assert};
+    \item oracle deboli;
     \item codice eseguito ma non verificato;
+    \item rami difficili da raggiungere;
     \item mutanti equivalenti;
-    \item mutanti generati in codice poco rilevante o difficilmente raggiungibile.
+    \item mutazioni in parti poco rilevanti del codice.
 \end{itemize}
 
 \begin{notaesame}
-Non bisogna fidarsi solo del numero finale. Un buon report deve spiegare perché certi mutanti sono sopravvissuti e se il problema è nella test suite, nel codice o nella presenza di mutanti equivalenti.
+Non bisogna riportare solo il numero finale prodotto da PIT. Bisogna spiegare quali mutanti sono sopravvissuti e perché.
 \end{notaesame}
