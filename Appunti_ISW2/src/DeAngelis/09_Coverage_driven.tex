@@ -1,0 +1,205 @@
+\chapter{Coverage-Driven Test Generation}
+
+\section{Adeguatezza dei test}
+
+Il concetto di \textbf{adeguatezza dei test} nasce dall'esigenza di capire se e quando sia possibile smettere di testare un \textbf{System Under Test} (SUT).
+
+Le domande principali sono:
+
+\begin{itemize}
+    \item i miei test sono sufficientemente buoni?
+    \item il SUT è stato testato in modo abbastanza meticoloso?
+    \item i test sono adeguati rispetto agli obiettivi prefissati?
+\end{itemize}
+
+Le tecniche di adequacy servono quindi a stimare, nel modo più oggettivo possibile, la qualità dell'attività di testing. In pratica, permettono di definire criteri di accettazione degli artefatti prodotti, cioè soglie o condizioni minime per dire che una test suite è sufficientemente adeguata.
+
+\begin{notaprof}
+L'adeguatezza viene spesso usata alla fine della catena di testing, come controllo a posteriori per dimostrare che il lavoro è stato fatto bene. In questa lezione, però, il problema viene ribaltato: l'adeguatezza può essere usata anche come \textbf{obiettivo guidato} per generare automaticamente i test fin dall'inizio.
+\end{notaprof}
+
+\begin{notaesame}
+L'adequacy non dimostra l'assenza di bug. Serve a misurare quanto una test suite soddisfi certi criteri espliciti di esplorazione o verifica del SUT.
+\end{notaesame}
+
+\section{Functional vs Structural Adequacy}
+
+Le tecniche di adequacy possono essere divise in due grandi famiglie: \textbf{functional adequacy} e \textbf{structural adequacy}.
+
+La \textbf{functional adequacy} è un criterio di tipo black-box. Si basa su requisiti, specifiche o modelli comportamentali del sistema. L'attenzione è rivolta ai comportamenti osservabili del SUT, senza considerare direttamente il codice sorgente.
+
+\begin{notaslide}
+Il limite principale della functional adequacy è che non riesce a intercettare errori dovuti a dettagli implementativi introdotti dallo sviluppatore.
+\end{notaslide}
+
+La \textbf{structural adequacy}, invece, è un criterio di tipo white-box. Si basa sull'implementazione eseguibile del SUT e cerca di attraversare la maggior parte possibile del codice reale.
+
+Il suo limite è duplice: da un lato non può scoprire funzionalità completamente mancanti, perché se una funzionalità non è implementata non esiste codice da coprire; dall'altro, non esiste una garanzia matematica secondo cui un'alta coverage implichi necessariamente l'esposizione di una failure.
+
+\begin{notaprof}
+Con la coverage strutturale misuriamo la nostra confidenza nell'esplorazione del sistema, ma non misuriamo direttamente il reale modo d'uso funzionale del SUT né la capacità effettiva di trovare difetti.
+\end{notaprof}
+
+\begin{notaesame}
+Alta coverage non significa automaticamente buona test suite. Una riga può essere eseguita senza essere realmente verificata da un'oracolo significativo.
+\end{notaesame}
+
+\section{Generazione automatica white-box}
+
+La \textbf{generazione automatica white-box} parte dall'idea di usare il codice del SUT come input per produrre automaticamente casi di test.
+
+Invece di progettare manualmente test con l'obiettivo di coprire il codice, si fornisce a un algoritmo un criterio di coverage da massimizzare. Lo strumento analizza il codice e genera automaticamente test, per esempio classi JUnit.
+
+\begin{notaslide}
+Un esempio mostrato nelle slide riguarda una funzione come \texttt{areBothParamsPositive(int i, int j)}, contenente rami logici basati su condizioni come \texttt{i > 0} e \texttt{j > 0}. Uno strumento coverage-driven può generare automaticamente test JUnit per coprire i branch della funzione.
+\end{notaslide}
+
+Tuttavia, bisogna distinguere tra \textbf{generare input} e \textbf{generare veri test}. Generare input significa trovare valori che stimolano il SUT e attraversano certe parti del codice. Generare un vero test significa anche produrre un \textbf{oracle}, cioè un'asserzione che stabilisca quale comportamento sia corretto.
+
+\begin{notaprof}
+Molti strumenti automatici sono bravi a generare stimoli, cioè valori di input e sequenze di chiamate. Il problema più difficile è generare anche le \texttt{assert}, perché senza oracle il test esegue il codice ma non verifica davvero la correttezza del risultato.
+\end{notaprof}
+
+\section{Approcci evolutivi}
+
+Gli approcci evolutivi alla generazione dei test rientrano nella \textbf{Search-Based Software Engineering}. L'idea è trattare la generazione dei test come un problema di ricerca: si parte da una popolazione di soluzioni candidate e la si evolve progressivamente verso test migliori.
+
+Il processo generale include:
+
+\begin{itemize}
+    \item una \textbf{popolazione iniziale} di test candidati, spesso generati in modo casuale;
+    \item una \textbf{fitness function}, che misura la bontà di un test rispetto all'obiettivo, per esempio code coverage o fault coverage;
+    \item operazioni di \textbf{crossover}, che combinano due test candidati per produrre nuovi test;
+    \item operazioni di \textbf{mutazione dei test}, che alterano localmente un test;
+    \item una fase di \textbf{selezione}, in cui vengono mantenuti i candidati migliori;
+    \item un criterio di arresto, come il raggiungimento dell'ottimalità o l'esaurimento del budget computazionale.
+\end{itemize}
+
+\begin{notaprof}
+La mutazione dei test serve anche a evitare che l'algoritmo si blocchi in ottimi locali. Alterando casualmente una soluzione, l'algoritmo può esplorare zone dello spazio di ricerca che altrimenti non raggiungerebbe.
+\end{notaprof}
+
+Il vantaggio principale di questi approcci è la loro genericità: possono essere automatizzati e applicati a molti SUT diversi. I limiti riguardano invece la difficoltà di modellare il software come problema evolutivo, la scelta della fitness function, la taratura degli iper-parametri e, soprattutto, la generazione degli oracle.
+
+\begin{notaesame}
+Negli approcci evolutivi, ottimizzare la coverage non basta. Una test suite generata automaticamente deve anche contenere asserzioni utili e non fragili.
+\end{notaesame}
+
+\section{Definizione automatica degli oracle}
+
+La definizione automatica degli \textbf{oracle} è uno dei problemi centrali della generazione white-box.
+
+Trovare una sequenza di chiamate che raggiunge una certa riga di codice è utile solo in parte. Se alla fine il test non controlla l'effetto prodotto, allora non è realmente in grado di rivelare una failure.
+
+Le asserzioni possono essere generate osservando:
+
+\begin{itemize}
+    \item valori di ritorno dei metodi;
+    \item stato pubblico dell'istanza;
+    \item API pubbliche del SUT;
+    \item valori osservabili dopo l'esecuzione del test.
+\end{itemize}
+
+Tuttavia, questa generazione automatica può produrre problemi. Alcune asserzioni possono essere irrilevanti, superflue o troppo legate a dettagli interni dell'implementazione. In questi casi, il test diventa fragile: può fallire dopo un refactoring corretto, anche se il comportamento funzionale del sistema non è cambiato.
+
+\begin{notaslide}
+Le slide evidenziano il rischio di generare troppe asserzioni o asserzioni irrilevanti, che aumentano il rumore invece di migliorare davvero la qualità della test suite.
+\end{notaslide}
+
+\begin{notaprof}
+Lo sviluppatore deve comunque controllare le asserzioni generate. Un'asserzione prodotta automaticamente non è automaticamente significativa: deve essere collegata a un requisito, a una proprietà attesa o a un comportamento realmente rilevante.
+\end{notaprof}
+
+\section{Mutazioni e asserzioni}
+
+Per generare asserzioni più utili, alcuni approcci coverage-driven sfruttano idee derivate dal \textbf{Mutation Testing}.
+
+\begin{notaesame}
+Bisogna distinguere chiaramente tra \textbf{mutazione dei test} e \textbf{mutazione del SUT}. La mutazione dei test riguarda modifiche casuali alla popolazione di test candidati. La mutazione del SUT riguarda invece alterazioni artificiali del codice sorgente per simulare fault.
+\end{notaesame}
+
+L'idea è assumere che il SUT originale sia corretto, introdurre artificialmente una mutazione nel SUT e poi eseguire la stessa sequenza di test sia sul programma originale sia sul mutante.
+
+Se il comportamento osservabile diverge, il tool può usare quella divergenza per generare un'asserzione. In altre parole, l'asserzione viene costruita in modo da accettare il comportamento del SUT originale e rifiutare quello del mutante.
+
+Il processo può essere sintetizzato così:
+
+\begin{enumerate}
+    \item si genera una sequenza di test;
+    \item si esegue la sequenza sul SUT originale;
+    \item si esegue la stessa sequenza su un mutante del SUT;
+    \item si confrontano ritorni, stato e valori osservabili;
+    \item si genera un'asserzione che cattura la differenza significativa.
+\end{enumerate}
+
+\begin{notaprof}
+Un mutante viene rilevato solo se esiste un oracle capace di osservare la divergenza. Se il test attraversa il codice mutato ma non controlla il valore modificato, il mutante può sopravvivere.
+\end{notaprof}
+
+\section{Test come sequenze di istruzioni}
+
+Negli approcci evolutivi, un test viene modellato come una \textbf{sequenza di istruzioni}. Questa modellazione permette agli algoritmi di generare, combinare e modificare test in modo automatico.
+
+\begin{notaslide}
+Le slide distinguono tra \textbf{constructor statements}, \textbf{method statements}, \textbf{field statements} e \textbf{primitive statements}.
+\end{notaslide}
+
+I \textbf{constructor statements} creano nuove istanze, per esempio tramite \texttt{new}. I \textbf{method statements} invocano metodi su oggetti già creati. I \textbf{field statements} accedono a campi pubblici, mentre i \textbf{primitive statements} definiscono valori primitivi, come interi, booleani o stringhe.
+
+La generazione deve rispettare alcune regole. Ogni istruzione produce una nuova variabile riutilizzabile. I parametri passati a un metodo devono riferirsi a variabili già dichiarate, altrimenti il codice generato sarebbe sintatticamente non valido.
+
+Inoltre, possono essere coinvolte anche classi dipendenti dal SUT. Questo è necessario perché molte API richiedono oggetti complessi come parametri; quindi, prima di invocare il metodo da testare, bisogna costruire uno stato valido e coerente.
+
+\begin{notaesame}
+Generare test automatici non significa solo scegliere valori primitivi. Spesso bisogna costruire intere sequenze di oggetti e chiamate per portare il SUT in uno stato utile al test.
+\end{notaesame}
+
+\section{EvoSuite}
+
+\textbf{EvoSuite} è uno strumento per la generazione automatica di test suite JUnit. Nasce da ricerche accademiche e implementa un approccio coverage-based alla generazione dei test.
+
+\begin{notaslide}
+EvoSuite lavora a livello di \textbf{bytecode Java}, cioè sui file \texttt{.class}. Per questo non richiede necessariamente il codice sorgente del SUT o delle librerie.
+\end{notaslide}
+
+Il suo obiettivo è generare automaticamente una test suite cercando di:
+
+\begin{itemize}
+    \item massimizzare la code coverage;
+    \item generare test JUnit eseguibili;
+    \item produrre asserzioni;
+    \item minimizzare il numero di asserzioni non necessarie.
+\end{itemize}
+
+EvoSuite può essere usato in diverse modalità operative: stand-alone da riga di comando, tramite plugin per Eclipse, tramite plugin per IntelliJ o tramite plugin Maven.
+
+\begin{notaesame}
+EvoSuite mostra bene il compromesso della generazione automatica: può produrre molti test e aumentare la coverage, ma le asserzioni generate devono essere controllate criticamente.
+\end{notaesame}
+
+\section{Collegamento con il progetto}
+
+Nel progetto è utile distinguere tra test scritti manualmente, test generati con strumenti randomici come Randoop, test prodotti da LLM e test generati da strumenti coverage-driven come EvoSuite.
+
+I test manuali permettono di ragionare sulle specifiche e sulle classi di equivalenza. Randoop genera sequenze random guidate dal feedback. Gli LLM possono produrre test a partire da codice e prompt, ma richiedono validazione. EvoSuite e gli strumenti coverage-driven, invece, usano la coverage come obiettivo esplicito di generazione.
+
+\begin{notaesame}
+Il peggior errore è fidarsi solo della coverage. Una test suite automatica può coprire molto codice ma contenere oracle deboli, asserzioni fragili o test poco significativi.
+\end{notaesame}
+
+Nel report di progetto bisogna documentare:
+
+\begin{itemize}
+    \item il tool usato;
+    \item la configurazione adottata;
+    \item il criterio di coverage considerato;
+    \item i test generati;
+    \item il tipo e la qualità delle asserzioni;
+    \item i limiti osservati;
+    \item eventuali test scartati o modificati.
+\end{itemize}
+
+\begin{notaprof}
+Includere test automatici che fanno molte chiamate ma non contengono nessuna \texttt{assert} significativa significa non aver compreso lo scopo del testing. Un test deve stimolare il SUT, ma deve anche verificare il risultato.
+\end{notaprof}
+
