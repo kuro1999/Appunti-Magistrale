@@ -15,6 +15,7 @@
 \usepackage{amstext}
 \usepackage{amsopn} % Per i box "Nota del Prof"
 
+
 % --- Configurazione Box "Nota del Prof" ---
 \newtcolorbox{notaprof}{
   colback=blue!5!white,
@@ -50,6 +51,8 @@
 \author{Appunti basati sulle lezioni di Davide Falessi e Gulyx}
 \date{A.A. 2025/2026}
 
+% --- Configurazione Indice ---
+\setcounter{tocdepth}{0} % Mostra l'indice solo fino alle subsection
 \begin{document}
 
 \maketitle
@@ -83,4 +86,5 @@
 \include{DeAngelis/07_TestAdequacy}
 \include{DeAngelis/08_MutationTesting}
 \include{DeAngelis/09_Coverage_driven}
+\include{DeAngelis/10_Coverage_BasedTestGeneration}
 \end{document}
